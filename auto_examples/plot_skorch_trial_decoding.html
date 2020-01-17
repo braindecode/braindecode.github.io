@@ -89,6 +89,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Braindecode examples</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Skorch Trialwise Decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_skorch_crop_decoding.html">Skorch Crop Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bcic_iv_2a_cropped.html">Cropped Decoding on BCIC IV 2a Competition Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bcic_iv_2a_trial.html">Trialwise Decoding on BCIC IV 2a Competition Set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="perturbation.html">Amplitude Perturbation Visualization</a></li>
 </ul>
 </li>
@@ -183,14 +185,14 @@ No baseline correction applied
 Not setting metadata
 Loading data for 90 events and 497 original time points ...
 0 bad epochs dropped
-  epoch    train_acc    train_f1    train_loss    valid_loss     dur
--------  -----------  ----------  ------------  ------------  ------
-      1       [36m0.8000[0m      [32m0.7778[0m        [35m1.1775[0m        [31m0.6880[0m  0.6216
-      2       [36m0.8250[0m      [32m0.8205[0m        [35m0.5595[0m        [31m0.6071[0m  0.6080
-      3       [36m0.8750[0m      [32m0.8718[0m        0.6315        [31m0.5475[0m  0.6657
-      4       [36m0.9250[0m      [32m0.9268[0m        [35m0.4493[0m        [31m0.4362[0m  0.5944
+  epoch    train_acc    train_f1    train_loss    valid_acc    valid_f1    valid_loss     dur
+-------  -----------  ----------  ------------  -----------  ----------  ------------  ------
+      1       [36m0.8000[0m      [32m0.7778[0m        [35m1.1775[0m       [31m0.7000[0m      [94m0.6400[0m        [36m0.6880[0m  0.5828
+      2       0.7750      0.7429        [35m0.7266[0m       0.6000      0.4545        0.7316  0.8608
+      3       [36m0.8500[0m      [32m0.8333[0m        0.8708       [31m0.7667[0m      [94m0.7407[0m        [36m0.5561[0m  0.5761
+      4       [36m0.9250[0m      [32m0.9231[0m        [35m0.4993[0m       [31m0.8000[0m      [94m0.7857[0m        [36m0.4765[0m  0.5418
 
-0.6666666666666665
+0.7
 </pre></div>
 </div>
 <div class="line-block">
@@ -202,31 +204,37 @@ Loading data for 90 events and 497 original time points ...
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.concatenate_raws.html#mne.concatenate_raws" title="mne.concatenate_raws" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">concatenate_raws</span></a>
-
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.concatenate_raws.html#mne.concatenate_raws" title="mne.concatenate_raws" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">concatenate_raws</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score" title="sklearn.metrics.f1_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">f1_score</span></a>
+<span class="kn">from</span> <span class="nn">skorch.callbacks.scoring</span> <span class="kn">import</span> <span class="n">EpochScoring</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score" title="sklearn.metrics.f1_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">f1_score</span></a>
-
-<span class="kn">from</span> <span class="nn">skorch.net</span> <span class="kn">import</span> <span class="n">NeuralNet</span>
-
+<span class="kn">from</span> <span class="nn">braindecode.classifier</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
+<span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">PostEpochTrainScoring</span>
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
-<span class="kn">from</span> <span class="nn">braindecode.experiments.classifier</span> <span class="kn">import</span> <span class="n">BraindecodeClassifier</span>
-<span class="kn">from</span> <span class="nn">braindecode.experiments.scoring</span> <span class="kn">import</span> <span class="n">PostEpochTrainScoring</span>
 
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="mi">22</span>  <span class="c1"># carefully cherry-picked to give nice results on such limited data :)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>  <span class="c1"># codes for executed and imagined hands/feet</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="p">(</span>
+    <span class="mi">22</span>
+<span class="p">)</span>  <span class="c1"># carefully cherry-picked to give nice results on such limited data :)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">5</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">,</span>
+<span class="p">]</span>  <span class="c1"># codes for executed and imagined hands/feet</span>
 
 <span class="c1"># This will download the files if you don&#39;t have them yet,</span>
 <span class="c1"># and then return the paths to the files.</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">physionet_paths</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 
 <span class="c1"># Load each of the files</span>
 <span class="n">raws</span> <span class="o">=</span> <span class="p">[</span>
@@ -303,8 +311,11 @@ Loading data for 90 events and 497 original time points ...
             <span class="n">n_train_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 
         <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a>
-        <span class="k">return</span> <span class="p">(</span><span class="n">EEGDataSet</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">],</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">]),</span>
-                <span class="n">EEGDataSet</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:],</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:]))</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">EEGDataSet</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">],</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">]),</span>
+            <span class="n">EEGDataSet</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:],</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:]),</span>
+        <span class="p">)</span>
+
 
 <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a><span class="p">(</span><span class="mi">20200114</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
@@ -313,12 +324,13 @@ Loading data for 90 events and 497 original time points ...
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">in_chans</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">in_chans</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a><span class="p">,</span>
     <span class="n">input_time_length</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-    <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">create_network</span><span class="p">()</span>
+    <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
     <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet.cuda" title="braindecode.models.ShallowFBCSPNet.cuda" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">cuda</span></a><span class="p">()</span>
 
 <span class="c1"># It can use also NeuralNetClassifier</span>
-<span class="n">clf</span> <span class="o">=</span> <span class="n">BraindecodeClassifier</span><span class="p">(</span>
+<span class="n">clf</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
     <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span>
     <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
@@ -327,22 +339,31 @@ Loading data for 90 events and 497 original time points ...
     <span class="n">optimizer__weight_decay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
     <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
-         <span class="p">(</span>
-             <span class="s2">&quot;train_accuracy&quot;</span><span class="p">,</span>
-             <span class="n">PostEpochTrainScoring</span><span class="p">(</span>
-                 <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
-                 <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;train_acc&quot;</span><span class="p">,</span>
-             <span class="p">),</span>
-         <span class="p">),</span>
         <span class="p">(</span>
-             <span class="s2">&quot;train_f1_score&quot;</span><span class="p">,</span>
-             <span class="n">PostEpochTrainScoring</span><span class="p">(</span>
-                 <span class="s2">&quot;f1&quot;</span><span class="p">,</span>
-                 <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;train_f1&quot;</span><span class="p">,</span>
-             <span class="p">),</span>
-         <span class="p">),</span>
+            <span class="s2">&quot;train_accuracy&quot;</span><span class="p">,</span>
+            <span class="n">PostEpochTrainScoring</span><span class="p">(</span>
+                <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;train_acc&quot;</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;train_f1_score&quot;</span><span class="p">,</span>
+            <span class="n">PostEpochTrainScoring</span><span class="p">(</span><span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;train_f1&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;valid_accuracy&quot;</span><span class="p">,</span>
+            <span class="n">EpochScoring</span><span class="p">(</span>
+                <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
+                <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;valid_acc&quot;</span><span class="p">,</span>
+                <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;valid_f1_score&quot;</span><span class="p">,</span>
+            <span class="n">EpochScoring</span><span class="p">(</span>
+                <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;valid_f1&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
     <span class="p">],</span>
 <span class="p">)</span>
 <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -352,8 +373,8 @@ Loading data for 90 events and 497 original time points ...
 <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score" title="sklearn.metrics.f1_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">f1_score</span></a><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a><span class="p">,</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preds</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.770 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1101 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.829 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1096 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-skorch-trial-decoding-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bcae24c39d32e42533e9fad57dd2a90d/plot_skorch_trial_decoding.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_skorch_trial_decoding.py</span></code></a></p>
