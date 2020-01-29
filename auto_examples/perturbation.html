@@ -89,8 +89,10 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Braindecode examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="plot_skorch_trial_decoding.html">Skorch Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">Simple Moabb Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb.html">Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_skorch_crop_decoding.html">Skorch Crop Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_skorch_trial_decoding.html">Skorch Trialwise Decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bcic_iv_2a_cropped.html">Cropped Decoding on BCIC IV 2a Competition Set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bcic_iv_2a_trial.html">Trialwise Decoding on BCIC IV 2a Competition Set</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Amplitude Perturbation Visualization</a><ul>
@@ -201,49 +203,72 @@ and visualization](<a class="reference external" href="https://arxiv.org/abs/170
 
 <span class="c1"># First 50 subjects as train</span>
 <span class="n">physionet_paths</span> <span class="o">=</span> <span class="p">[</span>
-    <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span>
-        <span class="n">sub_id</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">sub_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">51</span><span class="p">)]</span>
+    <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">sub_id</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sub_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">51</span><span class="p">)</span>
+<span class="p">]</span>
 
 <span class="n">physionet_paths</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="n">physionet_paths</span><span class="p">)</span>
-<span class="n">raws</span> <span class="o">=</span> <span class="p">[</span><a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">physionet_paths</span><span class="p">]</span>
+<span class="n">raws</span> <span class="o">=</span> <span class="p">[</span>
+    <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">physionet_paths</span>
+<span class="p">]</span>
 
 <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.concatenate_raws.html#mne.concatenate_raws" title="mne.concatenate_raws" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">concatenate_raws</span></a><span class="p">(</span><span class="n">raws</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">raws</span>
 
-<span class="n">picks</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                       <span class="n">exclude</span><span class="o">=</span><span class="s1">&#39;bads&#39;</span><span class="p">)</span>
+<span class="n">picks</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span>
+<span class="p">)</span>
 
 <span class="c1"># Find the events in this dataset</span>
 <span class="n">events</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
 <span class="c1"># Read epochs (train will be done only between 1 and 2s)</span>
 <span class="c1"># Testing will be done with a running classifier</span>
-<span class="n">epochs</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">hands</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">feet</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mf">4.1</span><span class="p">,</span>
-                    <span class="n">proj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span>
+    <span class="n">raw</span><span class="p">,</span>
+    <span class="n">events</span><span class="p">,</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">hands</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">feet</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">4.1</span><span class="p">,</span>
+    <span class="n">proj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span>
+    <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># 51-55 as validation subjects</span>
 <span class="n">physionet_paths_valid</span> <span class="o">=</span> <span class="p">[</span>
-    <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span>
-        <span class="n">sub_id</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">sub_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">56</span><span class="p">)]</span>
+    <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">sub_id</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sub_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">56</span><span class="p">)</span>
+<span class="p">]</span>
 <span class="n">physionet_paths_valid</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="n">physionet_paths_valid</span><span class="p">)</span>
-<span class="n">raws_valid</span> <span class="o">=</span> <span class="p">[</span><a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-              <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">physionet_paths_valid</span><span class="p">]</span>
+<span class="n">raws_valid</span> <span class="o">=</span> <span class="p">[</span>
+    <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">physionet_paths_valid</span>
+<span class="p">]</span>
 <span class="n">raw_valid</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.concatenate_raws.html#mne.concatenate_raws" title="mne.concatenate_raws" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">concatenate_raws</span></a><span class="p">(</span><span class="n">raws_valid</span><span class="p">)</span>
 
-<span class="n">picks_valid</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">raw_valid</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                             <span class="n">eog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s1">&#39;bads&#39;</span><span class="p">)</span>
+<span class="n">picks_valid</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span>
+    <span class="n">raw_valid</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span>
+<span class="p">)</span>
 
 <span class="c1"># Find the events in this dataset</span>
 <span class="n">events_valid</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw_valid</span><span class="p">)</span>
 
 <span class="c1"># Read epochs (train will be done only between 1 and 2s)</span>
 <span class="c1"># Testing will be done with a running classifier</span>
-<span class="n">epochs_valid</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw_valid</span><span class="p">,</span> <span class="n">events_valid</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">hands</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">feet</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
-                          <span class="n">tmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mf">4.1</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="n">picks_valid</span><span class="p">,</span>
-                          <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">epochs_valid</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span>
+    <span class="n">raw_valid</span><span class="p">,</span>
+    <span class="n">events_valid</span><span class="p">,</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">hands</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">feet</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">4.1</span><span class="p">,</span>
+    <span class="n">proj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">picks</span><span class="o">=</span><span class="n">picks_valid</span><span class="p">,</span>
+    <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">train_X</span> <span class="o">=</span> <span class="p">(</span><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 <span class="n">train_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">epochs</span><span class="o">.</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  <span class="c1"># 2, 3 -&gt; 0, 1</span>
@@ -271,29 +296,43 @@ networks for EEG decoding and visualization](<a class="reference external" href=
 <span class="c1"># This will determine how many crops are processed in parallel</span>
 <span class="n">input_time_length</span> <span class="o">=</span> <span class="mi">450</span>
 <span class="c1"># final_conv_length determines the size of the receptive field of the ConvNet</span>
-<span class="n">model</span> <span class="o">=</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a><span class="p">(</span><span class="n">in_chans</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
-                 <span class="n">filter_length_3</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">filter_length_4</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                 <span class="n">pool_time_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                 <span class="n">stride_before_pool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">final_conv_length</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a><span class="p">(</span>
+    <span class="n">in_chans</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
+    <span class="n">filter_length_3</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">filter_length_4</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">pool_time_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">stride_before_pool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">final_conv_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="k">if</span> <span class="n">cuda</span><span class="p">:</span>
     <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
 <span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">AdamW</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
 
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">AdamW</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="mf">0.001</span><span class="p">)</span>  <span class="c1"># these are good values for the deep model</span>
-<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">iterator_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cropped</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">AdamW</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="mf">0.001</span>
+<span class="p">)</span>  <span class="c1"># these are good values for the deep model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">iterator_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cropped</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="run-the-training">
 <h2>Run the training<a class="headerlink" href="#run-the-training" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">input_time_length</span> <span class="o">=</span> <span class="mi">450</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">train_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-          <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span><span class="p">,</span>
-          <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
-          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">valid_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">y</span><span class="p">),)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span>
+    <span class="n">train_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">n_epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;cosine&quot;</span><span class="p">,</span>
+    <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">valid_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -302,14 +341,17 @@ networks for EEG decoding and visualization](<a class="reference external" href=
 <p>First collect all batches and concatenate them into one array of examples:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datautil.iterators</span> <span class="kn">import</span> <span class="n">CropsFromTrialsIterator</span>
 <span class="kn">from</span> <span class="nn">braindecode.torch_ext.util</span> <span class="kn">import</span> <span class="n">np_to_var</span>
+
 <span class="n">test_input</span> <span class="o">=</span> <span class="n">np_to_var</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ones.html#numpy.ones" title="numpy.ones" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">input_time_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 <span class="k">if</span> <span class="n">cuda</span><span class="p">:</span>
     <span class="n">test_input</span> <span class="o">=</span> <span class="n">test_input</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">test_input</span><span class="p">)</span>
 <span class="n">n_preds_per_input</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">iterator</span> <span class="o">=</span> <span class="n">CropsFromTrialsIterator</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-                                   <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
-                                   <span class="n">n_preds_per_input</span><span class="o">=</span><span class="n">n_preds_per_input</span><span class="p">)</span>
+<span class="n">iterator</span> <span class="o">=</span> <span class="n">CropsFromTrialsIterator</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
+    <span class="n">n_preds_per_input</span><span class="o">=</span><span class="n">n_preds_per_input</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">train_batches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterator</span><span class="o">.</span><span class="n">get_batches</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 <span class="n">train_X_batches</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">train_batches</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
@@ -321,21 +363,31 @@ networks for EEG decoding and visualization](<a class="reference external" href=
 
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <span class="n">var_to_np</span>
 <span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">th</span>
+
 <span class="n">new_model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">named_children</span><span class="p">():</span>
-    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;softmax&#39;</span><span class="p">:</span> <span class="k">break</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;softmax&quot;</span><span class="p">:</span>
+        <span class="k">break</span>
     <span class="n">new_model</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
 
 <span class="n">new_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">pred_fn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">var_to_np</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">new_model</span><span class="p">(</span><span class="n">np_to_var</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">())[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">var_to_np</span><span class="p">(</span>
+        <span class="n">th</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">new_model</span><span class="p">(</span><span class="n">np_to_var</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">())[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">braindecode.visualization.perturbation</span> <span class="kn">import</span> <span class="n">compute_amplitude_prediction_correlations</span>
 
-<span class="n">amp_pred_corrs</span> <span class="o">=</span> <span class="n">compute_amplitude_prediction_correlations</span><span class="p">(</span><span class="n">pred_fn</span><span class="p">,</span> <span class="n">train_X_batches</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
-                                                           <span class="n">batch_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">braindecode.visualization.perturbation</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_amplitude_prediction_correlations</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">amp_pred_corrs</span> <span class="o">=</span> <span class="n">compute_amplitude_prediction_correlations</span><span class="p">(</span>
+    <span class="n">pred_fn</span><span class="p">,</span> <span class="n">train_X_batches</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">30</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -345,7 +397,7 @@ networks for EEG decoding and visualization](<a class="reference external" href=
 range to make a scalp plot. Here we use the alpha frequency range.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">amp_pred_corrs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-<span class="n">fs</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
 <span class="n">freqs</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.fft.rfftfreq.html#numpy.fft.rfftfreq" title="numpy.fft.rfftfreq" class="sphx-glr-backref-module-numpy-fft sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span></a><span class="p">(</span><span class="n">train_X_batches</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
 <span class="n">start_freq</span> <span class="o">=</span> <span class="mi">7</span>
 <span class="n">stop_freq</span> <span class="o">=</span> <span class="mi">14</span>
@@ -358,9 +410,12 @@ range to make a scalp plot. Here we use the alpha frequency range.</p>
 
 <span class="c1"># Now get approximate positions of the channels in the 10-20 system.</span>
 
-<span class="kn">from</span> <span class="nn">braindecode.datasets.sensor_positions</span> <span class="kn">import</span> <span class="n">get_channelpos</span><span class="p">,</span> <span class="n">CHANNEL_10_20_APPROX</span>
+<span class="kn">from</span> <span class="nn">braindecode.datasets.sensor_positions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_channelpos</span><span class="p">,</span>
+    <span class="n">CHANNEL_10_20_APPROX</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+<span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
 <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_channelpos</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">CHANNEL_10_20_APPROX</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">]</span>
 <span class="n">positions</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
 </pre></div>
@@ -374,12 +429,19 @@ range to make a scalp plot. Here we use the alpha frequency range.</p>
 <span class="n">max_abs_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freq_corr</span><span class="p">))</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Left Hand&#39;</span><span class="p">,</span> <span class="s1">&#39;Right Hand&#39;</span><span class="p">]</span>
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Left Hand&quot;</span><span class="p">,</span> <span class="s2">&quot;Right Hand&quot;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i_class</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i_class</span><span class="p">]</span>
-    <a href="https://mne.tools/stable/generated/mne.viz.plot_topomap.html#mne.viz.plot_topomap" title="mne.viz.plot_topomap" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">plot_topomap</span></a><span class="p">(</span><span class="n">freq_corr</span><span class="p">[:,</span> <span class="n">i_class</span><span class="p">],</span> <span class="n">positions</span><span class="p">,</span>
-                         <span class="n">vmin</span><span class="o">=-</span><span class="n">max_abs_val</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">max_abs_val</span><span class="p">,</span> <span class="n">contours</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                         <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <a href="https://mne.tools/stable/generated/mne.viz.plot_topomap.html#mne.viz.plot_topomap" title="mne.viz.plot_topomap" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">plot_topomap</span></a><span class="p">(</span>
+        <span class="n">freq_corr</span><span class="p">[:,</span> <span class="n">i_class</span><span class="p">],</span>
+        <span class="n">positions</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=-</span><span class="n">max_abs_val</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">max_abs_val</span><span class="p">,</span>
+        <span class="n">contours</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">,</span>
+        <span class="n">axes</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">class_names</span><span class="p">[</span><span class="n">i_class</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -389,12 +451,18 @@ range to make a scalp plot. Here we use the alpha frequency range.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.visualization.plot</span> <span class="kn">import</span> <span class="n">ax_scalp</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Left Hand&#39;</span><span class="p">,</span> <span class="s1">&#39;Right Hand&#39;</span><span class="p">]</span>
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Left Hand&quot;</span><span class="p">,</span> <span class="s2">&quot;Right Hand&quot;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i_class</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i_class</span><span class="p">]</span>
-    <span class="n">ax_scalp</span><span class="p">(</span><span class="n">freq_corr</span><span class="p">[:,</span> <span class="n">i_class</span><span class="p">],</span> <span class="n">ch_names</span><span class="p">,</span>
-             <span class="n">chan_pos_list</span><span class="o">=</span><span class="n">CHANNEL_10_20_APPROX</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">,</span>
-             <span class="n">vmin</span><span class="o">=-</span><span class="n">max_abs_val</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">max_abs_val</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax_scalp</span><span class="p">(</span>
+        <span class="n">freq_corr</span><span class="p">[:,</span> <span class="n">i_class</span><span class="p">],</span>
+        <span class="n">ch_names</span><span class="p">,</span>
+        <span class="n">chan_pos_list</span><span class="o">=</span><span class="n">CHANNEL_10_20_APPROX</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=-</span><span class="n">max_abs_val</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">max_abs_val</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">class_names</span><span class="p">[</span><span class="n">i_class</span><span class="p">])</span>
 
 <span class="c1"># From these plots we can see the ConvNet clearly learned to use the</span>

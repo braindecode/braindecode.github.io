@@ -89,8 +89,10 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Braindecode examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="plot_skorch_trial_decoding.html">Skorch Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">Simple Moabb Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb.html">Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_skorch_crop_decoding.html">Skorch Crop Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_skorch_trial_decoding.html">Skorch Trialwise Decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bcic_iv_2a_cropped.html">Cropped Decoding on BCIC IV 2a Competition Set</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Trialwise Decoding on BCIC IV 2a Competition Set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="perturbation.html">Amplitude Perturbation Visualization</a></li>
@@ -187,19 +189,19 @@
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 
+<span class="kn">from</span> <span class="nn">braindecode.callbacks</span> <span class="kn">import</span> <span class="n">MaxNormConstraintCallback</span>
+<span class="kn">from</span> <span class="nn">braindecode.classifier</span> <span class="kn">import</span> <span class="n">EEGClassifier</span>
 <span class="kn">from</span> <span class="nn">braindecode.datasets.bcic_iv_2a</span> <span class="kn">import</span> <span class="n">BCICompetition4Set2A</span>
+<span class="kn">from</span> <span class="nn">braindecode.datautil.signal_target</span> <span class="kn">import</span> <span class="n">apply_to_X_y</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.signalproc</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">bandpass_cnt</span><span class="p">,</span>
     <span class="n">exponential_running_standardize</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">braindecode.datautil.splitters</span> <span class="kn">import</span> <span class="n">split_into_two_sets</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.trial_segment</span> <span class="kn">import</span> <span class="n">create_signal_target_from_raw_mne</span>
-<span class="kn">from</span> <span class="nn">braindecode.callbacks</span> <span class="kn">import</span> <span class="n">MaxNormConstraintCallback</span>
-<span class="kn">from</span> <span class="nn">braindecode.classifier</span> <span class="kn">import</span> <span class="n">EEGClassifier</span>
-<span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">PostEpochTrainScoring</span>
 <span class="kn">from</span> <span class="nn">braindecode.mne_ext.signalproc</span> <span class="kn">import</span> <span class="n">mne_apply</span>
 <span class="kn">from</span> <span class="nn">braindecode.models.deep4</span> <span class="kn">import</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models.shallow_fbcsp</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ShallowFBCSPNet</span></a>
+<span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">PostEpochTrainScoring</span>
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
 
 <span class="n">log</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/logging.html#logging.getLogger" title="logging.getLogger" class="sphx-glr-backref-module-logging sphx-glr-backref-type-py-function"><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span></a><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -218,6 +220,69 @@
 <span class="n">factor_new</span> <span class="o">=</span> <span class="mf">1e-3</span>
 <span class="n">init_block_size</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">valid_set_fraction</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+
+<span class="k">def</span> <span class="nf">split_into_two_sets</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">first_set_fraction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_first_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split set into two sets either by fraction of first set or by number</span>
+<span class="sd">    of trials in first set.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset: :class:`.SignalAndTarget`</span>
+<span class="sd">    first_set_fraction: float, optional</span>
+<span class="sd">        Fraction of trials in first set.</span>
+<span class="sd">    n_first_set: int, optional</span>
+<span class="sd">        Number of trials in first set</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    first_set, second_set: :class:`.SignalAndTarget`</span>
+<span class="sd">        The two splitted sets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">first_set_fraction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span>
+        <span class="n">n_first_set</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="p">),</span> <span class="s2">&quot;Pass either first_set_fraction or n_first_set&quot;</span>
+    <span class="k">if</span> <span class="n">n_first_set</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_first_set</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">first_set_fraction</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">n_first_set</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">first_set</span> <span class="o">=</span> <span class="n">apply_to_X_y</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">[:</span><span class="n">n_first_set</span><span class="p">],</span> <span class="n">dataset</span><span class="p">)</span>
+    <span class="n">second_set</span> <span class="o">=</span> <span class="n">apply_to_X_y</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="n">n_first_set</span><span class="p">:],</span> <span class="n">dataset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">first_set</span><span class="p">,</span> <span class="n">second_set</span>
+
+
+<span class="k">class</span> <span class="nc">EEGDataSet</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">TrainTestSplit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_size</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_size</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">=</span> <span class="n">train_size</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># can we directly use this https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html</span>
+        <span class="c1"># or stick to same API</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">n_train_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_train_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">EEGDataSet</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">],</span> <span class="n">y</span><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">]),</span>
+            <span class="n">EEGDataSet</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:]),</span>
+        <span class="p">)</span>
 
 <span class="n">train_filename</span> <span class="o">=</span> <span class="s2">&quot;A</span><span class="si">{:02d}</span><span class="s2">T.gdf&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject_id</span><span class="p">)</span>
 <span class="n">test_filename</span> <span class="o">=</span> <span class="s2">&quot;A</span><span class="si">{:02d}</span><span class="s2">E.gdf&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject_id</span><span class="p">)</span>
@@ -291,40 +356,6 @@
     <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
     <span class="n">stream</span><span class="o">=</span><a href="https://docs.python.org/3/library/sys.html#sys.stdout" title="sys.stdout" class="sphx-glr-backref-module-sys sphx-glr-backref-type-py-data"><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span></a><span class="p">,</span>
 <span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">EEGDataSet</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
-
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-
-
-<span class="k">class</span> <span class="nc">TrainTestSplit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_size</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_size</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">=</span> <span class="n">train_size</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># can we directly use this https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html</span>
-        <span class="c1"># or stick to same API</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">n_train_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">n_train_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
-
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">y</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">EEGDataSet</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">],</span> <span class="n">y</span><span class="p">[:</span><span class="n">n_train_samples</span><span class="p">]),</span>
-            <span class="n">EEGDataSet</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:]),</span>
-        <span class="p">)</span>
 
 
 <span class="c1"># Set if you want to use GPU</span>

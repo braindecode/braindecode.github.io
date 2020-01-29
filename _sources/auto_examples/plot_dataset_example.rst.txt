@@ -1,0 +1,223 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_dataset_example.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_dataset_example.py:
+
+
+Simple Moabb Dataset Example
+=========================
+
+Showcasing how to fetch and crop a moabb dataset.
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: "MNE_DATASETS_BNCI_PATH"
+      set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 1 events and 1000 original time points ...
+    0 bad epochs dropped
+    (26, 1000) 4 [0, 250, 1250]
+    subject            4
+    session    session_E
+    run            run_5
+    Name: 11, dtype: object
+        subject  ...    run
+    0         4  ...  run_0
+    1         4  ...  run_1
+    2         4  ...  run_2
+    3         4  ...  run_3
+    4         4  ...  run_4
+    5         4  ...  run_5
+    6         4  ...  run_0
+    7         4  ...  run_1
+    8         4  ...  run_2
+    9         4  ...  run_3
+    10        4  ...  run_4
+    11        4  ...  run_5
+
+    [12 rows x 3 columns]
+    {'session_E': <torch.utils.data.dataset.Subset object at 0x7f92c9d66890>, 'session_T': <torch.utils.data.dataset.Subset object at 0x7f932910e150>}
+    Loading data for 1 events and 1000 original time points ...
+    0 bad epochs dropped
+    (26, 1000) 4 [0, 250, 1250]
+
+
+
+
+
+
+|
+
+
+.. code-block:: default
+
+
+    # Authors: Lukas Gemein <l.gemein@gmail.com>
+    #
+    # License: BSD (3-clause)
+
+    from braindecode.datasets import MOABBDataset
+
+    # create a dataset based on BCIC IV 2a fetched with moabb
+    ds = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[4],
+                      trial_start_offset_samples=0, trial_stop_offset_samples=1000,
+                      supercrop_size_samples=1000, supercrop_stride_samples=1000)
+
+    # we can iterate through ds which yields an example x, target y,
+    # and info as i_supercrop_in_trial, i_start_in_trial, and i_stop_in_trial
+    # which is required for combining supercrop predictions in the scorer
+    for x, y, info in ds:
+        print(x.shape, y, info)
+        break
+
+    # each base_ds in ds has its own info DataFrame
+    print(ds.datasets[-1].info)
+    # ds has a concattenation of all DataFrames of its datasets
+    print(ds.info)
+
+    # we can easily split ds based on a criterium in the info DataFrame
+    subsets = ds.split("session")
+    print(subsets)
+
+    # again we can iterate through the subsets as through the ds
+    for x, y, info in subsets["session_E"]:
+        print(x.shape, y, info)
+        break
+
+    # create a dataset based on TUH Abnormal EEG Corpus (v2.0.0)
+    # for this dataset, no events exist but a label (pathological / non-pathological
+    # is valid for the entire recording
+    # ds = TUHAbnormal(path="/path/to/the/directory/",
+    #                  subject_ids=[0, 1], trial_start_offset_samples=0,
+    #                  trial_stop_offset_samples=1000, supercrop_size_samples=1000,
+    #                  supercrop_stride_samples=1000, mapping={False: 0, True: 1})
+
+    # as before, we can iterate through the dataset, getting the same kind of info
+    # for x, y, info in ds:
+    #     print(x.get_data().shape, y, info)
+    #     break
+
+    # we can change the target for this dataset to 'age'
+    # ds = TUHAbnormal(path="/path/to/the/directory/",
+    #                  subject_ids=[0, 1], trial_start_offset_samples=0,
+    #                  trial_stop_offset_samples=1000, supercrop_size_samples=1000,
+    #                  supercrop_stride_samples=1000, target="age",
+    #                  mapping={False: 0, True: 1})
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  19.029 seconds)
+
+**Estimated memory usage:**  406 MB
+
+
+.. _sphx_glr_download_auto_examples_plot_dataset_example.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: plot_dataset_example.py <plot_dataset_example.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: plot_dataset_example.ipynb <plot_dataset_example.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
