@@ -8,11 +8,46 @@
 
     .. _sphx_glr_auto_examples_plot_dataset_example.py:
 
+MOABB Dataset Example
+========================
 
-Simple Moabb Dataset Example
-=========================
+In this example, we show how to fetch and prepare a MOABB dataset for usage
+with Braindecode.
 
-Showcasing how to fetch and crop a moabb dataset.
+
+.. code-block:: default
+
+
+    # Authors: Lukas Gemein <l.gemein@gmail.com>
+    #          Hubert Banville <hubert.jbanville@gmail.com>
+    #          Simon Brandt <simonbrandt@protonmail.com>
+    #
+    # License: BSD (3-clause)
+
+    from collections import OrderedDict
+
+    import matplotlib.pyplot as plt
+    from IPython.display import display
+
+    from braindecode.datasets import MOABBDataset
+    from braindecode.datautil.windowers import \
+        create_windows_from_events, create_fixed_length_windows
+    from braindecode.datautil.transforms import transform_concat_ds
+
+
+
+
+
+
+
+
+First, we create a dataset based on BCIC IV 2a fetched with MOABB,
+
+
+.. code-block:: default
+
+    ds = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[1])
+
 
 
 
@@ -25,174 +60,525 @@ Showcasing how to fetch and crop a moabb dataset.
 
     /home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: "MNE_DATASETS_BNCI_PATH"
       set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 matching events found
-    No baseline correction applied
-    Adding metadata with 4 columns
-    0 projection items activated
-    Loading data for 1 events and 1000 original time points ...
-    0 bad epochs dropped
-    (26, 1000) 4 [0, 250, 1250]
-    subject            4
-    session    session_E
-    run            run_5
-    Name: 11, dtype: object
+
+
+
+
+ds has a pandas DataFrame with additional description of its internal datasets
+
+
+.. code-block:: default
+
+    display(ds.description)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
         subject  ...    run
-    0         4  ...  run_0
-    1         4  ...  run_1
-    2         4  ...  run_2
-    3         4  ...  run_3
-    4         4  ...  run_4
-    5         4  ...  run_5
-    6         4  ...  run_0
-    7         4  ...  run_1
-    8         4  ...  run_2
-    9         4  ...  run_3
-    10        4  ...  run_4
-    11        4  ...  run_5
+    0         1  ...  run_0
+    1         1  ...  run_1
+    2         1  ...  run_2
+    3         1  ...  run_3
+    4         1  ...  run_4
+    5         1  ...  run_5
+    6         1  ...  run_0
+    7         1  ...  run_1
+    8         1  ...  run_2
+    9         1  ...  run_3
+    10        1  ...  run_4
+    11        1  ...  run_5
 
     [12 rows x 3 columns]
-    {'session_E': <torch.utils.data.dataset.Subset object at 0x7f92c9d66890>, 'session_T': <torch.utils.data.dataset.Subset object at 0x7f932910e150>}
+
+
+
+
+We can iterate through ds which yields one time point of a continuous signal x,
+and a target y (which can be None if targets are not defined for the entire
+continuous signal).
+
+
+.. code-block:: default
+
+    for x, y in ds:
+        print(x.shape, y)
+        break
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    (26, 1) None
+
+
+
+
+We can apply preprocessing transforms that are defined in mne and work
+in-place, such as resampling, bandpass filtering, or electrode selection.
+
+
+.. code-block:: default
+
+    transform_dict = OrderedDict([
+        ("pick_types", {"eeg": True, "meg": False, "stim": True}),
+        ("resample", {"sfreq": 100}),
+    ])
+    print(ds.datasets[0].raw.info["sfreq"])
+    transform_concat_ds(ds, transform_dict)
+    print(ds.datasets[0].raw.info["sfreq"])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    250.0
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    100.0
+
+
+
+
+We can easily split ds based on a criteria applied to the description
+DataFrame:
+
+
+.. code-block:: default
+
+    subsets = ds.split("session")
+    print({subset_name: len(subset) for subset_name, subset in subsets.items()})
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    {'session_E': 232164, 'session_T': 232164}
+
+
+
+
+Next, we use a windower to extract events from the dataset based on events:
+
+
+.. code-block:: default
+
+    windows_ds = create_windows_from_events(
+        ds, trial_start_offset_samples=0, trial_stop_offset_samples=1000,
+        supercrop_size_samples=1000, supercrop_stride_samples=1000,
+        drop_samples=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+
+
+
+
+We can iterate through the windows_ds which yields a supercrop/window x,
+a target y, and supercrop_ind (which itself contains `i_supercrop_in_trial`,
+`i_start_in_trial`, and `i_stop_in_trial`, which are required for combining
+supercrop/window predictions in the scorer).
+
+
+.. code-block:: default
+
+    for x, y, supercrop_ind in windows_ds:
+        print(x.shape, y, supercrop_ind)
+        break
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
     Loading data for 1 events and 1000 original time points ...
     0 bad epochs dropped
-    (26, 1000) 4 [0, 250, 1250]
+    (23, 1000) 4 [0, 100, 1100]
+
+
+
+
+We visually inspect the supercrops/windows:
+
+
+.. code-block:: default
+
+    max_i = 2
+    fig, ax_arr = plt.subplots(1, max_i + 1, figsize=((max_i + 1) * 7, 5),
+                               sharex=True, sharey=True)
+    for i, (x, y, supercrop_ind) in enumerate(windows_ds):
+        ax_arr[i].plot(x.T)
+        ax_arr[i].set_ylim(-0.0002, 0.0002)
+        ax_arr[i].set_title(f"label={y}")
+        if i == max_i:
+            break
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_dataset_example_001.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Loading data for 1 events and 1000 original time points ...
+    0 bad epochs dropped
+    Loading data for 1 events and 1000 original time points ...
+    0 bad epochs dropped
+    Loading data for 1 events and 1000 original time points ...
+    0 bad epochs dropped
+
+
+
+
+Alternatively, we can create evenly spaced ("sliding") windows using a
+different windower.
+
+
+.. code-block:: default
+
+    sliding_windows_ds = create_fixed_length_windows(
+        ds, start_offset_samples=0, stop_offset_samples=None,
+        supercrop_size_samples=1200, supercrop_stride_samples=1000,
+        drop_samples=False)
+
+    print(len(sliding_windows_ds))
+    for x, y, supercrop_ind in sliding_windows_ds:
+        print(x.shape, y, supercrop_ind)
+        break
 
 
 
 
 
+.. rst-class:: sphx-glr-script-out
 
-|
+ Out:
+
+ .. code-block:: none
+
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    38 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    456
+    Loading data for 1 events and 1200 original time points ...
+    0 bad epochs dropped
+    (23, 1200) -1 [0, 0, 1200]
+
+
+
+
+Transforms can also be applied on supercrops/windows in the same way as shown
+above on continuous data:
 
 
 .. code-block:: default
 
 
-    # Authors: Lukas Gemein <l.gemein@gmail.com>
-    #
-    # License: BSD (3-clause)
+    def crop_windows(windows, start_offset_samples, stop_offset_samples):
+        fs = windows.info["sfreq"]
+        windows.crop(tmin=start_offset_samples / fs, tmax=stop_offset_samples / fs,
+                     include_tmax=False)
 
-    from braindecode.datasets import MOABBDataset
+    epochs_transform_dict = OrderedDict([
+        ("pick_types", {"eeg": True, "meg": False, "stim": False}),
+        (crop_windows, {"start_offset_samples": 100, "stop_offset_samples": 900}),
+    ])
 
-    # create a dataset based on BCIC IV 2a fetched with moabb
-    ds = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[4],
-                      trial_start_offset_samples=0, trial_stop_offset_samples=1000,
-                      supercrop_size_samples=1000, supercrop_stride_samples=1000)
+    print(windows_ds.datasets[0].windows.info["ch_names"],
+          len(windows_ds.datasets[0].windows.times))
+    transform_concat_ds(windows_ds, epochs_transform_dict)
+    print(windows_ds.datasets[0].windows.info["ch_names"],
+          len(windows_ds.datasets[0].windows.times))
 
-    # we can iterate through ds which yields an example x, target y,
-    # and info as i_supercrop_in_trial, i_start_in_trial, and i_stop_in_trial
-    # which is required for combining supercrop predictions in the scorer
-    for x, y, info in ds:
-        print(x.shape, y, info)
-        break
+    max_i = 2
+    fig, ax_arr = plt.subplots(1, max_i+1, figsize=((max_i+1)*7, 5),
+                               sharex=True, sharey=True)
+    for i, (x, y, supercrop_ind) in enumerate(windows_ds):
+        ax_arr[i].plot(x.T)
+        ax_arr[i].set_ylim(-0.0002, 0.0002)
+        ax_arr[i].set_title(f"label={y}")
+        if i == max_i:
+            break
 
-    # each base_ds in ds has its own info DataFrame
-    print(ds.datasets[-1].info)
-    # ds has a concattenation of all DataFrames of its datasets
-    print(ds.info)
 
-    # we can easily split ds based on a criterium in the info DataFrame
-    subsets = ds.split("session")
-    print(subsets)
 
-    # again we can iterate through the subsets as through the ds
-    for x, y, info in subsets["session_E"]:
-        print(x.shape, y, info)
-        break
 
-    # create a dataset based on TUH Abnormal EEG Corpus (v2.0.0)
-    # for this dataset, no events exist but a label (pathological / non-pathological
-    # is valid for the entire recording
-    # ds = TUHAbnormal(path="/path/to/the/directory/",
-    #                  subject_ids=[0, 1], trial_start_offset_samples=0,
-    #                  trial_stop_offset_samples=1000, supercrop_size_samples=1000,
-    #                  supercrop_stride_samples=1000, mapping={False: 0, True: 1})
+.. image:: /auto_examples/images/sphx_glr_plot_dataset_example_002.png
+    :class: sphx-glr-single-img
 
-    # as before, we can iterate through the dataset, getting the same kind of info
-    # for x, y, info in ds:
-    #     print(x.get_data().shape, y, info)
-    #     break
 
-    # we can change the target for this dataset to 'age'
-    # ds = TUHAbnormal(path="/path/to/the/directory/",
-    #                  subject_ids=[0, 1], trial_start_offset_samples=0,
-    #                  trial_stop_offset_samples=1000, supercrop_size_samples=1000,
-    #                  supercrop_stride_samples=1000, target="age",
-    #                  mapping={False: 0, True: 1})
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    ['Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz', 'stim'] 1000
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    Loading data for 48 events and 1000 original time points ...
+    1 bad epochs dropped
+    ['Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz'] 800
+
+
+
+
+Again, we can easily split windows_ds based on some criteria in the
+description DataFrame:
+
+
+.. code-block:: default
+
+    subsets = windows_ds.split("session")
+    print({subset_name: len(subset) for subset_name, subset in subsets.items()})
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    {'session_E': 282, 'session_T': 282}
+
+
+
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  19.029 seconds)
+   **Total running time of the script:** ( 0 minutes  27.096 seconds)
 
-**Estimated memory usage:**  406 MB
+**Estimated memory usage:**  458 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_dataset_example.py:
