@@ -193,10 +193,7 @@
 <span class="kn">from</span> <span class="nn">braindecode.classifier</span> <span class="kn">import</span> <span class="n">EEGClassifier</span>
 <span class="kn">from</span> <span class="nn">braindecode.datasets.bcic_iv_2a</span> <span class="kn">import</span> <span class="n">BCICompetition4Set2A</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.signal_target</span> <span class="kn">import</span> <span class="n">apply_to_X_y</span>
-<span class="kn">from</span> <span class="nn">braindecode.datautil.signalproc</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">bandpass_cnt</span><span class="p">,</span>
-    <span class="n">exponential_running_standardize</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">braindecode.datautil.signalproc</span> <span class="kn">import</span> <span class="n">exponential_running_standardize</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.trial_segment</span> <span class="kn">import</span> <span class="n">create_signal_target_from_raw_mne</span>
 <span class="kn">from</span> <span class="nn">braindecode.mne_ext.signalproc</span> <span class="kn">import</span> <span class="n">mne_apply</span>
 <span class="kn">from</span> <span class="nn">braindecode.models.deep4</span> <span class="kn">import</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a>
@@ -306,37 +303,24 @@
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_cnt</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span>
 <span class="c1"># lets convert to millvolt for numerical stability of next operations</span>
 <span class="n">train_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">train_cnt</span><span class="p">)</span>
-<span class="n">train_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">bandpass_cnt</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
-        <span class="n">low_cut_hz</span><span class="p">,</span>
-        <span class="n">high_cut_hz</span><span class="p">,</span>
-        <span class="n">train_cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
-        <span class="n">filt_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">),</span>
-    <span class="n">train_cnt</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">train_cnt</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span>
+                 <span class="n">iir_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">))</span>
 <span class="n">train_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
     <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
-        <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
+    <span class="p">),</span>
     <span class="n">train_cnt</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">test_cnt</span> <span class="o">=</span> <span class="n">test_cnt</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s2">&quot;EOG-left&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-central&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-right&quot;</span><span class="p">])</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_cnt</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span>
 <span class="n">test_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">test_cnt</span><span class="p">)</span>
-<span class="n">test_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">bandpass_cnt</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">test_cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span> <span class="n">filt_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
-    <span class="p">),</span>
-    <span class="n">test_cnt</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">test_cnt</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span>
+                <span class="n">iir_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">))</span>
 <span class="n">test_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
     <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
-        <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
+    <span class="p">),</span>
     <span class="n">test_cnt</span><span class="p">,</span>
 <span class="p">)</span>
 
