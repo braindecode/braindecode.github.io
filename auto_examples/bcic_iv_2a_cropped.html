@@ -173,8 +173,8 @@
 </div>
 <div class="sphx-glr-example-title section" id="cropped-decoding-on-bcic-iv-2a-competition-set">
 <span id="sphx-glr-auto-examples-bcic-iv-2a-cropped-py"></span><h1>Cropped Decoding on BCIC IV 2a Competition Set<a class="headerlink" href="#cropped-decoding-on-bcic-iv-2a-competition-set" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Maciej Sliwowski</span>
-<span class="c1">#          Robin Tibor Schirrmeister</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Maciej Sliwowski &lt;maciek.sliwowski@gmail.com&gt;</span>
+<span class="c1">#          Robin Tibor Schirrmeister &lt;robintibor@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3</span>
 
@@ -182,7 +182,6 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OrderedDict</span></a>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 
 <span class="kn">from</span> <span class="nn">braindecode.classifier</span> <span class="kn">import</span> <span class="n">EEGClassifier</span>
 <span class="kn">from</span> <span class="nn">braindecode.datasets.bcic_iv_2a</span> <span class="kn">import</span> <span class="n">BCICompetition4Set2A</span>
@@ -191,14 +190,13 @@
 <span class="kn">from</span> <span class="nn">braindecode.datautil.splitters</span> <span class="kn">import</span> <span class="n">TrainTestSplit</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.trial_segment</span> <span class="kn">import</span> <span class="n">create_signal_target_from_raw_mne</span>
 <span class="kn">from</span> <span class="nn">braindecode.losses</span> <span class="kn">import</span> <span class="n">CroppedNLLLoss</span>
-<span class="kn">from</span> <span class="nn">braindecode.mne_ext.signalproc</span> <span class="kn">import</span> <span class="n">mne_apply</span>
 <span class="kn">from</span> <span class="nn">braindecode.models.deep4</span> <span class="kn">import</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models.shallow_fbcsp</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ShallowFBCSPNet</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models.util</span> <span class="kn">import</span> <span class="n">to_dense_prediction_model</span>
 <span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">CroppedTrialEpochScoring</span>
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
 
-<span class="n">data_folder</span> <span class="o">=</span>  <span class="s2">&quot;/data/schirrmr/schirrmr/bci-competition-iv/2a-gdf/&quot;</span>
+<span class="n">data_folder</span> <span class="o">=</span> <span class="s2">&quot;/data/schirrmr/schirrmr/bci-competition-iv/2a-gdf/&quot;</span>
 <span class="n">subject_id</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1-9</span>
 <span class="n">low_cut_hz</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># 0 or 4</span>
 <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;shallow&quot;</span>  <span class="c1"># &#39;shallow&#39; or &#39;deep&#39;</span>
@@ -234,27 +232,23 @@
 <span class="n">raw_train</span> <span class="o">=</span> <span class="n">raw_train</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s2">&quot;EOG-left&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-central&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-right&quot;</span><span class="p">])</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_train</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span>
 <span class="c1"># lets convert to millvolt for numerical stability of next operations</span>
-<span class="n">raw_train</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">raw_train</span><span class="p">)</span>
+<span class="n">raw_train</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">raw_train</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span>
                  <span class="n">iir_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">))</span>
-<span class="n">raw_train</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
+<span class="n">raw_train</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span>
+    <span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
-    <span class="p">),</span>
-    <span class="n">raw_train</span><span class="p">,</span>
-<span class="p">)</span>
+    <span class="p">),</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">raw_test</span> <span class="o">=</span> <span class="n">raw_test</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s2">&quot;EOG-left&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-central&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-right&quot;</span><span class="p">])</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_test</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span>
-<span class="n">raw_test</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">raw_test</span><span class="p">)</span>
+<span class="n">raw_test</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">raw_test</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span>
                 <span class="n">iir_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">))</span>
-<span class="n">raw_test</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
+<span class="n">raw_test</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span>
+    <span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
-    <span class="p">),</span>
-    <span class="n">raw_test</span><span class="p">,</span>
-<span class="p">)</span>
+    <span class="p">),</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">marker_def</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OrderedDict</span></a><span class="p">(</span>
     <span class="p">[(</span><span class="s2">&quot;Left Hand&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;Right Hand&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">],),</span> <span class="p">(</span><span class="s2">&quot;Foot&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;Tongue&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">])]</span>
 <span class="p">)</span>
@@ -288,7 +282,7 @@
     <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
 <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-    <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+    <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
         <span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="p">[:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">input_time_length</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span>
     <span class="p">)</span>
     <span class="n">n_preds_per_input</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -299,7 +293,8 @@
     <span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">train_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
     <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
     <span class="n">n_preds_per_input</span><span class="o">=</span><span class="n">n_preds_per_input</span><span class="p">)</span>
-<span class="n">test_set</span> <span class="o">=</span> <span class="n">CroppedXyDataset</span><span class="p">(</span><span class="n">test_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">test_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+<span class="n">test_set</span> <span class="o">=</span> <span class="n">CroppedXyDataset</span><span class="p">(</span>
+    <span class="n">test_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">test_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
     <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
     <span class="n">n_preds_per_input</span><span class="o">=</span><span class="n">n_preds_per_input</span><span class="p">)</span>
 
@@ -316,12 +311,13 @@
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;valid_trial_accuracy&quot;</span><span class="p">,</span>
     <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="c1"># MaxNormDefaultConstraint and early stopping should be added to repeat previous braindecode</span>
+<span class="c1"># MaxNormDefaultConstraint and early stopping should be added to repeat</span>
+<span class="c1"># previous braindecode</span>
 
 <span class="n">clf</span> <span class="o">=</span> <span class="n">EEGClassifier</span><span class="p">(</span>
     <span class="n">model</span><span class="p">,</span>
     <span class="n">criterion</span><span class="o">=</span><span class="n">CroppedNLLLoss</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">TrainTestSplit</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">valid_set_fraction</span><span class="p">,</span>
                                <span class="n">input_time_length</span><span class="o">=</span><span class="n">input_time_length</span><span class="p">,</span>
                                <span class="n">n_preds_per_input</span><span class="o">=</span><span class="n">n_preds_per_input</span><span class="p">),</span>

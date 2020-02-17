@@ -173,8 +173,8 @@
 </div>
 <div class="sphx-glr-example-title section" id="trialwise-decoding-on-bcic-iv-2a-competition-set">
 <span id="sphx-glr-auto-examples-bcic-iv-2a-trial-py"></span><h1>Trialwise Decoding on BCIC IV 2a Competition Set<a class="headerlink" href="#trialwise-decoding-on-bcic-iv-2a-competition-set" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Maciej Sliwowski</span>
-<span class="c1">#          Robin Tibor Schirrmeister</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Maciej Sliwowski &lt;maciek.sliwowski@gmail.com&gt;</span>
+<span class="c1">#          Robin Tibor Schirrmeister &lt;robintibor@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3</span>
 
@@ -186,7 +186,6 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">skorch.callbacks.scoring</span> <span class="kn">import</span> <span class="n">EpochScoring</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 
 <span class="kn">from</span> <span class="nn">braindecode.callbacks</span> <span class="kn">import</span> <span class="n">MaxNormConstraintCallback</span>
@@ -195,7 +194,6 @@
 <span class="kn">from</span> <span class="nn">braindecode.datautil.signal_target</span> <span class="kn">import</span> <span class="n">apply_to_X_y</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.signalproc</span> <span class="kn">import</span> <span class="n">exponential_running_standardize</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.trial_segment</span> <span class="kn">import</span> <span class="n">create_signal_target_from_raw_mne</span>
-<span class="kn">from</span> <span class="nn">braindecode.mne_ext.signalproc</span> <span class="kn">import</span> <span class="n">mne_apply</span>
 <span class="kn">from</span> <span class="nn">braindecode.models.deep4</span> <span class="kn">import</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models.shallow_fbcsp</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ShallowFBCSPNet</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">PostEpochTrainScoring</span>
@@ -207,6 +205,10 @@
 <span class="n">subject_id</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1-9</span>
 <span class="n">low_cut_hz</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># 0 or 4</span>
 <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;shallow&quot;</span>  <span class="c1"># &#39;shallow&#39; or &#39;deep&#39;</span>
+
+<span class="c1"># Set if you want to use GPU</span>
+<span class="c1"># You can also use torch.cuda.is_available() to determine if cuda is available</span>
+<span class="c1"># on your machine.</span>
 <span class="n">cuda</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="n">ival</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="mi">4000</span><span class="p">]</span>
@@ -281,6 +283,7 @@
             <span class="n">EEGDataSet</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">n_train_samples</span><span class="p">:]),</span>
         <span class="p">)</span>
 
+
 <span class="n">train_filename</span> <span class="o">=</span> <span class="s2">&quot;A</span><span class="si">{:02d}</span><span class="s2">T.gdf&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject_id</span><span class="p">)</span>
 <span class="n">test_filename</span> <span class="o">=</span> <span class="s2">&quot;A</span><span class="si">{:02d}</span><span class="s2">E.gdf&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject_id</span><span class="p">)</span>
 <span class="n">train_filepath</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="n">train_filename</span><span class="p">)</span>
@@ -302,27 +305,22 @@
 <span class="n">train_cnt</span> <span class="o">=</span> <span class="n">train_cnt</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s2">&quot;EOG-left&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-central&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-right&quot;</span><span class="p">])</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_cnt</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span>
 <span class="c1"># lets convert to millvolt for numerical stability of next operations</span>
-<span class="n">train_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">train_cnt</span><span class="p">)</span>
+<span class="n">train_cnt</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">train_cnt</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span>
                  <span class="n">iir_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">))</span>
-<span class="n">train_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
-    <span class="p">),</span>
-    <span class="n">train_cnt</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">train_cnt</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span>
+    <span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span>
+    <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">test_cnt</span> <span class="o">=</span> <span class="n">test_cnt</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s2">&quot;EOG-left&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-central&quot;</span><span class="p">,</span> <span class="s2">&quot;EOG-right&quot;</span><span class="p">])</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_cnt</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">22</span>
-<span class="n">test_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">test_cnt</span><span class="p">)</span>
+<span class="n">test_cnt</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">test_cnt</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="n">low_cut_hz</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">high_cut_hz</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span>
                 <span class="n">iir_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">))</span>
-<span class="n">test_cnt</span> <span class="o">=</span> <span class="n">mne_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span>
-    <span class="p">),</span>
-    <span class="n">test_cnt</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">test_cnt</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">exponential_running_standardize</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">factor_new</span><span class="o">=</span><span class="n">factor_new</span><span class="p">,</span> <span class="n">init_block_size</span><span class="o">=</span><span class="n">init_block_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span>
+    <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">marker_def</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OrderedDict</span></a><span class="p">(</span>
     <span class="p">[(</span><span class="s2">&quot;Left Hand&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;Right Hand&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;Foot&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;Tongue&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">])]</span>
@@ -341,10 +339,6 @@
     <span class="n">stream</span><span class="o">=</span><a href="https://docs.python.org/3/library/sys.html#sys.stdout" title="sys.stdout" class="sphx-glr-backref-module-sys sphx-glr-backref-type-py-data"><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span></a><span class="p">,</span>
 <span class="p">)</span>
 
-
-<span class="c1"># Set if you want to use GPU</span>
-<span class="c1"># You can also use torch.cuda.is_available() to determine if cuda is available on your machine.</span>
-<span class="n">cuda</span> <span class="o">=</span> <span class="kc">True</span>
 <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">20190706</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span><span class="p">)</span>
 
 <span class="n">n_classes</span> <span class="o">=</span> <span class="mi">4</span>
@@ -370,7 +364,7 @@
 <span class="n">clf</span> <span class="o">=</span> <span class="n">EEGClassifier</span><span class="p">(</span>
     <span class="n">model</span><span class="p">,</span>
     <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">TrainTestSplit</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
@@ -397,8 +391,8 @@
 <span class="p">)</span>
 
 <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <a href="https://numpy.org/doc/1.18/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">((</span><span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-    <a href="https://numpy.org/doc/1.18/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">((</span><span class="n">train_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">((</span><span class="n">train_set</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">((</span><span class="n">train_set</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
     <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>

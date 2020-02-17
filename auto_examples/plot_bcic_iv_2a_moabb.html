@@ -176,8 +176,8 @@
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_f1_score    train_loss    train_trial_accuracy    valid_loss    valid_trial_accuracy      dur
 -------  ----------------  ------------  ----------------------  ------------  ----------------------  -------
-      1            [36m0.1000[0m        [32m1.3843[0m                  [35m0.2500[0m       [31m18.1878[0m                  [94m0.2500[0m  20.1771
-      2            [36m0.2778[0m        [32m1.0926[0m                  [35m0.3785[0m       [31m12.2871[0m                  [94m0.3438[0m  19.3786
+      1            [36m0.1000[0m        [32m1.3843[0m                  [35m0.2500[0m       [31m18.1878[0m                  [94m0.2500[0m  14.7198
+      2            [36m0.2778[0m        [32m1.0926[0m                  [35m0.3785[0m       [31m12.2871[0m                  [94m0.3438[0m  14.4005
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=ShallowFBCSPNet(
@@ -200,19 +200,15 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Maciej Sliwowski</span>
-<span class="c1">#          Robin Tibor Schirrmeister</span>
-<span class="c1">#          Lukas Gemein</span>
-<span class="c1">#          Hubert Banville</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Maciej Sliwowski &lt;maciek.sliwowski@gmail.com&gt;</span>
+<span class="c1">#          Robin Tibor Schirrmeister &lt;robintibor@gmail.com&gt;</span>
+<span class="c1">#          Lukas Gemein &lt;l.gemein@gmail.com&gt;</span>
+<span class="c1">#          Hubert Banville &lt;hubert.jbanville@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class"><span class="n">OrderedDict</span></a>
 
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
-
 <span class="kn">import</span> <span class="nn">mne</span>
 <a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
 
@@ -225,7 +221,6 @@
 <span class="kn">from</span> <span class="nn">braindecode.models.util</span> <span class="kn">import</span> <span class="n">to_dense_prediction_model</span>
 <span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">CroppedTrialEpochScoring</span>
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
-
 <span class="kn">from</span> <span class="nn">braindecode.datautil.signalproc</span> <span class="kn">import</span> <span class="n">exponential_running_standardize</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.transforms</span> <span class="kn">import</span> <span class="n">transform_concat_ds</span>
 
@@ -272,10 +267,8 @@
     <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet.cuda" title="braindecode.models.ShallowFBCSPNet.cuda" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">cuda</span></a><span class="p">()</span>
 
 <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-    <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-        <a href="https://numpy.org/doc/1.18/reference/generated/numpy.ones.html#numpy.ones" title="numpy.ones" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><a href="https://numpy.org/doc/1.18/reference/generated/numpy.generic.html#numpy.generic" title="numpy.generic" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">float32</span></a><span class="p">),</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+        <span class="mi">1</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">)</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a> <span class="o">=</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
 <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;BNCI2014001&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">])</span>
@@ -303,6 +296,7 @@
     <span class="n">supercrop_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a><span class="p">,</span>
     <span class="n">drop_samples</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">TrainTestBCICIV2aSplit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -338,12 +332,13 @@
     <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="p">,</span>
 <span class="p">)</span>
-<span class="c1"># MaxNormDefaultConstraint and early stopping should be added to repeat previous braindecode</span>
+<span class="c1"># MaxNormDefaultConstraint and early stopping should be added to repeat</span>
+<span class="c1"># previous braindecode</span>
 
 <span class="n">clf</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
     <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span>
     <span class="n">criterion</span><span class="o">=</span><span class="n">CroppedNLLLoss</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">TrainTestBCICIV2aSplit</span><span class="p">(),</span>
     <span class="n">optimizer__lr</span><span class="o">=</span><span class="mf">0.0625</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">,</span>
     <span class="n">optimizer__weight_decay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -359,8 +354,8 @@
 <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  10.702 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1074 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  51.939 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  836 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-bcic-iv-2a-moabb-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/243c643470d4cea36260f545461c6906/plot_bcic_iv_2a_moabb.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bcic_iv_2a_moabb.py</span></code></a></p>

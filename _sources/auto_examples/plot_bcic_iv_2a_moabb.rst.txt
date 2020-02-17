@@ -10,7 +10,7 @@
 
 
 Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
-==============================================
+=====================================================================
 
 
 
@@ -23,8 +23,8 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
 
       epoch    train_f1_score    train_loss    train_trial_accuracy    valid_loss    valid_trial_accuracy      dur
     -------  ----------------  ------------  ----------------------  ------------  ----------------------  -------
-          1            [36m0.1000[0m        [32m1.3843[0m                  [35m0.2500[0m       [31m18.1878[0m                  [94m0.2500[0m  20.1771
-          2            [36m0.2778[0m        [32m1.0926[0m                  [35m0.3785[0m       [31m12.2871[0m                  [94m0.3438[0m  19.3786
+          1            [36m0.1000[0m        [32m1.3843[0m                  [35m0.2500[0m       [31m18.1878[0m                  [94m0.2500[0m  14.7198
+          2            [36m0.2778[0m        [32m1.0926[0m                  [35m0.3785[0m       [31m12.2871[0m                  [94m0.3438[0m  14.4005
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -53,19 +53,15 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
 .. code-block:: default
 
 
-    # Authors: Maciej Sliwowski
-    #          Robin Tibor Schirrmeister
-    #          Lukas Gemein
-    #          Hubert Banville
+    # Authors: Maciej Sliwowski <maciek.sliwowski@gmail.com>
+    #          Robin Tibor Schirrmeister <robintibor@gmail.com>
+    #          Lukas Gemein <l.gemein@gmail.com>
+    #          Hubert Banville <hubert.jbanville@gmail.com>
     #
     # License: BSD-3
     from collections import OrderedDict
 
-
-    import numpy as np
     import torch
-    from torch import optim
-
     import mne
     mne.set_log_level('ERROR')
 
@@ -78,7 +74,6 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
     from braindecode.models.util import to_dense_prediction_model
     from braindecode.scoring import CroppedTrialEpochScoring
     from braindecode.util import set_random_seeds
-
     from braindecode.datautil.signalproc import exponential_running_standardize
     from braindecode.datautil.transforms import transform_concat_ds
 
@@ -125,10 +120,8 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
         model.cuda()
 
     with torch.no_grad():
-        dummy_input = torch.tensor(
-            np.ones((1, n_chans, input_time_length, 1), dtype=np.float32),
-            device=device,
-        )
+        dummy_input = torch.ones(
+            1, n_chans, input_time_length, 1, dtype=torch.float32, device=device)
         n_preds_per_input = model(dummy_input).shape[2]
 
     dataset = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[subject_id])
@@ -156,6 +149,7 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
         supercrop_stride_samples=n_preds_per_input,
         drop_samples=False
     )
+
 
     class TrainTestBCICIV2aSplit(object):
         def __call__(self, dataset, y, **kwargs):
@@ -191,12 +185,13 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
         on_train=False,
         input_time_length=input_time_length,
     )
-    # MaxNormDefaultConstraint and early stopping should be added to repeat previous braindecode
+    # MaxNormDefaultConstraint and early stopping should be added to repeat
+    # previous braindecode
 
     clf = EEGClassifier(
         model,
         criterion=CroppedNLLLoss,
-        optimizer=optim.AdamW,
+        optimizer=torch.optim.AdamW,
         train_split=TrainTestBCICIV2aSplit(),
         optimizer__lr=0.0625 * 0.01,
         optimizer__weight_decay=0,
@@ -214,9 +209,9 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  10.702 seconds)
+   **Total running time of the script:** ( 0 minutes  51.939 seconds)
 
-**Estimated memory usage:**  1074 MB
+**Estimated memory usage:**  836 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb.py:
