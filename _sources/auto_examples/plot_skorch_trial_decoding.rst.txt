@@ -23,26 +23,14 @@ Example using skorch trialwise decoding on a simple dataset.
 
  .. code-block:: none
 
-    Using default location ~/mne_data for EEGBCI...
-    Using default location ~/mne_data for EEGBCI...
-    Using default location ~/mne_data for EEGBCI...
-    Using default location ~/mne_data for EEGBCI...
-    Using default location ~/mne_data for EEGBCI...
-    Using default location ~/mne_data for EEGBCI...
-    Used Annotations descriptions: ['T0', 'T1', 'T2']
-    90 matching events found
-    No baseline correction applied
-    Not setting metadata
-    Loading data for 90 events and 497 original time points ...
-    0 bad epochs dropped
-      epoch    train_acc    train_f1    train_loss    valid_acc    valid_f1    valid_loss     dur
-    -------  -----------  ----------  ------------  -----------  ----------  ------------  ------
-          1       [36m0.8000[0m      [32m0.7778[0m        [35m1.1775[0m       [31m0.7000[0m      [94m0.6400[0m        [36m0.6880[0m  1.1708
-          2       0.7750      0.7429        [35m0.7266[0m       0.6000      0.4545        0.7316  0.6625
-          3       [36m0.8500[0m      [32m0.8333[0m        0.8708       [31m0.7667[0m      [94m0.7407[0m        [36m0.5561[0m  0.8246
-          4       [36m0.9250[0m      [32m0.9231[0m        [35m0.4993[0m       [31m0.8000[0m      [94m0.7857[0m        [36m0.4765[0m  0.6842
+      epoch    train_accuracy    train_f1    train_loss    train_roc_auc    valid_accuracy    valid_f1    valid_loss    valid_roc_auc     dur
+    -------  ----------------  ----------  ------------  ---------------  ----------------  ----------  ------------  ---------------  ------
+          1            [36m0.8000[0m      [32m0.7778[0m        [35m1.1775[0m           [31m0.9073[0m            [94m0.7000[0m      [36m0.6400[0m        [32m0.6880[0m           [35m0.7902[0m  0.9787
+          2            0.7500      0.7059        [35m0.6499[0m           [31m0.9524[0m            0.6667      0.5833        0.6980           [35m0.9062[0m  0.5211
+          3            [36m0.8250[0m      [32m0.8000[0m        [35m0.5844[0m           [31m0.9699[0m            0.6667      0.5833        [32m0.6267[0m           0.9062  0.5863
+          4            [36m0.8750[0m      [32m0.8649[0m        [35m0.3581[0m           [31m0.9825[0m            0.6667      0.5833        [32m0.5109[0m           [35m0.9152[0m  0.5192
 
-    0.7
+    0.6666666666666665
 
 
 
@@ -194,33 +182,7 @@ Example using skorch trialwise decoding on a simple dataset.
         optimizer__lr=0.0625 * 0.01,
         optimizer__weight_decay=0,
         batch_size=64,
-        callbacks=[
-            (
-                "train_accuracy",
-                PostEpochTrainScoring(
-                    "accuracy", lower_is_better=False, name="train_acc"
-                ),
-            ),
-            (
-                "train_f1_score",
-                PostEpochTrainScoring("f1", lower_is_better=False, name="train_f1"),
-            ),
-            (
-                "valid_accuracy",
-                EpochScoring(
-                    "accuracy",
-                    lower_is_better=False,
-                    name="valid_acc",
-                    on_train=False,
-                ),
-            ),
-            (
-                "valid_f1_score",
-                EpochScoring(
-                    "f1", lower_is_better=False, name="valid_f1", on_train=False
-                ),
-            ),
-        ],
+        callbacks=['accuracy', 'f1', 'roc_auc']
     )
     clf.fit(train_set, y=None, epochs=4)
 
@@ -231,9 +193,9 @@ Example using skorch trialwise decoding on a simple dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.064 seconds)
+   **Total running time of the script:** ( 0 minutes  4.197 seconds)
 
-**Estimated memory usage:**  514 MB
+**Estimated memory usage:**  472 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_skorch_trial_decoding.py:

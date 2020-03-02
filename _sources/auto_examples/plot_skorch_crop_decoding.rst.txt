@@ -23,8 +23,6 @@ Example using Skorch for crop decoding on a simpler dataset.
 
  .. code-block:: none
 
-    /home/circleci/.local/lib/python3.7/site-packages/sklearn/utils/deprecation.py:144: FutureWarning: The sklearn.metrics.scorer module is  deprecated in version 0.22 and will be removed in version 0.24. The corresponding classes / functions should instead be imported from sklearn.metrics. Anything that cannot be imported from sklearn.metrics is now part of the private API.
-      warnings.warn(message, FutureWarning)
     Using default location ~/mne_data for EEGBCI...
     Using default location ~/mne_data for EEGBCI...
     Using default location ~/mne_data for EEGBCI...
@@ -37,27 +35,27 @@ Example using Skorch for crop decoding on a simpler dataset.
     Not setting metadata
     Loading data for 90 events and 497 original time points ...
     0 bad epochs dropped
-      epoch    train_loss    train_trial_accuracy    valid_loss    valid_trial_accuracy     dur
-    -------  ------------  ----------------------  ------------  ----------------------  ------
-          1        [36m1.3460[0m                  [32m0.8250[0m        [35m0.7710[0m                  [31m0.6333[0m  0.7268
-          2        [36m0.6674[0m                  [32m0.9000[0m        [35m0.6395[0m                  0.6333  0.6628
-          3        [36m0.3789[0m                  [32m0.9250[0m        [35m0.5846[0m                  [31m0.7000[0m  0.7783
-          4        [36m0.3279[0m                  [32m0.9500[0m        [35m0.5263[0m                  [31m0.7667[0m  0.7651
+      epoch    train_accuracy    train_loss    valid_accuracy    valid_loss     dur
+    -------  ----------------  ------------  ----------------  ------------  ------
+          1            [36m0.6333[0m        [32m1.3460[0m            [35m0.6333[0m        [31m0.7710[0m  0.9144
+          2            [36m0.7000[0m        [32m0.5877[0m            [35m0.7000[0m        [31m0.5442[0m  0.6883
+          3            [36m0.7333[0m        [32m0.5167[0m            [35m0.7333[0m        [31m0.5152[0m  0.8005
+          4            [36m0.7667[0m        [32m0.3726[0m            [35m0.7667[0m        0.5246  0.8089
 
     array([[8, 0],
-           [0, 5],
-           [8, 0],
-           [6, 2],
+           [1, 5],
+           [8, 5],
            [8, 1],
+           [0, 8],
            [8, 3],
            [3, 8],
            [0, 8],
-           [8, 5],
-           [7, 0],
+           [8, 4],
+           [8, 0],
            [0, 8],
            [4, 0],
            [8, 0],
-           [8, 0],
+           [8, 3],
            [0, 8],
            [0, 8],
            [1, 7],
@@ -179,30 +177,16 @@ Example using Skorch for crop decoding on a simpler dataset.
         dummy_input = torch.tensor(X[:1, :, :input_time_length, None], device="cpu")
         n_preds_per_input = model(dummy_input).shape[2]
 
-
     train_set = CroppedXyDataset(X[:70], y[:70],
-                           input_time_length=input_time_length,
-                           n_preds_per_input=n_preds_per_input)
+                                 input_time_length=input_time_length,
+                                 n_preds_per_input=n_preds_per_input)
     test_set = CroppedXyDataset(X[70:], y=y[70:],
-                          input_time_length=input_time_length,
-                          n_preds_per_input=n_preds_per_input)
-
-    cropped_cb_train = CroppedTrialEpochScoring(
-        "accuracy",
-        on_train=True,
-        name="train_trial_accuracy",
-        lower_is_better=False,
-    )
-
-    cropped_cb_valid = CroppedTrialEpochScoring(
-        "accuracy",
-        on_train=False,
-        name="valid_trial_accuracy",
-        lower_is_better=False,
-    )
+                                input_time_length=input_time_length,
+                                n_preds_per_input=n_preds_per_input)
 
     clf = EEGClassifier(
         model,
+        cropped=True,
         criterion=CroppedNLLLoss,
         optimizer=optim.AdamW,
         train_split=TrainTestSplit(
@@ -212,10 +196,7 @@ Example using Skorch for crop decoding on a simpler dataset.
         optimizer__lr=0.0625 * 0.01,
         optimizer__weight_decay=0,
         batch_size=64,
-        callbacks=[
-            ("train_trial_accuracy", cropped_cb_train),
-            ("valid_trial_accuracy", cropped_cb_valid),
-        ],
+        callbacks=['accuracy'],
     )
 
     clf.fit(train_set, y=None, epochs=4)
@@ -224,9 +205,9 @@ Example using Skorch for crop decoding on a simpler dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.670 seconds)
+   **Total running time of the script:** ( 0 minutes  4.171 seconds)
 
-**Estimated memory usage:**  987 MB
+**Estimated memory usage:**  892 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_skorch_crop_decoding.py:

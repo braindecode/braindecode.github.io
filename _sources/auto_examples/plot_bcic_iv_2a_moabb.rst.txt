@@ -21,10 +21,10 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
 
  .. code-block:: none
 
-      epoch    train_f1_score    train_loss    train_trial_accuracy    valid_loss    valid_trial_accuracy      dur
-    -------  ----------------  ------------  ----------------------  ------------  ----------------------  -------
-          1            [36m0.1000[0m        [32m1.3858[0m                  [35m0.2500[0m       [31m18.4125[0m                  [94m0.2500[0m  17.8899
-          2            [36m0.2629[0m        [32m1.0985[0m                  [35m0.3924[0m       [31m12.2707[0m                  [94m0.3889[0m  17.5058
+      epoch    train_accuracy    train_f1_macro    train_loss    valid_accuracy    valid_f1_macro    valid_loss      dur
+    -------  ----------------  ----------------  ------------  ----------------  ----------------  ------------  -------
+          1            [36m0.2500[0m            [32m0.1000[0m        [35m1.3858[0m            [31m0.2500[0m            [94m0.1000[0m       [36m18.4125[0m  15.3225
+          2            [36m0.4028[0m            [32m0.2875[0m        [35m1.0993[0m            [31m0.4028[0m            [94m0.2875[0m       [36m12.2891[0m  15.7918
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -159,50 +159,18 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
             return splitted['session_T'], splitted['session_E']
 
 
-    cropped_cb_train = CroppedTrialEpochScoring(
-        "accuracy",
-        name="train_trial_accuracy",
-        lower_is_better=False,
-        on_train=True,
-        input_time_length=input_time_length,
-    )
-    cropped_cb_train_f1_score = CroppedTrialEpochScoring(
-        "f1_macro",
-        name="train_f1_score",
-        lower_is_better=False,
-        on_train=True,
-        input_time_length=input_time_length,
-    )
-    cropped_cb_valid = CroppedTrialEpochScoring(
-        "accuracy",
-        on_train=False,
-        name="valid_trial_accuracy",
-        lower_is_better=False,
-        input_time_length=input_time_length,
-    )
-    cropped_cb_valid_f1_score = CroppedTrialEpochScoring(
-        "f1_macro",
-        name="valid_f1_score",
-        lower_is_better=False,
-        on_train=False,
-        input_time_length=input_time_length,
-    )
     # MaxNormDefaultConstraint and early stopping should be added to repeat
     # previous braindecode
-
     clf = EEGClassifier(
         model,
+        cropped=True,
         criterion=CroppedNLLLoss,
         optimizer=torch.optim.AdamW,
         train_split=TrainTestBCICIV2aSplit(),
         optimizer__lr=0.0625 * 0.01,
         optimizer__weight_decay=0,
         batch_size=batch_size,
-        callbacks=[
-            ("train_trial_accuracy", cropped_cb_train),
-            ("train_trial_f1_score", cropped_cb_train_f1_score),
-            ("valid_trial_accuracy", cropped_cb_valid),
-        ],
+        callbacks=['accuracy', 'f1_macro'],
         device=device,
     )
 
@@ -211,9 +179,9 @@ Cropped Decoding on BCIC IV 2a Competition Set with skorch and moabb.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  50.563 seconds)
+   **Total running time of the script:** ( 0 minutes  36.229 seconds)
 
-**Estimated memory usage:**  1002 MB
+**Estimated memory usage:**  751 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb.py:
