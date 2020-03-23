@@ -31,6 +31,7 @@ Trialwise Decoding on BCIC IV 2a Dataset
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
     from skorch.callbacks import LRScheduler
+    from skorch.helper import predefined_split
     mne.set_log_level('ERROR')
 
     from braindecode import EEGClassifier
@@ -114,19 +115,16 @@ Trialwise Decoding on BCIC IV 2a Dataset
         preload=True,
     )
 
-
-    class TrainTestBCICIV2aSplit(object):
-        def __call__(self, dataset, y, **kwargs):
-            splitted = dataset.split('session')
-            return splitted['session_T'], splitted['session_E']
-
+    splitted = windows_dataset.split('session')
+    train_set = splitted['session_T']
+    valid_set = splitted['session_E']
 
     clf = EEGClassifier(
         model,
         cropped=False,
         criterion=torch.nn.NLLLoss,
         optimizer=torch.optim.AdamW,
-        train_split=TrainTestBCICIV2aSplit(),
+        train_split=predefined_split(valid_set),
         optimizer__lr=lr,
         optimizer__weight_decay=weight_decay,
         iterator_train__shuffle=True,
@@ -153,11 +151,11 @@ Trialwise Decoding on BCIC IV 2a Dataset
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss     dur
     -------  ----------------  ------------  ----------------  ------------  ------
-          1            [36m0.2500[0m        [32m1.5764[0m            [35m0.2500[0m        [31m5.5871[0m  4.0183
-          2            0.2500        [32m1.2021[0m            0.2500        7.0600  4.9111
-          3            [36m0.2708[0m        [32m1.0988[0m            [35m0.2569[0m        6.1187  4.8441
-          4            [36m0.2882[0m        [32m0.9603[0m            [35m0.2639[0m        [31m4.7160[0m  4.6759
-          5            [36m0.2986[0m        [32m0.9259[0m            [35m0.2674[0m        [31m3.4907[0m  3.7972
+          1            [36m0.2569[0m        [32m1.5211[0m            [35m0.2535[0m        [31m6.5564[0m  6.9600
+          2            [36m0.3767[0m        [32m1.1803[0m            [35m0.3819[0m        [31m4.0607[0m  6.1129
+          3            0.3229        [32m1.0010[0m            0.3299        [31m2.5705[0m  6.1282
+          4            [36m0.4358[0m        [32m0.8872[0m            [35m0.4514[0m        [31m1.3708[0m  6.0230
+          5            [36m0.6406[0m        [32m0.7998[0m            [35m0.6424[0m        [31m0.8437[0m  5.9052
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -237,9 +235,9 @@ Plot Results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  2.548 seconds)
+   **Total running time of the script:** ( 1 minutes  4.092 seconds)
 
-**Estimated memory usage:**  1508 MB
+**Estimated memory usage:**  1499 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_trial.py:
@@ -252,13 +250,13 @@ Plot Results
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: plot_bcic_iv_2a_moabb_trial.py <plot_bcic_iv_2a_moabb_trial.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: plot_bcic_iv_2a_moabb_trial.ipynb <plot_bcic_iv_2a_moabb_trial.ipynb>`
 
