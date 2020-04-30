@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_skorch_crop_decoding.html">Skorch Crop Decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_skorch_trial_decoding.html">Skorch Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cropped Decoding on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="perturbation.html">Amplitude Perturbation Visualization</a></li>
@@ -194,7 +195,7 @@
 <span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.datautil</span> <span class="kn">import</span> <a href="../generated/braindecode.datautil.create_windows_from_events.html#braindecode.datautil.create_windows_from_events" title="braindecode.datautil.create_windows_from_events" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
-<span class="kn">from</span> <span class="nn">braindecode.losses</span> <span class="kn">import</span> <span class="n">CroppedNLLLoss</span>
+<span class="kn">from</span> <span class="nn">braindecode.losses</span> <span class="kn">import</span> <span class="n">CroppedLoss</span>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">Deep4Net</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models.util</span> <span class="kn">import</span> <span class="n">to_dense_prediction_model</span><span class="p">,</span> <span class="n">get_output_shape</span>
@@ -285,7 +286,8 @@
 <span class="n">clf</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
     <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span>
     <span class="n">cropped</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">criterion</span><span class="o">=</span><span class="n">CroppedNLLLoss</span><span class="p">,</span>
+    <span class="n">criterion</span><span class="o">=</span><span class="n">CroppedLoss</span><span class="p">,</span>
+    <span class="n">criterion__loss_function</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">predefined_split</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span></a><span class="p">),</span>
     <span class="n">optimizer__lr</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lr</span></a><span class="p">,</span>
@@ -304,15 +306,39 @@
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/.local/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:143: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: https://github.com/pytorch/pytorch/issues/new/choose.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/bnci.py:535: DeprecationWarning: Passing montage to create_info is deprecated and will be removed in 0.21, use raw.set_montage (or epochs.set_montage, etc.) instead
+  ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+/home/circleci/.local/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:143: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: https://github.com/pytorch/pytorch/issues/new/choose.
   warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
   epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      dur
 -------  ----------------  ------------  ----------------  ------------  -------
-      1            [36m0.2500[0m        [32m1.4515[0m            [35m0.2500[0m        [31m5.2604[0m  17.2309
-      2            [36m0.4062[0m        [32m1.2253[0m            [35m0.3611[0m        [31m3.0996[0m  15.6851
-      3            [36m0.4826[0m        [32m1.0905[0m            [35m0.4792[0m        [31m1.8044[0m  15.8199
-      4            [36m0.6389[0m        [32m0.9963[0m            [35m0.6285[0m        [31m1.0873[0m  15.9089
-      5            [36m0.7049[0m        [32m0.9327[0m            [35m0.6806[0m        [31m0.9762[0m  16.5176
+      1            [36m0.2500[0m        [32m1.4515[0m            [35m0.2500[0m        [31m5.2604[0m  17.5573
+      2            [36m0.4062[0m        [32m1.2253[0m            [35m0.3611[0m        [31m3.0996[0m  17.0202
+      3            [36m0.4826[0m        [32m1.0905[0m            [35m0.4792[0m        [31m1.8044[0m  17.4952
+      4            [36m0.6389[0m        [32m0.9963[0m            [35m0.6285[0m        [31m1.0873[0m  18.3015
+      5            [36m0.7049[0m        [32m0.9327[0m            [35m0.6806[0m        [31m0.9762[0m  16.5187
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=ShallowFBCSPNet(
@@ -376,8 +402,8 @@
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  52.873 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1342 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  0.070 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1515 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-bcic-iv-2a-moabb-cropped-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/995f58ef1b3d29dce64caee24e5bf457/plot_bcic_iv_2a_moabb_cropped.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bcic_iv_2a_moabb_cropped.py</span></code></a></p>

@@ -37,10 +37,10 @@ Example using Skorch for crop decoding on a simpler dataset.
     0 bad epochs dropped
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss     dur
     -------  ----------------  ------------  ----------------  ------------  ------
-          1            [36m0.8500[0m        [32m1.2691[0m            [35m0.6333[0m        [31m0.7273[0m  0.6418
-          2            0.8500        [32m0.5986[0m            [35m0.7333[0m        [31m0.6104[0m  0.6106
-          3            [36m0.9000[0m        [32m0.4317[0m            0.7333        [31m0.6023[0m  0.6684
-          4            [36m0.9250[0m        [32m0.3544[0m            0.7000        0.6139  0.5930
+          1            [36m0.8500[0m        [32m1.2691[0m            [35m0.6333[0m        [31m0.7273[0m  0.7582
+          2            0.8500        [32m0.5986[0m            [35m0.7333[0m        [31m0.6104[0m  0.6737
+          3            [36m0.9000[0m        [32m0.4317[0m            0.7333        [31m0.6023[0m  0.6553
+          4            [36m0.9250[0m        [32m0.3544[0m            0.7000        0.6139  0.7549
 
     array([[8, 0],
            [8, 3],
@@ -84,11 +84,12 @@ Example using Skorch for crop decoding on a simpler dataset.
     import numpy as np
     from mne.io import concatenate_raws
     from torch import optim
+    from torch.nn.functional import nll_loss
 
     from braindecode.classifier import EEGClassifier
     from braindecode.datasets.croppedxy import CroppedXyDataset
     from braindecode.datautil.splitters import TrainTestSplit
-    from braindecode.losses import CroppedNLLLoss
+    from braindecode.losses import CroppedLoss
     from braindecode.models import ShallowFBCSPNet
     from braindecode.models.util import to_dense_prediction_model, get_output_shape
     from braindecode.scoring import CroppedTrialEpochScoring
@@ -184,7 +185,8 @@ Example using Skorch for crop decoding on a simpler dataset.
     clf = EEGClassifier(
         model,
         cropped=True,
-        criterion=CroppedNLLLoss,
+        criterion=CroppedLoss,
+        criterion__loss_function=nll_loss,
         optimizer=optim.AdamW,
         train_split=TrainTestSplit(
             train_size=40,
@@ -202,9 +204,9 @@ Example using Skorch for crop decoding on a simpler dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.243 seconds)
+   **Total running time of the script:** ( 0 minutes  4.630 seconds)
 
-**Estimated memory usage:**  842 MB
+**Estimated memory usage:**  892 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_skorch_crop_decoding.py:

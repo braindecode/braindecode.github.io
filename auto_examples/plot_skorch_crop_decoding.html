@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Skorch Crop Decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_skorch_trial_decoding.html">Skorch Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="perturbation.html">Amplitude Perturbation Visualization</a></li>
@@ -189,10 +190,10 @@ Loading data for 90 events and 497 original time points ...
 0 bad epochs dropped
   epoch    train_accuracy    train_loss    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  ----------------  ------------  ------
-      1            [36m0.8500[0m        [32m1.2691[0m            [35m0.6333[0m        [31m0.7273[0m  0.6418
-      2            0.8500        [32m0.5986[0m            [35m0.7333[0m        [31m0.6104[0m  0.6106
-      3            [36m0.9000[0m        [32m0.4317[0m            0.7333        [31m0.6023[0m  0.6684
-      4            [36m0.9250[0m        [32m0.3544[0m            0.7000        0.6139  0.5930
+      1            [36m0.8500[0m        [32m1.2691[0m            [35m0.6333[0m        [31m0.7273[0m  0.7582
+      2            0.8500        [32m0.5986[0m            [35m0.7333[0m        [31m0.6104[0m  0.6737
+      3            [36m0.9000[0m        [32m0.4317[0m            0.7333        [31m0.6023[0m  0.6553
+      4            [36m0.9250[0m        [32m0.3544[0m            0.7000        0.6139  0.7549
 
 array([[8, 0],
        [8, 3],
@@ -230,11 +231,12 @@ array([[8, 0],
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.concatenate_raws.html#mne.concatenate_raws" title="mne.concatenate_raws" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">concatenate_raws</span></a>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">from</span> <span class="nn">torch.nn.functional</span> <span class="kn">import</span> <span class="n">nll_loss</span>
 
 <span class="kn">from</span> <span class="nn">braindecode.classifier</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.datasets.croppedxy</span> <span class="kn">import</span> <span class="n">CroppedXyDataset</span>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.splitters</span> <span class="kn">import</span> <span class="n">TrainTestSplit</span>
-<span class="kn">from</span> <span class="nn">braindecode.losses</span> <span class="kn">import</span> <span class="n">CroppedNLLLoss</span>
+<span class="kn">from</span> <span class="nn">braindecode.losses</span> <span class="kn">import</span> <span class="n">CroppedLoss</span>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models.util</span> <span class="kn">import</span> <span class="n">to_dense_prediction_model</span><span class="p">,</span> <span class="n">get_output_shape</span>
 <span class="kn">from</span> <span class="nn">braindecode.scoring</span> <span class="kn">import</span> <span class="n">CroppedTrialEpochScoring</span>
@@ -330,7 +332,8 @@ array([[8, 0],
 <span class="n">clf</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
     <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span>
     <span class="n">cropped</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">criterion</span><span class="o">=</span><span class="n">CroppedNLLLoss</span><span class="p">,</span>
+    <span class="n">criterion</span><span class="o">=</span><span class="n">CroppedLoss</span><span class="p">,</span>
+    <span class="n">criterion__loss_function</span><span class="o">=</span><span class="n">nll_loss</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">TrainTestSplit</span><span class="p">(</span>
         <span class="n">train_size</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
@@ -346,8 +349,8 @@ array([[8, 0],
 <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_set</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.243 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  842 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.630 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  892 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-skorch-crop-decoding-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/670da2e3c15b098b126fadb9f3097635/plot_skorch_crop_decoding.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_skorch_crop_decoding.py</span></code></a></p>
