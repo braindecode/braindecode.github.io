@@ -1,0 +1,318 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_mne_dataset_example.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_mne_dataset_example.py:
+
+MNE Dataset Example
+======================
+
+This example shows how to convert data from mne.Raws or mne.Epochs to a
+braindecode compatible data format.
+
+
+.. code-block:: default
+
+
+    # Authors: Lukas Gemein <l.gemein@gmail.com>
+    #
+    # License: BSD (3-clause)
+
+    import mne
+
+    from braindecode.datasets.mne import (
+        create_from_mne_raw, create_from_mne_epochs)
+
+
+
+
+
+
+
+
+First, fetch some data using mne:
+
+
+.. code-block:: default
+
+
+    # 5, 6, 7, 10, 13, 14 are codes for executed and imagined hands/feet
+    subject_id = 22
+    event_codes = [5, 6, 9, 10, 13, 14]
+    # event_codes = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+    # This will download the files if you don't have them yet,
+    # and then return the paths to the files.
+    physionet_paths = mne.datasets.eegbci.load_data(
+        subject_id, event_codes, update_path=False)
+
+    # Load each of the files
+    parts = [mne.io.read_raw_edf(path, preload=True, stim_channel='auto')
+             for path in physionet_paths]
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Using default location ~/mne_data for EEGBCI...
+    Using default location ~/mne_data for EEGBCI...
+    Using default location ~/mne_data for EEGBCI...
+    Using default location ~/mne_data for EEGBCI...
+    Using default location ~/mne_data for EEGBCI...
+    Using default location ~/mne_data for EEGBCI...
+    Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R05.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R06.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R09.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R10.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R13.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R14.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+
+
+
+
+Convert mne.RawArrays to a compatible data format:
+
+
+.. code-block:: default
+
+    descriptions = [{"event_code": code, "subject": subject_id}
+                    for code in event_codes]
+    windows_datasets = create_from_mne_raw(
+        parts,
+        trial_start_offset_samples=0,
+        trial_stop_offset_samples=0,
+        supercrop_size_samples=500,
+        supercrop_stride_samples=500,
+        drop_samples=False,
+        descriptions=descriptions,
+    )
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    60 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 60 events and 500 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    60 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 60 events and 500 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    60 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 60 events and 500 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    60 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 60 events and 500 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    60 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 60 events and 500 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    60 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 60 events and 500 original time points ...
+    0 bad epochs dropped
+
+
+
+
+If trials were already cut beforehand and are available as mne.Epochs:
+
+
+.. code-block:: default
+
+    list_of_epochs = [mne.Epochs(raw, [[0, 0, 0]], tmin=0, baseline=None)
+                      for raw in parts]
+    windows_datasets = create_from_mne_epochs(
+        list_of_epochs,
+        supercrop_size_samples=50,
+        supercrop_stride_samples=50,
+        drop_samples=False
+    )
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    1 matching events found
+    No baseline correction applied
+    Not setting metadata
+    0 projection items activated
+    1 matching events found
+    No baseline correction applied
+    Not setting metadata
+    0 projection items activated
+    1 matching events found
+    No baseline correction applied
+    Not setting metadata
+    0 projection items activated
+    1 matching events found
+    No baseline correction applied
+    Not setting metadata
+    0 projection items activated
+    1 matching events found
+    No baseline correction applied
+    Not setting metadata
+    0 projection items activated
+    1 matching events found
+    No baseline correction applied
+    Not setting metadata
+    0 projection items activated
+    Creating RawArray with float64 data, n_channels=64, n_times=81
+        Range : 0 ... 80 =      0.000 ...     0.500 secs
+    Ready.
+    2 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 2 events and 50 original time points ...
+    0 bad epochs dropped
+    Creating RawArray with float64 data, n_channels=64, n_times=81
+        Range : 0 ... 80 =      0.000 ...     0.500 secs
+    Ready.
+    2 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 2 events and 50 original time points ...
+    0 bad epochs dropped
+    Creating RawArray with float64 data, n_channels=64, n_times=81
+        Range : 0 ... 80 =      0.000 ...     0.500 secs
+    Ready.
+    2 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 2 events and 50 original time points ...
+    0 bad epochs dropped
+    Creating RawArray with float64 data, n_channels=64, n_times=81
+        Range : 0 ... 80 =      0.000 ...     0.500 secs
+    Ready.
+    2 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 2 events and 50 original time points ...
+    0 bad epochs dropped
+    Creating RawArray with float64 data, n_channels=64, n_times=81
+        Range : 0 ... 80 =      0.000 ...     0.500 secs
+    Ready.
+    2 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 2 events and 50 original time points ...
+    0 bad epochs dropped
+    Creating RawArray with float64 data, n_channels=64, n_times=81
+        Range : 0 ... 80 =      0.000 ...     0.500 secs
+    Ready.
+    2 matching events found
+    No baseline correction applied
+    Adding metadata with 4 columns
+    0 projection items activated
+    Loading data for 2 events and 50 original time points ...
+    0 bad epochs dropped
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.777 seconds)
+
+**Estimated memory usage:**  69 MB
+
+
+.. _sphx_glr_download_auto_examples_plot_mne_dataset_example.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: plot_mne_dataset_example.py <plot_mne_dataset_example.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_mne_dataset_example.ipynb <plot_mne_dataset_example.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
