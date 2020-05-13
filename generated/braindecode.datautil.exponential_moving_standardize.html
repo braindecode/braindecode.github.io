@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>braindecode.datautil.scale &mdash; Braindecode 0.5 documentation</title>
+  <title>braindecode.datautil.exponential_moving_standardize &mdash; Braindecode 0.5 documentation</title>
   
 
   
@@ -39,8 +39,8 @@
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="braindecode.util.set_random_seeds" href="braindecode.util.set_random_seeds.html" />
-    <link rel="prev" title="braindecode.datautil.zscore" href="braindecode.datautil.zscore.html" /> 
+    <link rel="next" title="braindecode.datautil.zscore" href="braindecode.datautil.zscore.html" />
+    <link rel="prev" title="braindecode.datautil.exponential_moving_demean" href="braindecode.datautil.exponential_moving_demean.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -108,9 +108,12 @@
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.create_fixed_length_windows.html">braindecode.datautil.create_fixed_length_windows</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.create_windows_from_events.html">braindecode.datautil.create_windows_from_events</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.exponential_moving_demean.html">braindecode.datautil.exponential_moving_demean</a></li>
-<li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.exponential_moving_standardize.html">braindecode.datautil.exponential_moving_standardize</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">braindecode.datautil.exponential_moving_standardize</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples-using-braindecode-datautil-exponential-moving-standardize">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datautil.exponential_moving_standardize</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.zscore.html">braindecode.datautil.zscore</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">braindecode.datautil.scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.scale.html">braindecode.datautil.scale</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
@@ -163,13 +166,13 @@
         
           <li><a href="../api.html">API Reference</a> &raquo;</li>
         
-      <li>braindecode.datautil.scale</li>
+      <li>braindecode.datautil.exponential_moving_standardize</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/braindecode.datautil.scale.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/braindecode.datautil.exponential_moving_standardize.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -182,36 +185,50 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="braindecode-datautil-scale">
-<h1>braindecode.datautil.scale<a class="headerlink" href="#braindecode-datautil-scale" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="braindecode-datautil-exponential-moving-standardize">
+<h1>braindecode.datautil.exponential_moving_standardize<a class="headerlink" href="#braindecode-datautil-exponential-moving-standardize" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="braindecode.datautil.scale">
-<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">factor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.scale" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scale continuous or windowed data in-place</p>
+<dt id="braindecode.datautil.exponential_moving_standardize">
+<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">exponential_moving_standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">factor_new</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">init_block_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">0.0001</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.exponential_moving_standardize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform exponential moving standardization.</p>
+<p>Compute the exponental moving mean <span class="math notranslate nohighlight">\(m_t\)</span> at time <cite>t</cite> as
+<span class="math notranslate nohighlight">\(m_t=\mathrm{factornew} \cdot mean(x_t) + (1 - \mathrm{factornew}) \cdot m_{t-1}\)</span>.</p>
+<p>Then, compute exponential moving variance <span class="math notranslate nohighlight">\(v_t\)</span> at time <cite>t</cite> as
+<span class="math notranslate nohighlight">\(v_t=\mathrm{factornew} \cdot (m_t - x_t)^2 + (1 - \mathrm{factornew}) \cdot v_{t-1}\)</span>.</p>
+<p>Finally, standardize the data point <span class="math notranslate nohighlight">\(x_t\)</span> at time <cite>t</cite> as:
+<span class="math notranslate nohighlight">\(x'_t=(x_t - m_t) / max(\sqrt{-&gt;v_t}, eps)\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>data: np.ndarray (n_channels x n_times) or (n_windows x n_channels x</strong></dt><dd></dd>
-<dt><strong>n_times)</strong></dt><dd><p>continuous or windowed signal</p>
+<dt><strong>data: np.ndarray (n_channels, n_times)</strong></dt><dd></dd>
+<dt><strong>factor_new: float</strong></dt><dd></dd>
+<dt><strong>init_block_size: int</strong></dt><dd><p>Standardize data before to this index with regular standardization.</p>
 </dd>
-<dt><strong>factor: float</strong></dt><dd><p>multiplication factor</p>
+<dt><strong>eps: float</strong></dt><dd><p>Stabilizer for division by zero variance.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>scaled: np.ndarray (n_channels x n_times) or (n_windows x n_channels x</dt><dd></dd>
-<dt>n_times)</dt><dd><p>normalized continuous or windowed data</p>
-</dd>
-<dt>..note:</dt><dd><p>If this function is supposed to preprocess continuous data, it should be
-given to raw.apply_function().</p>
+<dt>standardized: np.ndarray (n_channels, n_times)</dt><dd><p>Standardized data.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div style='clear:both'></div></div>
+<div class="section" id="examples-using-braindecode-datautil-exponential-moving-standardize">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datautil.exponential_moving_standardize</span></code><a class="headerlink" href="#examples-using-braindecode-datautil-exponential-moving-standardize" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id1">
+<img alt="Trialwise Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id2">
+<img alt="Cropped Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-cropped-py"><span class="std std-ref">Cropped Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
 
 
            </div>
@@ -221,10 +238,10 @@ given to raw.apply_function().</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="braindecode.util.set_random_seeds.html" class="btn btn-neutral float-right" title="braindecode.util.set_random_seeds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="braindecode.datautil.zscore.html" class="btn btn-neutral float-right" title="braindecode.datautil.zscore" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="braindecode.datautil.zscore.html" class="btn btn-neutral float-left" title="braindecode.datautil.zscore" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="braindecode.datautil.exponential_moving_demean.html" class="btn btn-neutral float-left" title="braindecode.datautil.exponential_moving_demean" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

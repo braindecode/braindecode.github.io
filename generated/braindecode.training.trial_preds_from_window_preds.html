@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>braindecode.util.set_random_seeds &mdash; Braindecode 0.5 documentation</title>
+  <title>braindecode.training.trial_preds_from_window_preds &mdash; Braindecode 0.5 documentation</title>
   
 
   
@@ -39,7 +39,8 @@
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="braindecode.datautil.scale" href="braindecode.datautil.scale.html" /> 
+    <link rel="next" title="braindecode.datasets.BaseDataset" href="braindecode.datasets.BaseDataset.html" />
+    <link rel="prev" title="braindecode.training.PostEpochTrainScoring" href="braindecode.training.PostEpochTrainScoring.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,16 +102,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../api.html#classifier">Classifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#regressor">Regressor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#models">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#training">Training</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#training">Training</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="braindecode.training.CroppedLoss.html">braindecode.training.CroppedLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="braindecode.training.CroppedTrialEpochScoring.html">braindecode.training.CroppedTrialEpochScoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="braindecode.training.PostEpochTrainScoring.html">braindecode.training.PostEpochTrainScoring</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">braindecode.training.trial_preds_from_window_preds</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#datasets">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#data-utils">Data Utils</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#utils">Utils</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">braindecode.util.set_random_seeds</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#examples-using-braindecode-util-set-random-seeds">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.util.set_random_seeds</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
 </ul>
 </li>
 </ul>
@@ -160,13 +161,13 @@
         
           <li><a href="../api.html">API Reference</a> &raquo;</li>
         
-      <li>braindecode.util.set_random_seeds</li>
+      <li>braindecode.training.trial_preds_from_window_preds</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/braindecode.util.set_random_seeds.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/braindecode.training.trial_preds_from_window_preds.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -179,44 +180,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="braindecode-util-set-random-seeds">
-<h1>braindecode.util.set_random_seeds<a class="headerlink" href="#braindecode-util-set-random-seeds" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="braindecode-training-trial-preds-from-window-preds">
+<h1>braindecode.training.trial_preds_from_window_preds<a class="headerlink" href="#braindecode-training-trial-preds-from-window-preds" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="braindecode.util.set_random_seeds">
-<code class="sig-prename descclassname">braindecode.util.</code><code class="sig-name descname">set_random_seeds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span></em>, <em class="sig-param"><span class="n">cuda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.util.set_random_seeds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set seeds for python random module numpy.random and torch.</p>
+<dt id="braindecode.training.trial_preds_from_window_preds">
+<code class="sig-prename descclassname">braindecode.training.</code><code class="sig-name descname">trial_preds_from_window_preds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">preds</span></em>, <em class="sig-param"><span class="n">i_window_in_trials</span></em>, <em class="sig-param"><span class="n">i_stop_in_trials</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.training.trial_preds_from_window_preds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigning window predictions to trials  while removing duplicate
+predictions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>seed: int</strong></dt><dd><p>Random seed.</p>
+<dt><strong>preds: list of ndarrays (atleast 2darrays)</strong></dt><dd><dl class="simple">
+<dt>List of window predictions, in each window prediction</dt><dd><p>time is in axis=1</p>
 </dd>
-<dt><strong>cuda: bool</strong></dt><dd><p>Whether to set cuda seed with torch.</p>
+</dl>
+</dd>
+<dt><strong>i_window_in_trials: list</strong></dt><dd><p>Index/number of window in trial</p>
+</dd>
+<dt><strong>i_stop_in_trials: list</strong></dt><dd><p>stop position of window in trial</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>preds_per_trial: list of ndarrays</dt><dd><p>Predictions in each trial, duplicates removed</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-braindecode-util-set-random-seeds">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.util.set_random_seeds</span></code><a class="headerlink" href="#examples-using-braindecode-util-set-random-seeds" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Regression example on fake data"><div class="figure align-default" id="id1">
-<img alt="Regression example on fake data" src="../_images/sphx_glr_plot_regression_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_regression.html#sphx-glr-auto-examples-plot-regression-py"><span class="std std-ref">Regression example on fake data</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id2">
-<img alt="Trialwise Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id3">
-<img alt="Cropped Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-cropped-py"><span class="std std-ref">Cropped Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this tutorial, we show how to use perturbations of the input amplitudes to learn something a..."><div class="figure align-default" id="id4">
-<img alt="Amplitude Perturbation Visualization" src="../_images/sphx_glr_perturbation_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/perturbation.html#sphx-glr-auto-examples-perturbation-py"><span class="std std-ref">Amplitude Perturbation Visualization</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div style='clear:both'></div></div>
-</div>
+<div style='clear:both'></div></div>
 
 
            </div>
@@ -226,8 +220,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="braindecode.datasets.BaseDataset.html" class="btn btn-neutral float-right" title="braindecode.datasets.BaseDataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="braindecode.datautil.scale.html" class="btn btn-neutral float-left" title="braindecode.datautil.scale" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="braindecode.training.PostEpochTrainScoring.html" class="btn btn-neutral float-left" title="braindecode.training.PostEpochTrainScoring" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
