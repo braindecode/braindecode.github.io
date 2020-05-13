@@ -33,14 +33,14 @@ On the right, you see cropped decoding:
 1. Instead of a complete trial, crops are pushed through the network.
 2. For computational efficiency, multiple neighbouring crops are pushed through the network simultaneously (these
    neighbouring crops are called compute windows)
-3. Therefore, the network produces multiple predictions (one per crop in the supercrop)
+3. Therefore, the network produces multiple predictions (one per crop in the window)
 4. The individual crop predictions are averaged before computing the loss function
 
 Notes:
 
 - The network architecture implicitly defines the crop size (it is the receptive field size, i.e., the number of
   timesteps the network uses to make a single prediction)
-- The window size is a user-defined hyperparameter, called `input_time_length` in Braindecode. It mostly affects runtime
+- The window size is a user-defined hyperparameter, called `input_window_samples` in Braindecode. It mostly affects runtime
   (larger window sizes should be faster). As a rule of thumb, you can set it to two times the crop size.
 - Crop size and window size together define how many predictions the network makes per window: `#window−#crop+1=#predictions`
 
@@ -77,9 +77,10 @@ typically used for classification in PyTorch.
     from braindecode import EEGClassifier
     from braindecode.datasets import MOABBDataset
     from braindecode.datautil import create_windows_from_events
-    from braindecode.datautil.signalproc import exponential_running_standardize
-    from braindecode.datautil.transforms import transform_concat_ds
-    from braindecode.losses import CroppedLoss
+    from braindecode.datautil.preprocess import exponential_moving_standardize
+    from braindecode.datautil.preprocess import preprocess, MNEPreproc, \
+        NumpyPreproc
+    from braindecode.training.losses import CroppedLoss
     from braindecode.models import ShallowFBCSPNet
     from braindecode.models.util import to_dense_prediction_model, get_output_shape
     from braindecode.util import set_random_seeds
@@ -108,13 +109,13 @@ Script parameters definition
     n_classes = 4  # number of classes to predict
     n_chans = 22  # number of channels in the dataset
     trial_start_offset_seconds = -0.5  # offset between trail start in the raw data and dataset
-    input_time_length = 1000  # length of trial in samples
+    input_window_samples = 1000  # length of trial in samples
     # Parameters for exponential running standarization
     factor_new = 1e-3
     init_block_size = 1000
 
     # Define parameters describing training
-    n_epochs = 5  # number of epochs of training
+    n_epochs = 4  # number of epochs of training
     batch_size = 64
     cuda = torch.cuda.is_available()  # check if GPU is available, if True chooses to use it
     device = 'cuda' if cuda else 'cpu'
@@ -147,7 +148,7 @@ raw time-domain EEG. Here, we use the shallow ConvNet model from
     model = ShallowFBCSPNet(
         n_chans,
         n_classes,
-        input_time_length=input_time_length,
+        input_window_samples=input_window_samples,
         final_conv_length=30,
     )
     lr = 0.0625 * 0.01
@@ -176,7 +177,7 @@ can use it to obtain properly predictions for all crops.
     # We calculate the shape of model output as it depends on the input shape and model
     # architecture. We save number of predictions computed per each sample by model for
     # windowing function.
-    n_preds_per_input = get_output_shape(model, n_chans, input_time_length)[2]
+    n_preds_per_input = get_output_shape(model, n_chans, input_window_samples)[2]
 
 
 
@@ -244,18 +245,17 @@ method. The second element of a tuple defines method parameters.
 .. code-block:: default
 
 
-    standardize_func = partial(exponential_running_standardize, factor_new=factor_new,
-                               init_block_size=init_block_size)
-
-    raw_transform_dict = [
-        ('pick_types', dict(eeg=True, meg=False, stim=False)),
-        ('apply_function', dict(fun=lambda x: x * 1e6, channel_wise=False)),
-        ('filter', dict(l_freq=low_cut_hz, h_freq=high_cut_hz)),
-        ('apply_function', dict(fun=standardize_func, channel_wise=False))
+    preprocessors = [
+        MNEPreproc(fn='pick_types', eeg=True, meg=False, stim=False), # keep only EEG sensors
+        NumpyPreproc(fn=lambda x: x * 1e6), # convert from volt to microvolt, directly modifying the numpy array
+        MNEPreproc(fn='filter', l_freq=low_cut_hz, h_freq=high_cut_hz), # bandpass filter
+        NumpyPreproc(fn=exponential_moving_standardize, factor_new=factor_new,
+                     init_block_size=init_block_size)
     ]
 
     # Transform the data
-    transform_concat_ds(dataset, raw_transform_dict)
+    preprocess(dataset, preprocessors)
+
 
 
 
@@ -284,9 +284,9 @@ Create windows from MOABB dataset
         dataset,
         trial_start_offset_samples=trial_start_offset_samples,
         trial_stop_offset_samples=0,
-        supercrop_size_samples=input_time_length,
-        supercrop_stride_samples=n_preds_per_input,
-        drop_samples=False,
+        window_size_samples=input_window_samples,
+        window_stride_samples=n_preds_per_input,
+        drop_last_window=False,
         preload=True,
     )
 
@@ -368,11 +368,10 @@ made by a model.
       warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      dur
     -------  ----------------  ------------  ----------------  ------------  -------
-          1            [36m0.2500[0m        [32m1.3765[0m            [35m0.2500[0m        [31m3.5592[0m  36.3686
-          2            [36m0.6215[0m        [32m1.1089[0m            [35m0.6632[0m        [31m0.8830[0m  42.2739
-          3            [36m0.7743[0m        [32m0.9340[0m            [35m0.7604[0m        [31m0.7381[0m  32.9294
-          4            [36m0.8316[0m        [32m0.8106[0m            [35m0.8403[0m        [31m0.6110[0m  39.5407
-          5            [36m0.8368[0m        [32m0.7455[0m            [35m0.8507[0m        [31m0.5891[0m  120.2274
+          1            [36m0.2500[0m        [32m1.3765[0m            [35m0.2500[0m        [31m3.5592[0m  28.4228
+          2            [36m0.6215[0m        [32m1.1089[0m            [35m0.6632[0m        [31m0.8830[0m  29.4831
+          3            [36m0.7795[0m        [32m0.9378[0m            [35m0.7674[0m        [31m0.7356[0m  29.5924
+          4            [36m0.8264[0m        [32m0.8288[0m            [35m0.8403[0m        [31m0.6446[0m  29.4764
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -446,9 +445,9 @@ Plot Results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 6 minutes  15.922 seconds)
+   **Total running time of the script:** ( 2 minutes  43.616 seconds)
 
-**Estimated memory usage:**  1076 MB
+**Estimated memory usage:**  1507 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_cropped.py:

@@ -79,7 +79,7 @@ Regression example on fake data
       warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
       epoch    train_loss    train_neg_root_mean_squared_error    valid_loss    valid_neg_root_mean_squared_error     dur
     -------  ------------  -----------------------------------  ------------  -----------------------------------  ------
-          1     [36m1088.8221[0m                             [32m-28.1520[0m       [35m41.5739[0m                              [31m-6.4478[0m  0.9637
+          1     [36m1088.8221[0m                             [32m-28.1520[0m       [35m41.5739[0m                              [31m-6.4478[0m  4.6525
     Loading data for 1 events and 6000 original time points ...
     Loading data for 1 events and 6000 original time points ...
     Loading data for 1 events and 6000 original time points ...
@@ -91,7 +91,7 @@ Regression example on fake data
     Loading data for 1 events and 6000 original time points ...
     /home/circleci/.local/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:143: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: https://github.com/pytorch/pytorch/issues/new/choose.
       warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
-          2     [36m1086.1565[0m                             [32m-25.7864[0m        [35m8.2148[0m                              [31m-2.8661[0m  0.5590
+          2     [36m1086.1565[0m                             [32m-25.7864[0m        [35m8.2148[0m                              [31m-2.8661[0m  3.1276
     Loading data for 1 events and 6000 original time points ...
     Loading data for 1 events and 6000 original time points ...
     Loading data for 1 events and 6000 original time points ...
@@ -103,7 +103,7 @@ Regression example on fake data
     Loading data for 1 events and 6000 original time points ...
     /home/circleci/.local/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:143: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: https://github.com/pytorch/pytorch/issues/new/choose.
       warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
-          3     [36m1083.3179[0m                             [32m-24.8156[0m        [35m1.5841[0m                              [31m-1.2586[0m  0.6038
+          3     [36m1083.3179[0m                             [32m-24.8156[0m        [35m1.5841[0m                              [31m-1.2586[0m  2.3855
 
     <class 'braindecode.regressor.EEGRegressor'>[initialized](
       module_=Sequential(
@@ -143,7 +143,7 @@ Regression example on fake data
     from braindecode import EEGRegressor
     from braindecode.datautil import create_fixed_length_windows
     from braindecode.datasets import BaseDataset, BaseConcatDataset
-    from braindecode.losses import CroppedLoss
+    from braindecode.training.losses import CroppedLoss
     from braindecode.models import Deep4Net
     from braindecode.models import ShallowFBCSPNet
     from braindecode.models.util import to_dense_prediction_model, get_output_shape
@@ -153,7 +153,7 @@ Regression example on fake data
     n_epochs = 3
     seed = 20200220
 
-    input_time_length = 6000
+    input_window_samples = 6000
     batch_size = 64
     cuda = torch.cuda.is_available()
     device = 'cuda' if cuda else 'cpu'
@@ -171,7 +171,7 @@ Regression example on fake data
         model = ShallowFBCSPNet(
             in_chans=n_chans,
             n_classes=n_classes,
-            input_time_length=input_time_length,
+            input_window_samples=input_window_samples,
             n_filters_time=40,
             n_filters_spat=40,
             final_conv_length=35,
@@ -182,7 +182,7 @@ Regression example on fake data
         model = Deep4Net(
             in_chans=n_chans,
             n_classes=n_classes,
-            input_time_length=input_time_length,
+            input_window_samples=input_window_samples,
             n_filters_time=25,
             n_filters_spat=25,
             stride_before_pool=True,
@@ -207,7 +207,7 @@ Regression example on fake data
         model.cuda()
 
     to_dense_prediction_model(model)
-    n_preds_per_input = get_output_shape(model, n_chans, input_time_length)[2]
+    n_preds_per_input = get_output_shape(model, n_chans, input_window_samples)[2]
 
     def fake_regression_dataset(n_fake_recs, n_fake_chs, fake_sfreq, fake_duration_s):
         datasets = []
@@ -234,9 +234,9 @@ Regression example on fake data
         dataset,
         start_offset_samples=0,
         stop_offset_samples=0,
-        supercrop_size_samples=input_time_length,
-        supercrop_stride_samples=n_preds_per_input,
-        drop_samples=False,
+        window_size_samples=input_window_samples,
+        window_stride_samples=n_preds_per_input,
+        drop_last_window=False,
         drop_bad_windows=True,
     )
 
@@ -268,9 +268,9 @@ Regression example on fake data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.084 seconds)
+   **Total running time of the script:** ( 0 minutes  13.870 seconds)
 
-**Estimated memory usage:**  276 MB
+**Estimated memory usage:**  267 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_regression.py:

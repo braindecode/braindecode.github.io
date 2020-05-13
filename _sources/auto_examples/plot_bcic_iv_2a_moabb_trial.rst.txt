@@ -60,8 +60,9 @@ optimization using cross validation on your training data.
     from braindecode import EEGClassifier
     from braindecode.datasets import MOABBDataset
     from braindecode.datautil import create_windows_from_events
-    from braindecode.datautil.signalproc import exponential_running_standardize
-    from braindecode.datautil.transforms import transform_concat_ds
+    from braindecode.datautil.preprocess import exponential_moving_standardize
+    from braindecode.datautil.preprocess import preprocess, MNEPreproc, \
+        NumpyPreproc
     from braindecode.models import ShallowFBCSPNet
     from braindecode.util import set_random_seeds
 
@@ -89,7 +90,7 @@ Script parameters definition
     n_classes = 4  # number of classes to predict
     n_chans = 22  # number of channels in the dataset
     trial_start_offset_seconds = -0.5  # offset between trail start in the raw data and dataset
-    input_time_length = 1125  # length of trial in samples
+    input_window_samples = 1125  # length of trial in samples
     # Parameters for exponential running standarization
     factor_new = 1e-3
     init_block_size = 1000
@@ -125,9 +126,10 @@ raw time-domain EEG. Here, we use the shallow ConvNet model from
     model = ShallowFBCSPNet(
         n_chans,
         n_classes,
-        input_time_length=input_time_length,
+        input_window_samples=input_window_samples,
         final_conv_length='auto',
     )
+
     lr = 0.0625 * 0.01
     weight_decay = 0
 
@@ -201,18 +203,16 @@ method. The second element of a tuple defines method parameters.
 .. code-block:: default
 
 
-    standardize_func = partial(exponential_running_standardize, factor_new=factor_new,
-                               init_block_size=init_block_size)
-
-    raw_transform_dict = [
-        ('pick_types', dict(eeg=True, meg=False, stim=False)),
-        ('apply_function', dict(fun=lambda x: x * 1e6, channel_wise=False)),
-        ('filter', dict(l_freq=low_cut_hz, h_freq=high_cut_hz)),
-        ('apply_function', dict(fun=standardize_func, channel_wise=False))
+    preprocessors = [
+        MNEPreproc(fn='pick_types', eeg=True, meg=False, stim=False), # keep only EEG sensors
+        NumpyPreproc(fn=lambda x: x * 1e6), # convert from volt to microvolt, directly modifying the numpy array
+        MNEPreproc(fn='filter', l_freq=low_cut_hz, h_freq=high_cut_hz), # bandpass filter
+        NumpyPreproc(fn=exponential_moving_standardize, factor_new=factor_new,
+                     init_block_size=init_block_size)
     ]
 
     # Transform the data
-    transform_concat_ds(dataset, raw_transform_dict)
+    preprocess(dataset, preprocessors)
 
 
 
@@ -241,9 +241,9 @@ Create windows from MOABB dataset
         dataset,
         trial_start_offset_samples=trial_start_offset_samples,
         trial_stop_offset_samples=0,
-        supercrop_size_samples=input_time_length,
-        supercrop_stride_samples=input_time_length,
-        drop_samples=False,
+        window_size_samples=input_window_samples,
+        window_stride_samples=input_window_samples,
+        drop_last_window=False,
         preload=True,
     )
 
@@ -315,11 +315,11 @@ performs training. Model supplied to this class has to be a PyTorch model.
       warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss     dur
     -------  ----------------  ------------  ----------------  ------------  ------
-          1            [36m0.2569[0m        [32m1.5211[0m            [35m0.2535[0m        [31m6.5564[0m  5.8721
-          2            [36m0.3715[0m        [32m1.1702[0m            [35m0.3715[0m        [31m3.8837[0m  5.8899
-          3            0.3351        [32m0.9766[0m            0.3299        [31m2.5528[0m  5.7227
-          4            [36m0.4149[0m        [32m0.8462[0m            [35m0.4271[0m        [31m1.5158[0m  6.0039
-          5            [36m0.6024[0m        [32m0.8309[0m            [35m0.6007[0m        [31m0.9143[0m  5.9944
+          1            [36m0.2569[0m        [32m1.5211[0m            [35m0.2535[0m        [31m6.5564[0m  7.2684
+          2            [36m0.3715[0m        [32m1.1702[0m            [35m0.3715[0m        [31m3.8837[0m  6.4208
+          3            0.3351        [32m0.9766[0m            0.3299        [31m2.5528[0m  6.3135
+          4            [36m0.4149[0m        [32m0.8462[0m            [35m0.4271[0m        [31m1.5158[0m  6.1161
+          5            [36m0.6024[0m        [32m0.8309[0m            [35m0.6007[0m        [31m0.9143[0m  6.0590
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -393,7 +393,7 @@ Plot Results
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  0.254 seconds)
+   **Total running time of the script:** ( 1 minutes  6.750 seconds)
 
 **Estimated memory usage:**  1585 MB
 

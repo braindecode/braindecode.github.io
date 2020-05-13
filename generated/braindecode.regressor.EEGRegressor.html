@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>braindecode.regressor.EEGRegressor &mdash; Braindecode 1.0.dev documentation</title>
+  <title>braindecode.regressor.EEGRegressor &mdash; Braindecode 0.5 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.0.dev
+                0.5
               </div>
             
           
@@ -98,6 +98,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#training">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#datasets">Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#data-utils">Data Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
@@ -178,6 +179,59 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>module: torch module (class or instance)</strong></dt><dd><p>A PyTorch <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>. In general, the
+uninstantiated class should be passed, although instantiated
+modules will also work.</p>
+</dd>
+<dt><strong>criterion: torch criterion (class, default=torch.nn.MSELoss)</strong></dt><dd><p>Mean squared error loss.</p>
+</dd>
+<dt><strong>optimizer: torch optim (class, default=torch.optim.SGD)</strong></dt><dd><p>The uninitialized optimizer (update rule) used to optimize the
+module</p>
+</dd>
+<dt><strong>lr: float (default=0.01)</strong></dt><dd><p>Learning rate passed to the optimizer. You may use <code class="docutils literal notranslate"><span class="pre">lr</span></code> instead
+of using <code class="docutils literal notranslate"><span class="pre">optimizer__lr</span></code>, which would result in the same outcome.</p>
+</dd>
+<dt><strong>max_epochs: int (default=10)</strong></dt><dd><p>The number of epochs to train for each <code class="docutils literal notranslate"><span class="pre">fit</span></code> call. Note that you
+may keyboard-interrupt training at any time.</p>
+</dd>
+<dt><strong>batch_size: int (default=128)</strong></dt><dd><p>Mini-batch size. Use this instead of setting
+<code class="docutils literal notranslate"><span class="pre">iterator_train__batch_size</span></code> and <code class="docutils literal notranslate"><span class="pre">iterator_test__batch_size</span></code>,
+which would result in the same outcome. If <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> is -1,
+a single batch with all the data will be used during training
+and validation.</p>
+</dd>
+<dt><strong>iterator_train: torch DataLoader</strong></dt><dd><p>The default PyTorch <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code> used for
+training data.</p>
+</dd>
+<dt><strong>iterator_valid: torch DataLoader</strong></dt><dd><p>The default PyTorch <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code> used for
+validation and test data, i.e. during inference.</p>
+</dd>
+<dt><strong>dataset: torch Dataset (default=skorch.dataset.Dataset)</strong></dt><dd><p>The dataset is necessary for the incoming data to work with
+pytorch’s <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>. It has to implement the <code class="docutils literal notranslate"><span class="pre">__len__</span></code> and
+<code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> methods. The provided dataset should be capable of
+dealing with a lot of data types out of the box, so only change
+this if your data is not supported. You should generally pass the
+uninitialized <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class and define additional arguments to
+X and y by prefixing them with <code class="docutils literal notranslate"><span class="pre">dataset__</span></code>. It is also possible
+to pass an initialzed <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>, in which case no additional
+arguments may be passed.</p>
+</dd>
+<dt><strong>train_split: None or callable (default=skorch.dataset.CVSplit(5))</strong></dt><dd><p>If None, there is no train/validation split. Else, train_split
+should be a function or callable that is called with X and y
+data and should return the tuple <code class="docutils literal notranslate"><span class="pre">dataset_train,</span> <span class="pre">dataset_valid</span></code>.
+The validation data may be None.</p>
+</dd>
+<dt><strong>warm_start: bool (default=False)</strong></dt><dd><p>Whether each fit call should lead to a re-initialization of the
+module (cold start) or whether the module should be trained
+further (warm start).</p>
+</dd>
+<dt><strong>verbose: int (default=1)</strong></dt><dd><p>Control the verbosity level.</p>
+</dd>
+<dt><strong>device: str, torch.device (default=’cpu’)</strong></dt><dd><p>The compute device to be used. If set to ‘cuda’, data in torch
+tensors will be pushed to cuda tensors before being sent to the
+module. If set to None, then all compute devices will be left
+unmodified.</p>
+</dd>
 <dt><strong>cropped: bool (default=False)</strong></dt><dd><p>Defines whether torch model passed to this class is cropped or not.
 Currently used for callbacks definition.</p>
 </dd>
@@ -203,7 +257,25 @@ shuffle the train dataset by default this one overwrites this option.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>history</strong></dt><dd></dd>
+<dt><strong>prefixes_: list of str</strong></dt><dd><p>Contains the prefixes to special parameters. E.g., since there
+is the <code class="docutils literal notranslate"><span class="pre">'module'</span></code> prefix, it is possible to set parameters like
+so: <code class="docutils literal notranslate"><span class="pre">NeuralNet(...,</span> <span class="pre">optimizer__momentum=0.95)</span></code>.</p>
+</dd>
+<dt><strong>cuda_dependent_attributes_: list of str</strong></dt><dd><p>Contains a list of all attribute prefixes whose values depend on a
+CUDA device. If a <code class="docutils literal notranslate"><span class="pre">NeuralNet</span></code> trained with a CUDA-enabled device
+is unpickled on a machine without CUDA or with CUDA disabled, the
+listed attributes are mapped to CPU.  Expand this list if you
+want to add other cuda-dependent attributes.</p>
+</dd>
+<dt><strong>initialized_: bool</strong></dt><dd><p>Whether the <code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNet</span></code> was initialized.</p>
+</dd>
+<dt><strong>module_: torch module (instance)</strong></dt><dd><p>The instantiated module.</p>
+</dd>
+<dt><strong>criterion_: torch criterion (instance)</strong></dt><dd><p>The instantiated criterion.</p>
+</dd>
+<dt><strong>callbacks_: list of tuples</strong></dt><dd><p>The complete (i.e. default and other), initialized callbacks, in
+a tuple with unique names.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -326,8 +398,8 @@ shuffle the train dataset by default this one overwrites this option.</p>
 </table>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 79%" />
-<col style="width: 21%" />
+<col style="width: 78%" />
+<col style="width: 22%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>get_default_callbacks</strong></p></td>
@@ -345,7 +417,7 @@ shuffle the train dataset by default this one overwrites this option.</p>
 <tr class="row-odd"><td><p><strong>on_grad_computed</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>predict_with_supercrop_inds_and_ys</strong></p></td>
+<tr class="row-even"><td><p><strong>predict_with_window_inds_and_ys</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -1024,15 +1096,12 @@ samples used in the fitting for the estimator.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The R2 score used when calling <code class="docutils literal notranslate"><span class="pre">score</span></code> on a regressor will use
+<p>The R2 score used when calling <code class="docutils literal notranslate"><span class="pre">score</span></code> on a regressor uses
 <code class="docutils literal notranslate"><span class="pre">multioutput='uniform_average'</span></code> from version 0.23 to keep consistent
-with <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="(in scikit-learn v0.22)"><code class="xref py py-func docutils literal notranslate"><span class="pre">r2_score()</span></code></a>. This will influence the
-<code class="docutils literal notranslate"><span class="pre">score</span></code> method of all the multioutput regressors (except for
-<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="(in scikit-learn v0.22)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiOutputRegressor</span></code></a>). To specify the
-default value manually and avoid the warning, please either call
-<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="(in scikit-learn v0.22)"><code class="xref py py-func docutils literal notranslate"><span class="pre">r2_score()</span></code></a> directly or make a custom scorer with
-<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.make_scorer.html#sklearn.metrics.make_scorer" title="(in scikit-learn v0.22)"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_scorer()</span></code></a> (the built-in scorer <code class="docutils literal notranslate"><span class="pre">'r2'</span></code> uses
-<code class="docutils literal notranslate"><span class="pre">multioutput='uniform_average'</span></code>).</p>
+with default value of <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="(in scikit-learn v0.23)"><code class="xref py py-func docutils literal notranslate"><span class="pre">r2_score()</span></code></a>.
+This influences the <code class="docutils literal notranslate"><span class="pre">score</span></code> method of all the multioutput
+regressors (except for
+<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="(in scikit-learn v0.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiOutputRegressor</span></code></a>).</p>
 </dd></dl>
 
 <dl class="py method">

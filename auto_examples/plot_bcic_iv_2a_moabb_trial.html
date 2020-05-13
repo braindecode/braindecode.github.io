@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Trialwise Decoding on BCIC IV 2a Dataset &mdash; Braindecode 1.0.dev documentation</title>
+  <title>Trialwise Decoding on BCIC IV 2a Dataset &mdash; Braindecode 0.5 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.0.dev
+                0.5
               </div>
             
           
@@ -211,7 +211,7 @@ optimization using cross validation on your training data.</p>
 <span class="c1">#          Hubert Banville &lt;hubert.jbanville@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">mne</span>
@@ -225,8 +225,9 @@ optimization using cross validation on your training data.</p>
 <span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.datautil</span> <span class="kn">import</span> <a href="../generated/braindecode.datautil.create_windows_from_events.html#braindecode.datautil.create_windows_from_events" title="braindecode.datautil.create_windows_from_events" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
-<span class="kn">from</span> <span class="nn">braindecode.datautil.signalproc</span> <span class="kn">import</span> <span class="n">exponential_running_standardize</span>
-<span class="kn">from</span> <span class="nn">braindecode.datautil.transforms</span> <span class="kn">import</span> <span class="n">transform_concat_ds</span>
+<span class="kn">from</span> <span class="nn">braindecode.datautil.preprocess</span> <span class="kn">import</span> <span class="n">exponential_moving_standardize</span>
+<span class="kn">from</span> <span class="nn">braindecode.datautil.preprocess</span> <span class="kn">import</span> <span class="n">preprocess</span><span class="p">,</span> <span class="n">MNEPreproc</span><span class="p">,</span> \
+    <span class="n">NumpyPreproc</span>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
 
@@ -244,7 +245,7 @@ optimization using cross validation on your training data.</p>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># number of classes to predict</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a> <span class="o">=</span> <span class="mi">22</span>  <span class="c1"># number of channels in the dataset</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_seconds</span></a> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>  <span class="c1"># offset between trail start in the raw data and dataset</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a> <span class="o">=</span> <span class="mi">1125</span>  <span class="c1"># length of trial in samples</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a> <span class="o">=</span> <span class="mi">1125</span>  <span class="c1"># length of trial in samples</span>
 <span class="c1"># Parameters for exponential running standarization</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor_new</span></a> <span class="o">=</span> <span class="mf">1e-3</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">init_block_size</span></a> <span class="o">=</span> <span class="mi">1000</span>
@@ -270,9 +271,10 @@ raw time-domain EEG. Here, we use the shallow ConvNet model from
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">,</span>
     <span class="n">final_conv_length</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
 <span class="p">)</span>
+
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lr</span></a> <span class="o">=</span> <span class="mf">0.0625</span> <span class="o">*</span> <span class="mf">0.01</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weight_decay</span></a> <span class="o">=</span> <span class="mi">0</span>
 
@@ -323,18 +325,16 @@ functionalities.</p>
 If the first element is string it has to be a name of
 <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html">mne.Raw</a>/<a class="reference external" href="https://mne.tools/0.11/generated/mne.Epochs.html#mne.Epochs">mne.Epochs</a>
 method. The second element of a tuple defines method parameters.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">standardize_func</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">partial</span></a><span class="p">(</span><span class="n">exponential_running_standardize</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor_new</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor_new</span></a><span class="p">,</span>
-                           <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">init_block_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">init_block_size</span></a><span class="p">)</span>
-
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_transform_dict</span></a> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s1">&#39;pick_types&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s1">&#39;apply_function&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">low_cut_hz</span></a><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a><span class="p">)),</span>
-    <span class="p">(</span><span class="s1">&#39;apply_function&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><a href="https://docs.python.org/3/library/functools.html#functools.partial" title="functools.partial" class="sphx-glr-backref-module-functools sphx-glr-backref-type-py-function"><span class="n">standardize_func</span></a><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">MNEPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s1">&#39;pick_types&#39;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="c1"># keep only EEG sensors</span>
+    <span class="n">NumpyPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">),</span> <span class="c1"># convert from volt to microvolt, directly modifying the numpy array</span>
+    <span class="n">MNEPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">low_cut_hz</span></a><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a><span class="p">),</span> <span class="c1"># bandpass filter</span>
+    <span class="n">NumpyPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">exponential_moving_standardize</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor_new</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor_new</span></a><span class="p">,</span>
+                 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">init_block_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">init_block_size</span></a><span class="p">)</span>
 <span class="p">]</span>
 
 <span class="c1"># Transform the data</span>
-<span class="n">transform_concat_ds</span><span class="p">(</span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_transform_dict</span></a><span class="p">)</span>
+<span class="n">preprocess</span><span class="p">(</span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -353,9 +353,9 @@ method. The second element of a tuple defines method parameters.</p>
     <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_samples</span></a><span class="p">,</span>
     <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">supercrop_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="p">,</span>
-    <span class="n">supercrop_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_time_length</span></a><span class="p">,</span>
-    <span class="n">drop_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -402,11 +402,11 @@ performs training. Model supplied to this class has to be a PyTorch model.</p>
   warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
   epoch    train_accuracy    train_loss    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  ----------------  ------------  ------
-      1            [36m0.2569[0m        [32m1.5211[0m            [35m0.2535[0m        [31m6.5564[0m  5.8721
-      2            [36m0.3715[0m        [32m1.1702[0m            [35m0.3715[0m        [31m3.8837[0m  5.8899
-      3            0.3351        [32m0.9766[0m            0.3299        [31m2.5528[0m  5.7227
-      4            [36m0.4149[0m        [32m0.8462[0m            [35m0.4271[0m        [31m1.5158[0m  6.0039
-      5            [36m0.6024[0m        [32m0.8309[0m            [35m0.6007[0m        [31m0.9143[0m  5.9944
+      1            [36m0.2569[0m        [32m1.5211[0m            [35m0.2535[0m        [31m6.5564[0m  7.2684
+      2            [36m0.3715[0m        [32m1.1702[0m            [35m0.3715[0m        [31m3.8837[0m  6.4208
+      3            0.3351        [32m0.9766[0m            0.3299        [31m2.5528[0m  6.3135
+      4            [36m0.4149[0m        [32m0.8462[0m            [35m0.4271[0m        [31m1.5158[0m  6.1161
+      5            [36m0.6024[0m        [32m0.8309[0m            [35m0.6007[0m        [31m0.9143[0m  6.0590
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=ShallowFBCSPNet(
@@ -464,7 +464,7 @@ performs training. Model supplied to this class has to be a PyTorch model.</p>
 </pre></div>
 </div>
 <img alt="plot bcic iv 2a moabb trial" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  0.254 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  6.750 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  1585 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-bcic-iv-2a-moabb-trial-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
