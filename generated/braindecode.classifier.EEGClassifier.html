@@ -247,7 +247,8 @@ further (warm start).</p>
 </dd>
 <dt><strong>device: str, torch.device (default=’cpu’)</strong></dt><dd><p>The compute device to be used. If set to ‘cuda’, data in torch
 tensors will be pushed to cuda tensors before being sent to the
-module.</p>
+module. If set to None, then all compute devices will be left
+unmodified.</p>
 </dd>
 <dt><strong>cropped: bool (default=False)</strong></dt><dd><p>Defines whether torch model passed to this class is cropped or not.
 Currently used for callbacks definition.</p>
@@ -333,7 +334,7 @@ a tuple with unique names.</p>
 <td><p>Get an iterator that allows to loop over the batches of the given data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.get_loss" title="braindecode.classifier.EEGClassifier.get_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_loss</span></code></a>(y_pred, y_true, *args, **kwargs)</p></td>
-<td><p>Return the loss for this batch by calling NeuralNet get_loss.</p></td>
+<td><p>Return the loss for this batch by calling NeuralNet get_loss. Parameters ———- y_pred : torch tensor   Predicted target values y_true : torch tensor   True target values. X : input data, compatible with skorch.dataset.Dataset   By default, you should be able to pass:     * numpy arrays     * torch tensors     * pandas DataFrame or Series     * scipy sparse CSR matrices     * a dictionary of the former three     * a list/tuple of the former three     * a Dataset   If this doesn’t work with your data, you have to pass a   <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> that can deal with the data. training : bool (default=False)   Whether train mode should be used or not.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.get_split_datasets" title="braindecode.classifier.EEGClassifier.get_split_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_split_datasets</span></code></a>(X[, y])</p></td>
 <td><p>Get internal train and validation datasets.</p></td>
@@ -392,22 +393,25 @@ a tuple with unique names.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.predict_proba" title="braindecode.classifier.EEGClassifier.predict_proba"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_proba</span></code></a>(X)</p></td>
 <td><p>Where applicable, return probability estimates for samples.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.save_params" title="braindecode.classifier.EEGClassifier.save_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_params</span></code></a>([f_params, f_optimizer, f_history])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.run_single_epoch" title="braindecode.classifier.EEGClassifier.run_single_epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_single_epoch</span></code></a>(dataset, training, prefix, …)</p></td>
+<td><p>Compute a single epoch of train or validation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.save_params" title="braindecode.classifier.EEGClassifier.save_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_params</span></code></a>([f_params, f_optimizer, f_history])</p></td>
 <td><p>Saves the module’s parameters, history, and optimizer, not the whole object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.score" title="braindecode.classifier.EEGClassifier.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X, y[, sample_weight])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.score" title="braindecode.classifier.EEGClassifier.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X, y[, sample_weight])</p></td>
 <td><p>Return the mean accuracy on the given test data and labels.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.set_params" title="braindecode.classifier.EEGClassifier.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.set_params" title="braindecode.classifier.EEGClassifier.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**kwargs)</p></td>
 <td><p>Set the parameters of this class.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.train_step" title="braindecode.classifier.EEGClassifier.train_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_step</span></code></a>(Xi, yi, **fit_params)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.train_step" title="braindecode.classifier.EEGClassifier.train_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_step</span></code></a>(Xi, yi, **fit_params)</p></td>
 <td><p>Prepares a loss function callable and pass it to the optimizer, hence performing one optimization step.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.train_step_single" title="braindecode.classifier.EEGClassifier.train_step_single"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_step_single</span></code></a>(Xi, yi, **fit_params)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.train_step_single" title="braindecode.classifier.EEGClassifier.train_step_single"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_step_single</span></code></a>(Xi, yi, **fit_params)</p></td>
 <td><p>Compute y_pred, loss value, and update net’s gradients.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.validation_step" title="braindecode.classifier.EEGClassifier.validation_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_step</span></code></a>(Xi, yi, **fit_params)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#braindecode.classifier.EEGClassifier.validation_step" title="braindecode.classifier.EEGClassifier.validation_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_step</span></code></a>(Xi, yi, **fit_params)</p></td>
 <td><p>Perform a forward step using batched data and return the resulting loss.</p></td>
 </tr>
 </tbody>
@@ -438,12 +442,6 @@ a tuple with unique names.</p>
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt id="braindecode.classifier.EEGClassifier.__hash__">
-<code class="sig-name descname">__hash__</code><span class="sig-paren">(</span><em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.classifier.EEGClassifier.__hash__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return hash(self).</p>
-</dd></dl>
-
 <dl class="py method">
 <dt id="braindecode.classifier.EEGClassifier.check_is_fitted">
 <code class="sig-name descname">check_is_fitted</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.classifier.EEGClassifier.check_is_fitted" title="Permalink to this definition">¶</a></dt>
@@ -1021,11 +1019,36 @@ values are relevant, consider using
 </dd></dl>
 
 <dl class="py method">
+<dt id="braindecode.classifier.EEGClassifier.run_single_epoch">
+<code class="sig-name descname">run_single_epoch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">training</span></em>, <em class="sig-param"><span class="n">prefix</span></em>, <em class="sig-param"><span class="n">step_fn</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">fit_params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.classifier.EEGClassifier.run_single_epoch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a single epoch of train or validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dataset</strong><span class="classifier">torch Dataset</span></dt><dd><p>The initialized dataset to loop over.</p>
+</dd>
+<dt><strong>training</strong><span class="classifier">bool</span></dt><dd><p>Whether to set the module to train mode or not.</p>
+</dd>
+<dt><strong>prefix</strong><span class="classifier">str</span></dt><dd><p>Prefix to use when saving to the history.</p>
+</dd>
+<dt><strong>step_fn</strong><span class="classifier">callable</span></dt><dd><p>Function to call for each batch.</p>
+</dd>
+<dt><strong>**fit_params</strong><span class="classifier">dict</span></dt><dd><p>Additional parameters passed to the <code class="docutils literal notranslate"><span class="pre">step_fn</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="braindecode.classifier.EEGClassifier.save_params">
 <code class="sig-name descname">save_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">f_optimizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">f_history</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.classifier.EEGClassifier.save_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the module’s parameters, history, and optimizer,
 not the whole object.</p>
-<p>To save the whole object, use pickle.</p>
+<p>To save the whole object, use pickle. This is necessary when
+you need additional learned attributes on the net, e.g. the
+<code class="docutils literal notranslate"><span class="pre">classes_</span></code> attribute on
+<code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.classifier.NeuralNetClassifier</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">f_params</span></code> and <code class="docutils literal notranslate"><span class="pre">f_optimizer</span></code> uses PyTorchs’
 <code class="xref py py-func docutils literal notranslate"><span class="pre">save()</span></code>.</p>
 <dl class="field-list simple">
