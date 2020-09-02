@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>braindecode.datautil.zscore &mdash; Braindecode 0.5 documentation</title>
+  <title>braindecode.datautil.filterbank &mdash; Braindecode 0.5 documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="braindecode.datautil.scale" href="braindecode.datautil.scale.html" />
-    <link rel="prev" title="braindecode.datautil.exponential_moving_standardize" href="braindecode.datautil.exponential_moving_standardize.html" /> 
+    <link rel="next" title="braindecode.datautil.save_concat_dataset" href="braindecode.datautil.save_concat_dataset.html" />
+    <link rel="prev" title="braindecode.datautil.scale" href="braindecode.datautil.scale.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -114,9 +114,9 @@
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.create_windows_from_events.html">braindecode.datautil.create_windows_from_events</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.exponential_moving_demean.html">braindecode.datautil.exponential_moving_demean</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.exponential_moving_standardize.html">braindecode.datautil.exponential_moving_standardize</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">braindecode.datautil.zscore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.zscore.html">braindecode.datautil.zscore</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.scale.html">braindecode.datautil.scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.filterbank.html">braindecode.datautil.filterbank</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">braindecode.datautil.filterbank</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.save_concat_dataset.html">braindecode.datautil.save_concat_dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="braindecode.datautil.load_concat_dataset.html">braindecode.datautil.load_concat_dataset</a></li>
 </ul>
@@ -172,13 +172,13 @@
         
           <li><a href="../api.html">API Reference</a> &raquo;</li>
         
-      <li>braindecode.datautil.zscore</li>
+      <li>braindecode.datautil.filterbank</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/braindecode.datautil.zscore.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/braindecode.datautil.filterbank.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,27 +191,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="braindecode-datautil-zscore">
-<h1>braindecode.datautil.zscore<a class="headerlink" href="#braindecode-datautil-zscore" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="braindecode-datautil-filterbank">
+<h1>braindecode.datautil.filterbank<a class="headerlink" href="#braindecode-datautil-filterbank" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="braindecode.datautil.zscore">
-<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">zscore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.zscore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Zscore continuous or windowed data in-place</p>
+<dt id="braindecode.datautil.filterbank">
+<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">filterbank</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em>, <em class="sig-param"><span class="n">frequency_bands</span></em>, <em class="sig-param"><span class="n">drop_original_signals</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">mne_filter_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.filterbank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies multiple bandpass filters to the signals in raw. The raw will be
+modified in-place and number of channels in raw will be updated to
+len(frequency_bands) * len(raw.ch_names) (-len(raw.ch_names) if
+drop_original_signals).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>data: np.ndarray (n_channels x n_times) or (n_windows x n_channels x</strong></dt><dd></dd>
-<dt><strong>n_times)</strong></dt><dd><p>continuous or windowed signal</p>
+<dt><strong>raw: Instance of mne.io.Raw</strong></dt><dd><p>The raw signals to be filtered</p>
 </dd>
-</dl>
+<dt><strong>frequency_bands: list(tuple)</strong></dt><dd><p>The frequency bands to be filtered for (e.g. [(4, 8), (8, 13)])</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>zscored: np.ndarray (n_channels x n_times) or (n_windows x n_channels x</dt><dd></dd>
-<dt>n_times)</dt><dd><p>normalized continuous or windowed data</p>
+<dt><strong>drop_original_signals: bool</strong></dt><dd><p>Whether to drop the original unfiltered signals</p>
 </dd>
-<dt>..note:</dt><dd><p>If this function is supposed to preprocess continuous data, it should be
-given to raw.apply_function().</p>
+<dt><strong>mne_filter_kwargs: dict</strong></dt><dd><p>Keyworkd arguments for filtering supported by mne.io.Raw.filter().
+Please refer to mne for a detailed explanation.</p>
 </dd>
 </dl>
 </dd>
@@ -228,10 +227,10 @@ given to raw.apply_function().</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="braindecode.datautil.scale.html" class="btn btn-neutral float-right" title="braindecode.datautil.scale" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="braindecode.datautil.save_concat_dataset.html" class="btn btn-neutral float-right" title="braindecode.datautil.save_concat_dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="braindecode.datautil.exponential_moving_standardize.html" class="btn btn-neutral float-left" title="braindecode.datautil.exponential_moving_standardize" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="braindecode.datautil.scale.html" class="btn btn-neutral float-left" title="braindecode.datautil.scale" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
