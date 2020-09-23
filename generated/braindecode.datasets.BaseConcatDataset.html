@@ -193,16 +193,16 @@
 <em class="property">class </em><code class="sig-prename descclassname">braindecode.datasets.</code><code class="sig-name descname">BaseConcatDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_of_ds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datasets.BaseConcatDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>A base class for concatenated datasets. Holds either mne.Raw or
 mne.Epoch in self.datasets and has a pandas DataFrame with additional
-description.
-Parameters
-———-
-list_of_ds: list</p>
-<blockquote>
-<div><p>list of BaseDataset, BaseConcatDataset or WindowsDataset</p>
-</div></blockquote>
+description.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>list_of_ds: list</strong></dt><dd><p>list of BaseDataset, BaseConcatDataset or WindowsDataset</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>cummulative_sizes</strong></dt><dd></dd>
 </dl>
 </dd>
@@ -214,8 +214,8 @@ list_of_ds: list</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split</span></code></a>([property, split_ids])</p></td>
-<td><p>Split the dataset based on some property listed in its description DataFrame or based on indices. Parameters ———- property: str     some property which is listed in info DataFrame split_ids: list(int)     list of indices to be combined in a subset Returns ——- splits: dict{split_name: BaseConcatDataset}     mapping of split name based on property or index based on split_ids     to subset of the data.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split</span></code></a>([by, property, split_ids])</p></td>
+<td><p>Split the dataset based on information listed in its description DataFrame or based on indices.</p></td>
 </tr>
 </tbody>
 </table>
@@ -232,22 +232,30 @@ list_of_ds: list</p>
 </table>
 <dl class="py method">
 <dt id="braindecode.datasets.BaseConcatDataset.split">
-<code class="sig-name descname">split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">property</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datasets.BaseConcatDataset.split" title="Permalink to this definition">¶</a></dt>
-<dd><p>Split the dataset based on some property listed in its description
-DataFrame or based on indices.
-Parameters
-———-
-property: str</p>
-<blockquote>
-<div><p>some property which is listed in info DataFrame</p>
-</div></blockquote>
-<dl class="simple">
-<dt>split_ids: list(int)</dt><dd><p>list of indices to be combined in a subset</p>
+<code class="sig-name descname">split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">property</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datasets.BaseConcatDataset.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the dataset based on information listed in its description
+DataFrame or based on indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>by: str | list(int) | list(list(int))</strong></dt><dd><p>If by is a string, splitting is performed based on the description
+DataFrame column with this name.
+If by is a (list of) list of integers, the position in the first
+list corresponds to the split id and the integers to the
+datapoints of that split.</p>
+</dd>
+<dt><strong>property: str</strong></dt><dd><p>Some property which is listed in info DataFrame.</p>
+</dd>
+<dt><strong>split_ids: list(int) | list(list(int))</strong></dt><dd><p>List of indices to be combined in a subset.</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>splits: dict{split_name: BaseConcatDataset}</dt><dd><p>mapping of split name based on property or index based on split_ids
-to subset of the data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>splits: dict{str: BaseConcatDataset}</dt><dd><p>A dictionary with the name of the split (a string) as key and the
+dataset as value.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -256,29 +264,33 @@ to subset of the data</p>
 
 <div class="section" id="examples-using-braindecode-datasets-baseconcatdataset">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code><a class="headerlink" href="#examples-using-braindecode-datasets-baseconcatdataset" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Custom Dataset Example"><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="In this example, we show multiple ways of how to split datasets."><div class="figure align-default" id="id1">
+<img alt="Split Dataset Example" src="../_images/sphx_glr_plot_split_dataset_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_split_dataset.html#sphx-glr-auto-examples-plot-split-dataset-py"><span class="std std-ref">Split Dataset Example</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Custom Dataset Example"><div class="figure align-default" id="id2">
 <img alt="Custom Dataset Example" src="../_images/sphx_glr_plot_custom_dataset_example_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_custom_dataset_example.html#sphx-glr-auto-examples-plot-custom-dataset-example-py"><span class="std std-ref">Custom Dataset Example</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_custom_dataset_example.html#sphx-glr-auto-examples-plot-custom-dataset-example-py"><span class="std std-ref">Custom Dataset Example</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="MNE Dataset Example"><div class="figure align-default" id="id2">
+</div><div class="sphx-glr-thumbcontainer" tooltip="MNE Dataset Example"><div class="figure align-default" id="id3">
 <img alt="MNE Dataset Example" src="../_images/sphx_glr_plot_mne_dataset_example_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_mne_dataset_example.html#sphx-glr-auto-examples-plot-mne-dataset-example-py"><span class="std std-ref">MNE Dataset Example</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_mne_dataset_example.html#sphx-glr-auto-examples-plot-mne-dataset-example-py"><span class="std std-ref">MNE Dataset Example</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we show how to fetch and prepare a MOABB dataset for usage with Braindecode."><div class="figure align-default" id="id3">
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we show how to fetch and prepare a MOABB dataset for usage with Braindecode."><div class="figure align-default" id="id4">
 <img alt="MOABB Dataset Example" src="../_images/sphx_glr_plot_dataset_example_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_dataset_example.html#sphx-glr-auto-examples-plot-dataset-example-py"><span class="std std-ref">MOABB Dataset Example</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_dataset_example.html#sphx-glr-auto-examples-plot-dataset-example-py"><span class="std std-ref">MOABB Dataset Example</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Regression example on fake data"><div class="figure align-default" id="id4">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Regression example on fake data"><div class="figure align-default" id="id5">
 <img alt="Regression example on fake data" src="../_images/sphx_glr_plot_regression_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_regression.html#sphx-glr-auto-examples-plot-regression-py"><span class="std std-ref">Regression example on fake data</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_regression.html#sphx-glr-auto-examples-plot-regression-py"><span class="std std-ref">Regression example on fake data</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id5">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id6">
 <img alt="Trialwise Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id6">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id7">
 <img alt="Cropped Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-cropped-py"><span class="std std-ref">Cropped Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-cropped-py"><span class="std std-ref">Cropped Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </div>
 </div><div style='clear:both'></div></div>
 </div>

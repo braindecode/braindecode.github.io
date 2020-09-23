@@ -198,32 +198,45 @@
 <h1>braindecode.datautil.create_fixed_length_windows<a class="headerlink" href="#braindecode-datautil-create-fixed-length-windows" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="braindecode.datautil.create_fixed_length_windows">
-<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">create_fixed_length_windows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">concat_ds</span></em>, <em class="sig-param"><span class="n">start_offset_samples</span></em>, <em class="sig-param"><span class="n">stop_offset_samples</span></em>, <em class="sig-param"><span class="n">window_size_samples</span></em>, <em class="sig-param"><span class="n">window_stride_samples</span></em>, <em class="sig-param"><span class="n">drop_last_window</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preload</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">drop_bad_windows</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.create_fixed_length_windows" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">create_fixed_length_windows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">concat_ds</span></em>, <em class="sig-param"><span class="n">start_offset_samples</span></em>, <em class="sig-param"><span class="n">stop_offset_samples</span></em>, <em class="sig-param"><span class="n">window_size_samples</span></em>, <em class="sig-param"><span class="n">window_stride_samples</span></em>, <em class="sig-param"><span class="n">drop_last_window</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preload</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">drop_bad_windows</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">picks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_missing</span><span class="o">=</span><span class="default_value">'error'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.create_fixed_length_windows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Windower that creates sliding windows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>concat_ds: ConcatDataset</strong></dt><dd><p>a concat of base datasets each holding raw and descpription</p>
+<dt><strong>concat_ds: ConcatDataset</strong></dt><dd><p>A concat of base datasets each holding raw and descpription.</p>
 </dd>
-<dt><strong>start_offset_samples: int</strong></dt><dd><p>start offset from beginning of recording in samples</p>
+<dt><strong>start_offset_samples: int</strong></dt><dd><p>Start offset from beginning of recording in samples.</p>
 </dd>
-<dt><strong>stop_offset_samples: int | None</strong></dt><dd><p>stop offset from beginning of recording in samples.</p>
+<dt><strong>stop_offset_samples: int | None</strong></dt><dd><p>Stop offset from beginning of recording in samples. If None, set to be
+the end of the recording.</p>
 </dd>
-<dt><strong>window_size_samples: int</strong></dt><dd><p>window size</p>
+<dt><strong>window_size_samples: int</strong></dt><dd><p>Window size.</p>
 </dd>
-<dt><strong>window_stride_samples: int</strong></dt><dd><p>stride between windows</p>
+<dt><strong>window_stride_samples: int</strong></dt><dd><p>Stride between windows.</p>
 </dd>
-<dt><strong>drop_last_window: bool</strong></dt><dd><p>whether or not have a last overlapping window, when
-windows do not equally divide the continuous signal</p>
+<dt><strong>drop_last_window: bool</strong></dt><dd><p>Whether or not have a last overlapping window, when windows do not
+equally divide the continuous signal.</p>
 </dd>
-<dt><strong>mapping: dict(str: int)</strong></dt><dd><p>mapping from event description to target value</p>
+<dt><strong>mapping: dict(str: int)</strong></dt><dd><p>Mapping from event description to target value.</p>
 </dd>
-<dt><strong>preload: bool</strong></dt><dd><p>if True, preload the data of the Epochs objects.</p>
+<dt><strong>preload: bool</strong></dt><dd><p>If True, preload the data of the Epochs objects.</p>
 </dd>
 <dt><strong>drop_bad_windows: bool</strong></dt><dd><p>If True, call <cite>.drop_bad()</cite> on the resulting mne.Epochs object. This
 step allows identifying e.g., windows that fall outside of the
-continuous recording. It is suggested to run this step here as otherwise
-the BaseConcatDataset has to be updated as well.</p>
+continuous recording. It is suggested to run this step here as
+otherwise the BaseConcatDataset has to be updated as well.</p>
+</dd>
+<dt><strong>picks: str | list | slice | None</strong></dt><dd><p>Channels to include. If None, all available channels are used. See
+mne.Epochs.</p>
+</dd>
+<dt><strong>reject: dict | None</strong></dt><dd><p>Epoch rejection parameters based on peak-to-peak amplitude. If None, no
+rejection is done based on peak-to-peak amplitude. See mne.Epochs.</p>
+</dd>
+<dt><strong>flat: dict | None</strong></dt><dd><p>Epoch rejection parameters based on flatness of signals. If None, no
+rejection based on flatness is done. See mne.Epochs.</p>
+</dd>
+<dt><strong>on_missing: str</strong></dt><dd><p>What to do if one or several event ids are not found in the recording.
+Valid keys are ‘error’ | ‘warning’ | ‘ignore’. See mne.Epochs.</p>
 </dd>
 </dl>
 </dd>

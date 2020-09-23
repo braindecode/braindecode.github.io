@@ -1,0 +1,377 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_split_dataset.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_split_dataset.py:
+
+Split Dataset Example
+========================
+
+In this example, we show multiple ways of how to split datasets.
+
+
+.. code-block:: default
+
+
+    # Authors: Lukas Gemein <l.gemein@gmail.com>
+    #
+    # License: BSD (3-clause)
+
+    from IPython.display import display
+
+    from braindecode.datasets import MOABBDataset
+    from braindecode.datautil.windowers import create_windows_from_events
+
+
+
+
+
+
+
+
+First, we create a dataset based on BCIC IV 2a fetched with MOABB,
+
+
+.. code-block:: default
+
+    ds = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[1])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/circleci/.local/lib/python3.7/site-packages/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: "MNE_DATASETS_BNCI_PATH"
+      set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+    48 events found
+    Event IDs: [1 2 3 4]
+
+
+
+
+ds has a pandas DataFrame with additional description of its internal datasets
+
+
+.. code-block:: default
+
+    display(ds.description)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+        subject  ...    run
+    0         1  ...  run_0
+    1         1  ...  run_1
+    2         1  ...  run_2
+    3         1  ...  run_3
+    4         1  ...  run_4
+    5         1  ...  run_5
+    6         1  ...  run_0
+    7         1  ...  run_1
+    8         1  ...  run_2
+    9         1  ...  run_3
+    10        1  ...  run_4
+    11        1  ...  run_5
+
+    [12 rows x 3 columns]
+
+
+
+
+We can split the dataset based on the info in the description, for example
+based on different runs. The returned dictionary will have string keys
+corresponding to unique entries in the description DataFrame column
+
+
+.. code-block:: default
+
+    splits = ds.split("run")
+    display(splits)
+    display(splits["run_4"].description)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    {'run_0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f53a669cd10>, 'run_1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decded0>, 'run_2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decdf10>, 'run_3': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decdfd0>, 'run_4': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decde90>, 'run_5': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decdf50>}
+       subject  ...    run
+    0        1  ...  run_4
+    1        1  ...  run_4
+
+    [2 rows x 3 columns]
+
+
+
+
+We can also split the dataset based on a list of integers corresponding to
+rows in the description. In this case, the returned dictionary will have
+'0' as the only key
+
+
+.. code-block:: default
+
+    splits = ds.split([0, 1, 5])
+    display(splits)
+    display(splits["0"].description)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f53a41d49d0>}
+       subject  ...    run
+    0        1  ...  run_0
+    1        1  ...  run_1
+    2        1  ...  run_5
+
+    [3 rows x 3 columns]
+
+
+
+
+If we want multiple splits based on indices, we can also specify a list of
+list of integers. In this case, the dictionary will have string keys
+representing the id of the dataset split in the order of the given list of
+integers
+
+
+.. code-block:: default
+
+    splits = ds.split([[0, 1, 5], [2, 3, 4], [6, 7, 8, 9, 10, 11]])
+    display(splits)
+    display(splits["2"].description)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f53a666d910>, '1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decdc90>, '2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decd9d0>}
+       subject  ...    run
+    0        1  ...  run_0
+    1        1  ...  run_1
+    2        1  ...  run_2
+    3        1  ...  run_3
+    4        1  ...  run_4
+    5        1  ...  run_5
+
+    [6 rows x 3 columns]
+
+
+
+
+Similarly, we can split datasets after creating windows
+
+
+.. code-block:: default
+
+    windows = create_windows_from_events(
+        ds, trial_start_offset_samples=0, trial_stop_offset_samples=0)
+    splits = windows.split("run")
+    display(splits)
+    splits = windows.split([4, 8])
+    display(splits)
+    splits = windows.split([[4, 8], [5, 9, 11]])
+    display(splits)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
+    Adding metadata with 4 columns
+    Replacing existing metadata with 4 columns
+    48 matching events found
+    No baseline correction applied
+    0 projection items activated
+    Loading data for 48 events and 1000 original time points ...
+    0 bad epochs dropped
+    {'run_0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f540129f310>, 'run_1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decdfd0>, 'run_2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538deb0410>, 'run_3': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538deb08d0>, 'run_4': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538deb0c10>, 'run_5': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538deb01d0>}
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decd9d0>}
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f53a666d910>, '1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f538decd110>}
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  17.996 seconds)
+
+**Estimated memory usage:**  406 MB
+
+
+.. _sphx_glr_download_auto_examples_plot_split_dataset.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: plot_split_dataset.py <plot_split_dataset.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_split_dataset.ipynb <plot_split_dataset.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

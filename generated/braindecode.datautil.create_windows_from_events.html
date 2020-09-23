@@ -198,40 +198,71 @@
 <h1>braindecode.datautil.create_windows_from_events<a class="headerlink" href="#braindecode-datautil-create-windows-from-events" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="braindecode.datautil.create_windows_from_events">
-<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">create_windows_from_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">concat_ds</span></em>, <em class="sig-param"><span class="n">trial_start_offset_samples</span></em>, <em class="sig-param"><span class="n">trial_stop_offset_samples</span></em>, <em class="sig-param"><span class="n">window_size_samples</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">window_stride_samples</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drop_last_window</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preload</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">drop_bad_windows</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.create_windows_from_events" title="Permalink to this definition">¶</a></dt>
-<dd><p>Windower that creates windows based on events in mne.Raw.</p>
-<p>The function fits windows of window_size_samples in
-trial_start_offset_samples to trial_stop_offset_samples separated by
-window_stride_samples. If the last window does not end
-at trial_stop_offset_samples, it creates another overlapping window that
-ends at trial_stop_offset_samples if drop_last_window is set to False.</p>
-<p>in mne: tmin (s)                    trial onset        onset + duration (s)
-trial:  <a href="#id4"><span class="problematic" id="id5">|--------------------------------|</span></a>——————————–|
-here:   trial_start_offset_samples                trial_stop_offset_samples</p>
+<code class="sig-prename descclassname">braindecode.datautil.</code><code class="sig-name descname">create_windows_from_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">concat_ds</span></em>, <em class="sig-param"><span class="n">trial_start_offset_samples</span></em>, <em class="sig-param"><span class="n">trial_stop_offset_samples</span></em>, <em class="sig-param"><span class="n">window_size_samples</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">window_stride_samples</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drop_last_window</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preload</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">drop_bad_windows</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">picks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flat</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_missing</span><span class="o">=</span><span class="default_value">'error'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datautil.create_windows_from_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create windows based on events in mne.Raw.</p>
+<p>This function extracts windows of size window_size_samples in the interval
+[trial onset + trial_start_offset_samples, trial onset + trial duration +
+trial_stop_offset_samples] around each trial, with a separation of
+window_stride_samples between consecutive windows. If the last window
+around an event does not end at trial_stop_offset_samples and
+drop_last_window is set to False, an additional overlapping window that
+ends at trial_stop_offset_samples is created.</p>
+<p>Windows are extracted from the interval defined by the following:</p>
+<blockquote>
+<div><blockquote>
+<div><p>trial onset +</p>
+</div></blockquote>
+<p>trial onset                     duration</p>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">|--------------------|</span></a>——————————<a href="#id7"><span class="problematic" id="id8">|---------------------|</span></a>
+trial onset -                                                 trial onset +
+trial_start_offset_samples                                       duration +</p>
+<blockquote>
+<div><p>trial_stop_offset_samples</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>concat_ds: BaseConcatDataset</strong></dt><dd><p>a concat of base datasets each holding raw and description</p>
+<dt><strong>concat_ds: BaseConcatDataset</strong></dt><dd><p>A concat of base datasets each holding raw and description.</p>
 </dd>
-<dt><strong>trial_start_offset_samples: int</strong></dt><dd><p>start offset from original trial onsets in samples</p>
+<dt><strong>trial_start_offset_samples: int</strong></dt><dd><p>Start offset from original trial onsets, in samples.</p>
 </dd>
-<dt><strong>trial_stop_offset_samples: int</strong></dt><dd><p>stop offset from original trial stop in samples</p>
+<dt><strong>trial_stop_offset_samples: int</strong></dt><dd><p>Stop offset from original trial stop, in samples.</p>
 </dd>
-<dt><strong>window_size_samples: int</strong></dt><dd><p>window size</p>
+<dt><strong>window_size_samples: int | None</strong></dt><dd><p>Window size. If None, the window size is inferred from the original
+trial size of the first trial and trial_start_offset_samples and
+trial_stop_offset_samples.</p>
 </dd>
-<dt><strong>window_stride_samples: int</strong></dt><dd><p>stride between windows</p>
+<dt><strong>window_stride_samples: int | None</strong></dt><dd><p>Stride between windows, in samples. If None, the window size is
+inferred from the original trial size of the first trial and
+trial_start_offset_samples and trial_stop_offset_samples.</p>
 </dd>
-<dt><strong>drop_last_window: bool</strong></dt><dd><p>whether or not have a last overlapping window, when
-windows do not equally divide the continuous signal</p>
+<dt><strong>drop_last_window: bool</strong></dt><dd><p>If True, an additional overlapping window that ends at
+trial_stop_offset_samples will be extracted around each event when the
+last window does not end exactly at trial_stop_offset_samples.</p>
 </dd>
-<dt><strong>mapping: dict(str: int)</strong></dt><dd><p>mapping from event description to target value</p>
+<dt><strong>mapping: dict(str: int)</strong></dt><dd><p>Mapping from event description to numerical target value.</p>
 </dd>
-<dt><strong>preload: bool</strong></dt><dd><p>if True, preload the data of the Epochs objects.</p>
+<dt><strong>preload: bool</strong></dt><dd><p>If True, preload the data of the Epochs objects. This is useful to
+reduce disk reading overhead when returning windows in a training
+scenario, however very large data might not fit into memory.</p>
 </dd>
 <dt><strong>drop_bad_windows: bool</strong></dt><dd><p>If True, call <cite>.drop_bad()</cite> on the resulting mne.Epochs object. This
 step allows identifying e.g., windows that fall outside of the
 continuous recording. It is suggested to run this step here as otherwise
 the BaseConcatDataset has to be updated as well.</p>
+</dd>
+<dt><strong>picks: str | list | slice | None</strong></dt><dd><p>Channels to include. If None, all available channels are used. See
+mne.Epochs.</p>
+</dd>
+<dt><strong>reject: dict | None</strong></dt><dd><p>Epoch rejection parameters based on peak-to-peak amplitude. If None, no
+rejection is done based on peak-to-peak amplitude. See mne.Epochs.</p>
+</dd>
+<dt><strong>flat: dict | None</strong></dt><dd><p>Epoch rejection parameters based on flatness of signals. If None, no
+rejection based on flatness is done. See mne.Epochs.</p>
+</dd>
+<dt><strong>on_missing: str</strong></dt><dd><p>What to do if one or several event ids are not found in the recording.
+Valid keys are ‘error’ | ‘warning’ | ‘ignore’. See mne.Epochs.</p>
 </dd>
 </dl>
 </dd>
@@ -246,17 +277,21 @@ the BaseConcatDataset has to be updated as well.</p>
 
 <div class="section" id="examples-using-braindecode-datautil-create-windows-from-events">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datautil.create_windows_from_events</span></code><a class="headerlink" href="#examples-using-braindecode-datautil-create-windows-from-events" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="In this example, we show how to fetch and prepare a MOABB dataset for usage with Braindecode."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="In this example, we show multiple ways of how to split datasets."><div class="figure align-default" id="id1">
+<img alt="Split Dataset Example" src="../_images/sphx_glr_plot_split_dataset_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_split_dataset.html#sphx-glr-auto-examples-plot-split-dataset-py"><span class="std std-ref">Split Dataset Example</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we show how to fetch and prepare a MOABB dataset for usage with Braindecode."><div class="figure align-default" id="id2">
 <img alt="MOABB Dataset Example" src="../_images/sphx_glr_plot_dataset_example_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_dataset_example.html#sphx-glr-auto-examples-plot-dataset-example-py"><span class="std std-ref">MOABB Dataset Example</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_dataset_example.html#sphx-glr-auto-examples-plot-dataset-example-py"><span class="std std-ref">MOABB Dataset Example</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id2">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id3">
 <img alt="Trialwise Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id3">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id4">
 <img alt="Cropped Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-cropped-py"><span class="std std-ref">Cropped Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-cropped-py"><span class="std std-ref">Cropped Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 </div><div style='clear:both'></div></div>
 </div>
