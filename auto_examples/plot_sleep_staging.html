@@ -1,0 +1,769 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Sleep staging on the Sleep Physionet dataset &mdash; Braindecode 0.5 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Benchmarking eager and lazy loading" href="benchmark_lazy_eager_loading.html" />
+    <link rel="prev" title="Regression example on fake data" href="plot_regression.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Braindecode
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html"> Basic trialwise decoding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html"> More data-efficient &quot;cropped decoding&quot;</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_mne_dataset_example.html"> Your own datasets through MNE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_custom_dataset_example.html"> Your own datasets through Numpy</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Braindecode examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Sleep staging on the Sleep Physionet dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extract-windows">Extract windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#window-preprocessing">Window preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-results">Plot results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Braindecode</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Braindecode examples</a> &raquo;</li>
+        
+      <li>Sleep staging on the Sleep Physionet dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/auto_examples/plot_sleep_staging.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-sleep-staging-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="sleep-staging-on-the-sleep-physionet-dataset">
+<span id="sphx-glr-auto-examples-plot-sleep-staging-py"></span><h1>Sleep staging on the Sleep Physionet dataset<a class="headerlink" href="#sleep-staging-on-the-sleep-physionet-dataset" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial shows how to train and test a sleep staging neural network with
+Braindecode. We follow the approach of <a class="footnote-reference brackets" href="#id4" id="id1">1</a> on the openly accessible Sleep
+Physionet dataset <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>.</p>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>,<a href="#id7">3</a>,<a href="#id8">4</a>,<a href="#id9">5</a>,<a href="#id10">6</a>)</span></dt>
+<dd><p>Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A.
+(2018)A Deep Learning Architecture for Temporal Sleep Stage
+Classification Using Multivariate and Multimodal Time Series.
+IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:
+(758-769)</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>B Kemp, AH Zwinderman, B Tuk, HAC Kamphuisen, JJL Oberyé. Analysis of
+a sleep-dependent neuronal feedback loop: the slow-wave
+microcontinuity of the EEG. IEEE-BME 47(9):1185-1194 (2000).</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">3</span></dt>
+<dd><p>Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh,
+Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. (2000)
+PhysioBank, PhysioToolkit, and PhysioNet: Components of a New
+Research Resource for Complex Physiologic Signals.
+Circulation 101(23):e215-e220</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Hubert Banville &lt;hubert.jbanville@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loading-and-preprocessing-the-dataset">
+<h2>Loading and preprocessing the dataset<a class="headerlink" href="#loading-and-preprocessing-the-dataset" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="loading">
+<h3>Loading<a class="headerlink" href="#loading" title="Permalink to this headline">¶</a></h3>
+<p>First, we load the data using the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.sleep_physionet.SleepPhysionet</span></code> class. We load
+two recordings from two different individuals: we will use the first one to
+train our network and the second one to evaluate performance (as in the <a class="reference external" href="https://mne.tools/stable/auto_tutorials/sample-datasets/plot_sleep.html">MNE</a>
+sleep staging example).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To load your own datasets either via MNE or from
+preprocessed X/y numpy arrays, see the <a class="reference external" href="./plot_mne_dataset_example.html">MNE Dataset
+Tutorial</a> and the <a class="reference external" href="./plot_custom_dataset_example.html">Numpy Dataset
+Tutorial</a>.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datasets.sleep_physionet</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a>
+
+<span class="n">dataset</span> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a><span class="p">(</span>
+    <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">recording_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">crop_wake_mins</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for PHYSIONET_SLEEP...
+Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4001E0-PSG.edf (46.1 MB)
+
+  0%|          | Downloading : 0.00/46.1M [00:00&lt;?,        ?B/s]
+  0%|          | Downloading : 56.0k/46.1M [00:00&lt;00:14,    3.33MB/s]
+  0%|          | Downloading : 152k/46.1M [00:00&lt;00:14,    3.32MB/s]
+  1%|          | Downloading : 280k/46.1M [00:00&lt;00:14,    3.41MB/s]
+  1%|1         | Downloading : 536k/46.1M [00:00&lt;00:13,    3.55MB/s]
+  2%|2         | Downloading : 1.02M/46.1M [00:00&lt;00:12,    3.72MB/s]
+  4%|4         | Downloading : 2.02M/46.1M [00:00&lt;00:11,    3.89MB/s]
+  7%|6         | Downloading : 3.02M/46.1M [00:00&lt;00:11,    4.07MB/s]
+  8%|7         | Downloading : 3.52M/46.1M [00:00&lt;00:10,    4.25MB/s]
+ 10%|9         | Downloading : 4.52M/46.1M [00:00&lt;00:09,    4.45MB/s]
+ 13%|#3        | Downloading : 6.02M/46.1M [00:00&lt;00:09,    4.66MB/s]
+ 15%|#5        | Downloading : 7.02M/46.1M [00:00&lt;00:08,    4.88MB/s]
+ 17%|#7        | Downloading : 8.02M/46.1M [00:00&lt;00:07,    5.10MB/s]
+ 20%|#9        | Downloading : 9.02M/46.1M [00:00&lt;00:07,    5.33MB/s]
+ 22%|##1       | Downloading : 10.0M/46.1M [00:00&lt;00:06,    5.58MB/s]
+ 24%|##3       | Downloading : 11.0M/46.1M [00:00&lt;00:06,    5.84MB/s]
+ 26%|##6       | Downloading : 12.0M/46.1M [00:00&lt;00:05,    6.11MB/s]
+ 28%|##8       | Downloading : 13.0M/46.1M [00:00&lt;00:05,    6.34MB/s]
+ 33%|###2      | Downloading : 15.0M/46.1M [00:00&lt;00:04,    6.63MB/s]
+ 35%|###4      | Downloading : 16.0M/46.1M [00:00&lt;00:04,    6.94MB/s]
+ 37%|###6      | Downloading : 17.0M/46.1M [00:00&lt;00:04,    7.24MB/s]
+ 39%|###9      | Downloading : 18.0M/46.1M [00:00&lt;00:03,    7.57MB/s]
+ 43%|####3     | Downloading : 20.0M/46.1M [00:00&lt;00:03,    7.93MB/s]
+ 50%|####9     | Downloading : 23.0M/46.1M [00:00&lt;00:02,    8.29MB/s]
+ 54%|#####4    | Downloading : 25.0M/46.1M [00:00&lt;00:02,    8.68MB/s]
+ 59%|#####8    | Downloading : 27.0M/46.1M [00:00&lt;00:02,    9.09MB/s]
+ 63%|######2   | Downloading : 29.0M/46.1M [00:00&lt;00:01,    9.51MB/s]
+ 67%|######7   | Downloading : 31.0M/46.1M [00:00&lt;00:01,    9.95MB/s]
+ 72%|#######1  | Downloading : 33.0M/46.1M [00:00&lt;00:01,    10.4MB/s]
+ 76%|#######5  | Downloading : 35.0M/46.1M [00:00&lt;00:01,    10.9MB/s]
+ 80%|########  | Downloading : 37.0M/46.1M [00:00&lt;00:00,    11.4MB/s]
+ 85%|########4 | Downloading : 39.0M/46.1M [00:00&lt;00:00,    11.9MB/s]
+ 89%|########8 | Downloading : 41.0M/46.1M [00:00&lt;00:00,    12.4MB/s]
+ 93%|#########3| Downloading : 43.0M/46.1M [00:00&lt;00:00,    13.0MB/s]
+ 98%|#########7| Downloading : 45.0M/46.1M [00:00&lt;00:00,    13.6MB/s]
+100%|##########| Downloading : 46.1M/46.1M [00:00&lt;00:00,    54.9MB/s]
+Verifying hash adabd3b01fc7bb75c523a974f38ee3ae4e57b40f.
+Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4001EC-Hypnogram.edf (5 kB)
+
+  0%|          | Downloading : 0.00/4.51k [00:00&lt;?,        ?B/s]
+100%|##########| Downloading : 4.51k/4.51k [00:00&lt;00:00,    7.92MB/s]
+Verifying hash 21c998eadc8b1e3ea6727d3585186b8f76e7e70b.
+Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4011E0-PSG.edf (48.7 MB)
+
+  0%|          | Downloading : 0.00/48.7M [00:00&lt;?,        ?B/s]
+  0%|          | Downloading : 56.0k/48.7M [00:00&lt;00:14,    3.41MB/s]
+  0%|          | Downloading : 152k/48.7M [00:00&lt;00:14,    3.46MB/s]
+  1%|          | Downloading : 344k/48.7M [00:00&lt;00:14,    3.58MB/s]
+  1%|1         | Downloading : 600k/48.7M [00:00&lt;00:13,    3.71MB/s]
+  2%|1         | Downloading : 984k/48.7M [00:00&lt;00:13,    3.85MB/s]
+  2%|2         | Downloading : 1.21M/48.7M [00:00&lt;00:12,    4.00MB/s]
+  3%|2         | Downloading : 1.46M/48.7M [00:00&lt;00:11,    4.15MB/s]
+  4%|3         | Downloading : 1.71M/48.7M [00:00&lt;00:11,    4.31MB/s]
+  5%|4         | Downloading : 2.21M/48.7M [00:00&lt;00:10,    4.47MB/s]
+  6%|5         | Downloading : 2.71M/48.7M [00:00&lt;00:10,    4.65MB/s]
+  6%|6         | Downloading : 2.96M/48.7M [00:00&lt;00:09,    4.82MB/s]
+  7%|6         | Downloading : 3.21M/48.7M [00:00&lt;00:09,    4.98MB/s]
+  8%|7         | Downloading : 3.71M/48.7M [00:00&lt;00:09,    5.17MB/s]
+  9%|8         | Downloading : 4.21M/48.7M [00:00&lt;00:08,    5.39MB/s]
+ 10%|9         | Downloading : 4.71M/48.7M [00:00&lt;00:08,    5.60MB/s]
+ 11%|#         | Downloading : 5.21M/48.7M [00:00&lt;00:07,    5.84MB/s]
+ 12%|#1        | Downloading : 5.71M/48.7M [00:00&lt;00:07,    6.07MB/s]
+ 13%|#2        | Downloading : 6.21M/48.7M [00:00&lt;00:07,    6.32MB/s]
+ 14%|#3        | Downloading : 6.71M/48.7M [00:00&lt;00:06,    6.59MB/s]
+ 15%|#4        | Downloading : 7.21M/48.7M [00:00&lt;00:06,    6.85MB/s]
+ 17%|#6        | Downloading : 8.21M/48.7M [00:00&lt;00:05,    7.14MB/s]
+ 19%|#8        | Downloading : 9.21M/48.7M [00:00&lt;00:05,    7.44MB/s]
+ 21%|##        | Downloading : 10.2M/48.7M [00:00&lt;00:05,    7.75MB/s]
+ 23%|##3       | Downloading : 11.2M/48.7M [00:00&lt;00:04,    8.08MB/s]
+ 25%|##5       | Downloading : 12.2M/48.7M [00:00&lt;00:04,    8.42MB/s]
+ 27%|##7       | Downloading : 13.2M/48.7M [00:00&lt;00:04,    8.78MB/s]
+ 29%|##9       | Downloading : 14.2M/48.7M [00:00&lt;00:03,    9.16MB/s]
+ 31%|###1      | Downloading : 15.2M/48.7M [00:00&lt;00:03,    9.54MB/s]
+ 33%|###3      | Downloading : 16.2M/48.7M [00:00&lt;00:03,    9.95MB/s]
+ 35%|###5      | Downloading : 17.2M/48.7M [00:00&lt;00:03,    10.4MB/s]
+ 37%|###7      | Downloading : 18.2M/48.7M [00:00&lt;00:02,    10.8MB/s]
+ 41%|####1     | Downloading : 20.2M/48.7M [00:00&lt;00:02,    11.3MB/s]
+ 46%|####5     | Downloading : 22.2M/48.7M [00:00&lt;00:02,    11.8MB/s]
+ 50%|####9     | Downloading : 24.2M/48.7M [00:00&lt;00:02,    12.3MB/s]
+ 54%|#####3    | Downloading : 26.2M/48.7M [00:00&lt;00:01,    12.9MB/s]
+ 58%|#####7    | Downloading : 28.2M/48.7M [00:00&lt;00:01,    13.5MB/s]
+ 62%|######1   | Downloading : 30.2M/48.7M [00:00&lt;00:01,    14.1MB/s]
+ 66%|######6   | Downloading : 32.2M/48.7M [00:00&lt;00:01,    14.7MB/s]
+ 70%|#######   | Downloading : 34.2M/48.7M [00:00&lt;00:00,    15.3MB/s]
+ 74%|#######4  | Downloading : 36.2M/48.7M [00:00&lt;00:00,    16.0MB/s]
+ 78%|#######8  | Downloading : 38.2M/48.7M [00:00&lt;00:00,    16.7MB/s]
+ 82%|########2 | Downloading : 40.2M/48.7M [00:00&lt;00:00,    17.4MB/s]
+ 87%|########6 | Downloading : 42.2M/48.7M [00:00&lt;00:00,    18.1MB/s]
+ 91%|######### | Downloading : 44.2M/48.7M [00:00&lt;00:00,    18.8MB/s]
+ 95%|#########4| Downloading : 46.2M/48.7M [00:01&lt;00:00,    19.6MB/s]
+ 99%|#########8| Downloading : 48.2M/48.7M [00:01&lt;00:00,    20.4MB/s]
+100%|##########| Downloading : 48.7M/48.7M [00:01&lt;00:00,    48.9MB/s]
+Verifying hash 4d17451f7847355bcab17584de05e7e1df58c660.
+Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4011EH-Hypnogram.edf (4 kB)
+
+  0%|          | Downloading : 0.00/3.80k [00:00&lt;?,        ?B/s]
+100%|##########| Downloading : 3.80k/3.80k [00:00&lt;00:00,    6.35MB/s]
+Verifying hash d582a3cbe2db481a362af890bc5a2f5ca7c878dc.
+Extracting EDF parameters from /home/circleci/mne_data/physionet-sleep-data/SC4001E0-PSG.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/physionet-sleep-data/SC4011E0-PSG.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+</pre></div>
+</div>
+</div>
+<div class="section" id="preprocessing">
+<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h3>
+<p>Next, we preprocess the raw data. We apply convert the data to microvolts and
+apply a lowpass filter. We omit the downsampling step of <a class="footnote-reference brackets" href="#id4" id="id7">1</a> as the Sleep
+Physionet data is already sampled at a lower 100 Hz.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datautil.preprocess</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MNEPreproc</span><span class="p">,</span> <span class="n">NumpyPreproc</span><span class="p">,</span> <span class="n">preprocess</span><span class="p">)</span>
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a> <span class="o">=</span> <span class="mi">30</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># convert from volt to microvolt, directly modifying the numpy array</span>
+    <span class="n">NumpyPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">),</span>
+    <span class="c1"># bandpass filter</span>
+    <span class="n">MNEPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c1"># Transform the data</span>
+<span class="n">preprocess</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading 0 ... 2508000  =      0.000 ... 25080.000 secs...
+Filtering raw data in 1 contiguous segment
+Setting up low-pass filter at 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal lowpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 45 samples (0.450 sec)
+
+Reading 0 ... 3261000  =      0.000 ... 32610.000 secs...
+Filtering raw data in 1 contiguous segment
+Setting up low-pass filter at 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal lowpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 45 samples (0.450 sec)
+</pre></div>
+</div>
+</div>
+<div class="section" id="extract-windows">
+<h3>Extract windows<a class="headerlink" href="#extract-windows" title="Permalink to this headline">¶</a></h3>
+<p>We extract 30-s windows to be used in the classification task.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datautil.windowers</span> <span class="kn">import</span> <a href="../generated/braindecode.datautil.create_windows_from_events.html#braindecode.datautil.create_windows_from_events" title="braindecode.datautil.create_windows_from_events" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
+
+
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mapping</span></a> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># We merge stages 3 and 4 following AASM standards.</span>
+    <span class="s1">&#39;Sleep stage W&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s1">&#39;Sleep stage 1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;Sleep stage 2&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;Sleep stage 3&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;Sleep stage 4&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;Sleep stage R&#39;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_s</span></a> <span class="o">=</span> <span class="mi">30</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <span class="mi">100</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_s</span></a> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a>
+
+<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.create_windows_from_events.html#braindecode.datautil.create_windows_from_events" title="braindecode.datautil.create_windows_from_events" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
+    <span class="n">dataset</span><span class="p">,</span> <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mapping</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mapping</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;Sleep stage 1&#39;, &#39;Sleep stage 2&#39;, &#39;Sleep stage 3&#39;, &#39;Sleep stage 4&#39;, &#39;Sleep stage R&#39;, &#39;Sleep stage W&#39;]
+Adding metadata with 4 columns
+Replacing existing metadata with 4 columns
+837 matching events found
+No baseline correction applied
+0 projection items activated
+Loading data for 837 events and 3000 original time points ...
+0 bad epochs dropped
+Used Annotations descriptions: [&#39;Sleep stage 1&#39;, &#39;Sleep stage 2&#39;, &#39;Sleep stage 3&#39;, &#39;Sleep stage 4&#39;, &#39;Sleep stage R&#39;, &#39;Sleep stage W&#39;]
+Adding metadata with 4 columns
+Replacing existing metadata with 4 columns
+1088 matching events found
+No baseline correction applied
+0 projection items activated
+Loading data for 1088 events and 3000 original time points ...
+0 bad epochs dropped
+</pre></div>
+</div>
+</div>
+<div class="section" id="window-preprocessing">
+<h3>Window preprocessing<a class="headerlink" href="#window-preprocessing" title="Permalink to this headline">¶</a></h3>
+<p>We also preprocess the windows by applying channel-wise z-score normalization
+in each window.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datautil.preprocess</span> <span class="kn">import</span> <a href="../generated/braindecode.datautil.zscore.html#braindecode.datautil.zscore" title="braindecode.datautil.zscore" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">zscore</span></a>
+
+<span class="n">preprocess</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">,</span> <span class="p">[</span><span class="n">MNEPreproc</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><a href="../generated/braindecode.datautil.zscore.html#braindecode.datautil.zscore" title="braindecode.datautil.zscore" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">zscore</span></a><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="split-dataset-into-train-and-valid">
+<h3>Split dataset into train and valid<a class="headerlink" href="#split-dataset-into-train-and-valid" title="Permalink to this headline">¶</a></h3>
+<p>We can easily split the dataset using additional info stored in the
+<cite>description</cite> attribute of <a class="reference internal" href="../generated/braindecode.datasets.BaseDataset.html#braindecode.datasets.BaseDataset" title="braindecode.datasets.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseDataset</span></code></a>,
+in this case using the <code class="docutils literal notranslate"><span class="pre">subject</span></code> column. Here, we split the examples per subject.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows_dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>
+<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">]</span>
+<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span>
+
+<span class="c1"># Print number of examples per class</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Epochs |  837 events (all good), 0 - 29.99 sec, baseline off, ~38.3 MB, data loaded, with metadata,
+ &#39;Sleep stage 1&#39;: 58
+ &#39;Sleep stage 2&#39;: 250
+ &#39;Sleep stage 3&#39;: 220
+ &#39;Sleep stage 4&#39;: 220
+ &#39;Sleep stage R&#39;: 125
+ &#39;Sleep stage W&#39;: 184&gt;
+&lt;Epochs |  1088 events (all good), 0 - 29.99 sec, baseline off, ~49.8 MB, data loaded, with metadata,
+ &#39;Sleep stage 1&#39;: 109
+ &#39;Sleep stage 2&#39;: 562
+ &#39;Sleep stage 3&#39;: 105
+ &#39;Sleep stage 4&#39;: 105
+ &#39;Sleep stage R&#39;: 170
+ &#39;Sleep stage W&#39;: 142&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="create-model">
+<h2>Create model<a class="headerlink" href="#create-model" title="Permalink to this headline">¶</a></h2>
+<p>We can now create the deep learning model. In this tutorial, we use the sleep
+staging architecture introduced in <a class="footnote-reference brackets" href="#id4" id="id8">1</a>, which is a four-layer convolutional
+neural network.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
+<span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <span class="n">SleepStagerChambon2018</span>
+
+<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>  <span class="c1"># check if GPU is available</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span>
+<span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span></a> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Set random seed to be able to reproduce results</span>
+<a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">87</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">)</span>
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># Extract number of channels and time steps from dataset</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_size_samples</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SleepStagerChambon2018</span><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a><span class="p">,</span>
+    <span class="n">input_size_s</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_size_samples</span></a> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a>
+<span class="p">)</span>
+
+<span class="c1"># Send model to GPU</span>
+<span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
+    <span class="n">model</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="training">
+<h2>Training<a class="headerlink" href="#training" title="Permalink to this headline">¶</a></h2>
+<p>We can now train our network. <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> is a
+braindecode object that is responsible for managing the training of neural
+networks. It inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.NeuralNetClassifier</span></code>, so the
+training logic is the same as in
+<a class="reference external" href="https://skorch.readthedocs.io/en/stable/">Skorch</a>.</p>
+<p><strong>Note</strong>: We use different hyperparameters from <a class="footnote-reference brackets" href="#id4" id="id9">1</a>, as
+these hyperparameters were optimized on a different dataset (MASS SS3) and
+with a different number of recordings. Generally speaking, it is
+recommended to perform hyperparameter optimization if reusing this code on
+a different dataset or with more recordings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skorch.helper</span> <span class="kn">import</span> <span class="n">predefined_split</span>
+<span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <span class="n">EpochScoring</span>
+<span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
+
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lr</span></a> <span class="o">=</span> <span class="mf">5e-4</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a> <span class="o">=</span> <span class="mi">16</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">train_bal_acc</span> <span class="o">=</span> <span class="n">EpochScoring</span><span class="p">(</span>
+    <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;balanced_accuracy&#39;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;train_bal_acc&#39;</span><span class="p">,</span>
+    <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">valid_bal_acc</span> <span class="o">=</span> <span class="n">EpochScoring</span><span class="p">(</span>
+    <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;balanced_accuracy&#39;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;valid_bal_acc&#39;</span><span class="p">,</span>
+    <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callbacks</span></a> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;train_bal_acc&#39;</span><span class="p">,</span> <span class="n">train_bal_acc</span><span class="p">),</span>
+             <span class="p">(</span><span class="s1">&#39;valid_bal_acc&#39;</span><span class="p">,</span> <span class="n">valid_bal_acc</span><span class="p">)]</span>
+
+<span class="n">clf</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="n">predefined_split</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span></a><span class="p">),</span>  <span class="c1"># using valid_set for validation</span>
+    <span class="n">optimizer__lr</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lr</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callbacks</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callbacks</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a>
+<span class="p">)</span>
+<span class="c1"># Model training for a specified number of epochs. `y` is None as it is already</span>
+<span class="c1"># supplied in the dataset.</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss     dur
+-------  ---------------  ------------  ---------------  ------------  ------
+      1           [36m0.2327[0m        [32m1.4823[0m           [35m0.3783[0m        [31m1.3577[0m  4.0851
+      2           [36m0.4687[0m        [32m1.0553[0m           [35m0.5187[0m        [31m1.0603[0m  2.8810
+      3           [36m0.5600[0m        [32m0.8073[0m           0.5122        [31m0.9819[0m  6.9950
+      4           [36m0.5732[0m        [32m0.7450[0m           [35m0.5564[0m        0.9850  2.1156
+      5           [36m0.5969[0m        [32m0.6878[0m           0.5173        [31m0.9374[0m  1.8152
+
+&lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
+  module_=SleepStagerChambon2018(
+    (spatial_conv): Conv2d(1, 2, kernel_size=(2, 1), stride=(1, 1))
+    (feature_extractor): Sequential(
+      (0): Conv2d(1, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
+      (1): ReLU()
+      (2): MaxPool2d(kernel_size=(1, 12), stride=(1, 12), padding=0, dilation=1, ceil_mode=False)
+      (3): Conv2d(8, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
+      (4): ReLU()
+      (5): MaxPool2d(kernel_size=(1, 12), stride=(1, 12), padding=0, dilation=1, ceil_mode=False)
+    )
+    (fc): Sequential(
+      (0): Dropout(p=0.25, inplace=False)
+      (1): Linear(in_features=320, out_features=5, bias=True)
+    )
+  ),
+)
+</pre></div>
+</div>
+</div>
+<div class="section" id="plot-results">
+<h2>Plot results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
+<p>We use the history stored by Skorch during training to plot the performance of
+the model throughout training. Specifically, we plot the loss and the balanced
+misclassification rate (1 - balanced accuracy) for the training and validation
+sets.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="matplotlib.lines.Line2D" class="sphx-glr-backref-module-matplotlib-lines sphx-glr-backref-type-py-class"><span class="n">Line2D</span></a>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># Extract loss and balanced accuracy values for plotting from history object</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
+<span class="n">df</span><span class="p">[[</span><span class="s1">&#39;train_mis_clf&#39;</span><span class="p">,</span> <span class="s1">&#39;valid_mis_clf&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span>
+    <span class="p">[</span><span class="s1">&#39;train_bal_acc&#39;</span><span class="p">,</span> <span class="s1">&#39;valid_bal_acc&#39;</span><span class="p">]]</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="c1"># get percent of misclass for better visual comparison to loss</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-talk&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;train_loss&#39;</span><span class="p">,</span> <span class="s1">&#39;valid_loss&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax1</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">labelcolor</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<span class="n">ax2</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.twinx.html#matplotlib.axes.Axes.twinx" title="matplotlib.axes.Axes.twinx" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span></a><span class="p">()</span>  <span class="c1"># instantiate a second axes that shares the same x-axis</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;train_mis_clf&#39;</span><span class="p">,</span> <span class="s1">&#39;valid_mis_clf&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax2</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax2</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">labelcolor</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s1">&#39;Balanced misclassification rate [%]&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">,</span>
+               <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.get_ylim.html#matplotlib.axes.Axes.get_ylim" title="matplotlib.axes.Axes.get_ylim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax2</span><span class="o">.</span><span class="n">get_ylim</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">85</span><span class="p">)</span>  <span class="c1"># make some room for legend</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<span class="c1"># where some data has already been plotted to ax</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">handles</span></a> <span class="o">=</span> <span class="p">[]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">handles</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="matplotlib.lines.Line2D" class="sphx-glr-backref-module-matplotlib-lines sphx-glr-backref-type-py-class"><span class="n">Line2D</span></a><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Train&#39;</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">handles</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="matplotlib.lines.Line2D" class="sphx-glr-backref-module-matplotlib-lines sphx-glr-backref-type-py-class"><span class="n">Line2D</span></a><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Valid&#39;</span><span class="p">))</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.legend.html#matplotlib.pyplot.legend" title="matplotlib.pyplot.legend" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">handles</span></a><span class="p">,</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">handles</span></a><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="plot sleep staging" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_sleep_staging_001.png" />
+<p>Finally, we also display the confusion matrix and classification report:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html#sklearn.metrics.confusion_matrix" title="sklearn.metrics.confusion_matrix" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">confusion_matrix</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html#sklearn.metrics.classification_report" title="sklearn.metrics.classification_report" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">classification_report</span></a>
+
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pred</span></a> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span></a><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html#sklearn.metrics.confusion_matrix" title="sklearn.metrics.confusion_matrix" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">confusion_matrix</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pred</span></a><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html#sklearn.metrics.classification_report" title="sklearn.metrics.classification_report" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">classification_report</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pred</span></a><span class="p">))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[128   0  12   1   1]
+ [ 77   0  31   1   0]
+ [ 70   0 480  11   1]
+ [  0   0  19  86   0]
+ [ 63   0 105   0   2]]
+/home/circleci/.local/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1221: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.38      0.90      0.53       142
+           1       0.00      0.00      0.00       109
+           2       0.74      0.85      0.79       562
+           3       0.87      0.82      0.84       105
+           4       0.50      0.01      0.02       170
+
+    accuracy                           0.64      1088
+   macro avg       0.50      0.52      0.44      1088
+weighted avg       0.59      0.64      0.56      1088
+</pre></div>
+</div>
+<p>Our model was able to perform reasonably well given the low amount of data
+available, reaching a balanced accuracy of around 55% in a 5-class
+classification task (chance-level = 20%) on held-out data.</p>
+<p>To further improve performance, more recordings can be included in the
+training set, and various modifications can be made to the model (e.g.,
+aggregating the representation of multiple consecutive windows <a class="footnote-reference brackets" href="#id4" id="id10">1</a>).</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  26.820 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  146 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-sleep-staging-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/6e8734cc42665d49e95a1be079f57feb/plot_sleep_staging.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sleep_staging.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/5bafba0488197e377d459780399abb29/plot_sleep_staging.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_sleep_staging.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="benchmark_lazy_eager_loading.html" class="btn btn-neutral float-right" title="Benchmarking eager and lazy loading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plot_regression.html" class="btn btn-neutral float-left" title="Regression example on fake data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2020, Braindecode developers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
