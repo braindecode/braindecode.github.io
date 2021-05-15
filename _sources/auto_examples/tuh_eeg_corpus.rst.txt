@@ -41,7 +41,7 @@ including simple preprocessing steps as well as cutting of compute windows.
     import mne
 
     from braindecode.datasets import TUH
-    from braindecode.datautil.preprocess import preprocess, MNEPreproc, NumpyPreproc
+    from braindecode.datautil.preprocess import preprocess, Preprocessor
     from braindecode.datautil.windowers import create_fixed_length_windows
     from braindecode.datautil.serialization import (
         save_concat_dataset, load_concat_dataset)
@@ -130,7 +130,7 @@ recordings, that have at least five minutes duration. Data is not loaded here.
         return split
 
 
-    tmin = 5*60
+    tmin = 5 * 60
     tmax = None
     tuh = select_by_duration(tuh, tmin, tmax)
 
@@ -200,7 +200,7 @@ in brackets:
 - resample recordings to a common frequency (requires load)
 - create compute windows
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-183
+.. GENERATED FROM PYTHON SOURCE LINES 149-185
 
 .. code-block:: default
 
@@ -224,22 +224,24 @@ in brackets:
         raw.crop(tmin=tmin, tmax=tmax, include_tmax=include_tmax)
 
 
-    tmin = 1*60
-    tmax = 6*60
+    tmin = 1 * 60
+    tmax = 6 * 60
     sfreq = 100
 
     preprocessors = [
-        MNEPreproc(custom_crop, tmin=tmin, tmax=tmax, include_tmax=False),
-        MNEPreproc('set_eeg_reference', ref_channels='average', ch_type='eeg'),
-        MNEPreproc(custom_rename_channels, mapping=ch_mapping),
-        MNEPreproc("pick_channels", ch_names=short_ch_names, ordered=True),
-        NumpyPreproc(lambda x: x * 1e6),
-        MNEPreproc("resample", sfreq=sfreq),
+        Preprocessor(custom_crop, tmin=tmin, tmax=tmax, include_tmax=False,
+                     apply_on_array=False),
+        Preprocessor('set_eeg_reference', ref_channels='average', ch_type='eeg'),
+        Preprocessor(custom_rename_channels, mapping=ch_mapping,
+                     apply_on_array=False),
+        Preprocessor('pick_channels', ch_names=short_ch_names, ordered=True),
+        Preprocessor(lambda x: x * 1e6),
+        Preprocessor('resample', sfreq=sfreq),
     ]
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 184-191
+.. GENERATED FROM PYTHON SOURCE LINES 186-193
 
 The preprocessing loop works as follows. For every recording, we apply the
 preprocessors as defined above. Then, we update the description of the rec,
@@ -249,7 +251,7 @@ each recording to a unique subdirectory that is named corresponding to the
 rec id. To save memory, after windowing and storing, we delete the raw
 dataset and the windows dataset, respectively.
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-239
+.. GENERATED FROM PYTHON SOURCE LINES 193-241
 
 .. code-block:: default
 
@@ -302,12 +304,12 @@ dataset and the windows dataset, respectively.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 240-242
+.. GENERATED FROM PYTHON SOURCE LINES 242-244
 
 We load the preprocessed data again in a lazy fashion (`preload=False`). It is
 now ready to be used for model training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 242-244
+.. GENERATED FROM PYTHON SOURCE LINES 244-246
 
 .. code-block:: default
 

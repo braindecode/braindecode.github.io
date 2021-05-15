@@ -23,7 +23,7 @@ MOABB Dataset Example
 In this example, we show how to fetch and prepare a MOABB dataset for usage
 with Braindecode.
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-24
+.. GENERATED FROM PYTHON SOURCE LINES 7-22
 
 .. code-block:: default
 
@@ -34,15 +34,13 @@ with Braindecode.
     #
     # License: BSD (3-clause)
 
-    from collections import OrderedDict
-
     import matplotlib.pyplot as plt
     from IPython.display import display
 
     from braindecode.datasets import MOABBDataset
     from braindecode.datautil.windowers import \
         create_windows_from_events, create_fixed_length_windows
-    from braindecode.datautil.preprocess import preprocess, MNEPreproc
+    from braindecode.datautil.preprocess import preprocess, Preprocessor
 
 
 
@@ -51,11 +49,11 @@ with Braindecode.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-26
+.. GENERATED FROM PYTHON SOURCE LINES 23-24
 
 First, we create a dataset based on BCIC IV 2a fetched with MOABB,
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-28
+.. GENERATED FROM PYTHON SOURCE LINES 24-26
 
 .. code-block:: default
 
@@ -99,11 +97,11 @@ First, we create a dataset based on BCIC IV 2a fetched with MOABB,
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-30
+.. GENERATED FROM PYTHON SOURCE LINES 27-28
 
 ds has a pandas DataFrame with additional description of its internal datasets
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-32
+.. GENERATED FROM PYTHON SOURCE LINES 28-30
 
 .. code-block:: default
 
@@ -138,13 +136,13 @@ ds has a pandas DataFrame with additional description of its internal datasets
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-36
+.. GENERATED FROM PYTHON SOURCE LINES 31-34
 
 We can iterate through ds which yields one time point of a continuous signal x,
 and a target y (which can be None if targets are not defined for the entire
 continuous signal).
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-40
+.. GENERATED FROM PYTHON SOURCE LINES 34-38
 
 .. code-block:: default
 
@@ -167,21 +165,21 @@ continuous signal).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-43
+.. GENERATED FROM PYTHON SOURCE LINES 39-41
 
 We can apply preprocessing transforms that are defined in mne and work
 in-place, such as resampling, bandpass filtering, or electrode selection.
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-51
+.. GENERATED FROM PYTHON SOURCE LINES 41-49
 
 .. code-block:: default
 
-    transforms = [
-        MNEPreproc("pick_types", eeg=True, meg=False, stim=True),
-        MNEPreproc("resample", sfreq=100),
+    preprocessors = [
+        Preprocessor('pick_types', eeg=True, meg=False, stim=True),
+        Preprocessor('resample', sfreq=100)
     ]
     print(ds.datasets[0].raw.info["sfreq"])
-    preprocess(ds, transforms)
+    preprocess(ds, preprocessors)
     print(ds.datasets[0].raw.info["sfreq"])
 
 
@@ -248,12 +246,12 @@ in-place, such as resampling, bandpass filtering, or electrode selection.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-54
+.. GENERATED FROM PYTHON SOURCE LINES 50-52
 
 We can easily split ds based on a criteria applied to the description
 DataFrame:
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-57
+.. GENERATED FROM PYTHON SOURCE LINES 52-55
 
 .. code-block:: default
 
@@ -275,11 +273,11 @@ DataFrame:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-59
+.. GENERATED FROM PYTHON SOURCE LINES 56-57
 
 Next, we use a windower to extract events from the dataset based on events:
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-64
+.. GENERATED FROM PYTHON SOURCE LINES 57-62
 
 .. code-block:: default
 
@@ -398,14 +396,14 @@ Next, we use a windower to extract events from the dataset based on events:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-69
+.. GENERATED FROM PYTHON SOURCE LINES 63-67
 
 We can iterate through the windows_ds which yields a window x,
 a target y, and window_ind (which itself contains `i_window_in_trial`,
 `i_start_in_trial`, and `i_stop_in_trial`, which are required for combining
 window predictions in the scorer).
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-73
+.. GENERATED FROM PYTHON SOURCE LINES 67-71
 
 .. code-block:: default
 
@@ -429,11 +427,11 @@ window predictions in the scorer).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-75
+.. GENERATED FROM PYTHON SOURCE LINES 72-73
 
 We visually inspect the windows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-85
+.. GENERATED FROM PYTHON SOURCE LINES 73-83
 
 .. code-block:: default
 
@@ -469,12 +467,12 @@ We visually inspect the windows:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-88
+.. GENERATED FROM PYTHON SOURCE LINES 84-86
 
 Alternatively, we can create evenly spaced ("sliding") windows using a
 different windower.
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-98
+.. GENERATED FROM PYTHON SOURCE LINES 86-96
 
 .. code-block:: default
 
@@ -591,14 +589,15 @@ different windower.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-101
+.. GENERATED FROM PYTHON SOURCE LINES 97-99
 
 Transforms can also be applied on windows in the same way as shown
 above on continuous data:
 
-.. GENERATED FROM PYTHON SOURCE LINES 101-128
+.. GENERATED FROM PYTHON SOURCE LINES 99-129
 
 .. code-block:: default
+
 
 
     def crop_windows(windows, start_offset_samples, stop_offset_samples):
@@ -606,19 +605,21 @@ above on continuous data:
         windows.crop(tmin=start_offset_samples / fs, tmax=stop_offset_samples / fs,
                      include_tmax=False)
 
-    epochs_transform_list = [
-        MNEPreproc("pick_types", eeg=True, meg=False, stim=False),
-        MNEPreproc(crop_windows, start_offset_samples=100, stop_offset_samples=900),
+
+    epochs_preprocessors = [
+        Preprocessor('pick_types', eeg=True, meg=False, stim=False),
+        Preprocessor(crop_windows, apply_on_array=False, start_offset_samples=100,
+                     stop_offset_samples=900)
     ]
 
     print(windows_ds.datasets[0].windows.info["ch_names"],
           len(windows_ds.datasets[0].windows.times))
-    preprocess(windows_ds, epochs_transform_list)
+    preprocess(windows_ds, epochs_preprocessors)
     print(windows_ds.datasets[0].windows.info["ch_names"],
           len(windows_ds.datasets[0].windows.times))
 
     max_i = 2
-    fig, ax_arr = plt.subplots(1, max_i+1, figsize=((max_i+1)*7, 5),
+    fig, ax_arr = plt.subplots(1, max_i + 1, figsize=((max_i + 1) * 7, 5),
                                sharex=True, sharey=True)
     for i, (x, y, window_ind) in enumerate(windows_ds):
         ax_arr[i].plot(x.T)
@@ -644,58 +645,57 @@ above on continuous data:
 
     ['Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz', 'stim'] 400
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     Loading data for 96 events and 400 original time points ...
-    /home/circleci/project/examples/plot_dataset_example.py:105: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
+    /home/circleci/project/examples/plot_dataset_example.py:104: RuntimeWarning: tmax is not in epochs time interval. tmax is set to epochs.tmax
       include_tmax=False)
     ['Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz'] 299
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-131
+.. GENERATED FROM PYTHON SOURCE LINES 130-132
 
 Again, we can easily split windows_ds based on some criteria in the
 description DataFrame:
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-134
+.. GENERATED FROM PYTHON SOURCE LINES 132-134
 
 .. code-block:: default
 
     subsets = windows_ds.split("session")
     print({subset_name: len(subset) for subset_name, subset in subsets.items()})
-
 
 
 
@@ -714,7 +714,7 @@ description DataFrame:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.901 seconds)
+   **Total running time of the script:** ( 0 minutes  6.175 seconds)
 
 **Estimated memory usage:**  379 MB
 

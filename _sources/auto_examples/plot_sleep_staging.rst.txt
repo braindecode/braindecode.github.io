@@ -135,21 +135,18 @@ apply a lowpass filter. We omit the downsampling step of [1]_ as the Sleep
 Physionet data is already sampled at a lower 100 Hz.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-92
+.. GENERATED FROM PYTHON SOURCE LINES 75-89
 
 .. code-block:: default
 
 
-    from braindecode.datautil.preprocess import (
-        MNEPreproc, NumpyPreproc, preprocess)
+    from braindecode.datautil.preprocess import preprocess, Preprocessor
 
     high_cut_hz = 30
 
     preprocessors = [
-        # convert from volt to microvolt, directly modifying the numpy array
-        NumpyPreproc(fn=lambda x: x * 1e6),
-        # bandpass filter
-        MNEPreproc(fn='filter', l_freq=None, h_freq=high_cut_hz),
+        Preprocessor(lambda x: x * 1e6),
+        Preprocessor('filter', l_freq=None, h_freq=high_cut_hz)
     ]
 
     # Transform the data
@@ -196,17 +193,17 @@ Physionet data is already sampled at a lower 100 Hz.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-96
+.. GENERATED FROM PYTHON SOURCE LINES 90-93
 
 Extract windows
 ~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-100
+.. GENERATED FROM PYTHON SOURCE LINES 96-97
 
 We extract 30-s windows to be used in the classification task.
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-123
+.. GENERATED FROM PYTHON SOURCE LINES 97-120
 
 .. code-block:: default
 
@@ -263,26 +260,26 @@ We extract 30-s windows to be used in the classification task.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-127
+.. GENERATED FROM PYTHON SOURCE LINES 121-124
 
 Window preprocessing
 ~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-133
+.. GENERATED FROM PYTHON SOURCE LINES 127-130
 
 We also preprocess the windows by applying channel-wise z-score normalization
 in each window.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-139
+.. GENERATED FROM PYTHON SOURCE LINES 130-136
 
 .. code-block:: default
 
 
     from braindecode.datautil.preprocess import zscore
 
-    preprocess(windows_dataset, [MNEPreproc(fn=zscore)])
+    preprocess(windows_dataset, [Preprocessor(zscore)])
 
 
 
@@ -292,20 +289,20 @@ in each window.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-143
+.. GENERATED FROM PYTHON SOURCE LINES 137-140
 
 Split dataset into train and valid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-149
+.. GENERATED FROM PYTHON SOURCE LINES 142-146
 
 We can easily split the dataset using additional info stored in the
 `description` attribute of :class:`braindecode.datasets.BaseDataset`,
 in this case using the ``subject`` column. Here, we split the examples per subject.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-159
+.. GENERATED FROM PYTHON SOURCE LINES 146-156
 
 .. code-block:: default
 
@@ -347,20 +344,20 @@ in this case using the ``subject`` column. Here, we split the examples per subje
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-163
+.. GENERATED FROM PYTHON SOURCE LINES 157-160
 
 Create model
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-169
+.. GENERATED FROM PYTHON SOURCE LINES 162-166
 
 We can now create the deep learning model. In this tutorial, we use the sleep
 staging architecture introduced in [1]_, which is a four-layer convolutional
 neural network.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-198
+.. GENERATED FROM PYTHON SOURCE LINES 166-195
 
 .. code-block:: default
 
@@ -400,13 +397,13 @@ neural network.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-202
+.. GENERATED FROM PYTHON SOURCE LINES 196-199
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-211
+.. GENERATED FROM PYTHON SOURCE LINES 202-208
 
 We can now train our network. :class:`braindecode.EEGClassifier` is a
 braindecode object that is responsible for managing the training of neural
@@ -415,7 +412,7 @@ training logic is the same as in
 `Skorch <https://skorch.readthedocs.io/en/stable/>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-220
+.. GENERATED FROM PYTHON SOURCE LINES 211-217
 
 **Note**: We use different hyperparameters from [1]_, as
 these hyperparameters were optimized on a different dataset (MASS SS3) and
@@ -424,7 +421,7 @@ recommended to perform hyperparameter optimization if reusing this code on
 a different dataset or with more recordings.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 220-253
+.. GENERATED FROM PYTHON SOURCE LINES 217-250
 
 .. code-block:: default
 
@@ -471,13 +468,13 @@ a different dataset or with more recordings.
 
  .. code-block:: none
 
-      epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss       dur
-    -------  ---------------  ------------  ---------------  ------------  --------
-          1           [36m0.2483[0m        [32m1.4752[0m           [35m0.3525[0m        [31m1.4364[0m  730.1107
-          2           [36m0.4277[0m        [32m1.1294[0m           [35m0.4570[0m        [31m1.0498[0m  733.0987
-          3           [36m0.5466[0m        [32m0.8522[0m           0.4150        [31m0.9985[0m  755.8943
-          4           [36m0.5960[0m        [32m0.7219[0m           [35m0.5007[0m        [31m0.9172[0m  737.0956
-          5           0.5904        [32m0.7080[0m           [35m0.5616[0m        1.0147  763.7042
+      epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss      dur
+    -------  ---------------  ------------  ---------------  ------------  -------
+          1           [36m0.2483[0m        [32m1.4752[0m           [35m0.3525[0m        [31m1.4364[0m  60.2641
+          2           [36m0.4277[0m        [32m1.1294[0m           [35m0.4570[0m        [31m1.0498[0m  34.7004
+          3           [36m0.5466[0m        [32m0.8522[0m           0.4150        [31m0.9985[0m  32.3934
+          4           [36m0.5960[0m        [32m0.7219[0m           [35m0.5007[0m        [31m0.9172[0m  34.5947
+          5           0.5904        [32m0.7080[0m           [35m0.5616[0m        1.0147  38.0928
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=SleepStagerChambon2018(
@@ -501,13 +498,13 @@ a different dataset or with more recordings.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 254-257
+.. GENERATED FROM PYTHON SOURCE LINES 251-254
 
 Plot results
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 260-265
+.. GENERATED FROM PYTHON SOURCE LINES 257-262
 
 We use the history stored by Skorch during training to plot the performance of
 the model throughout training. Specifically, we plot the loss and the balanced
@@ -515,7 +512,7 @@ misclassification rate (1 - balanced accuracy) for the training and validation
 sets.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 265-305
+.. GENERATED FROM PYTHON SOURCE LINES 262-302
 
 .. code-block:: default
 
@@ -571,12 +568,12 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 306-308
+.. GENERATED FROM PYTHON SOURCE LINES 303-305
 
 Finally, we also display the confusion matrix and classification report:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 308-320
+.. GENERATED FROM PYTHON SOURCE LINES 305-317
 
 .. code-block:: default
 
@@ -629,7 +626,7 @@ Finally, we also display the confusion matrix and classification report:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 321-329
+.. GENERATED FROM PYTHON SOURCE LINES 318-326
 
 Our model was able to perform reasonably well given the low amount of data
 available, reaching a balanced accuracy of around 55% in a 5-class
@@ -643,9 +640,9 @@ aggregating the representation of multiple consecutive windows [1]_).
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 65 minutes  1.339 seconds)
+   **Total running time of the script:** ( 3 minutes  29.628 seconds)
 
-**Estimated memory usage:**  136 MB
+**Estimated memory usage:**  103 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging.py:

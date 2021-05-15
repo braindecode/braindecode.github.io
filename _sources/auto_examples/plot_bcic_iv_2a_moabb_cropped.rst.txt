@@ -98,19 +98,18 @@ Loading and preprocessing stays the same as in the `Trialwise decoding
 tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-115
+.. GENERATED FROM PYTHON SOURCE LINES 83-110
 
 .. code-block:: default
 
 
     from braindecode.datasets.moabb import MOABBDataset
-    import mne
 
     subject_id = 3
     dataset = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[subject_id])
 
-    from braindecode.datautil.preprocess import exponential_moving_standardize
-    from braindecode.datautil.preprocess import MNEPreproc, NumpyPreproc, preprocess
+    from braindecode.datautil.preprocess import (
+        exponential_moving_standardize, preprocess, Preprocessor)
 
     low_cut_hz = 4.  # low cut frequency for filtering
     high_cut_hz = 38.  # high cut frequency for filtering
@@ -119,15 +118,11 @@ tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
     init_block_size = 1000
 
     preprocessors = [
-        # keep only EEG sensors
-        MNEPreproc(fn='pick_types', eeg=True, meg=False, stim=False),
-        # convert from volt to microvolt, directly modifying the numpy array
-        NumpyPreproc(fn=lambda x: x * 1e6),
-        # bandpass filter
-        MNEPreproc(fn='filter', l_freq=low_cut_hz, h_freq=high_cut_hz),
-        # exponential moving standardization
-        NumpyPreproc(fn=exponential_moving_standardize, factor_new=factor_new,
-            init_block_size=init_block_size)
+        Preprocessor('pick_types', eeg=True, meg=False, stim=False),  # Keep EEG sensors
+        Preprocessor(lambda x: x * 1e6),  # Convert from V to uV
+        Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
+        Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
+                     factor_new=factor_new, init_block_size=init_block_size)
     ]
 
     # Transform the data
@@ -340,13 +335,13 @@ tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-119
+.. GENERATED FROM PYTHON SOURCE LINES 111-114
 
 Create model and compute windowing parameters
 ---------------------------------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-127
+.. GENERATED FROM PYTHON SOURCE LINES 117-122
 
 In contrast to trialwise decoding, we first have to create the model
 before we can cut the dataset into windows. This is because we need to
@@ -354,7 +349,7 @@ know the receptive field of the network to know how large the window
 stride should be.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-136
+.. GENERATED FROM PYTHON SOURCE LINES 125-131
 
 We first choose the compute/input window size that will be fed to the
 network during training This has to be larger than the networks
@@ -363,7 +358,7 @@ efficiency (see explanations in the beginning of this tutorial). Here we
 choose 1000 samples, which are 4 seconds for the 250 Hz sampling rate.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-140
+.. GENERATED FROM PYTHON SOURCE LINES 131-135
 
 .. code-block:: default
 
@@ -378,7 +373,7 @@ choose 1000 samples, which are 4 seconds for the 250 Hz sampling rate.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-147
+.. GENERATED FROM PYTHON SOURCE LINES 136-142
 
 Now we create the model. To enable it to be used in cropped decoding
 efficiently, we manually set the length of the final convolution layer
@@ -387,7 +382,7 @@ than ``input_window_samples`` (see ``final_conv_length=30`` in the model
 definition).
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-178
+.. GENERATED FROM PYTHON SOURCE LINES 142-172
 
 .. code-block:: default
 
@@ -405,7 +400,7 @@ definition).
     # Set random seed to be able to reproduce results
     set_random_seeds(seed=seed, cuda=cuda)
 
-    n_classes=4
+    n_classes = 4
     # Extract number of chans from dataset
     n_chans = dataset[0][0].shape[0]
 
@@ -428,15 +423,14 @@ definition).
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 179-183
+.. GENERATED FROM PYTHON SOURCE LINES 173-177
 
 And now we transform model with strides to a model that outputs dense
 prediction, so we can use it to obtain predictions for all
 crops.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-188
+.. GENERATED FROM PYTHON SOURCE LINES 177-182
 
 .. code-block:: default
 
@@ -452,13 +446,13 @@ crops.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-192
+.. GENERATED FROM PYTHON SOURCE LINES 183-186
 
 To know the models’ receptive field, we calculate the shape of model
 output for a dummy input.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-196
+.. GENERATED FROM PYTHON SOURCE LINES 186-190
 
 .. code-block:: default
 
@@ -473,24 +467,23 @@ output for a dummy input.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-200
+.. GENERATED FROM PYTHON SOURCE LINES 191-194
 
 Cut the data into windows
 -------------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-206
+.. GENERATED FROM PYTHON SOURCE LINES 197-200
 
 In contrast to trialwise decoding, we have to supply an explicit window size and window stride to the
 ``create_windows_from_events`` function.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-231
+.. GENERATED FROM PYTHON SOURCE LINES 200-224
 
 .. code-block:: default
 
 
-    import numpy as np
     from braindecode.datautil.windowers import create_windows_from_events
 
     trial_start_offset_seconds = -0.5
@@ -510,7 +503,7 @@ In contrast to trialwise decoding, we have to supply an explicit window size and
         window_size_samples=input_window_samples,
         window_stride_samples=n_preds_per_input,
         drop_last_window=False,
-        preload=True,
+        preload=True
     )
 
 
@@ -624,7 +617,7 @@ In contrast to trialwise decoding, we have to supply an explicit window size and
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-237
+.. GENERATED FROM PYTHON SOURCE LINES 225-230
 
 Split the dataset
 -----------------
@@ -632,7 +625,7 @@ Split the dataset
 This code is the same as in trialwise decoding.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-243
+.. GENERATED FROM PYTHON SOURCE LINES 230-236
 
 .. code-block:: default
 
@@ -649,13 +642,13 @@ This code is the same as in trialwise decoding.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 244-247
+.. GENERATED FROM PYTHON SOURCE LINES 237-240
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 250-255
+.. GENERATED FROM PYTHON SOURCE LINES 243-248
 
 In difference to trialwise decoding, we now should supply
 ``cropped=True`` to the EEGClassifier, and ``CroppedLoss`` as the
@@ -663,7 +656,7 @@ criterion, as well as ``criterion__loss_function`` as the loss function
 applied to the meaned predictions.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 258-264
+.. GENERATED FROM PYTHON SOURCE LINES 251-257
 
 .. note::
    In this tutorial, we use some default parameters that we
@@ -672,7 +665,7 @@ applied to the meaned predictions.
    cross validation on your training data.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 264-303
+.. GENERATED FROM PYTHON SOURCE LINES 257-296
 
 .. code-block:: default
 
@@ -725,12 +718,12 @@ applied to the meaned predictions.
 
  .. code-block:: none
 
-      epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr       dur
-    -------  ----------------  ------------  ----------------  ------------  ------  --------
-          1            [36m0.2500[0m        [32m1.4505[0m            [35m0.2500[0m        [31m5.5330[0m  0.0006  390.6729
-          2            [36m0.2569[0m        [32m1.2306[0m            0.2500        [31m3.7173[0m  0.0005  358.9060
-          3            [36m0.3576[0m        [32m1.1416[0m            [35m0.3264[0m        [31m2.2904[0m  0.0002  350.8886
-          4            [36m0.4410[0m        [32m1.1129[0m            [35m0.4236[0m        [31m1.4426[0m  0.0000  341.9004
+      epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr      dur
+    -------  ----------------  ------------  ----------------  ------------  ------  -------
+          1            [36m0.2500[0m        [32m1.4505[0m            [35m0.2500[0m        [31m5.5330[0m  0.0006  53.6873
+          2            [36m0.2569[0m        [32m1.2306[0m            0.2500        [31m3.7173[0m  0.0005  55.0004
+          3            [36m0.3576[0m        [32m1.1416[0m            [35m0.3264[0m        [31m2.2904[0m  0.0002  54.8977
+          4            [36m0.4410[0m        [32m1.1129[0m            [35m0.4236[0m        [31m1.4426[0m  0.0000  54.7944
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -751,13 +744,13 @@ applied to the meaned predictions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 304-307
+.. GENERATED FROM PYTHON SOURCE LINES 297-300
 
 Plot Results
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 310-316
+.. GENERATED FROM PYTHON SOURCE LINES 303-309
 
 This is again the same code as in trialwise decoding.
 
@@ -766,7 +759,7 @@ This is again the same code as in trialwise decoding.
     loss as in the trialwise decoding tutorial.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 316-352
+.. GENERATED FROM PYTHON SOURCE LINES 309-346
 
 .. code-block:: default
 
@@ -774,6 +767,7 @@ This is again the same code as in trialwise decoding.
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
     import pandas as pd
+
     # Extract loss and accuracy values for plotting from history object
     results_columns = ['train_loss', 'valid_loss', 'train_accuracy', 'valid_accuracy']
     df = pd.DataFrame(clf.history[:, results_columns], columns=results_columns,
@@ -821,9 +815,9 @@ This is again the same code as in trialwise decoding.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 27 minutes  20.453 seconds)
+   **Total running time of the script:** ( 4 minutes  44.214 seconds)
 
-**Estimated memory usage:**  1274 MB
+**Estimated memory usage:**  1284 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_cropped.py:

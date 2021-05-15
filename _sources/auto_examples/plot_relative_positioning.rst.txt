@@ -142,21 +142,18 @@ a lowpass filter. Since the Sleep Physionet data is already sampled at 100 Hz
 we don't need to apply resampling.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-96
+.. GENERATED FROM PYTHON SOURCE LINES 79-93
 
 .. code-block:: default
 
 
-    from braindecode.datautil.preprocess import (
-        MNEPreproc, NumpyPreproc, preprocess)
+    from braindecode.datautil.preprocess import preprocess, Preprocessor
 
     high_cut_hz = 30
 
     preprocessors = [
-        # convert from volt to microvolt, directly modifying the numpy array
-        NumpyPreproc(fn=lambda x: x * 1e6),
-        # bandpass filter
-        MNEPreproc(fn='filter', l_freq=None, h_freq=high_cut_hz, n_jobs=n_jobs),
+        Preprocessor(lambda x: x * 1e6),
+        Preprocessor('filter', l_freq=None, h_freq=high_cut_hz, n_jobs=n_jobs)
     ]
 
     # Transform the data
@@ -216,13 +213,13 @@ we don't need to apply resampling.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-100
+.. GENERATED FROM PYTHON SOURCE LINES 94-97
 
 Extracting windows
 ~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-110
+.. GENERATED FROM PYTHON SOURCE LINES 100-107
 
 We extract 30-s windows to be used in both the pretext and downstream tasks.
 As RP (and SSL in general) don't require labelled data, the pretext task
@@ -232,7 +229,7 @@ Here however, purely for convenience, we directly extract labelled windows so
 that we can reuse them in the sleep staging downstream task later.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-132
+.. GENERATED FROM PYTHON SOURCE LINES 107-129
 
 .. code-block:: default
 
@@ -296,25 +293,25 @@ that we can reuse them in the sleep staging downstream task later.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-136
+.. GENERATED FROM PYTHON SOURCE LINES 130-133
 
 Preprocessing windows
 ~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-141
+.. GENERATED FROM PYTHON SOURCE LINES 136-138
 
 We also preprocess the windows by applying channel-wise z-score normalization.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-147
+.. GENERATED FROM PYTHON SOURCE LINES 138-144
 
 .. code-block:: default
 
 
     from braindecode.datautil.preprocess import zscore
 
-    preprocess(windows_dataset, [MNEPreproc(fn=zscore)])
+    preprocess(windows_dataset, [Preprocessor(zscore)])
 
 
 
@@ -324,13 +321,13 @@ We also preprocess the windows by applying channel-wise z-score normalization.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-151
+.. GENERATED FROM PYTHON SOURCE LINES 145-148
 
 Splitting dataset into train, valid and test sets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-158
+.. GENERATED FROM PYTHON SOURCE LINES 150-155
 
 We randomly split the recordings by subject into train, validation and
 testing sets. We further define a new Dataset class which can receive a pair
@@ -338,7 +335,7 @@ of indices and return the corresponding windows. This will be needed when
 training and evaluating on the pretext task.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-202
+.. GENERATED FROM PYTHON SOURCE LINES 155-199
 
 .. code-block:: default
 
@@ -393,13 +390,13 @@ training and evaluating on the pretext task.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-206
+.. GENERATED FROM PYTHON SOURCE LINES 200-203
 
 Creating samplers
 ~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-224
+.. GENERATED FROM PYTHON SOURCE LINES 205-221
 
 Next, we need to create samplers. These samplers will be used to randomly
 sample pairs of examples to train and validate our model with
@@ -418,7 +415,7 @@ training, for instance 2,000 pairs per recording as in [1]_. Here, we use a
 lower number of 250 pairs per recording to reduce training time.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-245
+.. GENERATED FROM PYTHON SOURCE LINES 221-242
 
 .. code-block:: default
 
@@ -450,13 +447,13 @@ lower number of 250 pairs per recording to reduce training time.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 246-249
+.. GENERATED FROM PYTHON SOURCE LINES 243-246
 
 Creating the model
 ------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-262
+.. GENERATED FROM PYTHON SOURCE LINES 248-259
 
 We can now create the deep learning model. In this tutorial, we use a
 modified version of the sleep staging architecture introduced in [4]_ -
@@ -470,7 +467,7 @@ We further wrap the model into a siamese architecture using the
 feature extractor end-to-end.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 262-318
+.. GENERATED FROM PYTHON SOURCE LINES 259-315
 
 .. code-block:: default
 
@@ -537,20 +534,20 @@ feature extractor end-to-end.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 319-322
+.. GENERATED FROM PYTHON SOURCE LINES 316-319
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 325-329
+.. GENERATED FROM PYTHON SOURCE LINES 322-326
 
 We can now train our network on the pretext task. We use similar
 hyperparameters as in [1]_, but reduce the number of epochs and increase the
 learning rate to account for the smaller setting of this example.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 329-378
+.. GENERATED FROM PYTHON SOURCE LINES 326-375
 
 .. code-block:: default
 
@@ -561,8 +558,8 @@ learning rate to account for the smaller setting of this example.
     from braindecode import EEGClassifier
 
     lr = 5e-3
-    batch_size = 256
-    n_epochs = 50
+    batch_size = 512
+    n_epochs = 25
     num_workers = 0 if n_jobs <= 1 else n_jobs
 
     cp = Checkpoint(dirname='', f_criterion=None, f_optimizer=None, f_history=None)
@@ -613,81 +610,56 @@ learning rate to account for the smaller setting of this example.
 
  .. code-block:: none
 
-      epoch    train_acc    train_loss    valid_acc    valid_loss    cp       dur
-    -------  -----------  ------------  -----------  ------------  ----  --------
-          1       [36m0.5040[0m        [32m0.7028[0m       [35m0.5920[0m        [31m0.6776[0m     +  183.2626
-          2       [36m0.6000[0m        [32m0.6707[0m       [35m0.6480[0m        [31m0.6208[0m     +  159.1752
-          3       0.5560        0.8949       0.5240        0.7298        180.2018
-          4       0.5960        0.8165       [35m0.6880[0m        0.6452        139.6962
-          5       [36m0.6120[0m        0.6770       [35m0.7200[0m        [31m0.5918[0m     +  166.0173
-          6       0.5800        [32m0.6600[0m       0.7120        [31m0.5841[0m     +  144.2019
-          7       0.6120        0.6637       0.6920        [31m0.5814[0m     +  154.8040
-          8       [36m0.6280[0m        [32m0.6298[0m       0.6920        [31m0.5760[0m     +  186.6128
-          9       0.6120        0.6501       0.7000        0.5776        181.1817
-         10       0.6240        0.6535       0.7000        0.5801        179.0093
-         11       [36m0.6760[0m        [32m0.5778[0m       0.7040        [31m0.5660[0m     +  148.9972
-         12       0.6000        0.6298       0.6880        [31m0.5518[0m     +  160.7977
-         13       0.6760        [32m0.5706[0m       0.6840        [31m0.5455[0m     +  146.1863
-         14       [36m0.7040[0m        0.5950       0.6880        [31m0.5393[0m     +  157.3031
-         15       0.7040        [32m0.5508[0m       0.7000        [31m0.5354[0m     +  177.8023
-         16       0.6960        0.5618       [35m0.7240[0m        0.5427        165.7098
-         17       [36m0.7720[0m        [32m0.5458[0m       0.7080        0.5625        131.3846
-         18       [36m0.8000[0m        [32m0.4816[0m       0.7120        0.5705        32.0857
-         19       0.7640        0.5015       0.7120        0.5595        35.6959
-         20       0.7360        0.5755       [35m0.7440[0m        0.5358        51.6018
-         21       0.7840        0.5428       [35m0.7680[0m        [31m0.5079[0m     +  37.5919
-         22       0.7800        0.4842       [35m0.7800[0m        [31m0.4891[0m     +  103.3098
-         23       0.7560        0.5212       [35m0.8040[0m        [31m0.4777[0m     +  40.3054
-         24       0.7520        0.5172       [35m0.8080[0m        [31m0.4740[0m     +  18.3990
-         25       0.7280        0.5100       0.7920        [31m0.4701[0m     +  18.5953
-         26       0.7480        0.4975       0.7840        [31m0.4655[0m     +  9.6926
-         27       0.7280        0.5153       0.8040        [31m0.4624[0m     +  9.3927
-         28       [36m0.8080[0m        [32m0.4716[0m       0.8080        [31m0.4609[0m     +  10.1962
-         29       [36m0.8160[0m        [32m0.4282[0m       0.8080        0.4643        9.9925
-         30       0.7320        0.5118       0.7960        0.4631        9.2945
-         31       0.8120        0.4437       0.8040        [31m0.4576[0m     +  9.7005
-         32       0.7760        0.4956       0.7840        [31m0.4573[0m     +  10.0995
-         33       0.7720        0.4762       0.7800        0.4573        9.6912
-         34       0.8080        0.4610       0.7880        0.4594        9.2020
-         35       [36m0.8240[0m        [32m0.4225[0m       0.7960        [31m0.4549[0m     +  9.4925
-         36       0.7800        0.4408       0.7920        [31m0.4527[0m     +  9.4974
-         37       0.8120        0.4286       0.8040        0.4557        50.0930
-         38       0.7720        0.4548       0.8040        0.4550        20.4958
-         39       [36m0.8280[0m        [32m0.4191[0m       0.8000        0.4559        23.4916
-         40       0.7920        0.4495       0.7960        0.4543        41.6999
-         41       0.8120        0.4313       0.7920        [31m0.4507[0m     +  20.1978
-         42       0.7920        0.4860       0.7960        [31m0.4490[0m     +  18.3933
-         43       0.8080        0.4456       0.7920        [31m0.4443[0m     +  48.8926
-         44       0.7880        0.5039       0.7920        0.4478        112.6897
-         45       0.8080        0.4446       0.7920        [31m0.4425[0m     +  139.3965
-         46       0.7920        0.4550       0.7960        0.4487        94.1125
-         47       0.7640        0.4609       0.7840        0.4559        115.2853
-         48       [36m0.8480[0m        [32m0.3924[0m       0.7800        0.4541        95.2965
-         49       0.7800        0.4754       0.7880        0.4448        110.0036
-         50       0.8240        0.4041       0.7920        [31m0.4337[0m     +  109.4857
+      epoch    train_acc    train_loss    valid_acc    valid_loss    cp     dur
+    -------  -----------  ------------  -----------  ------------  ----  ------
+          1       [36m0.5040[0m        [32m0.7028[0m       [35m0.5920[0m        [31m0.6776[0m     +  9.6290
+          2       [36m0.6000[0m        [32m0.6707[0m       [35m0.6480[0m        [31m0.6208[0m     +  7.0940
+          3       0.5560        0.8949       0.5240        0.7298        6.9931
+          4       0.5960        0.8165       [35m0.6880[0m        0.6452        7.6949
+          5       [36m0.6120[0m        0.6770       [35m0.7200[0m        [31m0.5918[0m     +  7.2987
+          6       0.5800        [32m0.6600[0m       0.7120        [31m0.5841[0m     +  8.0003
+          7       0.6120        0.6637       0.6920        [31m0.5814[0m     +  7.2982
+          8       [36m0.6280[0m        [32m0.6298[0m       0.6920        [31m0.5760[0m     +  7.0946
+          9       0.6120        0.6501       0.7000        0.5776        7.1941
+         10       0.6240        0.6535       0.7000        0.5801        7.4955
+         11       [36m0.6760[0m        [32m0.5778[0m       0.7040        [31m0.5660[0m     +  7.4005
+         12       0.6000        0.6298       0.6880        [31m0.5518[0m     +  7.4971
+         13       0.6760        [32m0.5706[0m       0.6840        [31m0.5455[0m     +  7.2964
+         14       [36m0.7040[0m        0.5950       0.6880        [31m0.5393[0m     +  6.6967
+         15       0.7040        [32m0.5508[0m       0.7000        [31m0.5354[0m     +  7.0966
+         16       0.6960        0.5618       [35m0.7240[0m        0.5427        7.0969
+         17       [36m0.7720[0m        [32m0.5458[0m       0.7080        0.5625        6.7953
+         18       [36m0.8000[0m        [32m0.4816[0m       0.7120        0.5705        7.0005
+         19       0.7640        0.5015       0.7120        0.5595        7.2980
+         20       0.7360        0.5755       [35m0.7440[0m        0.5358        7.0963
+         21       0.7840        0.5428       [35m0.7680[0m        [31m0.5079[0m     +  7.0953
+         22       0.7800        0.4842       [35m0.7800[0m        [31m0.4891[0m     +  7.0972
+         23       0.7560        0.5212       [35m0.8040[0m        [31m0.4777[0m     +  7.1926
+         24       0.7520        0.5172       [35m0.8080[0m        [31m0.4740[0m     +  7.0972
+         25       0.7280        0.5100       0.7920        [31m0.4701[0m     +  6.7961
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 379-382
+.. GENERATED FROM PYTHON SOURCE LINES 376-379
 
 Visualizing the results
 -----------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 384-387
+.. GENERATED FROM PYTHON SOURCE LINES 381-384
 
 Inspecting pretext task performance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 389-392
+.. GENERATED FROM PYTHON SOURCE LINES 386-389
 
 We plot the loss and pretext task performance for the training and validation
 sets.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 392-431
+.. GENERATED FROM PYTHON SOURCE LINES 389-428
 
 .. code-block:: default
 
@@ -742,13 +714,13 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 432-435
+.. GENERATED FROM PYTHON SOURCE LINES 429-432
 
 We also display the confusion matrix and classification report for the
 pretext task:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 435-448
+.. GENERATED FROM PYTHON SOURCE LINES 432-445
 
 .. code-block:: default
 
@@ -775,35 +747,35 @@ pretext task:
 
  .. code-block:: none
 
-    [[82 39]
-     [37 92]]
+    [[89 32]
+     [46 83]]
                   precision    recall  f1-score   support
 
-             0.0       0.69      0.68      0.68       121
-             1.0       0.70      0.71      0.71       129
+             0.0       0.66      0.74      0.70       121
+             1.0       0.72      0.64      0.68       129
 
-        accuracy                           0.70       250
-       macro avg       0.70      0.70      0.70       250
-    weighted avg       0.70      0.70      0.70       250
-
-
+        accuracy                           0.69       250
+       macro avg       0.69      0.69      0.69       250
+    weighted avg       0.69      0.69      0.69       250
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 449-452
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 446-449
 
 Using the learned representation for sleep staging
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 454-458
+.. GENERATED FROM PYTHON SOURCE LINES 451-455
 
 We can now use the trained convolutional neural network as a feature
 extractor. We perform sleep stage classification from the learned feature
 representation using a linear logistic regression classifier.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 458-500
+.. GENERATED FROM PYTHON SOURCE LINES 455-497
 
 .. code-block:: default
 
@@ -868,39 +840,39 @@ representation using a linear logistic regression classifier.
         https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
       extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG)
     Sleep staging performance with logistic regression:
-    Train bal acc: 0.9088
-    Valid bal acc: 0.5196
-    Test bal acc: 0.5715
+    Train bal acc: 0.9200
+    Valid bal acc: 0.5606
+    Test bal acc: 0.6181
     Results on test set:
-    [[ 98  21   7   0  16]
-     [ 13  67   6   0  23]
-     [  3  28 327   1 203]
-     [  0   0  84  21   0]
-     [  0  17  22   0 131]]
+    [[ 94  34   4   0  10]
+     [  8  68   6   0  27]
+     [  3  20 376   3 160]
+     [  0   0  71  34   0]
+     [  0  17  15   0 138]]
                   precision    recall  f1-score   support
 
-               0       0.86      0.69      0.77       142
-               1       0.50      0.61      0.55       109
-               2       0.73      0.58      0.65       562
-               3       0.95      0.20      0.33       105
-               4       0.35      0.77      0.48       170
+               0       0.90      0.66      0.76       142
+               1       0.49      0.62      0.55       109
+               2       0.80      0.67      0.73       562
+               3       0.92      0.32      0.48       105
+               4       0.41      0.81      0.55       170
 
-        accuracy                           0.59      1088
-       macro avg       0.68      0.57      0.56      1088
-    weighted avg       0.69      0.59      0.60      1088
-
-
+        accuracy                           0.65      1088
+       macro avg       0.70      0.62      0.61      1088
+    weighted avg       0.73      0.65      0.66      1088
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 501-505
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 498-502
 
 The balanced accuracy is much higher than chance-level (i.e., 20% for our
 5-class classification problem). Finally, we perform a quick 2D visualization
 of the feature space using a PCA:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 505-526
+.. GENERATED FROM PYTHON SOURCE LINES 502-523
 
 .. code-block:: default
 
@@ -941,11 +913,11 @@ of the feature space using a PCA:
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fcd426ed790>
+    <matplotlib.legend.Legend object at 0x7fc6e135fed0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 527-532
+.. GENERATED FROM PYTHON SOURCE LINES 524-529
 
 We see that there is sleep stage-related structure in the embedding. A
 nonlinear projection method (e.g., tSNE, UMAP) might yield more insightful
@@ -953,13 +925,13 @@ visualizations. Using a similar approach, the embedding space could also be
 explored with respect to subject-level features, e.g., age and sex.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 534-537
+.. GENERATED FROM PYTHON SOURCE LINES 531-534
 
 Conclusion
 ----------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 539-577
+.. GENERATED FROM PYTHON SOURCE LINES 536-574
 
 In this example, we used self-supervised learning (SSL) as a way to learn
 representations from unlabelled raw EEG data. Specifically, we used the
@@ -1003,9 +975,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 70 minutes  51.493 seconds)
+   **Total running time of the script:** ( 3 minutes  22.499 seconds)
 
-**Estimated memory usage:**  560 MB
+**Estimated memory usage:**  387 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_relative_positioning.py:
