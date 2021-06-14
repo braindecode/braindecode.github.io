@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Self-supervised learning on EEG with relative positioning &mdash; Braindecode 0.5 documentation</title>
+  <title>Self-supervised learning on EEG with relative positioning &mdash; Braindecode 0.5.1 documentation</title>
   
 
   
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.5
+                0.5.1
               </div>
             
           
@@ -285,9 +285,9 @@ low-labels data regimes <a class="footnote-reference brackets" href="#id15" id="
 <p>First, we load a few recordings from the Sleep Physionet dataset. Running
 this example with more recordings should yield better representations and
 downstream classification performance.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datasets.sleep_physionet</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datasets.sleep_physionet</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a>
 
-<span class="n">dataset</span> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a><span class="p">(</span>
+<a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a><span class="p">(</span>
     <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">recording_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">crop_wake_mins</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -297,61 +297,43 @@ Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette/
 
   0%|          | Downloading : 0.00/48.8M [00:00&lt;?,        ?B/s]
   0%|          | Downloading : 88.0k/48.8M [00:00&lt;00:16,    3.09MB/s]
-  0%|          | Downloading : 248k/48.8M [00:00&lt;00:08,    5.67MB/s]
-  1%|          | Downloading : 376k/48.8M [00:00&lt;00:07,    6.35MB/s]
-  1%|1         | Downloading : 504k/48.8M [00:00&lt;00:07,    6.76MB/s]
-  2%|1         | Downloading : 888k/48.8M [00:00&lt;00:06,    8.35MB/s]
-  2%|2         | Downloading : 1.12M/48.8M [00:00&lt;00:05,    9.20MB/s]
-  3%|2         | Downloading : 1.37M/48.8M [00:00&lt;00:05,    9.32MB/s]
-  3%|3         | Downloading : 1.62M/48.8M [00:00&lt;00:04,    9.99MB/s]
-  4%|3         | Downloading : 1.87M/48.8M [00:00&lt;00:04,    10.6MB/s]
-  4%|4         | Downloading : 2.12M/48.8M [00:00&lt;00:04,    11.1MB/s]
-  5%|4         | Downloading : 2.37M/48.8M [00:00&lt;00:04,    11.5MB/s]
-  6%|5         | Downloading : 2.87M/48.8M [00:00&lt;00:03,    12.3MB/s]
-  7%|6         | Downloading : 3.37M/48.8M [00:00&lt;00:03,    13.1MB/s]
-  8%|8         | Downloading : 4.12M/48.8M [00:00&lt;00:03,    14.3MB/s]
-  9%|9         | Downloading : 4.62M/48.8M [00:00&lt;00:03,    15.3MB/s]
- 10%|#         | Downloading : 5.12M/48.8M [00:00&lt;00:02,    15.7MB/s]
- 12%|#1        | Downloading : 5.62M/48.8M [00:00&lt;00:02,    16.5MB/s]
- 13%|#2        | Downloading : 6.12M/48.8M [00:00&lt;00:02,    17.3MB/s]
- 14%|#3        | Downloading : 6.62M/48.8M [00:00&lt;00:02,    18.1MB/s]
- 15%|#4        | Downloading : 7.12M/48.8M [00:00&lt;00:02,    18.7MB/s]
- 16%|#5        | Downloading : 7.62M/48.8M [00:00&lt;00:02,    19.4MB/s]
- 17%|#6        | Downloading : 8.12M/48.8M [00:00&lt;00:02,    19.9MB/s]
- 18%|#7        | Downloading : 8.62M/48.8M [00:00&lt;00:02,    20.4MB/s]
- 19%|#8        | Downloading : 9.12M/48.8M [00:00&lt;00:01,    20.8MB/s]
- 21%|##        | Downloading : 10.1M/48.8M [00:00&lt;00:01,    22.5MB/s]
- 23%|##2       | Downloading : 11.1M/48.8M [00:00&lt;00:01,    23.8MB/s]
- 25%|##4       | Downloading : 12.1M/48.8M [00:00&lt;00:01,    25.3MB/s]
- 27%|##6       | Downloading : 13.1M/48.8M [00:00&lt;00:01,    26.7MB/s]
- 30%|##9       | Downloading : 14.6M/48.8M [00:00&lt;00:01,    28.8MB/s]
- 32%|###2      | Downloading : 15.6M/48.8M [00:00&lt;00:01,    29.9MB/s]
- 34%|###4      | Downloading : 16.6M/48.8M [00:00&lt;00:01,    31.2MB/s]
- 36%|###6      | Downloading : 17.6M/48.8M [00:00&lt;00:01,    32.7MB/s]
- 38%|###8      | Downloading : 18.6M/48.8M [00:00&lt;00:00,    34.0MB/s]
- 42%|####2     | Downloading : 20.6M/48.8M [00:00&lt;00:00,    36.8MB/s]
- 46%|####6     | Downloading : 22.6M/48.8M [00:00&lt;00:00,    39.6MB/s]
- 50%|#####     | Downloading : 24.6M/48.8M [00:00&lt;00:00,    41.4MB/s]
- 53%|#####2    | Downloading : 25.6M/48.8M [00:00&lt;00:00,    42.3MB/s]
- 55%|#####4    | Downloading : 26.6M/48.8M [00:00&lt;00:00,    43.1MB/s]
- 57%|#####6    | Downloading : 27.6M/48.8M [00:00&lt;00:00,    42.7MB/s]
- 59%|#####8    | Downloading : 28.6M/48.8M [00:00&lt;00:00,    42.1MB/s]
- 61%|######    | Downloading : 29.6M/48.8M [00:00&lt;00:00,    42.3MB/s]
- 63%|######2   | Downloading : 30.6M/48.8M [00:00&lt;00:00,    42.8MB/s]
- 67%|######6   | Downloading : 32.6M/48.8M [00:00&lt;00:00,    45.3MB/s]
- 73%|#######3  | Downloading : 35.6M/48.8M [00:01&lt;00:00,    48.7MB/s]
- 77%|#######7  | Downloading : 37.6M/48.8M [00:01&lt;00:00,    51.3MB/s]
- 81%|########1 | Downloading : 39.6M/48.8M [00:01&lt;00:00,    50.8MB/s]
- 85%|########5 | Downloading : 41.6M/48.8M [00:01&lt;00:00,    50.3MB/s]
- 89%|########9 | Downloading : 43.6M/48.8M [00:01&lt;00:00,    52.3MB/s]
- 94%|#########3| Downloading : 45.6M/48.8M [00:01&lt;00:00,    53.3MB/s]
- 98%|#########7| Downloading : 47.6M/48.8M [00:01&lt;00:00,    52.4MB/s]
-100%|##########| Downloading : 48.8M/48.8M [00:01&lt;00:00,    41.0MB/s]
+  0%|          | Downloading : 184k/48.8M [00:00&lt;00:12,    4.07MB/s]
+  1%|          | Downloading : 376k/48.8M [00:00&lt;00:08,    6.25MB/s]
+  2%|1         | Downloading : 760k/48.8M [00:00&lt;00:05,    10.0MB/s]
+  3%|3         | Downloading : 1.49M/48.8M [00:00&lt;00:03,    16.4MB/s]
+  5%|5         | Downloading : 2.49M/48.8M [00:00&lt;00:02,    22.1MB/s]
+  6%|6         | Downloading : 2.99M/48.8M [00:00&lt;00:02,    22.7MB/s]
+  9%|9         | Downloading : 4.49M/48.8M [00:00&lt;00:01,    26.5MB/s]
+ 11%|#1        | Downloading : 5.49M/48.8M [00:00&lt;00:01,    27.8MB/s]
+ 13%|#3        | Downloading : 6.49M/48.8M [00:00&lt;00:01,    30.6MB/s]
+ 17%|#7        | Downloading : 8.49M/48.8M [00:00&lt;00:01,    35.9MB/s]
+ 19%|#9        | Downloading : 9.49M/48.8M [00:00&lt;00:01,    35.7MB/s]
+ 24%|##3       | Downloading : 11.5M/48.8M [00:00&lt;00:01,    38.7MB/s]
+ 28%|##7       | Downloading : 13.5M/48.8M [00:00&lt;00:00,    42.1MB/s]
+ 30%|##9       | Downloading : 14.5M/48.8M [00:00&lt;00:00,    43.2MB/s]
+ 34%|###3      | Downloading : 16.5M/48.8M [00:00&lt;00:00,    47.0MB/s]
+ 38%|###7      | Downloading : 18.5M/48.8M [00:00&lt;00:00,    44.7MB/s]
+ 42%|####2     | Downloading : 20.5M/48.8M [00:00&lt;00:00,    43.9MB/s]
+ 46%|####6     | Downloading : 22.5M/48.8M [00:00&lt;00:00,    41.8MB/s]
+ 50%|#####     | Downloading : 24.5M/48.8M [00:00&lt;00:00,    42.2MB/s]
+ 54%|#####4    | Downloading : 26.5M/48.8M [00:00&lt;00:00,    43.8MB/s]
+ 58%|#####8    | Downloading : 28.5M/48.8M [00:00&lt;00:00,    44.5MB/s]
+ 63%|######2   | Downloading : 30.5M/48.8M [00:00&lt;00:00,    45.7MB/s]
+ 67%|######6   | Downloading : 32.5M/48.8M [00:00&lt;00:00,    45.0MB/s]
+ 71%|#######   | Downloading : 34.5M/48.8M [00:00&lt;00:00,    45.5MB/s]
+ 75%|#######4  | Downloading : 36.5M/48.8M [00:00&lt;00:00,    47.3MB/s]
+ 79%|#######8  | Downloading : 38.5M/48.8M [00:00&lt;00:00,    45.0MB/s]
+ 83%|########3 | Downloading : 40.5M/48.8M [00:00&lt;00:00,    44.8MB/s]
+ 87%|########7 | Downloading : 42.5M/48.8M [00:01&lt;00:00,    45.8MB/s]
+ 91%|#########1| Downloading : 44.5M/48.8M [00:01&lt;00:00,    46.9MB/s]
+ 95%|#########5| Downloading : 46.5M/48.8M [00:01&lt;00:00,    48.0MB/s]
+ 99%|#########9| Downloading : 48.5M/48.8M [00:01&lt;00:00,    46.5MB/s]
+100%|##########| Downloading : 48.8M/48.8M [00:01&lt;00:00,    44.3MB/s]
 Verifying hash 8b135afa7fb93bb5f1998fda50355944777c245e.
 Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4021EH-Hypnogram.edf (5 kB)
 
   0%|          | Downloading : 0.00/4.69k [00:00&lt;?,        ?B/s]
-100%|##########| Downloading : 4.69k/4.69k [00:00&lt;00:00,    2.97MB/s]
+100%|##########| Downloading : 4.69k/4.69k [00:00&lt;00:00,    3.48MB/s]
 Verifying hash 91043cfe46695088b17b6a02937b25efd674c3fb.
 Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4001E0-PSG.edf...
 EDF file detected
@@ -383,7 +365,7 @@ we don’t need to apply resampling.</p>
 <span class="p">]</span>
 
 <span class="c1"># Transform the data</span>
-<a href="../generated/braindecode.datautil.preprocess.html#braindecode.datautil.preprocess" title="braindecode.datautil.preprocess" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">)</span>
+<a href="../generated/braindecode.datautil.preprocess.html#braindecode.datautil.preprocess" title="braindecode.datautil.preprocess" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -452,7 +434,7 @@ that we can reuse them in the sleep staging downstream task later.</p>
 <span class="p">}</span>
 
 <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.create_windows_from_events.html#braindecode.datautil.create_windows_from_events" title="braindecode.datautil.create_windows_from_events" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
-    <span class="n">dataset</span><span class="p">,</span> <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="p">,</span>
     <span class="n">window_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mapping</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mapping</span></a><span class="p">)</span>
 </pre></div>
@@ -559,21 +541,21 @@ as in <a class="footnote-reference brackets" href="#id15" id="id6">1</a>, i.e., 
 <cite>n_examples</cite>). This number can be large to help regularize the pretext task
 training, for instance 2,000 pairs per recording as in <a class="footnote-reference brackets" href="#id15" id="id11">1</a>. Here, we use a
 lower number of 250 pairs per recording to reduce training time.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.samplers.ssl</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/typing.html#typing.Generic" title="typing.Generic" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.samplers.ssl</span> <span class="kn">import</span> <a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">*</span> <span class="mi">60</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">*</span> <span class="mi">15</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_examples_train</span></a> <span class="o">=</span> <span class="mi">250</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_examples_valid</span></a> <span class="o">=</span> <span class="mi">250</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;valid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_examples_test</span></a> <span class="o">=</span> <span class="mi">250</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
 
-<span class="n">train_sampler</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/typing.html#typing.Generic" title="typing.Generic" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a><span class="p">(</span>
+<a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sampler</span></a> <span class="o">=</span> <a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(),</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a><span class="p">,</span>
     <span class="n">n_examples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_examples_train</span></a><span class="p">,</span> <span class="n">same_rec_neg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_state</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_state</span></a><span class="p">)</span>
-<span class="n">valid_sampler</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/typing.html#typing.Generic" title="typing.Generic" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a><span class="p">(</span>
+<a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_sampler</span></a> <span class="o">=</span> <a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;valid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(),</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a><span class="p">,</span>
     <span class="n">n_examples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_examples_valid</span></a><span class="p">,</span> <span class="n">same_rec_neg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_state</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_state</span></a><span class="p">)</span><span class="o">.</span><span class="n">presample</span><span class="p">()</span>
-<span class="n">test_sampler</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/typing.html#typing.Generic" title="typing.Generic" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a><span class="p">(</span>
+<a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_sampler</span></a> <span class="o">=</span> <a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class"><span class="n">RelativePositioningSampler</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(),</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_pos</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tau_neg</span></a><span class="p">,</span>
     <span class="n">n_examples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_examples_test</span></a><span class="p">,</span> <span class="n">same_rec_neg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_state</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_state</span></a><span class="p">)</span><span class="o">.</span><span class="n">presample</span><span class="p">()</span>
@@ -595,7 +577,7 @@ feature extractor end-to-end.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">braindecode.util</span> <span class="kn">import</span> <a href="../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
-<span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <span class="n">SleepStagerChambon2018</span>
+<span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">SleepStagerChambon2018</span></a>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">==</span> <span class="s1">&#39;cuda&#39;</span><span class="p">:</span>
@@ -607,7 +589,7 @@ feature extractor end-to-end.</p>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_size_samples</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="n">emb</span> <span class="o">=</span> <span class="n">SleepStagerChambon2018</span><span class="p">(</span>
+<a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a> <span class="o">=</span> <a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">SleepStagerChambon2018</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span>
     <span class="n">n_classes</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a><span class="p">,</span>
@@ -630,9 +612,9 @@ feature extractor end-to-end.</p>
 <span class="sd">    dropout : float</span>
 <span class="sd">        Dropout rate applied to the linear layer of the contrastive module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emb</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">emb</span>
+        <span class="bp">self</span><span class="o">.</span><a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a> <span class="o">=</span> <a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a>
         <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">),</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -640,11 +622,11 @@ feature extractor end-to-end.</p>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">x</span>
-        <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+        <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a><span class="p">(</span><span class="n">x1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z1</span> <span class="o">-</span> <span class="n">z2</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">ContrastiveNet</span><span class="p">(</span><span class="n">emb</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ContrastiveNet</span><span class="p">(</span><a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb_size</span></a><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -684,8 +666,8 @@ learning rate to account for the smaller setting of this example.</p>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
     <span class="n">max_epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">,</span>
     <span class="n">iterator_train__shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">iterator_train__sampler</span><span class="o">=</span><span class="n">train_sampler</span><span class="p">,</span>
-    <span class="n">iterator_valid__sampler</span><span class="o">=</span><span class="n">valid_sampler</span><span class="p">,</span>
+    <span class="n">iterator_train__sampler</span><span class="o">=</span><a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sampler</span></a><span class="p">,</span>
+    <span class="n">iterator_valid__sampler</span><span class="o">=</span><a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_sampler</span></a><span class="p">,</span>
     <span class="n">iterator_train__num_workers</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
     <span class="n">iterator_valid__num_workers</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">predefined_split</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;valid&#39;</span><span class="p">]),</span>
@@ -705,31 +687,31 @@ learning rate to account for the smaller setting of this example.</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_acc    train_loss    valid_acc    valid_loss    cp     dur
 -------  -----------  ------------  -----------  ------------  ----  ------
-      1       [36m0.5520[0m        [32m0.7133[0m       [35m0.6040[0m        [31m0.6830[0m     +  3.7681
-      2       [36m0.5920[0m        [32m0.6791[0m       0.5720        [31m0.6325[0m     +  3.1687
-      3       0.5160        0.8718       [35m0.6880[0m        0.6441        3.1942
-      4       0.5360        0.6845       0.5520        0.6825        3.2181
-      5       0.5560        0.7046       0.6320        0.6565        3.3351
-      6       [36m0.6440[0m        [32m0.6461[0m       [35m0.6960[0m        [31m0.6131[0m     +  3.3734
-      7       0.6000        [32m0.6460[0m       0.6800        [31m0.5898[0m     +  3.4258
-      8       0.6280        [32m0.5980[0m       0.6840        [31m0.5811[0m     +  3.3564
-      9       0.5880        0.6493       [35m0.7280[0m        [31m0.5766[0m     +  3.2214
-     10       [36m0.6680[0m        0.6185       0.7000        0.5787        3.4929
-     11       [36m0.7200[0m        [32m0.5608[0m       0.6960        0.5779        3.4257
-     12       0.6320        0.6330       0.7160        [31m0.5669[0m     +  3.1293
-     13       0.6920        0.5720       0.7240        [31m0.5572[0m     +  3.2175
-     14       0.7040        0.5761       0.7240        [31m0.5500[0m     +  3.0936
-     15       [36m0.7320[0m        [32m0.5545[0m       0.6960        [31m0.5434[0m     +  3.0429
-     16       0.6560        0.5829       0.7120        [31m0.5397[0m     +  3.2480
-     17       0.6800        0.5859       [35m0.7360[0m        [31m0.5396[0m     +  3.0779
-     18       0.7040        0.5573       0.7360        [31m0.5394[0m     +  3.0437
-     19       0.7200        0.5630       [35m0.7520[0m        [31m0.5391[0m     +  3.3134
-     20       0.7040        0.5860       0.7440        [31m0.5320[0m     +  3.0880
-     21       [36m0.7440[0m        [32m0.5240[0m       0.7360        [31m0.5274[0m     +  3.2288
-     22       0.7120        0.5562       0.7440        [31m0.5254[0m     +  3.4004
-     23       0.7040        0.5464       0.7400        0.5254        3.2538
-     24       0.7440        0.5757       0.7520        [31m0.5249[0m     +  3.3365
-     25       0.7200        0.5421       [35m0.7560[0m        [31m0.5154[0m     +  3.1965
+      1       [36m0.5520[0m        [32m0.7133[0m       [35m0.6040[0m        [31m0.6830[0m     +  4.4000
+      2       [36m0.5920[0m        [32m0.6791[0m       0.5720        [31m0.6325[0m     +  3.8866
+      3       0.5160        0.8718       [35m0.6880[0m        0.6441        3.5506
+      4       0.5360        0.6845       0.5520        0.6825        3.5311
+      5       0.5560        0.7046       0.6320        0.6564        3.7025
+      6       [36m0.6440[0m        [32m0.6460[0m       [35m0.6960[0m        [31m0.6129[0m     +  3.7446
+      7       0.6000        [32m0.6460[0m       0.6800        [31m0.5896[0m     +  3.3828
+      8       0.6280        [32m0.5980[0m       0.6840        [31m0.5809[0m     +  3.5968
+      9       0.5840        0.6489       [35m0.7320[0m        [31m0.5763[0m     +  3.5177
+     10       [36m0.6720[0m        0.6185       0.7080        0.5782        3.6017
+     11       [36m0.7200[0m        [32m0.5604[0m       0.7080        0.5778        3.5652
+     12       0.6280        0.6340       0.7200        [31m0.5668[0m     +  3.5475
+     13       0.6840        0.5734       0.7280        [31m0.5570[0m     +  3.5489
+     14       0.7000        0.5767       0.7280        [31m0.5499[0m     +  3.6010
+     15       [36m0.7280[0m        [32m0.5561[0m       0.7160        [31m0.5430[0m     +  3.3510
+     16       0.6600        0.5829       0.7240        [31m0.5390[0m     +  3.4906
+     17       0.6840        0.5848       [35m0.7520[0m        [31m0.5390[0m     +  3.5656
+     18       0.7080        0.5590       0.7360        [31m0.5389[0m     +  3.5193
+     19       0.7160        0.5617       0.7440        0.5390        3.5899
+     20       0.7120        0.5846       0.7400        [31m0.5318[0m     +  3.4785
+     21       [36m0.7480[0m        [32m0.5268[0m       0.7480        [31m0.5274[0m     +  3.5462
+     22       0.7160        0.5568       0.7480        [31m0.5258[0m     +  3.6473
+     23       0.7000        0.5474       0.7400        0.5258        3.4963
+     24       [36m0.7520[0m        0.5729       0.7400        [31m0.5249[0m     +  3.6251
+     25       0.7200        0.5384       0.7400        [31m0.5173[0m     +  3.7646
 </pre></div>
 </div>
 </div>
@@ -784,25 +766,25 @@ pretext task:</p>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html#sklearn.metrics.classification_report" title="sklearn.metrics.classification_report" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">classification_report</span></a>
 
 <span class="c1"># Switch to the test sampler</span>
-<span class="n">clf</span><span class="o">.</span><span class="n">iterator_valid__sampler</span> <span class="o">=</span> <span class="n">test_sampler</span>
+<a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span><span class="o">.</span><span class="n">iterator_valid__sampler</span></a> <span class="o">=</span> <a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_sampler</span></a>
 <span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="ow">in</span> <span class="n">test_sampler</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="ow">in</span> <a href="../generated/braindecode.samplers.RelativePositioningSampler.html#braindecode.samplers.RelativePositioningSampler" title="braindecode.samplers.RelativePositioningSampler" class="sphx-glr-backref-module-braindecode-samplers sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_sampler</span></a><span class="p">]</span>
 
 <span class="nb">print</span><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html#sklearn.metrics.confusion_matrix" title="sklearn.metrics.confusion_matrix" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">confusion_matrix</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html#sklearn.metrics.classification_report" title="sklearn.metrics.classification_report" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">classification_report</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_true</span></a><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[72 49]
- [31 98]]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[ 73  48]
+ [ 29 100]]
               precision    recall  f1-score   support
 
-         0.0       0.70      0.60      0.64       121
-         1.0       0.67      0.76      0.71       129
+         0.0       0.72      0.60      0.65       121
+         1.0       0.68      0.78      0.72       129
 
-    accuracy                           0.68       250
-   macro avg       0.68      0.68      0.68       250
-weighted avg       0.68      0.68      0.68       250
+    accuracy                           0.69       250
+   macro avg       0.70      0.69      0.69       250
+weighted avg       0.70      0.69      0.69       250
 </pre></div>
 </div>
 </div>
@@ -823,7 +805,7 @@ representation using a linear logistic regression classifier.</p>
     <span class="n">split</span><span class="o">.</span><span class="n">return_pair</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Return single windows</span>
     <span class="n">loader</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/typing.html#typing.Generic" title="typing.Generic" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span><span class="n">split</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">)</span>
     <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feats</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">emb</span><span class="p">(</span><span class="n">batch_x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">))</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feats</span></a> <span class="o">=</span> <span class="p">[</span><a href="../generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018" title="braindecode.models.SleepStagerChambon2018" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emb</span></a><span class="p">(</span><span class="n">batch_x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">))</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
                  <span class="k">for</span> <span class="n">batch_x</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">]</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feats</span></a><span class="p">),</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.get_metadata" title="braindecode.datasets.BaseConcatDataset.get_metadata" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">split</span><span class="o">.</span><span class="n">get_metadata</span></a><span class="p">()[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span><span class="o">.</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">values</span></a><span class="p">)</span>
 
@@ -863,26 +845,26 @@ Please also refer to the documentation for alternative solver options:
     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
   extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG)
 Sleep staging performance with logistic regression:
-Train bal acc: 0.9287
-Valid bal acc: 0.5512
-Test bal acc: 0.5244
+Train bal acc: 0.9278
+Valid bal acc: 0.5696
+Test bal acc: 0.5181
 Results on test set:
-[[102  28   3   0   9]
- [ 15  53   8   1  32]
- [  1  29 330   0 202]
- [  0   0  87  18   0]
- [  2  20  36   0 112]]
+[[ 99  30   5   0   8]
+ [ 15  55   7   1  31]
+ [  1  29 329   0 203]
+ [  0   0  88  17   0]
+ [  2  23  36   0 109]]
               precision    recall  f1-score   support
 
-           0       0.85      0.72      0.78       142
-           1       0.41      0.49      0.44       109
+           0       0.85      0.70      0.76       142
+           1       0.40      0.50      0.45       109
            2       0.71      0.59      0.64       562
-           3       0.95      0.17      0.29       105
-           4       0.32      0.66      0.43       170
+           3       0.94      0.16      0.28       105
+           4       0.31      0.64      0.42       170
 
-    accuracy                           0.57      1088
-   macro avg       0.65      0.52      0.52      1088
-weighted avg       0.66      0.57      0.57      1088
+    accuracy                           0.56      1088
+   macro avg       0.64      0.52      0.51      1088
+weighted avg       0.66      0.56      0.57      1088
 </pre></div>
 </div>
 <p>The balanced accuracy is much higher than chance-level (i.e., 20% for our
@@ -910,7 +892,7 @@ of the feature space using a PCA:</p>
 </div>
 <img alt="plot relative positioning" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_relative_positioning_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7efe19fe3850&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f5177f9b250&gt;
 </pre></div>
 </div>
 <p>We see that there is sleep stage-related structure in the embedding. A
@@ -962,8 +944,8 @@ IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:
 (758-769)</p>
 </dd>
 </dl>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  36.862 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2097 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  49.243 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1819 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-relative-positioning-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e21937efe066fc624a4b536dced68cd1/plot_relative_positioning.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_relative_positioning.py</span></code></a></p>
