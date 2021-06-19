@@ -1,0 +1,290 @@
+:orphan:
+
+
+
+.. _sphx_glr_auto_examples:
+
+Braindecode examples
+====================
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we show multiple ways of how to split datasets.">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_split_dataset_thumb.png
+     :alt: Split Dataset Example
+
+     :ref:`sphx_glr_auto_examples_plot_split_dataset.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_split_dataset
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Custom Dataset Example">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_custom_dataset_example_thumb.png
+     :alt: Custom Dataset Example
+
+     :ref:`sphx_glr_auto_examples_plot_custom_dataset_example.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_custom_dataset_example
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we show how to load and save braindecode datasets.">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_save_datasets_thumb.png
+     :alt: Load and save dataset example
+
+     :ref:`sphx_glr_auto_examples_plot_load_save_datasets.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_load_save_datasets
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="MNE Dataset Example">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_mne_dataset_example_thumb.png
+     :alt: MNE Dataset Example
+
+     :ref:`sphx_glr_auto_examples_plot_mne_dataset_example.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_mne_dataset_example
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we show how to fetch and prepare a MOABB dataset for usage with Braindecode.">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_dataset_example_thumb.png
+     :alt: MOABB Dataset Example
+
+     :ref:`sphx_glr_auto_examples_plot_dataset_example.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_dataset_example
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Regression example on fake data">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_regression_thumb.png
+     :alt: Regression example on fake data
+
+     :ref:`sphx_glr_auto_examples_plot_regression.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_regression
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows how to train and test a sleep staging neural network with Braindecode. We f...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_sleep_staging_thumb.png
+     :alt: Sleep staging on the Sleep Physionet dataset
+
+     :ref:`sphx_glr_auto_examples_plot_sleep_staging.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_sleep_staging
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_bcic_iv_2a_moabb_trial_thumb.png
+     :alt: Trialwise Decoding on BCIC IV 2a Dataset
+
+     :ref:`sphx_glr_auto_examples_plot_bcic_iv_2a_moabb_trial.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_bcic_iv_2a_moabb_trial
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_bcic_iv_2a_moabb_cropped_thumb.png
+     :alt: Cropped Decoding on BCIC IV 2a Dataset
+
+     :ref:`sphx_glr_auto_examples_plot_bcic_iv_2a_moabb_cropped.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_bcic_iv_2a_moabb_cropped
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we showcase usage of the Temple University Hospital EEG Corpus (https://www.is...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_tuh_eeg_corpus_thumb.png
+     :alt: Process a big data EEG resource (TUH EEG Corpus)
+
+     :ref:`sphx_glr_auto_examples_tuh_eeg_corpus.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/tuh_eeg_corpus
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we compare the execution time and memory requirements of 1) eager loading, i.e...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_benchmark_lazy_eager_loading_thumb.png
+     :alt: Benchmarking eager and lazy loading
+
+     :ref:`sphx_glr_auto_examples_benchmark_lazy_eager_loading.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/benchmark_lazy_eager_loading
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to train a neural network with self-supervision on sleep EEG data. We fo...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_relative_positioning_thumb.png
+     :alt: Self-supervised learning on EEG with relative positioning
+
+     :ref:`sphx_glr_auto_examples_plot_relative_positioning.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_relative_positioning
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-gallery
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+    :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
