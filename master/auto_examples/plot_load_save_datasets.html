@@ -102,11 +102,11 @@
 <li class="toctree-l1"><a class="reference internal" href="plot_custom_dataset_example.html"> Your own datasets through Numpy</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Braindecode examples</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_split_dataset.html">Split Dataset Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Load and save dataset example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging.html">Sleep staging on the Sleep Physionet dataset</a></li>
@@ -171,7 +171,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="index.html">Braindecode examples</a> &raquo;</li>
+          <li><a href="index.html">Examples</a> &raquo;</li>
         
       <li>Load and save dataset example</li>
     
@@ -204,6 +204,8 @@ to download the full example code</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
 <span class="kn">from</span> <span class="nn">braindecode.datasets.moabb</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.preprocessing.preprocess</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">MNEPreproc</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.datautil.serialization</span> <span class="kn">import</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a>
@@ -211,7 +213,7 @@ to download the full example code</p>
 </pre></div>
 </div>
 <p>First, we load some dataset using MOABB.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span>
     <span class="n">dataset_name</span><span class="o">=</span><span class="s1">&#39;BNCI2014001&#39;</span><span class="p">,</span>
     <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
 <span class="p">)</span>
@@ -247,7 +249,7 @@ Event IDs: [1 2 3 4]
 <p>We can apply preprocessing steps to the dataset. It is also possible to skip
 this step and not apply any preprocessing.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span>
-    <span class="n">concat_ds</span><span class="o">=</span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a><span class="p">,</span>
+    <span class="n">concat_ds</span><span class="o">=</span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span>
     <span class="n">preprocessors</span><span class="o">=</span><span class="p">[</span><a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">MNEPreproc</span></a><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">10</span><span class="p">)]</span>
 <span class="p">)</span>
 </pre></div>
@@ -311,48 +313,49 @@ JSON files, the first holding the description of the dataset, the second
 holding the name of the target. If you want to store to the same directory
 several times, for example due to trying different preprocessing, you can
 choose to overwrite the existing files.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset.save" title="braindecode.datasets.MOABBDataset.save" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">ds</span><span class="o">.</span><span class="n">save</span></a><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmpdir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp" title="tempfile.mkdtemp" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span></a><span class="p">()</span>  <span class="c1"># write in a temporary directory</span>
+<a href="../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset.save" title="braindecode.datasets.MOABBDataset.save" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">save</span></a><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmpdir</span></a><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /home/runner/work/braindecode/braindecode/examples/0-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/0-raw.fif
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmp7gh7n007/0-raw.fif
+Closing /tmp/tmp7gh7n007/0-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/1-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/1-raw.fif
+Writing /tmp/tmp7gh7n007/1-raw.fif
+Closing /tmp/tmp7gh7n007/1-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/2-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/2-raw.fif
+Writing /tmp/tmp7gh7n007/2-raw.fif
+Closing /tmp/tmp7gh7n007/2-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/3-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/3-raw.fif
+Writing /tmp/tmp7gh7n007/3-raw.fif
+Closing /tmp/tmp7gh7n007/3-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/4-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/4-raw.fif
+Writing /tmp/tmp7gh7n007/4-raw.fif
+Closing /tmp/tmp7gh7n007/4-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/5-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/5-raw.fif
+Writing /tmp/tmp7gh7n007/5-raw.fif
+Closing /tmp/tmp7gh7n007/5-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/6-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/6-raw.fif
+Writing /tmp/tmp7gh7n007/6-raw.fif
+Closing /tmp/tmp7gh7n007/6-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/7-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/7-raw.fif
+Writing /tmp/tmp7gh7n007/7-raw.fif
+Closing /tmp/tmp7gh7n007/7-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/8-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/8-raw.fif
+Writing /tmp/tmp7gh7n007/8-raw.fif
+Closing /tmp/tmp7gh7n007/8-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/9-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/9-raw.fif
+Writing /tmp/tmp7gh7n007/9-raw.fif
+Closing /tmp/tmp7gh7n007/9-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/10-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/10-raw.fif
+Writing /tmp/tmp7gh7n007/10-raw.fif
+Closing /tmp/tmp7gh7n007/10-raw.fif
 [done]
-Writing /home/runner/work/braindecode/braindecode/examples/11-raw.fif
-Closing /home/runner/work/braindecode/braindecode/examples/11-raw.fif
+Writing /tmp/tmp7gh7n007/11-raw.fif
+Closing /tmp/tmp7gh7n007/11-raw.fif
 [done]
 </pre></div>
 </div>
@@ -362,8 +365,8 @@ by specifying their ids. The target name can be changed, if the dataset
 supports it (TUHAbnormal for example supports ‘pathological’, ‘age’, and
 ‘gender’. If you stored a preprocessed version with target ‘pathological’
 it is possible to change the target upon loading).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds_loaded</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_loaded</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmpdir</span></a><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">ids_to_load</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
     <span class="n">target_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -371,11 +374,11 @@ it is possible to change the target upon loading).</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file ./1-raw.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /tmp/tmp7gh7n007/1-raw.fif...
     Range : 0 ... 3868 =      0.000 ...   386.800 secs
 Ready.
 Reading 0 ... 3868  =      0.000 ...   386.800 secs...
-Opening raw data file ./3-raw.fif...
+Opening raw data file /tmp/tmp7gh7n007/3-raw.fif...
     Range : 0 ... 3868 =      0.000 ...   386.800 secs
 Ready.
 Reading 0 ... 3868  =      0.000 ...   386.800 secs...
@@ -383,11 +386,13 @@ Reading 0 ... 3868  =      0.000 ...   386.800 secs...
 </div>
 <p>The serialization utility also supports WindowsDatasets, so we create
 compute windows next.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_ds</span></a> <span class="o">=</span> <a href="../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
-    <span class="n">concat_ds</span><span class="o">=</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds_loaded</span></a><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_loaded</span></a><span class="p">,</span>
     <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
+
+<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -409,14 +414,56 @@ Loading data for 48 events and 40 original time points ...
 0 bad epochs dropped
 </pre></div>
 </div>
-<p>Again, we save the dataset to an existing directory. It will create a
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>subject</th>
+      <th>session</th>
+      <th>run</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>session_T</td>
+      <td>run_1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>session_T</td>
+      <td>run_3</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /><p>Again, we save the dataset to an existing directory. It will create a
 ‘-epo.fif’ file for every dataset in the concat dataset. Additionally it
 will create a JSON file holding the description of the dataset. If you
 want to store to the same directory several times, for example due to
 trying different windowing parameters, you can choose to overwrite the
 existing files.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.save" title="braindecode.datasets.BaseConcatDataset.save" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows_ds</span><span class="o">.</span><span class="n">save</span></a><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.save" title="braindecode.datasets.BaseConcatDataset.save" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows_dataset</span><span class="o">.</span><span class="n">save</span></a><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmpdir</span></a><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -431,16 +478,18 @@ Loading data for 48 events and 40 original time points ...
 <p>Load the saved dataset from a directory. Signals can be preloaded in
 compliance with mne. Optionally, only specific ‘-epo.fif’ files can be
 loaded by specifying their ids.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_ds_loaded</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset_loaded</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmpdir</span></a><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ids_to_load</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">target_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
+
+<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset_loaded</span></a><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading ./0-epo.fif ...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading /tmp/tmp7gh7n007/0-epo.fif ...
     Found the data of interest:
         t =       0.00 ...    3900.00 ms
         0 CTF compensation matrices available
@@ -451,8 +500,44 @@ No baseline correction applied
 0 projection items activated
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.847 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  403 MB</p>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>subject</th>
+      <th>session</th>
+      <th>run</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>session_T</td>
+      <td>run_1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.840 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  404 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-load-save-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/09bd6a6e5f249aa69470feea45e3b5b0/plot_load_save_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_load_save_datasets.py</span></code></a></p>
