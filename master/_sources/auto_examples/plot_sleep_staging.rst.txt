@@ -22,8 +22,9 @@ Sleep staging on the Sleep Physionet dataset
 ============================================
 
 This tutorial shows how to train and test a sleep staging neural network with
-Braindecode. We follow the approach of [1]_ on the openly accessible Sleep
-Physionet dataset [1]_ [2]_.
+Braindecode. We adapt the time distributed approach of [1]_ to learn on
+sequences of EEG windows using the openly accessible Sleep Physionet dataset
+[2]_ [3]_.
 
 References
 ----------
@@ -43,7 +44,7 @@ References
        Research Resource for Complex Physiologic Signals.
        Circulation 101(23):e215-e220
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-32
+.. GENERATED FROM PYTHON SOURCE LINES 28-33
 
 .. code-block:: default
 
@@ -59,19 +60,19 @@ References
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-36
+.. GENERATED FROM PYTHON SOURCE LINES 34-37
 
 Loading and preprocessing the dataset
 -------------------------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-41
+.. GENERATED FROM PYTHON SOURCE LINES 40-43
 
 Loading
 ~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-57
+.. GENERATED FROM PYTHON SOURCE LINES 46-54
 
 First, we load the data using the
 :class:`braindecode.datasets.sleep_physionet.SleepPhysionet` class. We load
@@ -81,14 +82,8 @@ sleep staging example).
 
 .. _MNE: https://mne.tools/stable/auto_tutorials/sample-datasets/plot_sleep.html
 
-.. note::
-   To load your own datasets either via MNE or from
-   preprocessed X/y numpy arrays, see the `MNE Dataset
-   Tutorial <./plot_mne_dataset_example.html>`__ and the `Numpy Dataset
-   Tutorial <./plot_custom_dataset_example.html>`__.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 57-64
+.. GENERATED FROM PYTHON SOURCE LINES 54-61
 
 .. code-block:: default
 
@@ -96,7 +91,7 @@ sleep staging example).
     from braindecode.datasets.sleep_physionet import SleepPhysionet
 
     dataset = SleepPhysionet(
-        subject_ids=[0, 1], recording_ids=[1], crop_wake_mins=30)
+        subject_ids=[0, 1], recording_ids=[2], crop_wake_mins=30)
 
 
 
@@ -109,11 +104,23 @@ sleep staging example).
 
  .. code-block:: none
 
-    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4001E0-PSG.edf...
+    Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4002E0-PSG.edf (49.2 MB)
+      0%|          | Downloading : 0.00/49.2M [00:00<?,        ?B/s]      0%|          | Downloading : 120k/49.2M [00:00<00:13,    3.75MB/s]      1%|          | Downloading : 376k/49.2M [00:00<00:07,    6.57MB/s]      2%|1         | Downloading : 760k/49.2M [00:00<00:04,    10.6MB/s]      3%|3         | Downloading : 1.49M/49.2M [00:00<00:02,    18.0MB/s]      5%|5         | Downloading : 2.49M/49.2M [00:00<00:02,    24.1MB/s]      8%|8         | Downloading : 3.99M/49.2M [00:00<00:01,    31.0MB/s]     10%|#         | Downloading : 4.99M/49.2M [00:00<00:01,    34.5MB/s]     14%|#4        | Downloading : 6.99M/49.2M [00:00<00:01,    39.6MB/s]     16%|#6        | Downloading : 7.99M/49.2M [00:00<00:01,    41.2MB/s]     18%|#8        | Downloading : 8.99M/49.2M [00:00<00:00,    42.8MB/s]     20%|##        | Downloading : 9.99M/49.2M [00:00<00:00,    44.3MB/s]     22%|##2       | Downloading : 11.0M/49.2M [00:00<00:00,    45.5MB/s]     24%|##4       | Downloading : 12.0M/49.2M [00:00<00:00,    46.3MB/s]     26%|##6       | Downloading : 13.0M/49.2M [00:00<00:00,    46.6MB/s]     28%|##8       | Downloading : 14.0M/49.2M [00:00<00:00,    47.3MB/s]     30%|###       | Downloading : 15.0M/49.2M [00:00<00:00,    46.9MB/s]     32%|###2      | Downloading : 16.0M/49.2M [00:00<00:00,    47.9MB/s]     35%|###4      | Downloading : 17.0M/49.2M [00:00<00:00,    49.0MB/s]     37%|###6      | Downloading : 18.0M/49.2M [00:00<00:00,    48.8MB/s]     39%|###8      | Downloading : 19.0M/49.2M [00:00<00:00,    49.7MB/s]     41%|####      | Downloading : 20.0M/49.2M [00:00<00:00,    49.7MB/s]     43%|####2     | Downloading : 21.0M/49.2M [00:00<00:00,    50.3MB/s]     45%|####4     | Downloading : 22.0M/49.2M [00:00<00:00,    51.1MB/s]     47%|####6     | Downloading : 23.0M/49.2M [00:00<00:00,    51.5MB/s]     49%|####8     | Downloading : 24.0M/49.2M [00:00<00:00,    51.3MB/s]     51%|#####     | Downloading : 25.0M/49.2M [00:00<00:00,    51.5MB/s]     53%|#####2    | Downloading : 26.0M/49.2M [00:00<00:00,    51.4MB/s]     57%|#####6    | Downloading : 28.0M/49.2M [00:00<00:00,    52.4MB/s]     59%|#####8    | Downloading : 29.0M/49.2M [00:00<00:00,    52.0MB/s]     61%|######    | Downloading : 30.0M/49.2M [00:00<00:00,    52.1MB/s]     63%|######2   | Downloading : 31.0M/49.2M [00:00<00:00,    51.8MB/s]     67%|######7   | Downloading : 33.0M/49.2M [00:00<00:00,    53.2MB/s]     69%|######9   | Downloading : 34.0M/49.2M [00:00<00:00,    53.2MB/s]     71%|#######1  | Downloading : 35.0M/49.2M [00:00<00:00,    53.6MB/s]     73%|#######3  | Downloading : 36.0M/49.2M [00:00<00:00,    53.3MB/s]     75%|#######5  | Downloading : 37.0M/49.2M [00:00<00:00,    53.8MB/s]     77%|#######7  | Downloading : 38.0M/49.2M [00:00<00:00,    54.2MB/s]     79%|#######9  | Downloading : 39.0M/49.2M [00:00<00:00,    54.4MB/s]     81%|########1 | Downloading : 40.0M/49.2M [00:00<00:00,    53.8MB/s]     83%|########3 | Downloading : 41.0M/49.2M [00:00<00:00,    53.5MB/s]     85%|########5 | Downloading : 42.0M/49.2M [00:00<00:00,    53.0MB/s]     89%|########9 | Downloading : 44.0M/49.2M [00:00<00:00,    54.2MB/s]     91%|#########1| Downloading : 45.0M/49.2M [00:00<00:00,    53.9MB/s]     93%|#########3| Downloading : 46.0M/49.2M [00:00<00:00,    54.2MB/s]     95%|#########5| Downloading : 47.0M/49.2M [00:00<00:00,    53.8MB/s]    100%|#########9| Downloading : 49.0M/49.2M [00:00<00:00,    54.8MB/s]    100%|##########| Downloading : 49.2M/49.2M [00:00<00:00,    51.8MB/s]
+    Verifying hash c6b6d7a8605cc7e7602b6028ee77f6fbf5f7581d.
+    Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4002EC-Hypnogram.edf (4 kB)
+      0%|          | Downloading : 0.00/4.47k [00:00<?,        ?B/s]    100%|##########| Downloading : 4.47k/4.47k [00:00<00:00,    2.91MB/s]
+    Verifying hash 386230188a3552b1fc90bba0fb7476ceaca174b6.
+    Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4012E0-PSG.edf (49.6 MB)
+      0%|          | Downloading : 0.00/49.6M [00:00<?,        ?B/s]      0%|          | Downloading : 88.0k/49.6M [00:00<00:13,    3.84MB/s]      1%|          | Downloading : 344k/49.6M [00:00<00:07,    7.05MB/s]       2%|1         | Downloading : 984k/49.6M [00:00<00:03,    14.3MB/s]      5%|4         | Downloading : 2.46M/49.6M [00:00<00:01,    28.1MB/s]      9%|8         | Downloading : 4.46M/49.6M [00:00<00:01,    37.3MB/s]     11%|#1        | Downloading : 5.46M/49.6M [00:00<00:01,    39.6MB/s]     15%|#5        | Downloading : 7.46M/49.6M [00:00<00:00,    45.1MB/s]     19%|#9        | Downloading : 9.46M/49.6M [00:00<00:00,    49.9MB/s]     23%|##3       | Downloading : 11.5M/49.6M [00:00<00:00,    51.8MB/s]     29%|##9       | Downloading : 14.5M/49.6M [00:00<00:00,    55.0MB/s]     33%|###3      | Downloading : 16.5M/49.6M [00:00<00:00,    57.5MB/s]     37%|###7      | Downloading : 18.5M/49.6M [00:00<00:00,    57.3MB/s]     41%|####1     | Downloading : 20.5M/49.6M [00:00<00:00,    59.3MB/s]     45%|####5     | Downloading : 22.5M/49.6M [00:00<00:00,    60.3MB/s]     49%|####9     | Downloading : 24.5M/49.6M [00:00<00:00,    60.9MB/s]     53%|#####3    | Downloading : 26.5M/49.6M [00:00<00:00,    62.2MB/s]     57%|#####7    | Downloading : 28.5M/49.6M [00:00<00:00,    62.1MB/s]     61%|######1   | Downloading : 30.5M/49.6M [00:00<00:00,    63.8MB/s]     65%|######5   | Downloading : 32.5M/49.6M [00:00<00:00,    63.1MB/s]     70%|######9   | Downloading : 34.5M/49.6M [00:00<00:00,    63.2MB/s]     74%|#######3  | Downloading : 36.5M/49.6M [00:00<00:00,    63.3MB/s]     78%|#######7  | Downloading : 38.5M/49.6M [00:00<00:00,    62.9MB/s]     82%|########1 | Downloading : 40.5M/49.6M [00:00<00:00,    64.1MB/s]     86%|########5 | Downloading : 42.5M/49.6M [00:00<00:00,    64.3MB/s]     90%|########9 | Downloading : 44.5M/49.6M [00:00<00:00,    65.7MB/s]     94%|#########3| Downloading : 46.5M/49.6M [00:00<00:00,    61.4MB/s]     98%|#########7| Downloading : 48.5M/49.6M [00:00<00:00,    63.7MB/s]    100%|##########| Downloading : 49.6M/49.6M [00:00<00:00,    61.9MB/s]
+    Verifying hash a47d525f5147904b6890231e2ad338359c7ab94c.
+    Downloading https://physionet.org/physiobank/database/sleep-edfx/sleep-cassette//SC4012EC-Hypnogram.edf (5 kB)
+      0%|          | Downloading : 0.00/4.96k [00:00<?,        ?B/s]    100%|##########| Downloading : 4.96k/4.96k [00:00<00:00,    3.46MB/s]
+    Verifying hash fa99f60d7f54617cdd1128aff4f21c4daed763c7.
+    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4002E0-PSG.edf...
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4011E0-PSG.edf...
+    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4012E0-PSG.edf...
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
@@ -121,20 +128,20 @@ sleep staging example).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-68
+.. GENERATED FROM PYTHON SOURCE LINES 62-65
 
 Preprocessing
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-75
+.. GENERATED FROM PYTHON SOURCE LINES 68-72
 
-Next, we preprocess the raw data. We apply convert the data to microvolts and
-apply a lowpass filter. We omit the downsampling step of [1]_ as the Sleep
+Next, we preprocess the raw data. We convert the data to microvolts and apply
+a lowpass filter. We omit the downsampling step of [1]_ as the Sleep
 Physionet data is already sampled at a lower 100 Hz.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-89
+.. GENERATED FROM PYTHON SOURCE LINES 72-86
 
 .. code-block:: default
 
@@ -162,7 +169,7 @@ Physionet data is already sampled at a lower 100 Hz.
 
  .. code-block:: none
 
-    Reading 0 ... 2508000  =      0.000 ... 25080.000 secs...
+    Reading 0 ... 3348000  =      0.000 ... 33480.000 secs...
     Filtering raw data in 1 contiguous segment
     Setting up low-pass filter at 30 Hz
 
@@ -175,7 +182,7 @@ Physionet data is already sampled at a lower 100 Hz.
     - Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
     - Filter length: 45 samples (0.450 sec)
 
-    Reading 0 ... 3261000  =      0.000 ... 32610.000 secs...
+    Reading 0 ... 3447000  =      0.000 ... 34470.000 secs...
     Filtering raw data in 1 contiguous segment
     Setting up low-pass filter at 30 Hz
 
@@ -192,22 +199,22 @@ Physionet data is already sampled at a lower 100 Hz.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-93
+.. GENERATED FROM PYTHON SOURCE LINES 87-90
 
 Extract windows
 ~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-97
+.. GENERATED FROM PYTHON SOURCE LINES 93-94
 
 We extract 30-s windows to be used in the classification task.
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-120
+.. GENERATED FROM PYTHON SOURCE LINES 94-117
 
 .. code-block:: default
 
 
-    from braindecode.preprocessing.windowers import create_windows_from_events
+    from braindecode.preprocessing import create_windows_from_events
 
 
     mapping = {  # We merge stages 3 and 4 following AASM standards.
@@ -242,36 +249,36 @@ We extract 30-s windows to be used in the classification task.
     Used Annotations descriptions: ['Sleep stage 1', 'Sleep stage 2', 'Sleep stage 3', 'Sleep stage 4', 'Sleep stage R', 'Sleep stage W']
     Adding metadata with 4 columns
     Replacing existing metadata with 4 columns
-    837 matching events found
+    1116 matching events found
     No baseline correction applied
     0 projection items activated
-    Loading data for 837 events and 3000 original time points ...
+    Loading data for 1116 events and 3000 original time points ...
     0 bad epochs dropped
     Used Annotations descriptions: ['Sleep stage 1', 'Sleep stage 2', 'Sleep stage 3', 'Sleep stage 4', 'Sleep stage R', 'Sleep stage W']
     Adding metadata with 4 columns
     Replacing existing metadata with 4 columns
-    1088 matching events found
+    1150 matching events found
     No baseline correction applied
     0 projection items activated
-    Loading data for 1088 events and 3000 original time points ...
+    Loading data for 1150 events and 3000 original time points ...
     0 bad epochs dropped
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-124
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 Window preprocessing
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-130
+.. GENERATED FROM PYTHON SOURCE LINES 124-127
 
 We also preprocess the windows by applying channel-wise z-score normalization
 in each window.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-136
+.. GENERATED FROM PYTHON SOURCE LINES 127-133
 
 .. code-block:: default
 
@@ -288,31 +295,89 @@ in each window.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 137-140
+.. GENERATED FROM PYTHON SOURCE LINES 134-137
 
 Split dataset into train and valid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-146
+.. GENERATED FROM PYTHON SOURCE LINES 140-145
 
-We can easily split the dataset using additional info stored in the
-`description` attribute of :class:`braindecode.datasets.BaseDataset`,
-in this case using the ``subject`` column. Here, we split the examples per subject.
+We split the dataset into training and validation set using additional info
+stored in the `description` attribute of
+:class:`braindecode.datasets.BaseDataset`, in this case using the ``subject``
+column.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-156
+.. GENERATED FROM PYTHON SOURCE LINES 145-166
 
 .. code-block:: default
 
 
-    splitted = windows_dataset.split('subject')
-    train_set = splitted['0']
-    valid_set = splitted['1']
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+    from braindecode.datasets import BaseConcatDataset
+
+    random_state = 31
+    subjects = np.unique(windows_dataset.description['subject'])
+    subj_train, subj_valid = train_test_split(
+        subjects, test_size=0.5, random_state=random_state)
+
+    split_ids = {'train': subj_train, 'valid': subj_valid}
+    splitted = dict()
+    for name, values in split_ids.items():
+        splitted[name] = BaseConcatDataset(
+            [ds for ds in windows_dataset.datasets
+             if ds.description['subject'] in values])
+
+    train_set = splitted['train']
+    valid_set = splitted['valid']
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 167-170
+
+Create sequence samplers
+------------------------
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 173-183
+
+Following the time distributed approach of [1]_, we will need to provide our
+neural network with sequences of windows, such that the embeddings of
+multiple consecutive windows can be concatenated and provided to a final
+classifier. We can achieve this by defining Sampler objects that return
+sequences of window indices.
+To simplify the example, we train the whole model end-to-end on sequences,
+rather than using the two-step approach of [1]_ (i.e. training the feature
+extractor on single windows, then freezing its weights and training the
+classifier).
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 183-199
+
+.. code-block:: default
+
+
+    from braindecode.samplers import SequenceSampler
+
+    n_windows = 3  # Sequences of 3 consecutive windows
+    n_windows_stride = 1  # Maximally overlapping sequences
+
+    train_sampler = SequenceSampler(
+        train_set.get_metadata(), n_windows, n_windows_stride)
+    valid_sampler = SequenceSampler(
+        valid_set.get_metadata(), n_windows, n_windows_stride)
 
     # Print number of examples per class
-    print(train_set.datasets[0].windows)
-    print(valid_set.datasets[0].windows)
+    print(len(train_sampler))
+    print(len(valid_sampler))
 
 
 
@@ -325,43 +390,85 @@ in this case using the ``subject`` column. Here, we split the examples per subje
 
  .. code-block:: none
 
-    <Epochs |  837 events (all good), 0 - 29.99 sec, baseline off, ~38.3 MB, data loaded, with metadata,
-     'Sleep stage 1': 58
-     'Sleep stage 2': 250
-     'Sleep stage 3': 220
-     'Sleep stage 4': 220
-     'Sleep stage R': 125
-     'Sleep stage W': 184>
-    <Epochs |  1088 events (all good), 0 - 29.99 sec, baseline off, ~49.8 MB, data loaded, with metadata,
-     'Sleep stage 1': 109
-     'Sleep stage 2': 562
-     'Sleep stage 3': 105
-     'Sleep stage 4': 105
-     'Sleep stage R': 170
-     'Sleep stage W': 142>
+    1114
+    1148
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-160
+.. GENERATED FROM PYTHON SOURCE LINES 200-203
+
+We also implement a transform to extract the label of the center window of a
+sequence to use it as target.
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 203-213
+
+.. code-block:: default
+
+
+    # Use label of center window in the sequence
+    def get_center_label(x):
+        return x[np.ceil(len(x) / 2).astype(int)] if len(x) > 1 else x
+
+
+    train_set.seq_target_transform = get_center_label
+    valid_set.seq_target_transform = get_center_label
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 214-218
+
+Finally, since some sleep stages appear a lot more often than others (e.g.
+most of the night is spent in the N2 stage), the classes are imbalanced. To
+avoid overfitting on the more frequent classes, we compute weights that we
+will provide to the loss function when training.
+
+.. GENERATED FROM PYTHON SOURCE LINES 218-226
+
+.. code-block:: default
+
+
+    from sklearn.utils.class_weight import compute_class_weight
+
+    y_train = [train_set[idx][1] for idx in train_sampler]
+    class_weights = compute_class_weight(
+        'balanced', classes=np.unique(y_train), y=y_train)
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 227-230
 
 Create model
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-166
+.. GENERATED FROM PYTHON SOURCE LINES 233-237
 
 We can now create the deep learning model. In this tutorial, we use the sleep
 staging architecture introduced in [1]_, which is a four-layer convolutional
 neural network.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-195
+.. GENERATED FROM PYTHON SOURCE LINES 237-297
 
 .. code-block:: default
 
 
     import torch
+    from torch import nn
     from braindecode.util import set_random_seeds
     from braindecode.models import SleepStagerChambon2018
 
@@ -370,19 +477,49 @@ neural network.
     if cuda:
         torch.backends.cudnn.benchmark = True
     # Set random seed to be able to reproduce results
-    set_random_seeds(seed=87, cuda=cuda)
+    set_random_seeds(seed=random_state, cuda=cuda)
 
     n_classes = 5
     # Extract number of channels and time steps from dataset
-    n_channels = train_set[0][0].shape[0]
-    input_size_samples = train_set[0][0].shape[1]
+    n_channels, input_size_samples = train_set[0][0].shape
 
-    model = SleepStagerChambon2018(
+
+    class TimeDistributedNet(nn.Module):
+        """Extract features for multiple windows then concatenate & classify them.
+        """
+        def __init__(self, feat_extractor, len_last_layer, n_windows, n_classes,
+                     dropout=0.25):
+            super().__init__()
+            self.feat_extractor = feat_extractor
+            self.clf = nn.Sequential(
+                nn.Dropout(dropout),
+                nn.Linear(len_last_layer * n_windows, n_classes)
+            )
+
+        def forward(self, x):
+            """
+            Parameters
+            ----------
+            x : torch.Tensor
+                Input sequence of windows, of shape (batch_size, seq_len,
+                n_channels, n_times).
+            """
+            feats = [self.feat_extractor.embed(x[:, i]) for i in range(x.shape[1])]
+            feats = torch.stack(feats, dim=1).flatten(start_dim=1)
+            return self.clf(feats)
+
+
+    feat_extractor = SleepStagerChambon2018(
         n_channels,
         sfreq,
         n_classes=n_classes,
         input_size_s=input_size_samples / sfreq
     )
+
+    model = TimeDistributedNet(
+        feat_extractor, feat_extractor.len_last_layer, n_windows, n_classes,
+        dropout=0.5)
+
 
     # Send model to GPU
     if cuda:
@@ -396,13 +533,13 @@ neural network.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-199
+.. GENERATED FROM PYTHON SOURCE LINES 298-301
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-208
+.. GENERATED FROM PYTHON SOURCE LINES 304-310
 
 We can now train our network. :class:`braindecode.EEGClassifier` is a
 braindecode object that is responsible for managing the training of neural
@@ -411,7 +548,7 @@ training logic is the same as in
 `Skorch <https://skorch.readthedocs.io/en/stable/>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-217
+.. GENERATED FROM PYTHON SOURCE LINES 313-319
 
 **Note**: We use different hyperparameters from [1]_, as
 these hyperparameters were optimized on a different dataset (MASS SS3) and
@@ -420,7 +557,7 @@ recommended to perform hyperparameter optimization if reusing this code on
 a different dataset or with more recordings.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-250
+.. GENERATED FROM PYTHON SOURCE LINES 319-356
 
 .. code-block:: default
 
@@ -429,9 +566,9 @@ a different dataset or with more recordings.
     from skorch.callbacks import EpochScoring
     from braindecode import EEGClassifier
 
-    lr = 5e-4
-    batch_size = 16
-    n_epochs = 5
+    lr = 1e-3
+    batch_size = 32
+    n_epochs = 10
 
     train_bal_acc = EpochScoring(
         scoring='balanced_accuracy', on_train=True, name='train_bal_acc',
@@ -445,7 +582,11 @@ a different dataset or with more recordings.
     clf = EEGClassifier(
         model,
         criterion=torch.nn.CrossEntropyLoss,
+        criterion__weight=torch.Tensor(class_weights).to(device),
         optimizer=torch.optim.Adam,
+        iterator_train__shuffle=False,
+        iterator_train__sampler=train_sampler,
+        iterator_valid__sampler=valid_sampler,
         train_split=predefined_split(valid_set),  # using valid_set for validation
         optimizer__lr=lr,
         batch_size=batch_size,
@@ -469,41 +610,52 @@ a different dataset or with more recordings.
 
       epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss     dur
     -------  ---------------  ------------  ---------------  ------------  ------
-          1           [36m0.2175[0m        [32m1.5010[0m           [35m0.2262[0m        [31m1.4190[0m  3.7949
-          2           [36m0.3435[0m        [32m1.2576[0m           [35m0.4680[0m        [31m1.2743[0m  3.5622
-          3           [36m0.5117[0m        [32m0.9575[0m           0.4480        [31m1.0931[0m  3.2725
-          4           [36m0.5424[0m        [32m0.7795[0m           [35m0.5247[0m        [31m0.9272[0m  3.5704
-          5           [36m0.5732[0m        [32m0.7174[0m           [35m0.5624[0m        0.9923  3.5997
+          1           [36m0.1486[0m        [32m1.6382[0m           [35m0.2058[0m        [31m1.6052[0m  9.7280
+          2           [36m0.2013[0m        [32m1.5876[0m           0.2006        1.6072  8.8873
+          3           [36m0.2021[0m        [32m1.4889[0m           0.2000        1.6193  9.1081
+          4           [36m0.2086[0m        [32m1.3695[0m           0.2000        1.6655  9.2395
+          5           [36m0.2155[0m        [32m1.2967[0m           [35m0.2112[0m        1.6254  10.1366
+          6           [36m0.2445[0m        [32m1.2507[0m           [35m0.2252[0m        1.6283  8.1502
+          7           [36m0.2504[0m        [32m1.2241[0m           [35m0.2421[0m        1.6573  8.6727
+          8           [36m0.2771[0m        [32m1.1878[0m           [35m0.3097[0m        1.6905  8.9839
+          9           [36m0.3008[0m        [32m1.1700[0m           [35m0.3349[0m        [31m1.5284[0m  9.6265
+         10           [36m0.3536[0m        [32m1.1450[0m           [35m0.3454[0m        1.6528  9.9759
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
-      module_=SleepStagerChambon2018(
-        (spatial_conv): Conv2d(1, 2, kernel_size=(2, 1), stride=(1, 1))
-        (feature_extractor): Sequential(
-          (0): Conv2d(1, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
-          (1): Identity()
-          (2): ReLU()
-          (3): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
-          (4): Conv2d(8, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
-          (5): Identity()
-          (6): ReLU()
-          (7): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
+      module_=TimeDistributedNet(
+        (feat_extractor): SleepStagerChambon2018(
+          (spatial_conv): Conv2d(1, 2, kernel_size=(2, 1), stride=(1, 1))
+          (feature_extractor): Sequential(
+            (0): Conv2d(1, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
+            (1): Identity()
+            (2): ReLU()
+            (3): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
+            (4): Conv2d(8, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
+            (5): Identity()
+            (6): ReLU()
+            (7): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
+          )
+          (fc): Sequential(
+            (0): Dropout(p=0.25, inplace=False)
+            (1): Linear(in_features=272, out_features=5, bias=True)
+          )
         )
-        (fc): Sequential(
-          (0): Dropout(p=0.25, inplace=False)
-          (1): Linear(in_features=272, out_features=5, bias=True)
+        (clf): Sequential(
+          (0): Dropout(p=0.5, inplace=False)
+          (1): Linear(in_features=816, out_features=5, bias=True)
         )
       ),
     )
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-254
+.. GENERATED FROM PYTHON SOURCE LINES 357-360
 
 Plot results
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 257-262
+.. GENERATED FROM PYTHON SOURCE LINES 363-368
 
 We use the history stored by Skorch during training to plot the performance of
 the model throughout training. Specifically, we plot the loss and the balanced
@@ -511,7 +663,7 @@ misclassification rate (1 - balanced accuracy) for the training and validation
 sets.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 262-302
+.. GENERATED FROM PYTHON SOURCE LINES 368-408
 
 .. code-block:: default
 
@@ -566,12 +718,12 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 303-305
+.. GENERATED FROM PYTHON SOURCE LINES 409-411
 
 Finally, we also display the confusion matrix and classification report:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 305-317
+.. GENERATED FROM PYTHON SOURCE LINES 411-422
 
 .. code-block:: default
 
@@ -579,11 +731,10 @@ Finally, we also display the confusion matrix and classification report:
     from sklearn.metrics import confusion_matrix
     from sklearn.metrics import classification_report
 
-    y_true = valid_set.datasets[0].windows.metadata['target'].values
+    y_true = [valid_set[[i]][1][0] for i in range(len(valid_sampler))]
     y_pred = clf.predict(valid_set)
 
     print(confusion_matrix(y_true, y_pred))
-
     print(classification_report(y_true, y_pred))
 
 
@@ -597,11 +748,11 @@ Finally, we also display the confusion matrix and classification report:
 
  .. code-block:: none
 
-    [[125   0   9   1   7]
-     [ 69   0  26   0  14]
-     [ 65   0 416   5  76]
-     [  0   0  25  80   0]
-     [ 44   0  53   0  73]]
+    [[  0   6  36  81   1]
+     [  0   1  73  18   0]
+     [  0   3 450 207   0]
+     [  0   0   1  95   0]
+     [  0   0 131  45   0]]
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
       _warn_prf(average, modifier, msg_start, len(result))
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
@@ -610,37 +761,39 @@ Finally, we also display the confusion matrix and classification report:
       _warn_prf(average, modifier, msg_start, len(result))
                   precision    recall  f1-score   support
 
-               0       0.41      0.88      0.56       142
-               1       0.00      0.00      0.00       109
-               2       0.79      0.74      0.76       562
-               3       0.93      0.76      0.84       105
-               4       0.43      0.43      0.43       170
+               0       0.00      0.00      0.00       124
+               1       0.10      0.01      0.02        92
+               2       0.65      0.68      0.67       660
+               3       0.21      0.99      0.35        96
+               4       0.00      0.00      0.00       176
 
-        accuracy                           0.64      1088
-       macro avg       0.51      0.56      0.52      1088
-    weighted avg       0.62      0.64      0.62      1088
-
-
+        accuracy                           0.48      1148
+       macro avg       0.19      0.34      0.21      1148
+    weighted avg       0.40      0.48      0.41      1148
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 318-326
 
-Our model was able to perform reasonably well given the low amount of data
-available, reaching a balanced accuracy of around 55% in a 5-class
-classification task (chance-level = 20%) on held-out data.
 
-To further improve performance, more recordings can be included in the
-training set, and various modifications can be made to the model (e.g.,
-aggregating the representation of multiple consecutive windows [1]_).
+.. GENERATED FROM PYTHON SOURCE LINES 423-433
+
+Our model was able to learn despite the low amount of data that was available
+(only two recordings in this example) and reached a balanced accuracy of
+about 36% in a 5-class classification task (chance-level = 20%) on held-out
+data.
+
+To further improve performance, more recordings should be included in the
+training set, and hyperparameters should be selected accordingly. Increasing
+the sequence length was also shown in [1]_ to help improve performance,
+especially when few EEG channels are available.
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  26.124 seconds)
+   **Total running time of the script:** ( 1 minutes  44.643 seconds)
 
-**Estimated memory usage:**  839 MB
+**Estimated memory usage:**  2958 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging.py:
