@@ -720,10 +720,10 @@ applied to the meaned predictions.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr      dur
     -------  ----------------  ------------  ----------------  ------------  ------  -------
-          1            [36m0.2500[0m        [32m1.4505[0m            [35m0.2500[0m        [31m5.5330[0m  0.0006  16.2792
-          2            [36m0.2569[0m        [32m1.2306[0m            0.2500        [31m3.7171[0m  0.0005  16.1425
-          3            [36m0.3576[0m        [32m1.1416[0m            [35m0.3264[0m        [31m2.2903[0m  0.0002  16.2597
-          4            [36m0.4410[0m        [32m1.1129[0m            [35m0.4236[0m        [31m1.4426[0m  0.0000  16.5203
+          1            [36m0.2500[0m        [32m1.4505[0m            [35m0.2500[0m        [31m5.5330[0m  0.0006  18.4190
+          2            [36m0.2569[0m        [32m1.2306[0m            0.2500        [31m3.7171[0m  0.0005  18.0160
+          3            [36m0.3576[0m        [32m1.1416[0m            [35m0.3264[0m        [31m2.2903[0m  0.0002  18.1219
+          4            [36m0.4410[0m        [32m1.1129[0m            [35m0.4236[0m        [31m1.4426[0m  0.0000  18.3173
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -759,7 +759,7 @@ This is again the same code as in trialwise decoding.
     loss as in the trialwise decoding tutorial.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 309-346
+.. GENERATED FROM PYTHON SOURCE LINES 309-348
 
 .. code-block:: default
 
@@ -803,6 +803,8 @@ This is again the same code as in trialwise decoding.
 
 
 
+
+
 .. image:: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png
     :alt: plot bcic iv 2a moabb cropped
     :class: sphx-glr-single-img
@@ -811,12 +813,67 @@ This is again the same code as in trialwise decoding.
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 349-352
+
+Plot Confusion Matrix
+---------------------
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 355-357
+
+Generate a confusion matrix as in https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 357-378
+
+.. code-block:: default
+
+
+
+    from sklearn.metrics import confusion_matrix
+    from braindecode.visualization import plot_confusion_matrix
+
+    # generate confusion matrices
+    # get the targets
+    y_true = valid_set.get_metadata().target
+    y_pred = clf.predict(valid_set)
+
+    # generating confusion matrix
+    confusion_mat = confusion_matrix(y_true, y_pred)
+
+    # add class labels
+    # label_dict is class_name : str -> i_class : int
+    label_dict = valid_set.datasets[0].windows.event_id.items()
+    # sort the labels by values (values are integer class labels)
+    labels = list(dict(sorted(list(label_dict), key=lambda kv: kv[1])).keys())
+
+    # plot the basic conf. matrix
+    plot_confusion_matrix(confusion_mat, class_names=labels)
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_002.png
+    :alt: plot bcic iv 2a moabb cropped
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <Figure size 800x550 with 1 Axes>
+
+
+
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  29.966 seconds)
+   **Total running time of the script:** ( 1 minutes  45.376 seconds)
 
-**Estimated memory usage:**  1671 MB
+**Estimated memory usage:**  1689 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_cropped.py:
