@@ -61,54 +61,11 @@ If you want to try this code with the actual data, please delete the next
 section. We are required to mock some dataset functionality, since the data
 is not available at creation time of this example.
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-78
+.. GENERATED FROM PYTHON SOURCE LINES 32-35
 
 .. code-block:: default
 
-    from unittest import mock
-
-
-    FAKE_PATHS = {
-        'tuh_eeg/v1.1.0/edf/01_tcp_ar/000/00000000/s001_2015_12_30/00000000_s001_t000.edf': b'0       00000000 M 01-JAN-1978 00000000 Age:37                                          ',  # noqa E501
-        'tuh_eeg/v1.1.0/edf/02_tcp_le/000/00000058/s001_2003_02_05/00000058_s001_t000.edf': b'0       00000058 M 01-JAN-2003 00000058 Age:0.0109                                      ',  # noqa E501
-        'tuh_eeg/v1.2.0/edf/03_tcp_ar_a/149/00014928/s004_2016_01_15/00014928_s004_t007.edf': b'0       00014928 F 01-JAN-1933 00014928 Age:83                                          ',  # noqa E501
-    }
-
-
-    def _fake_raw(*args, **kwargs):
-        sfreq = 10
-        ch_names = [
-            'EEG A1-REF', 'EEG A2-REF',
-            'EEG FP1-REF', 'EEG FP2-REF', 'EEG F3-REF', 'EEG F4-REF', 'EEG C3-REF',
-            'EEG C4-REF', 'EEG P3-REF', 'EEG P4-REF', 'EEG O1-REF', 'EEG O2-REF',
-            'EEG F7-REF', 'EEG F8-REF', 'EEG T3-REF', 'EEG T4-REF', 'EEG T5-REF',
-            'EEG T6-REF', 'EEG FZ-REF', 'EEG CZ-REF', 'EEG PZ-REF']
-        duration_min = 6
-        data = np.random.randn(len(ch_names), duration_min*sfreq*60)
-        info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types='eeg')
-        raw = mne.io.RawArray(data=data, info=info)
-        return raw
-
-
-    def _get_header(*args):
-        return FAKE_PATHS[args[0]]
-
-
-    @mock.patch('glob.glob', return_value=FAKE_PATHS.keys())
-    @mock.patch('mne.io.read_raw_edf', new=_fake_raw)
-    @mock.patch('braindecode.datasets.tuh._read_edf_header', new=_get_header)
-    def mock_get_data(mock_glob):
-        tuh = TUH(
-            path='',
-            recording_ids=None,
-            target_name=None,
-            preload=False,
-            add_physician_reports=False,
-        )
-        return tuh
-
-
-    tuh = mock_get_data()
+    from braindecode.datasets.tuh import _TUHMock as TUH  # noqa F811
 
 
 
@@ -118,7 +75,7 @@ is not available at creation time of this example.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-94
+.. GENERATED FROM PYTHON SOURCE LINES 36-51
 
 We start by creating a TUH dataset. First, the class generates a description
 of the recordings in `TUH_PATH` (which is later accessible as
@@ -136,19 +93,19 @@ are read with `mne.io.read_raw_edf` with `preload=False`. Finally, we will get
 a `BaseConcatDataset` of `BaseDatasets` each holding a single
 `nme.io.Raw` which is fully compatible with other braindecode functionalities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-105
+.. GENERATED FROM PYTHON SOURCE LINES 51-62
 
 .. code-block:: default
 
 
-    # Uncomment the lines below to actually run this code on real data.
-    # tuh = TUH(
-    #     path=<TUH_PATH>,  # please insert actual path to data here
-    #     recording_ids=None,
-    #     target_name=None,
-    #     preload=False,
-    #     add_physician_reports=False,
-    # )
+    TUH_PATH = 'please insert actual path to data here'
+    tuh = TUH(
+        path=TUH_PATH,
+        recording_ids=None,
+        target_name=None,
+        preload=False,
+        add_physician_reports=False,
+    )
 
 
 
@@ -158,12 +115,12 @@ a `BaseConcatDataset` of `BaseDatasets` each holding a single
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
+.. GENERATED FROM PYTHON SOURCE LINES 63-65
 
 We can easily create descriptive statistics using the description `DataFrame`,
 for example an age histogram split by gender of patients.
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-123
+.. GENERATED FROM PYTHON SOURCE LINES 65-80
 
 .. code-block:: default
 
@@ -201,13 +158,13 @@ for example an age histogram split by gender of patients.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-127
+.. GENERATED FROM PYTHON SOURCE LINES 81-84
 
 Next, we will perform some preprocessing steps. First, we will do some
 selection of available recordings based on the duration. We will select those
 recordings, that have at least five minutes duration. Data is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-146
+.. GENERATED FROM PYTHON SOURCE LINES 84-103
 
 .. code-block:: default
 
@@ -237,7 +194,7 @@ recordings, that have at least five minutes duration. Data is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-152
+.. GENERATED FROM PYTHON SOURCE LINES 104-109
 
 Next, we will discard all recordings that have an incomplete channel
 configuration (wrt the channels that we are interested in, i.e. the 21
@@ -245,7 +202,7 @@ channels of the international 10-20-placement). The dataset is subdivided into
 recordings with 'le' and 'ar' reference which we will have to consider. Data
 is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-193
+.. GENERATED FROM PYTHON SOURCE LINES 109-150
 
 .. code-block:: default
 
@@ -297,7 +254,7 @@ is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 194-205
+.. GENERATED FROM PYTHON SOURCE LINES 151-162
 
 Next, we will chain several preprocessing steps that are realized through
 `mne`. Data will be loaded by the first preprocessor that has a mention of it
@@ -308,10 +265,10 @@ in brackets:
 #. rename channels to short channel names
 #. pick channels of interest
 #. scale signals to microvolts (requires load)
+#. clip outlier values to +/- 800 microvolts (requires load)
 #. resample recordings to a common frequency (requires load)
-#. create compute windows
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-241
+.. GENERATED FROM PYTHON SOURCE LINES 162-199
 
 .. code-block:: default
 
@@ -347,6 +304,7 @@ in brackets:
                      apply_on_array=False),
         Preprocessor('pick_channels', ch_names=short_ch_names, ordered=True),
         Preprocessor(lambda x: x * 1e6),
+        Preprocessor(fn=np.clip, a_min=-800, a_max=800, apply_on_array=True),
         Preprocessor('resample', sfreq=sfreq),
     ]
 
@@ -358,7 +316,7 @@ in brackets:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 242-249
+.. GENERATED FROM PYTHON SOURCE LINES 200-207
 
 The preprocessing loop works as follows. For every recording, we apply the
 preprocessors as defined above. Then, we update the description of the rec,
@@ -368,7 +326,7 @@ is named corresponding to the rec id. To save memory we delete the raw
 dataset after storing. This gives us the option to try different windowing
 parameters after reloading the data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 249-271
+.. GENERATED FROM PYTHON SOURCE LINES 207-229
 
 .. code-block:: default
 
@@ -401,11 +359,11 @@ parameters after reloading the data.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 272-273
+.. GENERATED FROM PYTHON SOURCE LINES 230-231
 
 We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
-.. GENERATED FROM PYTHON SOURCE LINES 273-277
+.. GENERATED FROM PYTHON SOURCE LINES 231-235
 
 .. code-block:: default
 
@@ -420,12 +378,12 @@ We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 278-280
+.. GENERATED FROM PYTHON SOURCE LINES 236-238
 
 We generate compute windows. The resulting dataset is now ready to be used
 for model training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 280-295
+.. GENERATED FROM PYTHON SOURCE LINES 238-253
 
 .. code-block:: default
 
@@ -454,7 +412,7 @@ for model training.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.242 seconds)
+   **Total running time of the script:** ( 0 minutes  1.539 seconds)
 
 **Estimated memory usage:**  9 MB
 
