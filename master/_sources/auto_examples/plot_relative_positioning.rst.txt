@@ -127,12 +127,12 @@ we don't need to apply resampling.
 .. code-block:: default
 
 
-    from braindecode.preprocessing.preprocess import preprocess, Preprocessor
+    from braindecode.preprocessing.preprocess import preprocess, Preprocessor, scale
 
     high_cut_hz = 30
 
     preprocessors = [
-        Preprocessor(lambda x: x * 1e6),
+        Preprocessor(scale, factor=1e6, apply_on_array=True),
         Preprocessor('filter', l_freq=None, h_freq=high_cut_hz, n_jobs=n_jobs)
     ]
 
@@ -143,6 +143,15 @@ we don't need to apply resampling.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
+      warnings.warn(msg, category=FutureWarning)
 
 
 
@@ -212,9 +221,9 @@ We also preprocess the windows by applying channel-wise z-score normalization.
 .. code-block:: default
 
 
-    from sklearn.preprocessing import scale
+    from sklearn.preprocessing import scale as standard_scale
 
-    preprocess(windows_dataset, [Preprocessor(scale, channel_wise=True)])
+    preprocess(windows_dataset, [Preprocessor(standard_scale, channel_wise=True)])
 
 
 
@@ -515,31 +524,31 @@ learning rate to account for the smaller setting of this example.
 
       epoch    train_acc    train_loss    valid_acc    valid_loss    cp     dur
     -------  -----------  ------------  -----------  ------------  ----  ------
-          1       0.5520        0.7133       0.6040        0.6830     +  4.8010
-          2       0.5920        0.6791       0.5720        0.6325     +  3.0403
-          3       0.5160        0.8718       0.6880        0.6441        2.8750
-          4       0.5360        0.6845       0.5520        0.6825        2.8068
-          5       0.5560        0.7046       0.6320        0.6565        2.9270
-          6       0.6440        0.6461       0.6960        0.6131     +  2.7692
-          7       0.6000        0.6460       0.6800        0.5898     +  2.8633
-          8       0.6280        0.5980       0.6840        0.5811     +  3.1148
-          9       0.5880        0.6493       0.7280        0.5766     +  2.9401
-         10       0.6680        0.6185       0.7000        0.5787        3.0925
-         11       0.7200        0.5608       0.6960        0.5779        2.8409
-         12       0.6320        0.6330       0.7160        0.5669     +  3.1545
-         13       0.6920        0.5720       0.7240        0.5572     +  3.0827
-         14       0.7040        0.5761       0.7240        0.5500     +  2.8439
-         15       0.7320        0.5545       0.6960        0.5434     +  2.9601
-         16       0.6560        0.5829       0.7120        0.5397     +  2.7677
-         17       0.6800        0.5859       0.7360        0.5396     +  3.0354
-         18       0.7040        0.5573       0.7360        0.5394     +  3.0281
-         19       0.7200        0.5630       0.7520        0.5391     +  2.8993
-         20       0.7040        0.5860       0.7440        0.5320     +  2.7590
-         21       0.7440        0.5240       0.7360        0.5274     +  2.8931
-         22       0.7120        0.5562       0.7440        0.5254     +  2.8594
-         23       0.7040        0.5464       0.7400        0.5254        2.8396
-         24       0.7440        0.5757       0.7520        0.5249     +  2.9244
-         25       0.7200        0.5421       0.7560        0.5154     +  2.9814
+          1       0.5520        0.7133       0.6040        0.6830     +  4.8686
+          2       0.5920        0.6791       0.5720        0.6325     +  3.0921
+          3       0.5160        0.8718       0.6880        0.6441        3.0777
+          4       0.5360        0.6845       0.5520        0.6825        3.0861
+          5       0.5560        0.7046       0.6320        0.6565        3.1266
+          6       0.6440        0.6461       0.6960        0.6131     +  3.2105
+          7       0.6000        0.6460       0.6800        0.5898     +  3.0771
+          8       0.6280        0.5980       0.6840        0.5811     +  3.0975
+          9       0.5880        0.6493       0.7280        0.5766     +  3.0696
+         10       0.6680        0.6185       0.7000        0.5787        2.9863
+         11       0.7200        0.5608       0.6960        0.5779        3.0448
+         12       0.6320        0.6330       0.7160        0.5669     +  3.1702
+         13       0.6920        0.5720       0.7240        0.5572     +  3.1309
+         14       0.7040        0.5761       0.7240        0.5500     +  2.9926
+         15       0.7320        0.5545       0.6960        0.5434     +  2.9775
+         16       0.6560        0.5829       0.7120        0.5397     +  3.0265
+         17       0.6800        0.5859       0.7360        0.5396     +  2.9973
+         18       0.7040        0.5573       0.7360        0.5394     +  3.0348
+         19       0.7200        0.5630       0.7520        0.5391     +  3.1127
+         20       0.7040        0.5860       0.7440        0.5320     +  2.9712
+         21       0.7440        0.5240       0.7360        0.5274     +  3.1589
+         22       0.7120        0.5562       0.7440        0.5254     +  3.4491
+         23       0.7040        0.5464       0.7400        0.5254        3.1309
+         24       0.7440        0.5757       0.7520        0.5249     +  3.1585
+         25       0.7200        0.5421       0.7560        0.5154     +  3.0078
 
 
 
@@ -815,7 +824,7 @@ of the feature space using a PCA:
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7fa5fed23650>
+    <matplotlib.legend.Legend object at 0x7f354fd67e90>
 
 
 
@@ -877,9 +886,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  34.173 seconds)
+   **Total running time of the script:** ( 1 minutes  40.842 seconds)
 
-**Estimated memory usage:**  1000 MB
+**Estimated memory usage:**  714 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_relative_positioning.py:

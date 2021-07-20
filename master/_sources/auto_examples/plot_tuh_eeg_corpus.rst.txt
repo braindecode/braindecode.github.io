@@ -42,7 +42,7 @@ including simple preprocessing steps as well as cutting of compute windows.
     import mne
 
     from braindecode.datasets import TUH
-    from braindecode.preprocessing import preprocess, Preprocessor, create_fixed_length_windows
+    from braindecode.preprocessing import preprocess, Preprocessor, create_fixed_length_windows, scale
     from braindecode.datautil.serialization import load_concat_dataset
 
     mne.set_log_level('ERROR')  # avoid messages everytime a window is extracted
@@ -304,8 +304,8 @@ in brackets:
         Preprocessor(custom_rename_channels, mapping=ch_mapping,
                      apply_on_array=False),
         Preprocessor('pick_channels', ch_names=short_ch_names, ordered=True),
-        Preprocessor(lambda x: x * 1e6),
-        Preprocessor(fn=np.clip, a_min=-800, a_max=800, apply_on_array=True),
+        Preprocessor(scale, factor=1e6, apply_on_array=True),
+        Preprocessor(np.clip, a_min=-800, a_max=800, apply_on_array=True),
         Preprocessor('resample', sfreq=sfreq),
     ]
 
@@ -356,6 +356,15 @@ parameters after reloading the data.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
+      warnings.warn(msg, category=FutureWarning)
 
 
 
@@ -413,7 +422,7 @@ for model training.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.940 seconds)
+   **Total running time of the script:** ( 0 minutes  1.855 seconds)
 
 **Estimated memory usage:**  9 MB
 

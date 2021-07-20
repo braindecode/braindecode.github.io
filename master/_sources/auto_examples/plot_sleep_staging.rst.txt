@@ -120,12 +120,12 @@ Physionet data is already sampled at a lower 100 Hz.
 .. code-block:: default
 
 
-    from braindecode.preprocessing.preprocess import preprocess, Preprocessor
+    from braindecode.preprocessing.preprocess import preprocess, Preprocessor, scale
 
     high_cut_hz = 30
 
     preprocessors = [
-        Preprocessor(lambda x: x * 1e6),
+        Preprocessor(scale, factor=1e6, apply_on_array=True),
         Preprocessor('filter', l_freq=None, h_freq=high_cut_hz)
     ]
 
@@ -136,6 +136,15 @@ Physionet data is already sampled at a lower 100 Hz.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
+      warnings.warn(msg, category=FutureWarning)
 
 
 
@@ -201,9 +210,9 @@ in each window.
 .. code-block:: default
 
 
-    from sklearn.preprocessing import scale
+    from sklearn.preprocessing import scale as standard_scale
 
-    preprocess(windows_dataset, [Preprocessor(scale, channel_wise=True)])
+    preprocess(windows_dataset, [Preprocessor(standard_scale, channel_wise=True)])
 
 
 
@@ -528,16 +537,16 @@ a different dataset or with more recordings.
 
       epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss      dur
     -------  ---------------  ------------  ---------------  ------------  -------
-          1           0.1486        1.6382           0.2058        1.6052  10.9528
-          2           0.2013        1.5876           0.2006        1.6072  11.0910
-          3           0.2021        1.4889           0.2000        1.6193  11.1377
-          4           0.2086        1.3695           0.2000        1.6655  10.3265
-          5           0.2155        1.2967           0.2112        1.6254  10.9548
-          6           0.2445        1.2507           0.2252        1.6283  10.6476
-          7           0.2504        1.2241           0.2421        1.6573  10.5052
-          8           0.2771        1.1878           0.3097        1.6905  10.2589
-          9           0.3008        1.1700           0.3349        1.5284  11.6404
-         10           0.3536        1.1450           0.3454        1.6528  11.0756
+          1           0.1486        1.6382           0.2058        1.6052  11.5522
+          2           0.2013        1.5876           0.2006        1.6072  10.2665
+          3           0.2021        1.4889           0.2000        1.6193  10.7092
+          4           0.2086        1.3695           0.2000        1.6655  9.9435
+          5           0.2155        1.2967           0.2112        1.6254  9.8347
+          6           0.2445        1.2507           0.2252        1.6283  9.9074
+          7           0.2504        1.2241           0.2421        1.6573  10.2773
+          8           0.2771        1.1878           0.3097        1.6905  10.5665
+          9           0.3008        1.1700           0.3349        1.5284  10.3809
+         10           0.3536        1.1450           0.3454        1.6528  9.9847
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=TimeDistributedNet(
@@ -710,9 +719,9 @@ especially when few EEG channels are available.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  6.919 seconds)
+   **Total running time of the script:** ( 2 minutes  1.391 seconds)
 
-**Estimated memory usage:**  3324 MB
+**Estimated memory usage:**  2968 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging.py:
