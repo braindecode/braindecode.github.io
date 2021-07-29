@@ -24,7 +24,7 @@ In this example, we showcase usage of the Temple University Hospital EEG Corpus
 (https://www.isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml#c_tueg)
 including simple preprocessing steps as well as cutting of compute windows.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-28
+.. GENERATED FROM PYTHON SOURCE LINES 8-29
 
 .. code-block:: default
 
@@ -42,7 +42,8 @@ including simple preprocessing steps as well as cutting of compute windows.
     import mne
 
     from braindecode.datasets import TUH
-    from braindecode.preprocessing import preprocess, Preprocessor, create_fixed_length_windows, scale
+    from braindecode.preprocessing import (
+        preprocess, Preprocessor, create_fixed_length_windows, scale)
     from braindecode.datautil.serialization import load_concat_dataset
 
     mne.set_log_level('ERROR')  # avoid messages everytime a window is extracted
@@ -55,13 +56,13 @@ including simple preprocessing steps as well as cutting of compute windows.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-32
+.. GENERATED FROM PYTHON SOURCE LINES 30-33
 
 If you want to try this code with the actual data, please delete the next
 section. We are required to mock some dataset functionality, since the data
 is not available at creation time of this example.
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-35
+.. GENERATED FROM PYTHON SOURCE LINES 33-36
 
 .. code-block:: default
 
@@ -75,7 +76,7 @@ is not available at creation time of this example.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-51
+.. GENERATED FROM PYTHON SOURCE LINES 37-52
 
 We start by creating a TUH dataset. First, the class generates a description
 of the recordings in `TUH_PATH` (which is later accessible as
@@ -93,7 +94,7 @@ are read with `mne.io.read_raw_edf` with `preload=False`. Finally, we will get
 a `BaseConcatDataset` of `BaseDatasets` each holding a single
 `nme.io.Raw` which is fully compatible with other braindecode functionalities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-62
+.. GENERATED FROM PYTHON SOURCE LINES 52-63
 
 .. code-block:: default
 
@@ -115,12 +116,12 @@ a `BaseConcatDataset` of `BaseDatasets` each holding a single
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-65
+.. GENERATED FROM PYTHON SOURCE LINES 64-66
 
 We can easily create descriptive statistics using the description `DataFrame`,
 for example an age histogram split by gender of patients.
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-80
+.. GENERATED FROM PYTHON SOURCE LINES 66-81
 
 .. code-block:: default
 
@@ -159,25 +160,26 @@ for example an age histogram split by gender of patients.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-84
+.. GENERATED FROM PYTHON SOURCE LINES 82-85
 
 Next, we will perform some preprocessing steps. First, we will do some
 selection of available recordings based on the duration. We will select those
 recordings, that have at least five minutes duration. Data is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-103
+.. GENERATED FROM PYTHON SOURCE LINES 85-105
 
 .. code-block:: default
 
 
     def select_by_duration(ds, tmin=0, tmax=None):
-        # determine length of the recordings and select based on tmin and tmax
-        duration = ds.description.n_samples / ds.description.sfreq
-        duration = duration[duration >= tmin]
         if tmax is None:
             tmax = np.inf
-        duration = duration[duration <= tmax]
-        split_ids = list(duration.index)
+        # determine length of the recordings and select based on tmin and tmax
+        split_ids = []
+        for d_i, d in enumerate(ds.datasets):
+            duration = d.raw.n_times / d.raw.info['sfreq']
+            if tmin <= duration <= tmax:
+                split_ids.append(d_i)
         splits = ds.split(split_ids)
         split = splits['0']
         return split
@@ -195,7 +197,7 @@ recordings, that have at least five minutes duration. Data is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-109
+.. GENERATED FROM PYTHON SOURCE LINES 106-111
 
 Next, we will discard all recordings that have an incomplete channel
 configuration (wrt the channels that we are interested in, i.e. the 21
@@ -203,7 +205,7 @@ channels of the international 10-20-placement). The dataset is subdivided into
 recordings with 'le' and 'ar' reference which we will have to consider. Data
 is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-150
+.. GENERATED FROM PYTHON SOURCE LINES 111-153
 
 .. code-block:: default
 
@@ -235,8 +237,9 @@ is not loaded here.
     def select_by_channels(ds, ch_mapping):
         split_ids = []
         for i, d in enumerate(ds.datasets):
+            ref = 'ar' if d.raw.ch_names[0].endswith('-REF') else 'le'
             # these are the channels we are looking for
-            seta = set(ch_mapping[d.description.reference].keys())
+            seta = set(ch_mapping[ref].keys())
             # these are the channels of the recoding
             setb = set(d.raw.ch_names)
             # if recording contains all channels we are looking for, include it
@@ -255,7 +258,7 @@ is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-162
+.. GENERATED FROM PYTHON SOURCE LINES 154-165
 
 Next, we will chain several preprocessing steps that are realized through
 `mne`. Data will be loaded by the first preprocessor that has a mention of it
@@ -269,7 +272,7 @@ in brackets:
 #. clip outlier values to +/- 800 microvolts (requires load)
 #. resample recordings to a common frequency (requires load)
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-199
+.. GENERATED FROM PYTHON SOURCE LINES 165-202
 
 .. code-block:: default
 
@@ -317,7 +320,7 @@ in brackets:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-207
+.. GENERATED FROM PYTHON SOURCE LINES 203-210
 
 The preprocessing loop works as follows. For every recording, we apply the
 preprocessors as defined above. Then, we update the description of the rec,
@@ -327,7 +330,7 @@ is named corresponding to the rec id. To save memory we delete the raw
 dataset after storing. This gives us the option to try different windowing
 parameters after reloading the data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 207-229
+.. GENERATED FROM PYTHON SOURCE LINES 210-225
 
 .. code-block:: default
 
@@ -336,13 +339,6 @@ parameters after reloading the data.
     tuh_splits = tuh.split([[i] for i in range(len(tuh.datasets))])
     for rec_i, tuh_subset in tuh_splits.items():
         preprocess(tuh_subset, preprocessors)
-
-        # update description of the recording(s)
-        tuh_subset.set_description({
-            'sfreq': len(tuh_subset.datasets) * [sfreq],
-            'reference': len(tuh_subset.datasets) * ['ar'],
-            'n_samples': [len(d) for d in tuh_subset.datasets],
-        }, overwrite=True)
 
         # create one directory for every recording
         rec_path = os.path.join(OUT_PATH, str(rec_i))
@@ -369,11 +365,11 @@ parameters after reloading the data.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 230-231
+.. GENERATED FROM PYTHON SOURCE LINES 226-227
 
 We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
-.. GENERATED FROM PYTHON SOURCE LINES 231-235
+.. GENERATED FROM PYTHON SOURCE LINES 227-231
 
 .. code-block:: default
 
@@ -388,12 +384,12 @@ We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 236-238
+.. GENERATED FROM PYTHON SOURCE LINES 232-234
 
 We generate compute windows. The resulting dataset is now ready to be used
 for model training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-253
+.. GENERATED FROM PYTHON SOURCE LINES 234-249
 
 .. code-block:: default
 
@@ -409,9 +405,9 @@ for model training.
         window_stride_samples=window_stride_samples,
         drop_last_window=False
     )
-    # store the number of windows required for loading later on
-    tuh_windows.set_description({
-        "n_windows": [len(d) for d in tuh_windows.datasets]})
+
+    for x, y, ind in tuh_windows:
+        break
 
 
 
@@ -422,7 +418,7 @@ for model training.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.022 seconds)
+   **Total running time of the script:** ( 0 minutes  2.148 seconds)
 
 **Estimated memory usage:**  9 MB
 
