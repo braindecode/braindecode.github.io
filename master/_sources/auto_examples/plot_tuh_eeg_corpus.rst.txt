@@ -24,7 +24,7 @@ In this example, we showcase usage of the Temple University Hospital EEG Corpus
 (https://www.isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml#c_tueg)
 including simple preprocessing steps as well as cutting of compute windows.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-29
+.. GENERATED FROM PYTHON SOURCE LINES 8-28
 
 .. code-block:: default
 
@@ -33,7 +33,6 @@ including simple preprocessing steps as well as cutting of compute windows.
     #
     # License: BSD (3-clause)
 
-    import os
     import tempfile
 
     import numpy as np
@@ -43,7 +42,7 @@ including simple preprocessing steps as well as cutting of compute windows.
 
     from braindecode.datasets import TUH
     from braindecode.preprocessing import (
-        preprocess, Preprocessor, create_fixed_length_windows, scale)
+        preprocess, Preprocessor, create_fixed_length_windows, scale as multiply)
     from braindecode.datautil.serialization import load_concat_dataset
 
     mne.set_log_level('ERROR')  # avoid messages everytime a window is extracted
@@ -56,13 +55,13 @@ including simple preprocessing steps as well as cutting of compute windows.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-33
+.. GENERATED FROM PYTHON SOURCE LINES 29-32
 
 If you want to try this code with the actual data, please delete the next
 section. We are required to mock some dataset functionality, since the data
 is not available at creation time of this example.
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-36
+.. GENERATED FROM PYTHON SOURCE LINES 32-35
 
 .. code-block:: default
 
@@ -76,7 +75,7 @@ is not available at creation time of this example.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-52
+.. GENERATED FROM PYTHON SOURCE LINES 36-51
 
 We start by creating a TUH dataset. First, the class generates a description
 of the recordings in `TUH_PATH` (which is later accessible as
@@ -94,18 +93,20 @@ are read with `mne.io.read_raw_edf` with `preload=False`. Finally, we will get
 a `BaseConcatDataset` of `BaseDatasets` each holding a single
 `nme.io.Raw` which is fully compatible with other braindecode functionalities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-63
+.. GENERATED FROM PYTHON SOURCE LINES 51-64
 
 .. code-block:: default
 
 
     TUH_PATH = 'please insert actual path to data here'
+    N_JOBS = 1  # specify the number of jobs for loading and windowing
     tuh = TUH(
         path=TUH_PATH,
         recording_ids=None,
         target_name=None,
         preload=False,
         add_physician_reports=False,
+        n_jobs=N_JOBS,
     )
 
 
@@ -116,12 +117,12 @@ a `BaseConcatDataset` of `BaseDatasets` each holding a single
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-66
+.. GENERATED FROM PYTHON SOURCE LINES 65-67
 
 We can easily create descriptive statistics using the description `DataFrame`,
 for example an age histogram split by gender of patients.
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-81
+.. GENERATED FROM PYTHON SOURCE LINES 67-82
 
 .. code-block:: default
 
@@ -160,13 +161,13 @@ for example an age histogram split by gender of patients.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-85
+.. GENERATED FROM PYTHON SOURCE LINES 83-86
 
 Next, we will perform some preprocessing steps. First, we will do some
 selection of available recordings based on the duration. We will select those
 recordings, that have at least five minutes duration. Data is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-105
+.. GENERATED FROM PYTHON SOURCE LINES 86-106
 
 .. code-block:: default
 
@@ -197,7 +198,7 @@ recordings, that have at least five minutes duration. Data is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-111
+.. GENERATED FROM PYTHON SOURCE LINES 107-112
 
 Next, we will discard all recordings that have an incomplete channel
 configuration (wrt the channels that we are interested in, i.e. the 21
@@ -205,7 +206,7 @@ channels of the international 10-20-placement). The dataset is subdivided into
 recordings with 'le' and 'ar' reference which we will have to consider. Data
 is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-153
+.. GENERATED FROM PYTHON SOURCE LINES 112-154
 
 .. code-block:: default
 
@@ -258,7 +259,7 @@ is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-165
+.. GENERATED FROM PYTHON SOURCE LINES 155-166
 
 Next, we will chain several preprocessing steps that are realized through
 `mne`. Data will be loaded by the first preprocessor that has a mention of it
@@ -268,11 +269,11 @@ in brackets:
 #. re-reference all recordings to 'ar' (requires load)
 #. rename channels to short channel names
 #. pick channels of interest
-#. scale signals to microvolts (requires load)
-#. clip outlier values to +/- 800 microvolts (requires load)
+#. scale signals to micro volts (requires load)
+#. clip outlier values to +/- 800 micro volts (requires load)
 #. resample recordings to a common frequency (requires load)
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-202
+.. GENERATED FROM PYTHON SOURCE LINES 166-203
 
 .. code-block:: default
 
@@ -307,7 +308,7 @@ in brackets:
         Preprocessor(custom_rename_channels, mapping=ch_mapping,
                      apply_on_array=False),
         Preprocessor('pick_channels', ch_names=short_ch_names, ordered=True),
-        Preprocessor(scale, factor=1e6, apply_on_array=True),
+        Preprocessor(multiply, factor=1e6, apply_on_array=True),
         Preprocessor(np.clip, a_min=-800, a_max=800, apply_on_array=True),
         Preprocessor('resample', sfreq=sfreq),
     ]
@@ -320,7 +321,7 @@ in brackets:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-210
+.. GENERATED FROM PYTHON SOURCE LINES 204-211
 
 The preprocessing loop works as follows. For every recording, we apply the
 preprocessors as defined above. Then, we update the description of the rec,
@@ -330,23 +331,23 @@ is named corresponding to the rec id. To save memory we delete the raw
 dataset after storing. This gives us the option to try different windowing
 parameters after reloading the data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 210-225
+.. GENERATED FROM PYTHON SOURCE LINES 211-226
 
 .. code-block:: default
 
 
     OUT_PATH = tempfile.mkdtemp()  # plaese insert actual output directory here
-    tuh_splits = tuh.split([[i] for i in range(len(tuh.datasets))])
-    for rec_i, tuh_subset in tuh_splits.items():
-        preprocess(tuh_subset, preprocessors)
-
-        # create one directory for every recording
-        rec_path = os.path.join(OUT_PATH, str(rec_i))
-        if not os.path.exists(rec_path):
-            os.makedirs(rec_path)
-        tuh_subset.save(rec_path)
+    tuh_splits = tuh.split([[i] for i in range(len(tuh.datasets))])  # will be unnecessary with PR277
+    for rec_i, tuh_subset in tuh_splits.items():  # will be unnecessary with PR277
+        preprocess(
+            concat_ds=tuh_subset,
+            preprocessors=preprocessors,
+            # n_jobs=N_JOBS,  # will be available with PR277
+            # save_dir=OUT_PATH,  # will be available with PR277
+        )
+        tuh_subset.save(OUT_PATH, offset=int(rec_i))  # will be unnecessary with PR277
         # save memory by deleting raw recording
-        del tuh_subset.datasets[0].raw
+        del tuh_subset.datasets[0].raw  # will be unnecessary with PR277
 
 
 
@@ -361,20 +362,28 @@ parameters after reloading the data.
 
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
+    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp_e_bj71_ contains other subdirectories or files ['0'].
+      warnings.warn(f'Chosen directory {path} contains other '
+    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp_e_bj71_ contains other subdirectories or files ['0', '1'].
+      warnings.warn(f'Chosen directory {path} contains other '
+    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp_e_bj71_ contains other subdirectories or files ['2', '0', '1'].
+      warnings.warn(f'Chosen directory {path} contains other '
+    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp_e_bj71_ contains other subdirectories or files ['3', '2', '0', '1'].
+      warnings.warn(f'Chosen directory {path} contains other '
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-227
+.. GENERATED FROM PYTHON SOURCE LINES 227-228
 
 We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
-.. GENERATED FROM PYTHON SOURCE LINES 227-231
+.. GENERATED FROM PYTHON SOURCE LINES 228-232
 
 .. code-block:: default
 
 
-    tuh_loaded = load_concat_dataset(OUT_PATH, preload=False)
+    tuh_loaded = load_concat_dataset(OUT_PATH, preload=False, n_jobs=N_JOBS)
 
 
 
@@ -384,12 +393,12 @@ We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-234
+.. GENERATED FROM PYTHON SOURCE LINES 233-235
 
 We generate compute windows. The resulting dataset is now ready to be used
 for model training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-249
+.. GENERATED FROM PYTHON SOURCE LINES 235-249
 
 .. code-block:: default
 
@@ -399,11 +408,10 @@ for model training.
     # generate compute windows here and store them to disk
     tuh_windows = create_fixed_length_windows(
         tuh_loaded,
-        start_offset_samples=0,
-        stop_offset_samples=None,
         window_size_samples=window_size_samples,
         window_stride_samples=window_stride_samples,
-        drop_last_window=False
+        drop_last_window=False,
+        n_jobs=N_JOBS,
     )
 
     for x, y, ind in tuh_windows:
@@ -418,7 +426,7 @@ for model training.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.203 seconds)
+   **Total running time of the script:** ( 0 minutes  2.412 seconds)
 
 **Estimated memory usage:**  9 MB
 

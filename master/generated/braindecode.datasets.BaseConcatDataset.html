@@ -153,7 +153,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#loading">Loading</a></li>
@@ -168,6 +167,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#plot-confusion-matrix">Plot Confusion Matrix</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_cropped.html#create-model-and-compute-windowing-parameters">Create model and compute windowing parameters</a></li>
@@ -551,15 +551,43 @@ for each window.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.datasets.BaseConcatDataset.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datasets.BaseConcatDataset.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save dataset to files.</p>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#braindecode.datasets.BaseConcatDataset.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save datasets to files by creating one subdirectory for each dataset:
+path/</p>
+<blockquote>
+<div><dl class="simple">
+<dt>0/</dt><dd><p>0-raw.fif | 0-epo.fif
+description.json
+raw_preproc_kwargs.json (if raws were preprocessed)
+window_kwargs.json (if this is a windowed dataset)
+window_preproc_kwargs.json  (if windows were preprocessed)
+target_name.json (if target_name is not None and dataset is raw)</p>
+</dd>
+<dt>1/</dt><dd><p>1-raw.fif | 1-epo.fif
+description.json
+raw_preproc_kwargs.json (if raws were preprocessed)
+window_kwargs.json (if this is a windowed dataset)
+window_preproc_kwargs.json  (if windows were preprocessed)
+target_name.json (if target_name is not None and dataset is raw)</p>
+</dd>
+</dl>
+<p>…</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>path</strong><span class="classifier">str</span></dt><dd><p>Directory to which .fif / -epo.fif and .json files are stored.</p>
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd><dl class="simple">
+<dt>Directory in which subdirectories are created to store</dt><dd><p>-raw.fif | -epo.fif and .json files to.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to delete old files (.json, .fif, -epo.fif) in specified directory
-prior to saving.</p>
+</dl>
+</dd>
+<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to delete old subdirectories that will be saved to in this
+call.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier">int</span></dt><dd><p>If provided, the integer is added to the id of the dataset in the
+concat. This is useful in the setting of very large datasets, where
+one dataset has to be processed and saved at a time to account for
+its original position.</p>
 </dd>
 </dl>
 </dd>
@@ -592,8 +620,8 @@ DataFrame or based on indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>by</strong><span class="classifier">str | list</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">by</span></code> is a string, splitting is performed based on the description
-DataFrame column with this name.
+<dt><strong>by</strong><span class="classifier">str | list</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">by</span></code> is a string, splitting is performed based on the
+description DataFrame column with this name.
 If <code class="docutils literal notranslate"><span class="pre">by</span></code> is a (list of) list of integers, the position in the first
 list corresponds to the split id and the integers to the
 datapoints of that split.</p>
@@ -651,13 +679,13 @@ dataset as value.</p>
 <img alt="Data Augmentation on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_data_augmentation_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_data_augmentation.html#sphx-glr-auto-examples-plot-data-augmentation-py"><span class="std std-ref">Data Augmentation on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we showcase usage of the Temple University Hospital EEG Corpus (https://www.is..."><div class="figure align-default" id="id9">
-<img alt="Process a big data EEG resource (TUH EEG Corpus)" src="../_images/sphx_glr_plot_tuh_eeg_corpus_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_tuh_eeg_corpus.html#sphx-glr-auto-examples-plot-tuh-eeg-corpus-py"><span class="std std-ref">Process a big data EEG resource (TUH EEG Corpus)</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id10">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows you how to train and test deep learning models with Braindecode in a classi..."><div class="figure align-default" id="id9">
 <img alt="Trialwise Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_bcic_iv_2a_moabb_trial.html#sphx-glr-auto-examples-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Trialwise Decoding on BCIC IV 2a Dataset</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we showcase usage of the Temple University Hospital EEG Corpus (https://www.is..."><div class="figure align-default" id="id10">
+<img alt="Process a big data EEG resource (TUH EEG Corpus)" src="../_images/sphx_glr_plot_tuh_eeg_corpus_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_tuh_eeg_corpus.html#sphx-glr-auto-examples-plot-tuh-eeg-corpus-py"><span class="std std-ref">Process a big data EEG resource (TUH EEG Corpus)</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Cropped Decoding on BCIC IV 2a Dataset"><div class="figure align-default" id="id11">
 <img alt="Cropped Decoding on BCIC IV 2a Dataset" src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_thumb.png" />
