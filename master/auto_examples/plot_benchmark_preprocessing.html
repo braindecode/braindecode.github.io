@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Custom Dataset Example &mdash; Braindecode 0.5.1 documentation</title>
+  <title>Benchmarking preprocessing with parallelization and serialization &mdash; Braindecode 0.5.1 documentation</title>
   
 
   
@@ -45,8 +45,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples" href="index.html" />
-    <link rel="prev" title="MNE Dataset Example" href="plot_mne_dataset_example.html" /> 
+    <link rel="next" title="MOABB Dataset Example" href="plot_dataset_example.html" />
+    <link rel="prev" title="Multiple discrete targets with the TUH EEG Corpus" href="plot_tuh_discrete_multitarget.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,7 +95,7 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html"> Basic trialwise decoding</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading">Loading</a></li>
@@ -121,16 +121,16 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plot_mne_dataset_example.html"> Your own datasets through MNE</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"> Your own datasets through Numpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_custom_dataset_example.html"> Your own datasets through Numpy</a></li>
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_split_dataset.html">Split Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_load_save_datasets.html">Load and save dataset example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a><ul>
@@ -496,13 +496,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Custom Dataset Example</li>
+          <li><a href="index.html">Examples</a> &raquo;</li>
+        
+      <li>Benchmarking preprocessing with parallelization and serialization</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/auto_examples/plot_custom_dataset_example.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/auto_examples/plot_benchmark_preprocessing.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -517,236 +519,195 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-custom-dataset-example-py"><span class="std std-ref">here</span></a>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-benchmark-preprocessing-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="custom-dataset-example">
-<span id="sphx-glr-auto-examples-plot-custom-dataset-example-py"></span><h1>Custom Dataset Example<a class="headerlink" href="#custom-dataset-example" title="Permalink to this headline">¶</a></h1>
-<p>This example shows how to convert data X and y as numpy arrays to a braindecode
-compatible data format.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Lukas Gemein &lt;l.gemein@gmail.com&gt;</span>
+<div class="sphx-glr-example-title section" id="benchmarking-preprocessing-with-parallelization-and-serialization">
+<span id="sphx-glr-auto-examples-plot-benchmark-preprocessing-py"></span><h1>Benchmarking preprocessing with parallelization and serialization<a class="headerlink" href="#benchmarking-preprocessing-with-parallelization-and-serialization" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we compare the execution time and memory requirements of
+preprocessing data with the parallelization and serialization functionalities
+available in <a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess()</span></code></a>.</p>
+<p>We compare 4 cases:</p>
+<ol class="arabic simple">
+<li><p>Sequential, no serialization</p></li>
+<li><p>Sequential, with serialization</p></li>
+<li><p>Parallel, no serialization</p></li>
+<li><p>Parallel, with serialization</p></li>
+</ol>
+<p>Case 1 is the simplest approach, in which all recordings in a
+<a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a> are preprocessed one after the
+other. In this scenario, <a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess()</span></code></a> acts
+inplace, which means memory usage will likely stay stable (depending on the
+preprocessing operations) if recordings have been preloaded. However, two
+potential issues arise when working with large datasets: (1) if recordings have
+not been preloaded before preprocessing, <cite>preprocess()</cite> will need to load them
+and keep them in memory, in which case memory can become a bottleneck, and (2)
+sequential preprocessing can take a considerable amount of time to run when
+working with many recordings.</p>
+<p>A solution to the first issue (memory usage) is to save the preprocessed data
+to a file so it can be cleared from memory before moving on to the next
+recording (case 2). The recordings can then be reloaded with <cite>preload=False</cite>
+once they have all been saved to disk. This enables using the lazy loading
+capabilities of <a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a> and avoids
+potential memory bottlenecks. The downside is that the writing to disk can take
+some time and of course requires disk space.</p>
+<p>A solution to the second issue (slow preprocessing) is to parallelize the
+preprocessing over multiple cores whenever possible (case 3). This can speed up
+preprocessing significantly. However, this approach will increase memory usage
+because of the way parallelization is implemented internally (with
+<cite>joblib</cite>, copies of (part of) the data must be made when sending arguments to
+parallel processes).</p>
+<p>Finally, case 4 (combining parallelization and serialization) is likely to be
+both fast and memory efficient. As shown in this example, this remains a
+tradeoff though, and the selected configuration should depend on the size of
+the dataset and the specific operations applied to the recordings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Hubert Banville &lt;hubert.jbanville@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">mne</span>
 
-<span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.create_from_X_y.html#braindecode.datasets.create_from_X_y" title="braindecode.datasets.create_from_X_y" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-function"><span class="n">create_from_X_y</span></a>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/itertools.html#itertools.product" title="itertools.product" class="sphx-glr-backref-module-itertools sphx-glr-backref-type-py-function"><span class="n">product</span></a>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a>
+<span class="kn">from</span> <span class="nn">memory_profiler</span> <span class="kn">import</span> <span class="n">memory_usage</span>
+
+<span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a>
+<span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <span class="p">(</span>
+    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>To set up the example, we first fetch some data using mne:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 5, 6, 7, 10, 13, 14 are codes for executed and imagined hands/feet</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="mi">22</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>
-<span class="c1"># event_codes = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]</span>
+<p>We create a function that goes through the usual three steps of data
+preparation: (1) data loading, (2) continuous data preprocessing,
+(3) windowing and (4) windowed data preprocessing. We use the
+<a class="reference internal" href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.SleepPhysionet</span></code></a> dataset for testing purposes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <span class="n">preload</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">):</span>
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">:</span>
+        <span class="n">tmp_dir</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory" title="tempfile.TemporaryDirectory" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span></a><span class="p">()</span>
+        <span class="n">save_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">save_dir</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="c1"># This will download the files if you don&#39;t have them yet,</span>
-<span class="c1"># and then return the paths to the files.</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">physionet_paths</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># (1) Load the data</span>
+    <span class="n">concat_ds</span> <span class="o">=</span> <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a><span class="p">(</span>
+        <span class="n">subject_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">),</span> <span class="n">recording_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">crop_wake_mins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">)</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">concat_ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
 
-<span class="c1"># Load each of the files</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parts</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">physionet_paths</span></a><span class="p">]</span>
+    <span class="c1"># (2) Preprocess the continuous data</span>
+    <span class="n">preprocessors</span> <span class="o">=</span> <span class="p">[</span>
+        <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;crop&#39;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="p">]</span>
+    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">concat_ds</span><span class="p">,</span> <span class="n">preprocessors</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">)</span>
+
+    <span class="c1"># (3) Window the data</span>
+    <span class="n">windows_ds</span> <span class="o">=</span> <a href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+        <span class="n">concat_ds</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">),</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">)</span>
+
+    <span class="c1"># Preprocess the windowed data</span>
+    <span class="n">preprocessors</span> <span class="o">=</span> <span class="p">[</span><a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">windows_ds</span><span class="p">,</span> <span class="n">preprocessors</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, we can run our function and measure its run time and peak memory usage
+for each one of our 4 cases above. We call the function multiple times with
+each configuration to get better estimates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To better characterize the run time vs. memory usage tradeoff for your
+specific configuration (as this will differ based on available hardware,
+data size and preprocessing operations), we recommend adapting this example
+to your use case and running it on your machine.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_repets</span></a> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Number of repetitions</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_recs</span></a> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Number of recordings to load and preprocess</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_jobs</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># Number of parallel processes</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/itertools.html#itertools.product" title="itertools.product" class="sphx-glr-backref-module-itertools sphx-glr-backref-type-py-function"><span class="n">product</span></a><span class="p">(</span>
+        <span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_repets</span></a><span class="p">),</span> <span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_recs</span></a><span class="p">],</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_jobs</span></a><span class="p">):</span>
+
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mem</span></a> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">memory_usage</span><span class="p">(</span>
+        <span class="n">proc</span><span class="o">=</span><span class="p">(</span><span class="n">prepare_data</span><span class="p">,</span> <span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">],</span> <span class="p">{})))</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">time_taken</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a>
+
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s1">&#39;n_recs&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span>
+        <span class="s1">&#39;max_mem&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mem</span></a><span class="p">,</span>
+        <span class="s1">&#39;save&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span>
+        <span class="s1">&#39;n_jobs&#39;</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">,</span>
+        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">time_taken</span></a>
+    <span class="p">})</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/runner/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R05.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-Extracting EDF parameters from /home/runner/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R06.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-Extracting EDF parameters from /home/runner/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R09.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-Extracting EDF parameters from /home/runner/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R10.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-Extracting EDF parameters from /home/runner/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R13.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-Extracting EDF parameters from /home/runner/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S022/S022R14.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmptkrk9oz8 contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:548: UserWarning: The number of saved datasets (1) does not match the number of existing subdirectories (2). You may now encounter a mix of differently preprocessed datasets!
+  f&quot;datasets!&quot;, UserWarning)
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmptkrk9oz8 contains other subdirectories or files [&#39;1&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmptkrk9oz8 contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmp6pghgn7l contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:548: UserWarning: The number of saved datasets (1) does not match the number of existing subdirectories (2). You may now encounter a mix of differently preprocessed datasets!
+  f&quot;datasets!&quot;, UserWarning)
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmp6pghgn7l contains other subdirectories or files [&#39;1&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmp6pghgn7l contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmp8_ctm2vp contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:548: UserWarning: The number of saved datasets (1) does not match the number of existing subdirectories (2). You may now encounter a mix of differently preprocessed datasets!
+  f&quot;datasets!&quot;, UserWarning)
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmp8_ctm2vp contains other subdirectories or files [&#39;1&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:552: UserWarning: Chosen directory /tmp/tmp8_ctm2vp contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
 </pre></div>
 </div>
-<p>We take the required data, targets and additional information sampling
-frequency and channel names from the loaded data. Note that this data and
-information can originate from any source.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parts</span></a><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_codes</span></a>
-<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parts</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parts</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>Convert to data format compatible with skorch and braindecode:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.create_from_X_y.html#braindecode.datasets.create_from_X_y" title="braindecode.datasets.create_from_X_y" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-function"><span class="n">create_from_X_y</span></a><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">,</span> <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_names</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_names</span></a><span class="p">,</span>
-    <span class="n">window_stride_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-    <span class="n">window_size_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-<span class="p">)</span>
+<p>Finally, we can plot the results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">)</span>
 
-<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="o">.</span><span class="n">description</span>  <span class="c1"># look as dataset description</span>
+<a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="s1">&#39;tab:orange&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">markers</span></a> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">m</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_jobs</span></a><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">])}</span>
+<span class="k">for</span> <span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">),</span> <span class="n">sub_df</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;n_jobs&#39;</span><span class="p">]):</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.scatter.html#matplotlib.axes.Axes.scatter" title="matplotlib.axes.Axes.scatter" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span></a><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">sub_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">sub_df</span><span class="p">[</span><span class="s1">&#39;max_mem&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">],</span>
+               <span class="n">marker</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">markers</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;save=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="si">}</span><span class="s1">, n_jobs=</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s1">&#39;Execution time (s)&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s1">&#39;Memory usage (MiB)&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loading and preprocessing </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_recs</span></a><span class="si">}</span><span class="s1"> recordings from Sleep &#39;</span>
+             <span class="s1">&#39;Physionet&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Creating RawArray with float64 data, n_channels=64, n_times=20000
-    Range : 0 ... 19999 =      0.000 ...   124.994 secs
-Ready.
-Creating RawArray with float64 data, n_channels=64, n_times=20000
-    Range : 0 ... 19999 =      0.000 ...   124.994 secs
-Ready.
-Creating RawArray with float64 data, n_channels=64, n_times=20000
-    Range : 0 ... 19999 =      0.000 ...   124.994 secs
-Ready.
-Creating RawArray with float64 data, n_channels=64, n_times=20000
-    Range : 0 ... 19999 =      0.000 ...   124.994 secs
-Ready.
-Creating RawArray with float64 data, n_channels=64, n_times=20000
-    Range : 0 ... 19999 =      0.000 ...   124.994 secs
-Ready.
-Creating RawArray with float64 data, n_channels=64, n_times=20000
-    Range : 0 ... 19999 =      0.000 ...   124.994 secs
-Ready.
-Adding metadata with 4 columns
-Replacing existing metadata with 4 columns
-40 matching events found
-No baseline correction applied
-0 projection items activated
-Loading data for 40 events and 500 original time points ...
-0 bad epochs dropped
-Adding metadata with 4 columns
-Replacing existing metadata with 4 columns
-40 matching events found
-No baseline correction applied
-0 projection items activated
-Loading data for 40 events and 500 original time points ...
-0 bad epochs dropped
-Adding metadata with 4 columns
-Replacing existing metadata with 4 columns
-40 matching events found
-No baseline correction applied
-0 projection items activated
-Loading data for 40 events and 500 original time points ...
-0 bad epochs dropped
-Adding metadata with 4 columns
-Replacing existing metadata with 4 columns
-40 matching events found
-No baseline correction applied
-0 projection items activated
-Loading data for 40 events and 500 original time points ...
-0 bad epochs dropped
-Adding metadata with 4 columns
-Replacing existing metadata with 4 columns
-40 matching events found
-No baseline correction applied
-0 projection items activated
-Loading data for 40 events and 500 original time points ...
-0 bad epochs dropped
-Adding metadata with 4 columns
-Replacing existing metadata with 4 columns
-40 matching events found
-No baseline correction applied
-0 projection items activated
-Loading data for 40 events and 500 original time points ...
-0 bad epochs dropped
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>target</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>5</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>6</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>9</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>10</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>13</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>14</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-<br />
-<br /><p>You can manipulate the dataset</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">))</span>  <span class="c1"># get the number of samples</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>240
-</pre></div>
-</div>
-<p>You can now index the data</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">=</span> <span class="mi">0</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x_i</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_i</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_ind</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x_i</span><span class="o">.</span><span class="n">shape</span></a>  <span class="c1"># the EEG data</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_ind</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stop_ind</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_ind</span></a>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n_channels=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="si">}</span><span class="s2">  -- n_times=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="si">}</span><span class="s2"> -- y_i=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_i</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;start_ind=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_ind</span></a><span class="si">}</span><span class="s2"> -- stop_ind=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stop_ind</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading data for 1 events and 500 original time points ...
-n_channels=64  -- n_times=500 -- y_i=5
-start_ind=0 -- stop_ind=500
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.143 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  8 MB</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-custom-dataset-example-py">
+<img src="../_images/sphx_glr_plot_benchmark_preprocessing_001.png" srcset="../_images/sphx_glr_plot_benchmark_preprocessing_001.png" alt="Loading and preprocessing 2 recordings from Sleep Physionet" class = "sphx-glr-single-img"/><p>We see that parallel preprocessing without serialization (blue crosses) is
+faster than simple sequential processing (blue circles), however it uses more
+memory.</p>
+<p>Combining parallel preprocessing and serialization (orange crosses) reduces
+memory usage significantly, however it increases run time by a few seconds.
+Depending on available resources (e.g. in limited memory settings), it might
+therefore be more advantageous to use both parallelization and serialization
+together.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  49.017 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  392 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-preprocessing-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/039c2490138a56f628199b79e22e54fd/plot_custom_dataset_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_custom_dataset_example.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/817b00270adee98fe11f869f8c64d9cc/plot_benchmark_preprocessing.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_preprocessing.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/49b1f19a86467aeaf762a1550583a845/plot_custom_dataset_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_custom_dataset_example.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/5ae34d87007c72630b1b1fd61f73ee5d/plot_benchmark_preprocessing.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark_preprocessing.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -758,8 +719,8 @@ start_ind=0 -- stop_ind=500
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="index.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="plot_mne_dataset_example.html" class="btn btn-neutral float-left" title="MNE Dataset Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot_dataset_example.html" class="btn btn-neutral float-right" title="MOABB Dataset Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="plot_tuh_discrete_multitarget.html" class="btn btn-neutral float-left" title="Multiple discrete targets with the TUH EEG Corpus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

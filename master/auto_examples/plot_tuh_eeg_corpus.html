@@ -130,6 +130,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a><ul>
@@ -153,6 +154,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Process a big data EEG resource (TUH EEG Corpus)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading">Loading</a></li>
@@ -167,7 +169,6 @@
 <li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#plot-confusion-matrix">Plot Confusion Matrix</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Process a big data EEG resource (TUH EEG Corpus)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#create-model-and-compute-windowing-parameters">Create model and compute windowing parameters</a></li>
@@ -540,7 +541,7 @@ including simple preprocessing steps as well as cutting of compute windows.</p>
 <span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <span class="p">(</span>
     <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">,</span> <span class="n">scale</span> <span class="k">as</span> <a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">multiply</span></a><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">braindecode.datautil.serialization</span> <span class="kn">import</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a>
+
 
 <a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>  <span class="c1"># avoid messages everytime a window is extracted</span>
 </pre></div>
@@ -567,14 +568,15 @@ are read with <cite>mne.io.read_raw_edf</cite> with <cite>preload=False</cite>. 
 a <cite>BaseConcatDataset</cite> of <cite>BaseDatasets</cite> each holding a single
 <cite>nme.io.Raw</cite> which is fully compatible with other braindecode functionalities.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUH_PATH</span></a> <span class="o">=</span> <span class="s1">&#39;please insert actual path to data here&#39;</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># specify the number of jobs for loading and windowing</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># specify the number of jobs for loading and windowing</span>
 <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a><span class="p">(</span>
     <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUH_PATH</span></a><span class="p">,</span>
     <span class="n">recording_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">target_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <a href="../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;_TUHMock&#39;</span> <span class="k">else</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">,</span>  <span class="c1"># Mock dataset can&#39;t</span>
+    <span class="c1"># be loaded in parallel</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -714,51 +716,35 @@ in brackets:</p>
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>The preprocessing loop works as follows. For every recording, we apply the
-preprocessors as defined above. Then, we update the description of the rec,
-since we have altered the duration, the reference, and the sampling
-frequency. Afterwards, we store each recording to a unique subdirectory that
-is named corresponding to the rec id. To save memory we delete the raw
-dataset after storing. This gives us the option to try different windowing
-parameters after reloading the data.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OUT_PATH</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp" title="tempfile.mkdtemp" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span></a><span class="p">()</span>  <span class="c1"># plaese insert actual output directory here</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_splits</span></a> <span class="o">=</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">tuh</span><span class="o">.</span><span class="n">split</span></a><span class="p">([[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">))])</span>  <span class="c1"># will be unnecessary with PR277</span>
-<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rec_i</span></a><span class="p">,</span> <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_subset</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_splits</span></a><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># will be unnecessary with PR277</span>
-    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span>
-        <span class="n">concat_ds</span><span class="o">=</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_subset</span></a><span class="p">,</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">,</span>
-        <span class="c1"># n_jobs=N_JOBS,  # will be available with PR277</span>
-        <span class="c1"># save_dir=OUT_PATH,  # will be available with PR277</span>
-    <span class="p">)</span>
-    <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.save" title="braindecode.datasets.BaseConcatDataset.save" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">tuh_subset</span><span class="o">.</span><span class="n">save</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OUT_PATH</span></a><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rec_i</span></a><span class="p">))</span>  <span class="c1"># will be unnecessary with PR277</span>
-    <span class="c1"># save memory by deleting raw recording</span>
-    <span class="k">del</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_subset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span>  <span class="c1"># will be unnecessary with PR277</span>
+<p>Next, we apply the preprocessors on the selected recordings in parallel.
+We additionally use the serialization functionality of
+<a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess()</span></code></a> to limit memory usage during
+preprocessing (as each file must be loaded into memory for some of the
+preprocessing steps to work). This also makes it possible to use the lazy
+loading capabilities of <a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a>, as
+the preprocessed data is automatically reloaded with <code class="docutils literal notranslate"><span class="pre">preload=False</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Here we use <code class="docutils literal notranslate"><span class="pre">n_jobs=2</span></code> as the machines the documentation is build on
+only have two cores. This number should be modified based on the machine
+that is available for preprocessing.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OUT_PATH</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp" title="tempfile.mkdtemp" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span></a><span class="p">()</span>  <span class="c1"># please insert actual output directory here</span>
+<a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_preproc</span></a> <span class="o">=</span> <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">,</span>
+    <span class="n">save_dir</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OUT_PATH</span></a>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
-  warnings.warn(msg, category=FutureWarning)
-/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files [&#39;0&#39;].
-  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
-/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files [&#39;0&#39;, &#39;1&#39;].
-  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
-/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files [&#39;2&#39;, &#39;0&#39;, &#39;1&#39;].
-  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
-/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files [&#39;3&#39;, &#39;2&#39;, &#39;0&#39;, &#39;1&#39;].
-  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
-</pre></div>
-</div>
-<p>We reload the preprocessed data again in a lazy fashion (<cite>preload=False</cite>).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_loaded</span></a> <span class="o">=</span> <a href="../generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset" title="braindecode.datautil.load_concat_dataset" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">load_concat_dataset</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">OUT_PATH</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<p>We generate compute windows. The resulting dataset is now ready to be used
-for model training.</p>
+<p>We can finally generate compute windows. The resulting dataset is now ready
+to be used for model training.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a> <span class="o">=</span> <span class="mi">1000</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_stride_samples</span></a> <span class="o">=</span> <span class="mi">1000</span>
 <span class="c1"># generate compute windows here and store them to disk</span>
 <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_windows</span></a> <span class="o">=</span> <a href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
-    <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_loaded</span></a><span class="p">,</span>
+    <a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_preproc</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_stride_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_stride_samples</span></a><span class="p">,</span>
     <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -769,8 +755,8 @@ for model training.</p>
     <span class="k">break</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.062 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.958 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  8 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-tuh-eeg-corpus-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e0deebe7e74ab8d42ee491e92f30e023/plot_tuh_eeg_corpus.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_tuh_eeg_corpus.py</span></code></a></p>

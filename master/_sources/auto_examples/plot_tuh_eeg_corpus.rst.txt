@@ -43,7 +43,7 @@ including simple preprocessing steps as well as cutting of compute windows.
     from braindecode.datasets import TUH
     from braindecode.preprocessing import (
         preprocess, Preprocessor, create_fixed_length_windows, scale as multiply)
-    from braindecode.datautil.serialization import load_concat_dataset
+
 
     mne.set_log_level('ERROR')  # avoid messages everytime a window is extracted
 
@@ -93,20 +93,21 @@ are read with `mne.io.read_raw_edf` with `preload=False`. Finally, we will get
 a `BaseConcatDataset` of `BaseDatasets` each holding a single
 `nme.io.Raw` which is fully compatible with other braindecode functionalities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-64
+.. GENERATED FROM PYTHON SOURCE LINES 51-65
 
 .. code-block:: default
 
 
     TUH_PATH = 'please insert actual path to data here'
-    N_JOBS = 1  # specify the number of jobs for loading and windowing
+    N_JOBS = 2  # specify the number of jobs for loading and windowing
     tuh = TUH(
         path=TUH_PATH,
         recording_ids=None,
         target_name=None,
         preload=False,
         add_physician_reports=False,
-        n_jobs=N_JOBS,
+        n_jobs=1 if TUH.__name__ == '_TUHMock' else N_JOBS,  # Mock dataset can't
+        # be loaded in parallel
     )
 
 
@@ -117,12 +118,12 @@ a `BaseConcatDataset` of `BaseDatasets` each holding a single
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-67
+.. GENERATED FROM PYTHON SOURCE LINES 66-68
 
 We can easily create descriptive statistics using the description `DataFrame`,
 for example an age histogram split by gender of patients.
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-82
+.. GENERATED FROM PYTHON SOURCE LINES 68-83
 
 .. code-block:: default
 
@@ -161,13 +162,13 @@ for example an age histogram split by gender of patients.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-86
+.. GENERATED FROM PYTHON SOURCE LINES 84-87
 
 Next, we will perform some preprocessing steps. First, we will do some
 selection of available recordings based on the duration. We will select those
 recordings, that have at least five minutes duration. Data is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-106
+.. GENERATED FROM PYTHON SOURCE LINES 87-107
 
 .. code-block:: default
 
@@ -198,7 +199,7 @@ recordings, that have at least five minutes duration. Data is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-112
+.. GENERATED FROM PYTHON SOURCE LINES 108-113
 
 Next, we will discard all recordings that have an incomplete channel
 configuration (wrt the channels that we are interested in, i.e. the 21
@@ -206,7 +207,7 @@ channels of the international 10-20-placement). The dataset is subdivided into
 recordings with 'le' and 'ar' reference which we will have to consider. Data
 is not loaded here.
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-154
+.. GENERATED FROM PYTHON SOURCE LINES 113-155
 
 .. code-block:: default
 
@@ -259,7 +260,7 @@ is not loaded here.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-166
+.. GENERATED FROM PYTHON SOURCE LINES 156-167
 
 Next, we will chain several preprocessing steps that are realized through
 `mne`. Data will be loaded by the first preprocessor that has a mention of it
@@ -273,7 +274,7 @@ in brackets:
 #. clip outlier values to +/- 800 micro volts (requires load)
 #. resample recordings to a common frequency (requires load)
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-203
+.. GENERATED FROM PYTHON SOURCE LINES 167-204
 
 .. code-block:: default
 
@@ -321,69 +322,33 @@ in brackets:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-211
+.. GENERATED FROM PYTHON SOURCE LINES 205-217
 
-The preprocessing loop works as follows. For every recording, we apply the
-preprocessors as defined above. Then, we update the description of the rec,
-since we have altered the duration, the reference, and the sampling
-frequency. Afterwards, we store each recording to a unique subdirectory that
-is named corresponding to the rec id. To save memory we delete the raw
-dataset after storing. This gives us the option to try different windowing
-parameters after reloading the data.
+Next, we apply the preprocessors on the selected recordings in parallel.
+We additionally use the serialization functionality of
+:func:`braindecode.preprocessing.preprocess` to limit memory usage during
+preprocessing (as each file must be loaded into memory for some of the
+preprocessing steps to work). This also makes it possible to use the lazy
+loading capabilities of :class:`braindecode.datasets.BaseConcatDataset`, as
+the preprocessed data is automatically reloaded with ``preload=False``.
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-226
+.. note::
+   Here we use ``n_jobs=2`` as the machines the documentation is build on
+   only have two cores. This number should be modified based on the machine
+   that is available for preprocessing.
 
-.. code-block:: default
-
-
-    OUT_PATH = tempfile.mkdtemp()  # plaese insert actual output directory here
-    tuh_splits = tuh.split([[i] for i in range(len(tuh.datasets))])  # will be unnecessary with PR277
-    for rec_i, tuh_subset in tuh_splits.items():  # will be unnecessary with PR277
-        preprocess(
-            concat_ds=tuh_subset,
-            preprocessors=preprocessors,
-            # n_jobs=N_JOBS,  # will be available with PR277
-            # save_dir=OUT_PATH,  # will be available with PR277
-        )
-        tuh_subset.save(OUT_PATH, offset=int(rec_i))  # will be unnecessary with PR277
-        # save memory by deleting raw recording
-        del tuh_subset.datasets[0].raw  # will be unnecessary with PR277
-
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
-      warnings.warn(msg, category=FutureWarning)
-    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files ['0'].
-      warnings.warn(f'Chosen directory {path} contains other '
-    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files ['0', '1'].
-      warnings.warn(f'Chosen directory {path} contains other '
-    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files ['2', '0', '1'].
-      warnings.warn(f'Chosen directory {path} contains other '
-    /home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:555: UserWarning: Chosen directory /tmp/tmp7owue0qa contains other subdirectories or files ['3', '2', '0', '1'].
-      warnings.warn(f'Chosen directory {path} contains other '
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 227-228
-
-We reload the preprocessed data again in a lazy fashion (`preload=False`).
-
-.. GENERATED FROM PYTHON SOURCE LINES 228-232
+.. GENERATED FROM PYTHON SOURCE LINES 217-227
 
 .. code-block:: default
 
 
-    tuh_loaded = load_concat_dataset(OUT_PATH, preload=False, n_jobs=N_JOBS)
+    OUT_PATH = tempfile.mkdtemp()  # please insert actual output directory here
+    tuh_preproc = preprocess(
+        concat_ds=tuh,
+        preprocessors=preprocessors,
+        n_jobs=N_JOBS,
+        save_dir=OUT_PATH
+    )
 
 
 
@@ -393,12 +358,12 @@ We reload the preprocessed data again in a lazy fashion (`preload=False`).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-235
+.. GENERATED FROM PYTHON SOURCE LINES 228-230
 
-We generate compute windows. The resulting dataset is now ready to be used
-for model training.
+We can finally generate compute windows. The resulting dataset is now ready
+to be used for model training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-249
+.. GENERATED FROM PYTHON SOURCE LINES 230-244
 
 .. code-block:: default
 
@@ -407,7 +372,7 @@ for model training.
     window_stride_samples = 1000
     # generate compute windows here and store them to disk
     tuh_windows = create_fixed_length_windows(
-        tuh_loaded,
+        tuh_preproc,
         window_size_samples=window_size_samples,
         window_stride_samples=window_stride_samples,
         drop_last_window=False,
@@ -426,9 +391,9 @@ for model training.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.062 seconds)
+   **Total running time of the script:** ( 0 minutes  1.958 seconds)
 
-**Estimated memory usage:**  9 MB
+**Estimated memory usage:**  8 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_tuh_eeg_corpus.py:
