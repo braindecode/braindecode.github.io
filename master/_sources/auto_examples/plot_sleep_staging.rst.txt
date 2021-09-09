@@ -146,7 +146,7 @@ Physionet data is already sampled at a lower 100 Hz.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:86: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f9e55a6c750>
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f421caa7390>
 
 
 
@@ -227,7 +227,7 @@ in each window.
  .. code-block:: none
 
 
-    <braindecode.datasets.base.BaseConcatDataset object at 0x7f9e56f7a690>
+    <braindecode.datasets.base.BaseConcatDataset object at 0x7f4214286610>
 
 
 
@@ -311,8 +311,8 @@ classifier).
         valid_set.get_metadata(), n_windows, n_windows_stride)
 
     # Print number of examples per class
-    print(len(train_sampler))
-    print(len(valid_sampler))
+    print('Training examples: ', len(train_sampler))
+    print('Validation examples: ', len(valid_sampler))
 
 
 
@@ -324,8 +324,8 @@ classifier).
 
  .. code-block:: none
 
-    372
-    383
+    Training examples:  372
+    Validation examples:  383
 
 
 
@@ -391,14 +391,16 @@ Create model
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-238
+.. GENERATED FROM PYTHON SOURCE LINES 234-240
 
 We can now create the deep learning model. In this tutorial, we use the sleep
 staging architecture introduced in [1]_, which is a four-layer convolutional
-neural network.
+neural network. We use the time distributed version of the model, where the
+feature vectors of a sequence of windows are concatenated and passed to a
+linear layer for classification.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-298
+.. GENERATED FROM PYTHON SOURCE LINES 240-279
 
 .. code-block:: default
 
@@ -406,7 +408,7 @@ neural network.
     import torch
     from torch import nn
     from braindecode.util import set_random_seeds
-    from braindecode.models import SleepStagerChambon2018
+    from braindecode.models import SleepStagerChambon2018, TimeDistributed
 
     cuda = torch.cuda.is_available()  # check if GPU is available
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -419,43 +421,22 @@ neural network.
     # Extract number of channels and time steps from dataset
     n_channels, input_size_samples = train_set[0][0].shape
 
-
-    class TimeDistributedNet(nn.Module):
-        """Extract features for multiple windows then concatenate & classify them.
-        """
-        def __init__(self, feat_extractor, len_last_layer, n_windows, n_classes,
-                     dropout=0.25):
-            super().__init__()
-            self.feat_extractor = feat_extractor
-            self.clf = nn.Sequential(
-                nn.Dropout(dropout),
-                nn.Linear(len_last_layer * n_windows, n_classes)
-            )
-
-        def forward(self, x):
-            """
-            Parameters
-            ----------
-            x : torch.Tensor
-                Input sequence of windows, of shape (batch_size, seq_len,
-                n_channels, n_times).
-            """
-            feats = [self.feat_extractor.embed(x[:, i]) for i in range(x.shape[1])]
-            feats = torch.stack(feats, dim=1).flatten(start_dim=1)
-            return self.clf(feats)
-
-
     feat_extractor = SleepStagerChambon2018(
         n_channels,
         sfreq,
         n_classes=n_classes,
-        input_size_s=input_size_samples / sfreq
+        input_size_s=input_size_samples / sfreq,
+        return_feats=True
     )
 
-    model = TimeDistributedNet(
-        feat_extractor, feat_extractor.len_last_layer, n_windows, n_classes,
-        dropout=0.5)
-
+    model = nn.Sequential(
+        TimeDistributed(feat_extractor),  # apply model on each 30-s window
+        nn.Sequential(  # apply linear layer on concatenated feature vectors
+            nn.Flatten(start_dim=1),
+            nn.Dropout(0.5),
+            nn.Linear(feat_extractor.len_last_layer * n_windows, n_classes)
+        )
+    )
 
     # Send model to GPU
     if cuda:
@@ -478,13 +459,13 @@ neural network.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 299-302
+.. GENERATED FROM PYTHON SOURCE LINES 280-283
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 305-311
+.. GENERATED FROM PYTHON SOURCE LINES 286-292
 
 We can now train our network. :class:`braindecode.EEGClassifier` is a
 braindecode object that is responsible for managing the training of neural
@@ -493,7 +474,7 @@ training logic is the same as in
 `Skorch <https://skorch.readthedocs.io/en/stable/>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 314-320
+.. GENERATED FROM PYTHON SOURCE LINES 295-301
 
 **Note**: We use different hyperparameters from [1]_, as
 these hyperparameters were optimized on a different dataset (MASS SS3) and
@@ -502,7 +483,7 @@ recommended to perform hyperparameter optimization if reusing this code on
 a different dataset or with more recordings.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 320-357
+.. GENERATED FROM PYTHON SOURCE LINES 301-338
 
 .. code-block:: default
 
@@ -555,52 +536,51 @@ a different dataset or with more recordings.
 
       epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss     dur
     -------  ---------------  ------------  ---------------  ------------  ------
-          1           0.1292        1.6569           0.2065        1.6108  3.4628
-          2           0.1957        1.6079           0.1857        1.6073  3.2363
-          3           0.2021        1.6084           0.1854        1.6073  3.2397
-          4           0.2205        1.6074           0.1997        1.6067  3.1947
-          5           0.2366        1.6038           0.1670        1.6113  3.1323
-          6           0.2028        1.6063           0.1776        1.6112  3.4338
-          7           0.1941        1.5885           0.1860        1.6077  3.1382
-          8           0.1994        1.5635           0.1721        1.5987  3.3415
-          9           0.1924        1.5290           0.1389        1.5863  2.9817
-         10           0.2159        1.4917           0.2480        1.5770  3.2351
+          1           0.1199        1.6479           0.1962        1.6122  3.9818
+          2           0.1818        1.6060           0.2113        1.6092  3.1552
+          3           0.2338        1.5971           0.2000        1.6173  3.2187
+          4           0.2100        1.5664           0.2000        1.6141  2.7261
+          5           0.2300        1.5202           0.2000        1.6408  3.5043
+          6           0.2200        1.4405           0.2000        1.6752  3.2047
+          7           0.2563        1.3843           0.2000        1.7847  3.1661
+          8           0.2620        1.3200           0.2056        1.8087  3.1171
+          9           0.2818        1.2864           0.2113        1.8648  2.8539
+         10           0.3058        1.2526           0.2258        1.8307  2.7422
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
-      module_=TimeDistributedNet(
-        (feat_extractor): SleepStagerChambon2018(
-          (spatial_conv): Conv2d(1, 2, kernel_size=(2, 1), stride=(1, 1))
-          (feature_extractor): Sequential(
-            (0): Conv2d(1, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
-            (1): Identity()
-            (2): ReLU()
-            (3): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
-            (4): Conv2d(8, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
-            (5): Identity()
-            (6): ReLU()
-            (7): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
-          )
-          (fc): Sequential(
-            (0): Dropout(p=0.25, inplace=False)
-            (1): Linear(in_features=272, out_features=5, bias=True)
+      module_=Sequential(
+        (0): TimeDistributed(
+          (module): SleepStagerChambon2018(
+            (spatial_conv): Conv2d(1, 2, kernel_size=(2, 1), stride=(1, 1))
+            (feature_extractor): Sequential(
+              (0): Conv2d(1, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
+              (1): Identity()
+              (2): ReLU()
+              (3): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
+              (4): Conv2d(8, 8, kernel_size=(1, 50), stride=(1, 1), padding=(0, 25))
+              (5): Identity()
+              (6): ReLU()
+              (7): MaxPool2d(kernel_size=(1, 13), stride=(1, 13), padding=0, dilation=1, ceil_mode=False)
+            )
           )
         )
-        (clf): Sequential(
-          (0): Dropout(p=0.5, inplace=False)
-          (1): Linear(in_features=816, out_features=5, bias=True)
+        (1): Sequential(
+          (0): Flatten(start_dim=1, end_dim=-1)
+          (1): Dropout(p=0.5, inplace=False)
+          (2): Linear(in_features=816, out_features=5, bias=True)
         )
       ),
     )
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 358-361
+.. GENERATED FROM PYTHON SOURCE LINES 339-342
 
 Plot results
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 364-369
+.. GENERATED FROM PYTHON SOURCE LINES 345-350
 
 We use the history stored by Skorch during training to plot the performance of
 the model throughout training. Specifically, we plot the loss and the balanced
@@ -608,7 +588,7 @@ misclassification rate (1 - balanced accuracy) for the training and validation
 sets.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 369-409
+.. GENERATED FROM PYTHON SOURCE LINES 350-390
 
 .. code-block:: default
 
@@ -664,12 +644,12 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 410-412
+.. GENERATED FROM PYTHON SOURCE LINES 391-393
 
 Finally, we also display the confusion matrix and classification report:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 412-423
+.. GENERATED FROM PYTHON SOURCE LINES 393-404
 
 .. code-block:: default
 
@@ -694,28 +674,34 @@ Finally, we also display the confusion matrix and classification report:
 
  .. code-block:: none
 
-    [[18  4 25  1 13]
-     [11  1  4  0  5]
-     [77  9 50  1 57]
-     [36  2 18  9 10]
-     [21  1  4  0  6]]
+    [[  0   0   3  58   0]
+     [  0   0   9  12   0]
+     [  1   0  23 170   0]
+     [  0   0   7  68   0]
+     [  0   0   6  26   0]]
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+      _warn_prf(average, modifier, msg_start, len(result))
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+      _warn_prf(average, modifier, msg_start, len(result))
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+      _warn_prf(average, modifier, msg_start, len(result))
                   precision    recall  f1-score   support
 
-               0       0.11      0.30      0.16        61
-               1       0.06      0.05      0.05        21
-               2       0.50      0.26      0.34       194
-               3       0.82      0.12      0.21        75
-               4       0.07      0.19      0.10        32
+               0       0.00      0.00      0.00        61
+               1       0.00      0.00      0.00        21
+               2       0.48      0.12      0.19       194
+               3       0.20      0.91      0.33        75
+               4       0.00      0.00      0.00        32
 
-        accuracy                           0.22       383
-       macro avg       0.31      0.18      0.17       383
-    weighted avg       0.44      0.22      0.25       383
-
-
+        accuracy                           0.24       383
+       macro avg       0.14      0.21      0.10       383
+    weighted avg       0.28      0.24      0.16       383
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 424-434
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 405-415
 
 Our model was able to learn despite the low amount of data that was available
 (only two recordings in this example) and reached a balanced accuracy of
@@ -731,9 +717,9 @@ especially when few EEG channels are available.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  40.611 seconds)
+   **Total running time of the script:** ( 0 minutes  41.039 seconds)
 
-**Estimated memory usage:**  1172 MB
+**Estimated memory usage:**  257 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging.py:
