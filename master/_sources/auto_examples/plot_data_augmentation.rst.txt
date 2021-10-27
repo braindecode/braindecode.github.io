@@ -120,7 +120,7 @@ Preprocessing
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.moabb.MOABBDataset object at 0x7fcc11ecacd0>
+    <braindecode.datasets.moabb.MOABBDataset object at 0x7f943a1a8dd0>
 
 
 
@@ -208,7 +208,7 @@ directly on input data, as demonstrated below for illutrative purposes.
     transform = FrequencyShift(
         probability=1.,  # defines the probability of actually modifying the input
         sfreq=sfreq,
-        max_delta_freq=10.  # -> fixed frequency shift for visualization
+        max_delta_freq=2.  # the frequency shifts are sampled now between -2 and 2 Hz
     )
 
 
@@ -224,7 +224,7 @@ Manipulating one session and visualizing the transformed data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-129
+.. GENERATED FROM PYTHON SOURCE LINES 119-131
 
 .. code-block:: default
 
@@ -236,7 +236,9 @@ Manipulating one session and visualizing the transformed data
 
     epochs = train_set.datasets[0].windows  # original epochs
     X = epochs.get_data()
-    X_tr = transform(X).numpy()
+    # This allows to apply the transform with a fixed shift (10 Hz) for
+    # visualization instead of sampling the shift randomly between -2 and 2 Hz
+    X_tr, _ = transform.operation(torch.as_tensor(X).float(), None, 10., sfreq)
 
 
 
@@ -245,12 +247,12 @@ Manipulating one session and visualizing the transformed data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-132
+.. GENERATED FROM PYTHON SOURCE LINES 132-134
 
 The psd of the transformed session has now been shifted by 10 Hz, as one can
 see on the psd plot.
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-155
+.. GENERATED FROM PYTHON SOURCE LINES 134-157
 
 .. code-block:: default
 
@@ -270,7 +272,7 @@ see on the psd plot.
 
     _, ax = plt.subplots()
     plot_psd(X, ax, 'original', 'k')
-    plot_psd(X_tr, ax, 'shifted', 'r')
+    plot_psd(X_tr.numpy(), ax, 'shifted', 'r')
 
     ax.set(title='Multitaper PSD (gradiometers)', xlabel='Frequency (Hz)',
            ylabel='Power Spectral Density (dB)')
@@ -289,7 +291,7 @@ see on the psd plot.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-166
+.. GENERATED FROM PYTHON SOURCE LINES 158-168
 
 Training a model with data augmentation
 ---------------------------------------
@@ -302,11 +304,11 @@ Create model
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 168-169
+.. GENERATED FROM PYTHON SOURCE LINES 170-171
 
 The model to be trained is defined as usual.
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-195
+.. GENERATED FROM PYTHON SOURCE LINES 171-197
 
 .. code-block:: default
 
@@ -343,19 +345,19 @@ The model to be trained is defined as usual.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-199
+.. GENERATED FROM PYTHON SOURCE LINES 198-201
 
 Create an EEGClassifier with the desired augmentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-204
+.. GENERATED FROM PYTHON SOURCE LINES 203-206
 
 In order to train with data augmentation, a custom data loader can be
 for the training. Multiple transforms can be passed to it and will be applied
 sequentially to the batched data within the ``AugmentedDataLoader`` object.
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-224
+.. GENERATED FROM PYTHON SOURCE LINES 206-226
 
 .. code-block:: default
 
@@ -365,7 +367,7 @@ sequentially to the batched data within the ``AugmentedDataLoader`` object.
     freq_shift = FrequencyShift(
         probability=.5,
         sfreq=sfreq,
-        max_delta_freq=-2.  # the frequency shifts are sampled now between -2 and 2 Hz
+        max_delta_freq=2.  # the frequency shifts are sampled now between -2 and 2 Hz
     )
 
     sign_flip = SignFlip(probability=.1)
@@ -386,13 +388,13 @@ sequentially to the batched data within the ``AugmentedDataLoader`` object.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-228
+.. GENERATED FROM PYTHON SOURCE LINES 227-230
 
 The model is now trained as in the trial-wise example. The
 ``AugmentedDataLoader`` is used as the train iterator and the list of
 transforms are passed as arguments.
 
-.. GENERATED FROM PYTHON SOURCE LINES 228-255
+.. GENERATED FROM PYTHON SOURCE LINES 230-257
 
 .. code-block:: default
 
@@ -435,10 +437,10 @@ transforms are passed as arguments.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
     -------  ----------------  ------------  ----------------  ------------  ------  ------
-          1            0.2708        1.6129            0.2674        5.5205  0.0006  5.1729
-          2            0.2639        1.2147            0.2535        6.1279  0.0005  5.0448
-          3            0.2639        1.0976            0.2535        5.0851  0.0002  5.0286
-          4            0.2674        1.0492            0.2569        3.8832  0.0000  4.9926
+          1            0.2569        1.6225            0.2431        5.5633  0.0006  6.2923
+          2            0.2535        1.2218            0.2535        6.3996  0.0005  6.0972
+          3            0.2535        1.0973            0.2535        5.2946  0.0002  6.2083
+          4            0.2639        1.0922            0.2535        4.0276  0.0000  6.2174
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -459,7 +461,7 @@ transforms are passed as arguments.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 256-261
+.. GENERATED FROM PYTHON SOURCE LINES 258-263
 
 Manually composing Transforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -467,7 +469,7 @@ Manually composing Transforms
 It would be equivalent (although more verbose) to pass to ``EEGClassifier`` a
 composition of the same transforms:
 
-.. GENERATED FROM PYTHON SOURCE LINES 261-266
+.. GENERATED FROM PYTHON SOURCE LINES 263-268
 
 .. code-block:: default
 
@@ -483,7 +485,7 @@ composition of the same transforms:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 267-275
+.. GENERATED FROM PYTHON SOURCE LINES 269-277
 
 Setting the data augmentation at the Dataset level
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -494,7 +496,7 @@ most commonly done in other libraries. However, it is advised to use the
 ``AugmentedDataLoader`` as above, as it is compatible with all transforms and
 can be more efficient.
 
-.. GENERATED FROM PYTHON SOURCE LINES 275-277
+.. GENERATED FROM PYTHON SOURCE LINES 277-279
 
 .. code-block:: default
 
@@ -510,9 +512,9 @@ can be more efficient.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  32.759 seconds)
+   **Total running time of the script:** ( 0 minutes  40.378 seconds)
 
-**Estimated memory usage:**  1571 MB
+**Estimated memory usage:**  1569 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_data_augmentation.py:
