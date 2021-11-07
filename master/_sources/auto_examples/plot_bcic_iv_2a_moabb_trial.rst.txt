@@ -130,7 +130,7 @@ numpy array.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.moabb.MOABBDataset object at 0x7f44117c1590>
+    <braindecode.datasets.moabb.MOABBDataset object at 0x7f346b0a7f10>
 
 
 
@@ -228,7 +228,7 @@ to use your own model, it just has to be a normal PyTorch
 `nn.Module <https://pytorch.org/docs/stable/nn.html#torch.nn.Module>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-180
+.. GENERATED FROM PYTHON SOURCE LINES 150-182
 
 .. code-block:: default
 
@@ -241,8 +241,10 @@ to use your own model, it just has to be a normal PyTorch
     device = 'cuda' if cuda else 'cpu'
     if cuda:
         torch.backends.cudnn.benchmark = True
-    seed = 20200220  # random seed to make results reproducible
-    # Set random seed to be able to reproduce results
+    # Set random seed to be able to roughly reproduce results
+    # Note that with cudnn benchmark set to True, GPU indeterminism
+    # may still make results substantially different between runs
+    seed = 20200220
     set_random_seeds(seed=seed, cuda=cuda)
 
     n_classes = 4
@@ -269,13 +271,13 @@ to use your own model, it just has to be a normal PyTorch
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-184
+.. GENERATED FROM PYTHON SOURCE LINES 183-186
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-192
+.. GENERATED FROM PYTHON SOURCE LINES 189-194
 
 Now we train the network! EEGClassifier is a Braindecode object
 responsible for managing the training of neural networks. It inherits
@@ -283,7 +285,7 @@ from skorch.NeuralNetClassifier, so the training logic is the same as in
 `Skorch <https://skorch.readthedocs.io/en/stable/>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-200
+.. GENERATED FROM PYTHON SOURCE LINES 197-202
 
 **Note**: In this tutorial, we use some default parameters that we
 have found to work well for motor decoding, however we strongly
@@ -291,7 +293,7 @@ encourage you to perform your own hyperparameter optimization using
 cross validation on your training data.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-234
+.. GENERATED FROM PYTHON SOURCE LINES 202-236
 
 .. code-block:: default
 
@@ -341,10 +343,10 @@ cross validation on your training data.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
     -------  ----------------  ------------  ----------------  ------------  ------  ------
-          1            0.2604        1.6159            0.2465        5.6117  0.0006  6.2290
-          2            0.2535        1.2103            0.2535        6.3205  0.0005  6.0697
-          3            0.2535        1.0746            0.2535        5.2373  0.0002  5.9383
-          4            0.2674        1.0589            0.2535        3.9898  0.0000  5.9687
+          1            0.2604        1.6159            0.2465        5.6117  0.0006  5.1894
+          2            0.2535        1.2103            0.2535        6.3205  0.0005  5.0834
+          3            0.2535        1.0746            0.2535        5.2373  0.0002  5.0369
+          4            0.2674        1.0589            0.2535        3.9898  0.0000  5.0293
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -365,19 +367,19 @@ cross validation on your training data.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-238
+.. GENERATED FROM PYTHON SOURCE LINES 237-240
 
 Plot Results
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 241-244
+.. GENERATED FROM PYTHON SOURCE LINES 243-246
 
 Now we use the history stored by Skorch throughout training to plot
 accuracy and loss curves.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 244-283
+.. GENERATED FROM PYTHON SOURCE LINES 246-285
 
 .. code-block:: default
 
@@ -432,18 +434,18 @@ accuracy and loss curves.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 284-287
+.. GENERATED FROM PYTHON SOURCE LINES 286-289
 
 Plot Confusion Matrix
 ---------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 290-292
+.. GENERATED FROM PYTHON SOURCE LINES 292-294
 
 Generate a confusion matrix as in https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 292-313
+.. GENERATED FROM PYTHON SOURCE LINES 294-315
 
 .. code-block:: default
 
@@ -491,9 +493,9 @@ Generate a confusion matrix as in https://onlinelibrary.wiley.com/doi/full/10.10
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  39.842 seconds)
+   **Total running time of the script:** ( 0 minutes  34.218 seconds)
 
-**Estimated memory usage:**  1119 MB
+**Estimated memory usage:**  1060 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_trial.py:

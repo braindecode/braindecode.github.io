@@ -142,7 +142,7 @@ tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.moabb.MOABBDataset object at 0x7f43fee04150>
+    <braindecode.datasets.moabb.MOABBDataset object at 0x7f3462bf9c50>
 
 
 
@@ -193,7 +193,7 @@ than ``input_window_samples`` (see ``final_conv_length=30`` in the model
 definition).
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-172
+.. GENERATED FROM PYTHON SOURCE LINES 142-174
 
 .. code-block:: default
 
@@ -207,8 +207,10 @@ definition).
     device = 'cuda' if cuda else 'cpu'
     if cuda:
         torch.backends.cudnn.benchmark = True
-    seed = 20200220  # random seed to make results reproducible
-    # Set random seed to be able to reproduce results
+    # Set random seed to be able to roughly reproduce results
+    # Note that with cudnn benchmark set to True, GPU indeterminism
+    # may still make results substantially different between runs
+    seed = 20200220
     set_random_seeds(seed=seed, cuda=cuda)
 
     n_classes = 4
@@ -234,14 +236,14 @@ definition).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-177
+.. GENERATED FROM PYTHON SOURCE LINES 175-179
 
 And now we transform model with strides to a model that outputs dense
 prediction, so we can use it to obtain predictions for all
 crops.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-182
+.. GENERATED FROM PYTHON SOURCE LINES 179-184
 
 .. code-block:: default
 
@@ -257,13 +259,13 @@ crops.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-186
+.. GENERATED FROM PYTHON SOURCE LINES 185-188
 
 To know the models’ receptive field, we calculate the shape of model
 output for a dummy input.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-190
+.. GENERATED FROM PYTHON SOURCE LINES 188-192
 
 .. code-block:: default
 
@@ -278,19 +280,19 @@ output for a dummy input.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-194
+.. GENERATED FROM PYTHON SOURCE LINES 193-196
 
 Cut the data into windows
 -------------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-200
+.. GENERATED FROM PYTHON SOURCE LINES 199-202
 
 In contrast to trialwise decoding, we have to supply an explicit window size and
 window stride to the ``create_windows_from_events`` function.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-224
+.. GENERATED FROM PYTHON SOURCE LINES 202-226
 
 .. code-block:: default
 
@@ -325,7 +327,7 @@ window stride to the ``create_windows_from_events`` function.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-230
+.. GENERATED FROM PYTHON SOURCE LINES 227-232
 
 Split the dataset
 -----------------
@@ -333,7 +335,7 @@ Split the dataset
 This code is the same as in trialwise decoding.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 230-236
+.. GENERATED FROM PYTHON SOURCE LINES 232-238
 
 .. code-block:: default
 
@@ -350,13 +352,13 @@ This code is the same as in trialwise decoding.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-240
+.. GENERATED FROM PYTHON SOURCE LINES 239-242
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 243-248
+.. GENERATED FROM PYTHON SOURCE LINES 245-250
 
 In difference to trialwise decoding, we now should supply
 ``cropped=True`` to the EEGClassifier, and ``CroppedLoss`` as the
@@ -364,7 +366,7 @@ criterion, as well as ``criterion__loss_function`` as the loss function
 applied to the meaned predictions.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-257
+.. GENERATED FROM PYTHON SOURCE LINES 253-259
 
 .. note::
    In this tutorial, we use some default parameters that we
@@ -373,7 +375,7 @@ applied to the meaned predictions.
    cross validation on your training data.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 257-296
+.. GENERATED FROM PYTHON SOURCE LINES 259-298
 
 .. code-block:: default
 
@@ -428,10 +430,10 @@ applied to the meaned predictions.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr      dur
     -------  ----------------  ------------  ----------------  ------------  ------  -------
-          1            0.2500        1.4486            0.2500        5.4387  0.0006  18.2382
-          2            0.2569        1.2315            0.2500        3.6825  0.0005  18.0313
-          3            0.3958        1.1476            0.3611        2.2702  0.0002  18.0450
-          4            0.4340        1.1225            0.4410        1.4375  0.0000  17.8698
+          1            0.2500        1.4486            0.2500        5.4387  0.0006  15.5825
+          2            0.2569        1.2315            0.2500        3.6824  0.0005  15.4562
+          3            0.3958        1.1476            0.3611        2.2702  0.0002  15.5249
+          4            0.4340        1.1225            0.4410        1.4375  0.0000  15.4969
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -452,13 +454,13 @@ applied to the meaned predictions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-300
+.. GENERATED FROM PYTHON SOURCE LINES 299-302
 
 Plot Results
 ------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 303-309
+.. GENERATED FROM PYTHON SOURCE LINES 305-311
 
 This is again the same code as in trialwise decoding.
 
@@ -467,7 +469,7 @@ This is again the same code as in trialwise decoding.
     loss as in the trialwise decoding tutorial.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 309-348
+.. GENERATED FROM PYTHON SOURCE LINES 311-350
 
 .. code-block:: default
 
@@ -522,18 +524,18 @@ This is again the same code as in trialwise decoding.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 349-352
+.. GENERATED FROM PYTHON SOURCE LINES 351-354
 
 Plot Confusion Matrix
 ---------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 355-357
+.. GENERATED FROM PYTHON SOURCE LINES 357-359
 
 Generate a confusion matrix as in https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 357-378
+.. GENERATED FROM PYTHON SOURCE LINES 359-380
 
 .. code-block:: default
 
@@ -581,9 +583,9 @@ Generate a confusion matrix as in https://onlinelibrary.wiley.com/doi/full/10.10
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  44.042 seconds)
+   **Total running time of the script:** ( 1 minutes  30.182 seconds)
 
-**Estimated memory usage:**  1335 MB
+**Estimated memory usage:**  1651 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_cropped.py:

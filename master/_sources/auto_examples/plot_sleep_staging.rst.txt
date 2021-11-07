@@ -136,7 +136,7 @@ Physionet data is already sampled at a lower 100 Hz.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f441a758390>
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f346a45d390>
 
 
 
@@ -215,7 +215,7 @@ in each window.
  .. code-block:: none
 
 
-    <braindecode.datasets.base.BaseConcatDataset object at 0x7f4412384ad0>
+    <braindecode.datasets.base.BaseConcatDataset object at 0x7f346912e210>
 
 
 
@@ -374,7 +374,7 @@ feature vectors of a sequence of windows are concatenated and passed to a
 linear layer for classification.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-253
+.. GENERATED FROM PYTHON SOURCE LINES 214-255
 
 .. code-block:: default
 
@@ -388,7 +388,9 @@ linear layer for classification.
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if cuda:
         torch.backends.cudnn.benchmark = True
-    # Set random seed to be able to reproduce results
+    # Set random seed to be able to roughly reproduce results
+    # Note that with cudnn benchmark set to True, GPU indeterminism
+    # may still make results substantially different between runs
     set_random_seeds(seed=random_state, cuda=cuda)
 
     n_classes = 5
@@ -424,7 +426,7 @@ linear layer for classification.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 254-270
+.. GENERATED FROM PYTHON SOURCE LINES 256-272
 
 Training
 --------
@@ -443,7 +445,7 @@ training logic is the same as in
    with more recordings.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 270-307
+.. GENERATED FROM PYTHON SOURCE LINES 272-309
 
 .. code-block:: default
 
@@ -496,16 +498,16 @@ training logic is the same as in
 
       epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss     dur
     -------  ---------------  ------------  ---------------  ------------  ------
-          1           0.1199        1.6479           0.1962        1.6122  3.6671
-          2           0.1818        1.6060           0.2113        1.6092  3.0400
-          3           0.2338        1.5971           0.2000        1.6173  3.0606
-          4           0.2100        1.5664           0.2000        1.6141  3.1212
-          5           0.2300        1.5202           0.2000        1.6408  3.1052
-          6           0.2200        1.4407           0.2000        1.6763  3.6255
-          7           0.2563        1.3840           0.2000        1.7847  3.1382
-          8           0.2620        1.3198           0.2056        1.8062  3.0099
-          9           0.2701        1.2873           0.2113        1.8669  3.0247
-         10           0.3074        1.2522           0.2268        1.8256  3.1284
+          1           0.1199        1.6479           0.1962        1.6122  3.6999
+          2           0.1818        1.6060           0.2113        1.6092  3.0987
+          3           0.2338        1.5971           0.2000        1.6173  3.0892
+          4           0.2100        1.5664           0.2000        1.6141  3.1486
+          5           0.2300        1.5202           0.2000        1.6408  3.0869
+          6           0.2200        1.4405           0.2000        1.6752  3.2037
+          7           0.2563        1.3843           0.2000        1.7847  3.0991
+          8           0.2620        1.3200           0.2056        1.8087  3.2155
+          9           0.2818        1.2864           0.2113        1.8648  3.0901
+         10           0.3058        1.2526           0.2258        1.8307  3.1849
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=Sequential(
@@ -534,7 +536,7 @@ training logic is the same as in
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 308-316
+.. GENERATED FROM PYTHON SOURCE LINES 310-318
 
 Plot results
 ------------
@@ -545,7 +547,7 @@ misclassification rate (1 - balanced accuracy) for the training and validation
 sets.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 316-356
+.. GENERATED FROM PYTHON SOURCE LINES 318-358
 
 .. code-block:: default
 
@@ -601,12 +603,12 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 357-359
+.. GENERATED FROM PYTHON SOURCE LINES 359-361
 
 Finally, we also display the confusion matrix and classification report:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 359-369
+.. GENERATED FROM PYTHON SOURCE LINES 361-371
 
 .. code-block:: default
 
@@ -632,7 +634,7 @@ Finally, we also display the confusion matrix and classification report:
 
     [[  0   0   3  58   0]
      [  0   0   9  12   0]
-     [  1   0  26 167   0]
+     [  1   0  23 170   0]
      [  0   0   7  68   0]
      [  0   0   6  26   0]]
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/metrics/_classification.py:1308: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
@@ -645,19 +647,19 @@ Finally, we also display the confusion matrix and classification report:
 
                0       0.00      0.00      0.00        61
                1       0.00      0.00      0.00        21
-               2       0.51      0.13      0.21       194
-               3       0.21      0.91      0.33        75
+               2       0.48      0.12      0.19       194
+               3       0.20      0.91      0.33        75
                4       0.00      0.00      0.00        32
 
-        accuracy                           0.25       383
-       macro avg       0.14      0.21      0.11       383
-    weighted avg       0.30      0.25      0.17       383
+        accuracy                           0.24       383
+       macro avg       0.14      0.21      0.10       383
+    weighted avg       0.28      0.24      0.16       383
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 370-380
+.. GENERATED FROM PYTHON SOURCE LINES 372-382
 
 Our model was able to learn despite the low amount of data that was available
 (only two recordings in this example) and reached a balanced accuracy of
@@ -673,9 +675,9 @@ data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  44.407 seconds)
+   **Total running time of the script:** ( 0 minutes  41.509 seconds)
 
-**Estimated memory usage:**  119 MB
+**Estimated memory usage:**  254 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging.py:
