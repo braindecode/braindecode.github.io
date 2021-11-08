@@ -153,7 +153,7 @@ we don't need to apply resampling.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f6630fe5ed0>
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f0b04102590>
 
 
 
@@ -238,7 +238,7 @@ We also preprocess the windows by applying channel-wise z-score normalization.
  .. code-block:: none
 
 
-    <braindecode.datasets.base.BaseConcatDataset object at 0x7f661e4c5c10>
+    <braindecode.datasets.base.BaseConcatDataset object at 0x7f0afd87d050>
 
 
 
@@ -388,7 +388,7 @@ We further wrap the model into a siamese architecture using the
 feature extractor end-to-end.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 259-317
+.. GENERATED FROM PYTHON SOURCE LINES 259-320
 
 .. code-block:: default
 
@@ -403,7 +403,10 @@ feature extractor end-to-end.
         torch.backends.cudnn.benchmark = True
     # Set random seed to be able to roughly reproduce results
     # Note that with cudnn benchmark set to True, GPU indeterminism
-    # may still make results substantially different between runs
+    # may still make results substantially different between runs.
+    # To obtain more consistent results at the cost of increased computation time,
+    # you can set `cudnn_benchmark=False` in `set_random_seeds`
+    # or remove `torch.backends.cudnn.benchmark = True`
     set_random_seeds(seed=random_state, cuda=device == 'cuda')
 
     # Extract number of channels and time steps from dataset
@@ -457,20 +460,20 @@ feature extractor end-to-end.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 318-321
+.. GENERATED FROM PYTHON SOURCE LINES 321-324
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 324-328
+.. GENERATED FROM PYTHON SOURCE LINES 327-331
 
 We can now train our network on the pretext task. We use similar
 hyperparameters as in [1]_, but reduce the number of epochs and increase the
 learning rate to account for the smaller setting of this example.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 328-377
+.. GENERATED FROM PYTHON SOURCE LINES 331-380
 
 .. code-block:: default
 
@@ -535,54 +538,54 @@ learning rate to account for the smaller setting of this example.
 
       epoch    train_acc    train_loss    valid_acc    valid_loss    cp     dur
     -------  -----------  ------------  -----------  ------------  ----  ------
-          1       0.5520        0.7133       0.6040        0.6830     +  3.8752
-          2       0.5920        0.6791       0.5720        0.6325     +  3.3744
-          3       0.5160        0.8718       0.6880        0.6442        3.1822
-          4       0.5360        0.6845       0.5560        0.6826        3.1676
-          5       0.5560        0.7046       0.6320        0.6565        3.2978
-          6       0.6440        0.6460       0.7000        0.6130     +  3.4511
-          7       0.6000        0.6460       0.6800        0.5897     +  3.4863
-          8       0.6280        0.5981       0.6840        0.5810     +  3.4351
-          9       0.5840        0.6489       0.7240        0.5763     +  3.4501
-         10       0.6720        0.6187       0.7080        0.5784        3.3339
-         11       0.7200        0.5600       0.7040        0.5777        3.2987
-         12       0.6320        0.6336       0.7200        0.5669     +  3.2214
-         13       0.6880        0.5739       0.7240        0.5572     +  3.5147
-         14       0.7000        0.5763       0.7200        0.5500     +  3.1709
-         15       0.7280        0.5558       0.7000        0.5435     +  3.2939
-         16       0.6600        0.5818       0.7200        0.5401     +  3.6492
-         17       0.6800        0.5852       0.7440        0.5413        3.4132
-         18       0.7160        0.5588       0.7360        0.5421        3.3032
-         19       0.7120        0.5614       0.7440        0.5418        3.2256
-         20       0.7080        0.5856       0.7360        0.5327     +  3.3040
-         21       0.7600        0.5271       0.7400        0.5269     +  3.4422
-         22       0.7160        0.5522       0.7360        0.5235     +  3.3490
-         23       0.7080        0.5469       0.7440        0.5215     +  3.2240
-         24       0.7400        0.5748       0.7520        0.5189     +  3.1908
-         25       0.7200        0.5383       0.7520        0.5115     +  3.3266
+          1       0.5520        0.7133       0.6080        0.6830     +  3.1247
+          2       0.5920        0.6791       0.5720        0.6326     +  2.8093
+          3       0.5160        0.8718       0.6880        0.6442        2.9299
+          4       0.5360        0.6845       0.5560        0.6826        2.9719
+          5       0.5560        0.7046       0.6320        0.6564        3.0753
+          6       0.6440        0.6461       0.7000        0.6129     +  2.8368
+          7       0.6000        0.6461       0.6800        0.5896     +  2.8290
+          8       0.6240        0.5982       0.6880        0.5809     +  2.9717
+          9       0.5880        0.6488       0.7280        0.5761     +  3.0526
+         10       0.6720        0.6187       0.7080        0.5782        3.0150
+         11       0.7200        0.5594       0.7000        0.5781        2.7794
+         12       0.6280        0.6336       0.7160        0.5674     +  2.8301
+         13       0.6880        0.5741       0.7320        0.5575     +  3.0407
+         14       0.6960        0.5754       0.7200        0.5501     +  3.1408
+         15       0.7360        0.5558       0.7160        0.5435     +  2.8170
+         16       0.6600        0.5821       0.7240        0.5396     +  2.7578
+         17       0.6840        0.5851       0.7400        0.5396        2.8953
+         18       0.7040        0.5593       0.7400        0.5396        2.8094
+         19       0.7160        0.5599       0.7520        0.5394     +  3.0338
+         20       0.7040        0.5823       0.7360        0.5334     +  2.9015
+         21       0.7520        0.5260       0.7360        0.5308     +  2.7807
+         22       0.7160        0.5532       0.7280        0.5312        2.8418
+         23       0.7120        0.5458       0.7280        0.5292     +  2.8164
+         24       0.7360        0.5734       0.7480        0.5227     +  2.9004
+         25       0.7320        0.5355       0.7480        0.5122     +  2.8307
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 378-381
+.. GENERATED FROM PYTHON SOURCE LINES 381-384
 
 Visualizing the results
 -----------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 383-386
+.. GENERATED FROM PYTHON SOURCE LINES 386-389
 
 Inspecting pretext task performance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 388-391
+.. GENERATED FROM PYTHON SOURCE LINES 391-394
 
 We plot the loss and pretext task performance for the training and validation
 sets.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 391-429
+.. GENERATED FROM PYTHON SOURCE LINES 394-432
 
 .. code-block:: default
 
@@ -636,13 +639,13 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 430-433
+.. GENERATED FROM PYTHON SOURCE LINES 433-436
 
 We also display the confusion matrix and classification report for the
 pretext task:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 433-446
+.. GENERATED FROM PYTHON SOURCE LINES 436-449
 
 .. code-block:: default
 
@@ -669,35 +672,35 @@ pretext task:
 
  .. code-block:: none
 
-    [[ 70  51]
-     [ 27 102]]
+    [[ 71  50]
+     [ 29 100]]
                   precision    recall  f1-score   support
 
-             0.0       0.72      0.58      0.64       121
-             1.0       0.67      0.79      0.72       129
+             0.0       0.71      0.59      0.64       121
+             1.0       0.67      0.78      0.72       129
 
-        accuracy                           0.69       250
+        accuracy                           0.68       250
        macro avg       0.69      0.68      0.68       250
-    weighted avg       0.69      0.69      0.68       250
+    weighted avg       0.69      0.68      0.68       250
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 447-450
+.. GENERATED FROM PYTHON SOURCE LINES 450-453
 
 Using the learned representation for sleep staging
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 452-456
+.. GENERATED FROM PYTHON SOURCE LINES 455-459
 
 We can now use the trained convolutional neural network as a feature
 extractor. We perform sleep stage classification from the learned feature
 representation using a linear logistic regression classifier.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 456-498
+.. GENERATED FROM PYTHON SOURCE LINES 459-501
 
 .. code-block:: default
 
@@ -762,39 +765,39 @@ representation using a linear logistic regression classifier.
         https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
       extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG,
     Sleep staging performance with logistic regression:
-    Train bal acc: 0.9401
-    Valid bal acc: 0.5598
-    Test bal acc: 0.5339
+    Train bal acc: 0.9366
+    Valid bal acc: 0.5442
+    Test bal acc: 0.5261
     Results on test set:
-    [[102  29   3   0   8]
-     [ 15  55   8   1  30]
-     [  1  30 322   1 208]
-     [  0   0  88  17   0]
-     [  2  23  24   0 121]]
+    [[103  26   3   0  10]
+     [ 15  55   7   2  30]
+     [  1  28 327   0 206]
+     [  0   0  87  18   0]
+     [  2  21  37   0 110]]
                   precision    recall  f1-score   support
 
-               0       0.85      0.72      0.78       142
-               1       0.40      0.50      0.45       109
-               2       0.72      0.57      0.64       562
-               3       0.89      0.16      0.27       105
-               4       0.33      0.71      0.45       170
+               0       0.85      0.73      0.78       142
+               1       0.42      0.50      0.46       109
+               2       0.71      0.58      0.64       562
+               3       0.90      0.17      0.29       105
+               4       0.31      0.65      0.42       170
 
-        accuracy                           0.57      1088
+        accuracy                           0.56      1088
        macro avg       0.64      0.53      0.52      1088
-    weighted avg       0.66      0.57      0.57      1088
+    weighted avg       0.66      0.56      0.57      1088
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 499-503
+.. GENERATED FROM PYTHON SOURCE LINES 502-506
 
 The balanced accuracy is much higher than chance-level (i.e., 20% for our
 5-class classification problem). Finally, we perform a quick 2D visualization
 of the feature space using a PCA:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 503-524
+.. GENERATED FROM PYTHON SOURCE LINES 506-527
 
 .. code-block:: default
 
@@ -835,11 +838,11 @@ of the feature space using a PCA:
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7f6630560350>
+    <matplotlib.legend.Legend object at 0x7f0aeebad410>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 525-530
+.. GENERATED FROM PYTHON SOURCE LINES 528-533
 
 We see that there is sleep stage-related structure in the embedding. A
 nonlinear projection method (e.g., tSNE, UMAP) might yield more insightful
@@ -847,13 +850,13 @@ visualizations. Using a similar approach, the embedding space could also be
 explored with respect to subject-level features, e.g., age and sex.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 532-535
+.. GENERATED FROM PYTHON SOURCE LINES 535-538
 
 Conclusion
 ----------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 537-575
+.. GENERATED FROM PYTHON SOURCE LINES 540-578
 
 In this example, we used self-supervised learning (SSL) as a way to learn
 representations from unlabelled raw EEG data. Specifically, we used the
@@ -897,7 +900,7 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  46.361 seconds)
+   **Total running time of the script:** ( 1 minutes  29.330 seconds)
 
 **Estimated memory usage:**  1913 MB
 

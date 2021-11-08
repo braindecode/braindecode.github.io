@@ -213,7 +213,7 @@ To obtain full results whole datasets should be used.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/copy.py:161: DeprecationWarning: Info does not support directly setting the key 'target_sfreq', this warning will turn into an error after 0.24. You can set info['temp'] to store temporary objects in an Info instance, but these will not survive an I/O round-trip.
       y = copier(memo)
 
-    <braindecode.datasets.base.BaseConcatDataset object at 0x7f6630668b90>
+    <braindecode.datasets.base.BaseConcatDataset object at 0x7f0afd61a690>
 
 
 
@@ -314,7 +314,7 @@ to use your own model, it just has to be a normal PyTorch
 `nn.Module <https://pytorch.org/docs/stable/nn.html#torch.nn.Module>`__.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-215
+.. GENERATED FROM PYTHON SOURCE LINES 175-218
 
 .. code-block:: default
 
@@ -329,7 +329,10 @@ to use your own model, it just has to be a normal PyTorch
         torch.backends.cudnn.benchmark = True
     # Set random seed to be able to roughly reproduce results
     # Note that with cudnn benchmark set to True, GPU indeterminism
-    # may still make results substantially different between runs
+    # may still make results substantially different between runs.
+    # To obtain more consistent results at the cost of increased computation time,
+    # you can set `cudnn_benchmark=False` in `set_random_seeds`
+    # or remove `torch.backends.cudnn.benchmark = True`
     seed = 20200220
     set_random_seeds(seed=seed, cuda=cuda)
 
@@ -365,12 +368,12 @@ to use your own model, it just has to be a normal PyTorch
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-218
+.. GENERATED FROM PYTHON SOURCE LINES 219-221
 
 To know the models’ receptive field, we calculate the shape of model
 output for a dummy input.
 
-.. GENERATED FROM PYTHON SOURCE LINES 218-222
+.. GENERATED FROM PYTHON SOURCE LINES 221-225
 
 .. code-block:: default
 
@@ -385,13 +388,13 @@ output for a dummy input.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-226
+.. GENERATED FROM PYTHON SOURCE LINES 226-229
 
 Cut Compute Windows
 ~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-268
+.. GENERATED FROM PYTHON SOURCE LINES 229-271
 
 .. code-block:: default
 
@@ -463,7 +466,7 @@ Cut Compute Windows
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 269-275
+.. GENERATED FROM PYTHON SOURCE LINES 272-278
 
 We select only the thumb's finger flexion to create one model per finger.
 
@@ -472,7 +475,7 @@ We select only the thumb's finger flexion to create one model per finger.
    We encourage you to find your own way to use braindecode models to predict fingers flexions.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 275-279
+.. GENERATED FROM PYTHON SOURCE LINES 278-282
 
 .. code-block:: default
 
@@ -487,13 +490,13 @@ We select only the thumb's finger flexion to create one model per finger.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 280-283
+.. GENERATED FROM PYTHON SOURCE LINES 283-286
 
 Training
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 286-297
+.. GENERATED FROM PYTHON SOURCE LINES 289-300
 
 In difference to trialwise decoding, we now should supply
 ``cropped=True`` to the EEGClassifier, and ``CroppedLoss`` as the
@@ -507,7 +510,7 @@ applied to the meaned predictions.
    cross validation on your training data.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-340
+.. GENERATED FROM PYTHON SOURCE LINES 300-343
 
 .. code-block:: default
 
@@ -561,12 +564,12 @@ applied to the meaned predictions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 341-343
+.. GENERATED FROM PYTHON SOURCE LINES 344-346
 
 Model training for a specified number of epochs. ``y`` is None as it is already supplied
 in the dataset.
 
-.. GENERATED FROM PYTHON SOURCE LINES 343-345
+.. GENERATED FROM PYTHON SOURCE LINES 346-348
 
 .. code-block:: default
 
@@ -584,23 +587,23 @@ in the dataset.
 
       epoch    r2_train    r2_valid    train_loss    valid_loss      lr     dur
     -------  ----------  ----------  ------------  ------------  ------  ------
-          1    -16.9008     -8.3092        2.5378       20.7349  0.0006  1.6327
-          2    -13.7501     -7.1255        1.9596       18.0754  0.0006  1.2975
-          3    -12.7732     -6.7412        1.6787       17.1895  0.0005  1.2739
-          4    -11.7943     -6.3908        1.5638       16.4402  0.0004  1.2841
-          5    -11.2692     -6.1832        1.4237       16.0076  0.0002  1.2947
-          6    -10.5717     -5.9194        1.3549       15.4414  0.0001  1.2720
-          7     -9.8211     -5.6172        1.3132       14.7778  0.0000  1.2972
-          8     -9.0628     -5.3038        1.3316       14.0865  0.0000  1.2723
+          1    -16.9004     -8.3093        2.5378       20.7347  0.0006  1.3977
+          2    -13.7487     -7.1251        1.9596       18.0735  0.0006  1.0447
+          3    -12.7717     -6.7405        1.6787       17.1869  0.0005  1.0360
+          4    -11.7932     -6.3900        1.5638       16.4375  0.0004  1.0483
+          5    -11.2684     -6.1825        1.4237       16.0051  0.0002  1.0394
+          6    -10.5711     -5.9188        1.3549       15.4391  0.0001  1.0359
+          7     -9.8206     -5.6167        1.3132       14.7758  0.0000  1.0420
+          8     -9.0623     -5.3034        1.3316       14.0847  0.0000  1.0395
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 346-347
+.. GENERATED FROM PYTHON SOURCE LINES 349-350
 
 Obtaining predictions and targets for the test, train, and validation dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 347-370
+.. GENERATED FROM PYTHON SOURCE LINES 350-373
 
 .. code-block:: default
 
@@ -634,12 +637,12 @@ Obtaining predictions and targets for the test, train, and validation dataset
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 371-373
+.. GENERATED FROM PYTHON SOURCE LINES 374-376
 
 Plot Results
 ------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 376-384
+.. GENERATED FROM PYTHON SOURCE LINES 379-387
 
 We plot target and predicted finger flexion on training, validation, adn test sets.
 
@@ -650,7 +653,7 @@ We plot target and predicted finger flexion on training, validation, adn test se
    pipeline which may be not optimal for ECoG.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 384-413
+.. GENERATED FROM PYTHON SOURCE LINES 387-416
 
 .. code-block:: default
 
@@ -695,12 +698,12 @@ We plot target and predicted finger flexion on training, validation, adn test se
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 414-416
+.. GENERATED FROM PYTHON SOURCE LINES 417-419
 
 We can compute correlation coefficients for each finger
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 416-423
+.. GENERATED FROM PYTHON SOURCE LINES 419-426
 
 .. code-block:: default
 
@@ -726,13 +729,13 @@ We can compute correlation coefficients for each finger
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 424-427
+.. GENERATED FROM PYTHON SOURCE LINES 427-430
 
 Now we use the history stored by Skorch throughout training to plot
 accuracy and loss curves.
 Extract loss and accuracy values for plotting from history object
 
-.. GENERATED FROM PYTHON SOURCE LINES 427-454
+.. GENERATED FROM PYTHON SOURCE LINES 430-457
 
 .. code-block:: default
 
@@ -778,7 +781,7 @@ Extract loss and accuracy values for plotting from history object
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.075 seconds)
+   **Total running time of the script:** ( 0 minutes  18.489 seconds)
 
 **Estimated memory usage:**  1312 MB
 

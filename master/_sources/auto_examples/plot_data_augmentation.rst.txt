@@ -120,7 +120,7 @@ Preprocessing
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.moabb.MOABBDataset object at 0x7f663a98c550>
+    <braindecode.datasets.moabb.MOABBDataset object at 0x7f0aedfad590>
 
 
 
@@ -308,7 +308,7 @@ Create model
 
 The model to be trained is defined as usual.
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-199
+.. GENERATED FROM PYTHON SOURCE LINES 171-202
 
 .. code-block:: default
 
@@ -323,7 +323,10 @@ The model to be trained is defined as usual.
 
     # Set random seed to be able to roughly reproduce results
     # Note that with cudnn benchmark set to True, GPU indeterminism
-    # may still make results substantially different between runs
+    # may still make results substantially different between runs.
+    # To obtain more consistent results at the cost of increased computation time,
+    # you can set `cudnn_benchmark=False` in `set_random_seeds`
+    # or remove `torch.backends.cudnn.benchmark = True`
     seed = 20200220
     set_random_seeds(seed=seed, cuda=cuda)
 
@@ -347,19 +350,19 @@ The model to be trained is defined as usual.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-203
+.. GENERATED FROM PYTHON SOURCE LINES 203-206
 
 Create an EEGClassifier with the desired augmentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-208
+.. GENERATED FROM PYTHON SOURCE LINES 208-211
 
 In order to train with data augmentation, a custom data loader can be
 for the training. Multiple transforms can be passed to it and will be applied
 sequentially to the batched data within the ``AugmentedDataLoader`` object.
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-228
+.. GENERATED FROM PYTHON SOURCE LINES 211-231
 
 .. code-block:: default
 
@@ -390,13 +393,13 @@ sequentially to the batched data within the ``AugmentedDataLoader`` object.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-232
+.. GENERATED FROM PYTHON SOURCE LINES 232-235
 
 The model is now trained as in the trial-wise example. The
 ``AugmentedDataLoader`` is used as the train iterator and the list of
 transforms are passed as arguments.
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-259
+.. GENERATED FROM PYTHON SOURCE LINES 235-262
 
 .. code-block:: default
 
@@ -439,10 +442,10 @@ transforms are passed as arguments.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
     -------  ----------------  ------------  ----------------  ------------  ------  ------
-          1            0.2569        1.6225            0.2431        5.5633  0.0006  6.4073
-          2            0.2535        1.2218            0.2535        6.3996  0.0005  6.2311
-          3            0.2535        1.0973            0.2535        5.2946  0.0002  6.3662
-          4            0.2639        1.0922            0.2535        4.0276  0.0000  6.2393
+          1            0.2569        1.6225            0.2431        5.5634  0.0006  5.2570
+          2            0.2535        1.2218            0.2535        6.3996  0.0005  5.1506
+          3            0.2535        1.0973            0.2535        5.2946  0.0002  5.2039
+          4            0.2639        1.0922            0.2535        4.0276  0.0000  5.0990
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -463,7 +466,7 @@ transforms are passed as arguments.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 260-265
+.. GENERATED FROM PYTHON SOURCE LINES 263-268
 
 Manually composing Transforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -471,7 +474,7 @@ Manually composing Transforms
 It would be equivalent (although more verbose) to pass to ``EEGClassifier`` a
 composition of the same transforms:
 
-.. GENERATED FROM PYTHON SOURCE LINES 265-270
+.. GENERATED FROM PYTHON SOURCE LINES 268-273
 
 .. code-block:: default
 
@@ -487,7 +490,7 @@ composition of the same transforms:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 271-279
+.. GENERATED FROM PYTHON SOURCE LINES 274-282
 
 Setting the data augmentation at the Dataset level
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -498,7 +501,7 @@ most commonly done in other libraries. However, it is advised to use the
 ``AugmentedDataLoader`` as above, as it is compatible with all transforms and
 can be more efficient.
 
-.. GENERATED FROM PYTHON SOURCE LINES 279-281
+.. GENERATED FROM PYTHON SOURCE LINES 282-284
 
 .. code-block:: default
 
@@ -514,9 +517,9 @@ can be more efficient.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  41.027 seconds)
+   **Total running time of the script:** ( 0 minutes  33.295 seconds)
 
-**Estimated memory usage:**  1558 MB
+**Estimated memory usage:**  1591 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_data_augmentation.py:

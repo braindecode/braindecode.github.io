@@ -139,7 +139,7 @@ is described in [1]_.
  .. code-block:: none
 
 
-    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f6632a201d0>
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f0aeeec4110>
 
 
 
@@ -313,7 +313,7 @@ We can now create the deep learning model. In this tutorial, we use the
 U-Sleep architecture introduced in [1]_, which is fully convolutional
 neural network.
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-222
+.. GENERATED FROM PYTHON SOURCE LINES 189-225
 
 .. code-block:: default
 
@@ -328,7 +328,10 @@ neural network.
         torch.backends.cudnn.benchmark = True
     # Set random seed to be able to roughly reproduce results
     # Note that with cudnn benchmark set to True, GPU indeterminism
-    # may still make results substantially different between runs
+    # may still make results substantially different between runs.
+    # To obtain more consistent results at the cost of increased computation time,
+    # you can set `cudnn_benchmark=False` in `set_random_seeds`
+    # or remove `torch.backends.cudnn.benchmark = True`
     set_random_seeds(seed=random_state, cuda=cuda)
 
     n_classes = 5
@@ -357,7 +360,7 @@ neural network.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-238
+.. GENERATED FROM PYTHON SOURCE LINES 226-241
 
 Training
 --------
@@ -375,7 +378,7 @@ training logic is the same as in
    optimization if reusing this code on a different dataset or with more
    recordings.
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-289
+.. GENERATED FROM PYTHON SOURCE LINES 241-292
 
 .. code-block:: default
 
@@ -444,7 +447,7 @@ training logic is the same as in
       self.padding, self.dilation, self.groups)
       epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss       dur
     -------  ---------------  ------------  ---------------  ------------  --------
-          1           0.2144        1.5860           0.1902        1.6218  127.7456
+          1           0.2138        1.5860           0.1908        1.6218  120.3024
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=USleep(
@@ -735,7 +738,7 @@ training logic is the same as in
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 290-297
+.. GENERATED FROM PYTHON SOURCE LINES 293-300
 
 Plot results
 ------------
@@ -745,7 +748,7 @@ the model throughout training. Specifically, we plot the loss and the balanced
 misclassification rate (1 - balanced accuracy) for the training and validation
 sets.
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-340
+.. GENERATED FROM PYTHON SOURCE LINES 300-343
 
 .. code-block:: default
 
@@ -804,11 +807,11 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 341-342
+.. GENERATED FROM PYTHON SOURCE LINES 344-345
 
 Finally, we also display the confusion matrix and classification report:
 
-.. GENERATED FROM PYTHON SOURCE LINES 342-352
+.. GENERATED FROM PYTHON SOURCE LINES 345-355
 
 .. code-block:: default
 
@@ -834,16 +837,16 @@ Finally, we also display the confusion matrix and classification report:
 
     [[ 32  30  35  23   5]
      [ 52   9  23   5   3]
-     [252  67 203 115  23]
-     [ 38   7  26  24   1]
+     [252  67 205 113  23]
+     [ 37   7  26  24   2]
      [ 71  21  52  25   7]]
                   precision    recall  f1-score   support
 
                0       0.07      0.26      0.11       125
                1       0.07      0.10      0.08        92
                2       0.60      0.31      0.41       660
-               3       0.12      0.25      0.17        96
-               4       0.18      0.04      0.07       176
+               3       0.13      0.25      0.17        96
+               4       0.17      0.04      0.06       176
 
         accuracy                           0.24      1149
        macro avg       0.21      0.19      0.17      1149
@@ -853,7 +856,7 @@ Finally, we also display the confusion matrix and classification report:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 353-358
+.. GENERATED FROM PYTHON SOURCE LINES 356-361
 
 Our model was able to learn, as shown by the decreasing training and
 validation loss values, despite the low amount of data that was available
@@ -864,9 +867,9 @@ trained for more epochs and hyperparameters should be optimized.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  12.278 seconds)
+   **Total running time of the script:** ( 3 minutes  0.093 seconds)
 
-**Estimated memory usage:**  313 MB
+**Estimated memory usage:**  157 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging_usleep.py:
