@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmarking preprocessing with parallelization and serialization &mdash; Braindecode 0.6 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="MOABB Dataset Example" href="plot_dataset_example.html" />
+    <link rel="prev" title="Multiple discrete targets with the TUH EEG Corpus" href="plot_tuh_discrete_multitarget.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Braindecode
+          </a>
+              <div class="version">
+                0.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html"> Basic trialwise decoding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading">Loading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#cut-compute-windows">Cut Compute Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#create-model">Create model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#training">Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#plot-results">Plot Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#plot-confusion-matrix">Plot Confusion Matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html"> More data-efficient &quot;cropped decoding&quot;</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#create-model-and-compute-windowing-parameters">Create model and compute windowing parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#cut-the-data-into-windows">Cut the data into windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#split-the-dataset">Split the dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#training">Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#plot-results">Plot Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#plot-confusion-matrix">Plot Confusion Matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plot_mne_dataset_example.html"> Your own datasets through MNE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_custom_dataset_example.html"> Your own datasets through Numpy</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_usleep.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_usleep.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_usleep.html#extract-windows">Extract windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_usleep.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#create-sequence-samplers">Create sequence samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#plot-results">Plot results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_data_augmentation.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#extracting-windows">Extracting windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_data_augmentation.html#defining-a-transform">Defining a Transform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#manipulating-one-session-and-visualizing-the-transformed-data">Manipulating one session and visualizing the transformed data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_data_augmentation.html#training-a-model-with-data-augmentation">Training a model with data augmentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#create-model">Create model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#create-an-eegclassifier-with-the-desired-augmentation">Create an EEGClassifier with the desired augmentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#manually-composing-transforms">Manually composing Transforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_data_augmentation.html#setting-the-data-augmentation-at-the-dataset-level">Setting the data augmentation at the Dataset level</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#extract-windows">Extract windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#window-preprocessing">Window preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#create-sequence-samplers">Create sequence samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_eldele2021.html#plot-results">Plot results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#extract-windows">Extract windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#window-preprocessing">Window preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#create-sequence-samplers">Create sequence samplers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_chambon2018.html#plot-results">Plot results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#cut-compute-windows">Cut Compute Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#plot-results">Plot Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html#plot-confusion-matrix">Plot Confusion Matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#create-model-and-compute-windowing-parameters">Create model and compute windowing parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#cut-the-data-into-windows">Cut the data into windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#split-the-dataset">Split the dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#plot-results">Plot Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html#plot-confusion-matrix">Plot Confusion Matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#loading-and-preparing-the-dataset">Loading and preparing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#cut-compute-windows">Cut Compute Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#split-dataset-into-train-valid-and-test">Split dataset into train, valid, and test</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html#plot-results">Plot Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#loading-and-preparing-the-dataset">Loading and preparing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#split-dataset-into-train-and-test">Split dataset into train and test</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#preprocessing">Preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#create-model">Create model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#cut-compute-windows">Cut Compute Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bcic_iv_4_ecog_cropped.html#plot-results">Plot Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_relative_positioning.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#loading-the-raw-recordings">Loading the raw recordings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#extracting-windows">Extracting windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#preprocessing-windows">Preprocessing windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#splitting-dataset-into-train-valid-and-test-sets">Splitting dataset into train, valid and test sets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#creating-samplers">Creating samplers</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_relative_positioning.html#creating-the-model">Creating the model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_relative_positioning.html#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_relative_positioning.html#visualizing-the-results">Visualizing the results</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#inspecting-pretext-task-performance">Inspecting pretext task performance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_relative_positioning.html#using-the-learned-representation-for-sleep-staging">Using the learned representation for sleep staging</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_relative_positioning.html#conclusion">Conclusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_relative_positioning.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classifier">Classifier</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.classifier.EEGClassifier.html">braindecode.classifier.EEGClassifier</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regressor">Regressor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.regressor.EEGRegressor.html">braindecode.regressor.EEGRegressor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.ShallowFBCSPNet.html">braindecode.models.ShallowFBCSPNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.ShallowFBCSPNet.html#examples-using-braindecode-models-shallowfbcspnet">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.ShallowFBCSPNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.Deep4Net.html">braindecode.models.Deep4Net</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.Deep4Net.html#examples-using-braindecode-models-deep4net">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.Deep4Net</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.EEGNetv1.html">braindecode.models.EEGNetv1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.EEGNetv4.html">braindecode.models.EEGNetv4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.HybridNet.html">braindecode.models.HybridNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.EEGResNet.html">braindecode.models.EEGResNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.TCN.html">braindecode.models.TCN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.SleepStagerChambon2018.html">braindecode.models.SleepStagerChambon2018</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.SleepStagerChambon2018.html#examples-using-braindecode-models-sleepstagerchambon2018">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.SleepStagerChambon2018</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.SleepStagerBlanco2020.html">braindecode.models.SleepStagerBlanco2020</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.SleepStagerEldele2021.html">braindecode.models.SleepStagerEldele2021</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.SleepStagerEldele2021.html#examples-using-braindecode-models-sleepstagereldele2021">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.SleepStagerEldele2021</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.USleep.html">braindecode.models.USleep</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.USleep.html#examples-using-braindecode-models-usleep">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.USleep</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.TIDNet.html">braindecode.models.TIDNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.get_output_shape.html">braindecode.models.get_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.get_output_shape.html#examples-using-braindecode-models-get-output-shape">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.get_output_shape</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.models.TimeDistributed.html">braindecode.models.TimeDistributed</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.models.TimeDistributed.html#examples-using-braindecode-models-timedistributed">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.models.TimeDistributed</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#training">Training</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.CroppedLoss.html">braindecode.training.CroppedLoss</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.training.CroppedLoss.html#examples-using-braindecode-training-croppedloss">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.training.CroppedLoss</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.TimeSeriesLoss.html">braindecode.training.TimeSeriesLoss</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.training.TimeSeriesLoss.html#examples-using-braindecode-training-timeseriesloss">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.training.TimeSeriesLoss</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.CroppedTrialEpochScoring.html">braindecode.training.CroppedTrialEpochScoring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.training.CroppedTrialEpochScoring.html#examples-using-braindecode-training-croppedtrialepochscoring">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.training.CroppedTrialEpochScoring</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.CroppedTimeSeriesEpochScoring.html">braindecode.training.CroppedTimeSeriesEpochScoring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.training.CroppedTimeSeriesEpochScoring.html#examples-using-braindecode-training-croppedtimeseriesepochscoring">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.training.CroppedTimeSeriesEpochScoring</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.PostEpochTrainScoring.html">braindecode.training.PostEpochTrainScoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.mixup_criterion.html">braindecode.training.mixup_criterion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.trial_preds_from_window_preds.html">braindecode.training.trial_preds_from_window_preds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.training.predict_trials.html">braindecode.training.predict_trials</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.BaseDataset.html">braindecode.datasets.BaseDataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.BaseDataset.html#examples-using-braindecode-datasets-basedataset">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.BaseDataset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html">braindecode.datasets.BaseConcatDataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html#examples-using-braindecode-datasets-baseconcatdataset">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.WindowsDataset.html">braindecode.datasets.WindowsDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.MOABBDataset.html">braindecode.datasets.MOABBDataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.MOABBDataset.html#examples-using-braindecode-datasets-moabbdataset">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.MOABBDataset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.HGD.html">braindecode.datasets.HGD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.BNCI2014001.html">braindecode.datasets.BNCI2014001</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.TUH.html">braindecode.datasets.TUH</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.TUH.html#examples-using-braindecode-datasets-tuh">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.TUH</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.TUHAbnormal.html">braindecode.datasets.TUHAbnormal</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.TUHAbnormal.html#examples-using-braindecode-datasets-tuhabnormal">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.TUHAbnormal</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.SleepPhysionet.html">braindecode.datasets.SleepPhysionet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.SleepPhysionet.html#examples-using-braindecode-datasets-sleepphysionet">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.SleepPhysionet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.BCICompetitionIVDataset4.html">braindecode.datasets.BCICompetitionIVDataset4</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.BCICompetitionIVDataset4.html#examples-using-braindecode-datasets-bcicompetitionivdataset4">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.BCICompetitionIVDataset4</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.create_from_X_y.html">braindecode.datasets.create_from_X_y</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.create_from_X_y.html#examples-using-braindecode-datasets-create-from-x-y">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.create_from_X_y</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.create_from_mne_raw.html">braindecode.datasets.create_from_mne_raw</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.create_from_mne_raw.html#examples-using-braindecode-datasets-create-from-mne-raw">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.create_from_mne_raw</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datasets.create_from_mne_epochs.html">braindecode.datasets.create_from_mne_epochs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datasets.create_from_mne_epochs.html#examples-using-braindecode-datasets-create-from-mne-epochs">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datasets.create_from_mne_epochs</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#preprocessing">Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.create_windows_from_events.html">braindecode.preprocessing.create_windows_from_events</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.create_windows_from_events.html#examples-using-braindecode-preprocessing-create-windows-from-events">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.create_windows_from_events</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.create_fixed_length_windows.html">braindecode.preprocessing.create_fixed_length_windows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#examples-using-braindecode-preprocessing-create-fixed-length-windows">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.create_fixed_length_windows</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.create_windows_from_target_channels.html">braindecode.preprocessing.create_windows_from_target_channels</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.create_windows_from_target_channels.html#examples-using-braindecode-preprocessing-create-windows-from-target-channels">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.create_windows_from_target_channels</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.exponential_moving_demean.html">braindecode.preprocessing.exponential_moving_demean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.exponential_moving_standardize.html">braindecode.preprocessing.exponential_moving_standardize</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.exponential_moving_standardize.html#examples-using-braindecode-preprocessing-exponential-moving-standardize">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.exponential_moving_standardize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.zscore.html">braindecode.preprocessing.zscore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.scale.html">braindecode.preprocessing.scale</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.scale.html#examples-using-braindecode-preprocessing-scale">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.scale</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.filterbank.html">braindecode.preprocessing.filterbank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html">braindecode.preprocessing.preprocess</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html#examples-using-braindecode-preprocessing-preprocess">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.preprocessing.Preprocessor.html">braindecode.preprocessing.Preprocessor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.preprocessing.Preprocessor.html#examples-using-braindecode-preprocessing-preprocessor">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.preprocessing.Preprocessor</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#data-utils">Data Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datautil.save_concat_dataset.html">braindecode.datautil.save_concat_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.datautil.load_concat_dataset.html">braindecode.datautil.load_concat_dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.datautil.load_concat_dataset.html#examples-using-braindecode-datautil-load-concat-dataset">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.datautil.load_concat_dataset</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#samplers">Samplers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.samplers.RecordingSampler.html">braindecode.samplers.RecordingSampler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.samplers.RecordingSampler.html#examples-using-braindecode-samplers-recordingsampler">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.samplers.RecordingSampler</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.samplers.SequenceSampler.html">braindecode.samplers.SequenceSampler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.samplers.SequenceSampler.html#examples-using-braindecode-samplers-sequencesampler">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.samplers.SequenceSampler</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.samplers.RelativePositioningSampler.html">braindecode.samplers.RelativePositioningSampler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.samplers.RelativePositioningSampler.html#examples-using-braindecode-samplers-relativepositioningsampler">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.samplers.RelativePositioningSampler</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.samplers.BalancedSequenceSampler.html">braindecode.samplers.BalancedSequenceSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#augmentation">Augmentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.Transform.html">braindecode.augmentation.Transform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.augmentation.Transform.html#examples-using-braindecode-augmentation-transform">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.augmentation.Transform</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.IdentityTransform.html">braindecode.augmentation.IdentityTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.Compose.html">braindecode.augmentation.Compose</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.augmentation.Compose.html#examples-using-braindecode-augmentation-compose">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.augmentation.Compose</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.AugmentedDataLoader.html">braindecode.augmentation.AugmentedDataLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.augmentation.AugmentedDataLoader.html#examples-using-braindecode-augmentation-augmenteddataloader">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.augmentation.AugmentedDataLoader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.TimeReverse.html">braindecode.augmentation.TimeReverse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.SignFlip.html">braindecode.augmentation.SignFlip</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.augmentation.SignFlip.html#examples-using-braindecode-augmentation-signflip">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.augmentation.SignFlip</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.FTSurrogate.html">braindecode.augmentation.FTSurrogate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.ChannelsShuffle.html">braindecode.augmentation.ChannelsShuffle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.ChannelsDropout.html">braindecode.augmentation.ChannelsDropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.GaussianNoise.html">braindecode.augmentation.GaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.ChannelsSymmetry.html">braindecode.augmentation.ChannelsSymmetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.SmoothTimeMask.html">braindecode.augmentation.SmoothTimeMask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.BandstopFilter.html">braindecode.augmentation.BandstopFilter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.FrequencyShift.html">braindecode.augmentation.FrequencyShift</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.augmentation.FrequencyShift.html#examples-using-braindecode-augmentation-frequencyshift">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.augmentation.FrequencyShift</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.SensorsRotation.html">braindecode.augmentation.SensorsRotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.SensorsZRotation.html">braindecode.augmentation.SensorsZRotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.SensorsYRotation.html">braindecode.augmentation.SensorsYRotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.SensorsXRotation.html">braindecode.augmentation.SensorsXRotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.Mixup.html">braindecode.augmentation.Mixup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.identity.html">braindecode.augmentation.functional.identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.time_reverse.html">braindecode.augmentation.functional.time_reverse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.sign_flip.html">braindecode.augmentation.functional.sign_flip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.ft_surrogate.html">braindecode.augmentation.functional.ft_surrogate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.channels_dropout.html">braindecode.augmentation.functional.channels_dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.channels_shuffle.html">braindecode.augmentation.functional.channels_shuffle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.channels_permute.html">braindecode.augmentation.functional.channels_permute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.gaussian_noise.html">braindecode.augmentation.functional.gaussian_noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.smooth_time_mask.html">braindecode.augmentation.functional.smooth_time_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.bandstop_filter.html">braindecode.augmentation.functional.bandstop_filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.frequency_shift.html">braindecode.augmentation.functional.frequency_shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.sensors_rotation.html">braindecode.augmentation.functional.sensors_rotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.augmentation.functional.mixup.html">braindecode.augmentation.functional.mixup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.util.set_random_seeds.html">braindecode.util.set_random_seeds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.util.set_random_seeds.html#examples-using-braindecode-util-set-random-seeds">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.util.set_random_seeds</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#visualization">Visualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.visualization.compute_amplitude_gradients.html">braindecode.visualization.compute_amplitude_gradients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/braindecode.visualization.plot_confusion_matrix.html">braindecode.visualization.plot_confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../generated/braindecode.visualization.plot_confusion_matrix.html#examples-using-braindecode-visualization-plot-confusion-matrix">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.visualization.plot_confusion_matrix</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-6-2021-12-06">Version 0.6 (2021-12-06)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#enhancements">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#bugs">Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#api-changes">API changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-5-1-2021-07-14">Version 0.5.1 (2021-07-14)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#id1">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#id2">Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#id3">API changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../whats_new.html#authors">Authors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Braindecode</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Examples</a> &raquo;</li>
+      <li>Benchmarking preprocessing with parallelization and serialization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_examples/plot_benchmark_preprocessing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-benchmark-preprocessing-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="benchmarking-preprocessing-with-parallelization-and-serialization">
+<span id="sphx-glr-auto-examples-plot-benchmark-preprocessing-py"></span><h1>Benchmarking preprocessing with parallelization and serialization<a class="headerlink" href="#benchmarking-preprocessing-with-parallelization-and-serialization" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we compare the execution time and memory requirements of
+preprocessing data with the parallelization and serialization functionalities
+available in <a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess()</span></code></a>.</p>
+<p>We compare 4 cases:</p>
+<ol class="arabic simple">
+<li><p>Sequential, no serialization</p></li>
+<li><p>Sequential, with serialization</p></li>
+<li><p>Parallel, no serialization</p></li>
+<li><p>Parallel, with serialization</p></li>
+</ol>
+<p>Case 1 is the simplest approach, in which all recordings in a
+<a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a> are preprocessed one after the
+other. In this scenario, <a class="reference internal" href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess()</span></code></a> acts
+inplace, which means memory usage will likely stay stable (depending on the
+preprocessing operations) if recordings have been preloaded. However, two
+potential issues arise when working with large datasets: (1) if recordings have
+not been preloaded before preprocessing, <cite>preprocess()</cite> will need to load them
+and keep them in memory, in which case memory can become a bottleneck, and (2)
+sequential preprocessing can take a considerable amount of time to run when
+working with many recordings.</p>
+<p>A solution to the first issue (memory usage) is to save the preprocessed data
+to a file so it can be cleared from memory before moving on to the next
+recording (case 2). The recordings can then be reloaded with <cite>preload=False</cite>
+once they have all been saved to disk. This enables using the lazy loading
+capabilities of <a class="reference internal" href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a> and avoids
+potential memory bottlenecks. The downside is that the writing to disk can take
+some time and of course requires disk space.</p>
+<p>A solution to the second issue (slow preprocessing) is to parallelize the
+preprocessing over multiple cores whenever possible (case 3). This can speed up
+preprocessing significantly. However, this approach will increase memory usage
+because of the way parallelization is implemented internally (with
+<cite>joblib</cite>, copies of (part of) the data must be made when sending arguments to
+parallel processes).</p>
+<p>Finally, case 4 (combining parallelization and serialization) is likely to be
+both fast and memory efficient. As shown in this example, this remains a
+tradeoff though, and the selected configuration should depend on the size of
+the dataset and the specific operations applied to the recordings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Hubert Banville &lt;hubert.jbanville@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/itertools.html#itertools.product" title="itertools.product" class="sphx-glr-backref-module-itertools sphx-glr-backref-type-py-function"><span class="n">product</span></a>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a>
+<span class="kn">from</span> <span class="nn">memory_profiler</span> <span class="kn">import</span> <span class="n">memory_usage</span>
+
+<span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a>
+<span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <span class="p">(</span>
+    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>We create a function that goes through the usual three steps of data
+preparation: (1) data loading, (2) continuous data preprocessing,
+(3) windowing and (4) windowed data preprocessing. We use the
+<a class="reference internal" href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.SleepPhysionet</span></code></a> dataset for testing purposes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <span class="n">preload</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">):</span>
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">:</span>
+        <span class="n">tmp_dir</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory" title="tempfile.TemporaryDirectory" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span></a><span class="p">()</span>
+        <span class="n">save_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">save_dir</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># (1) Load the data</span>
+    <span class="n">concat_ds</span> <span class="o">=</span> <a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">SleepPhysionet</span></a><span class="p">(</span>
+        <span class="n">subject_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">),</span> <span class="n">recording_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">crop_wake_mins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">)</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">concat_ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+
+    <span class="c1"># (2) Preprocess the continuous data</span>
+    <span class="n">preprocessors</span> <span class="o">=</span> <span class="p">[</span>
+        <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;crop&#39;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="p">]</span>
+    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">concat_ds</span><span class="p">,</span> <span class="n">preprocessors</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">)</span>
+
+    <span class="c1"># (3) Window the data</span>
+    <span class="n">windows_ds</span> <span class="o">=</span> <a href="../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+        <span class="n">concat_ds</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">),</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">)</span>
+
+    <span class="c1"># Preprocess the windowed data</span>
+    <span class="n">preprocessors</span> <span class="o">=</span> <span class="p">[</span><a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+    <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">windows_ds</span><span class="p">,</span> <span class="n">preprocessors</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, we can run our function and measure its run time and peak memory usage
+for each one of our 4 cases above. We call the function multiple times with
+each configuration to get better estimates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To better characterize the run time vs. memory usage tradeoff for your
+specific configuration (as this will differ based on available hardware,
+data size and preprocessing operations), we recommend adapting this example
+to your use case and running it on your machine.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_repets</span></a> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Number of repetitions</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_recs</span></a> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Number of recordings to load and preprocess</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_jobs</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># Number of parallel processes</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/itertools.html#itertools.product" title="itertools.product" class="sphx-glr-backref-module-itertools sphx-glr-backref-type-py-function"><span class="n">product</span></a><span class="p">(</span>
+        <span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_repets</span></a><span class="p">),</span> <span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_recs</span></a><span class="p">],</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_jobs</span></a><span class="p">):</span>
+
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mem</span></a> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">memory_usage</span><span class="p">(</span>
+        <span class="n">proc</span><span class="o">=</span><span class="p">(</span><span class="n">prepare_data</span><span class="p">,</span> <span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">],</span> <span class="p">{})))</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">time_taken</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a>
+
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s1">&#39;n_recs&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_recs</span></a><span class="p">,</span>
+        <span class="s1">&#39;max_mem&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mem</span></a><span class="p">,</span>
+        <span class="s1">&#39;save&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span>
+        <span class="s1">&#39;n_jobs&#39;</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">,</span>
+        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">time_taken</span></a>
+    <span class="p">})</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmp2uu7w99c contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:569: UserWarning: The number of saved datasets (1) does not match the number of existing subdirectories (2). You may now encounter a mix of differently preprocessed datasets!
+  f&quot;datasets!&quot;, UserWarning)
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmp2uu7w99c contains other subdirectories or files [&#39;1&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmp2uu7w99c contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmpcxu27h70 contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:569: UserWarning: The number of saved datasets (1) does not match the number of existing subdirectories (2). You may now encounter a mix of differently preprocessed datasets!
+  f&quot;datasets!&quot;, UserWarning)
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmpcxu27h70 contains other subdirectories or files [&#39;1&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmpcxu27h70 contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmpdu8xz23h contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:569: UserWarning: The number of saved datasets (1) does not match the number of existing subdirectories (2). You may now encounter a mix of differently preprocessed datasets!
+  f&quot;datasets!&quot;, UserWarning)
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmpdu8xz23h contains other subdirectories or files [&#39;1&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+/home/runner/work/braindecode/braindecode/braindecode/datasets/base.py:573: UserWarning: Chosen directory /tmp/tmpdu8xz23h contains other subdirectories or files [&#39;0&#39;].
+  warnings.warn(f&#39;Chosen directory {path} contains other &#39;
+</pre></div>
+</div>
+<p>Finally, we can plot the results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">)</span>
+
+<a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="s1">&#39;tab:orange&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">markers</span></a> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">m</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_jobs</span></a><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">])}</span>
+<span class="k">for</span> <span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">),</span> <span class="n">sub_df</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;n_jobs&#39;</span><span class="p">]):</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.scatter.html#matplotlib.axes.Axes.scatter" title="matplotlib.axes.Axes.scatter" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span></a><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">sub_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">sub_df</span><span class="p">[</span><span class="s1">&#39;max_mem&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="p">],</span>
+               <span class="n">marker</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">markers</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;save=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">save</span></a><span class="si">}</span><span class="s1">, n_jobs=</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">n_jobs</span></a><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s1">&#39;Execution time (s)&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s1">&#39;Memory usage (MiB)&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loading and preprocessing </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_n_recs</span></a><span class="si">}</span><span class="s1"> recordings from Sleep &#39;</span>
+             <span class="s1">&#39;Physionet&#39;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_benchmark_preprocessing_001.png" srcset="../_images/sphx_glr_plot_benchmark_preprocessing_001.png" alt="Loading and preprocessing 2 recordings from Sleep Physionet" class = "sphx-glr-single-img"/><p>We see that parallel preprocessing without serialization (blue crosses) is
+faster than simple sequential processing (blue circles), however it uses more
+memory.</p>
+<p>Combining parallel preprocessing and serialization (orange crosses) reduces
+memory usage significantly, however it increases run time by a few seconds.
+Depending on available resources (e.g. in limited memory settings), it might
+therefore be more advantageous to use both parallelization and serialization
+together.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  40.352 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  431 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-preprocessing-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/817b00270adee98fe11f869f8c64d9cc/plot_benchmark_preprocessing.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_preprocessing.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/5ae34d87007c72630b1b1fd61f73ee5d/plot_benchmark_preprocessing.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark_preprocessing.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plot_tuh_discrete_multitarget.html" class="btn btn-neutral float-left" title="Multiple discrete targets with the TUH EEG Corpus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot_dataset_example.html" class="btn btn-neutral float-right" title="MOABB Dataset Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2021, Braindecode developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

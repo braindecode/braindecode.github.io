@@ -21,14 +21,11 @@
 Cropped Decoding on BCIC IV 2a Dataset
 ======================================
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-13
+.. GENERATED FROM PYTHON SOURCE LINES 9-70
 
 Building on the `Trialwise decoding
 tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__, we now do more
 data-efficient cropped decoding!
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 16-53
 
 In Braindecode, there are two supported configurations created for
 training models: trialwise decoding and cropped decoding. We will
@@ -67,16 +64,13 @@ On the right, you see cropped decoding:
     -  Crop size and window size together define how many predictions the
        network makes per window: ``#window−#crop+1=#predictions``
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 56-71
-
 .. note::
     For cropped decoding, the above training setup is mathematically
     identical to sampling crops in your dataset, pushing them through the
     network and training directly on the individual crops. At the same time,
     the above training setup is much faster as it avoids redundant
     computations by using dilated convolutions, see our paper
-    `Deep learning with convolutional neural networks for EEG decoding and visualization <https://arxiv.org/abs/1703.05051>`_.
+    `Deep learning with convolutional neural networks for EEG decoding and visualization <https://arxiv.org/abs/1703.05051>`_.  # noqa: E501
     However, the two setups are only mathematically identical in case (1)
     your network does not use any padding or only left padding and
     (2) your loss function leads
@@ -85,31 +79,24 @@ On the right, you see cropped decoding:
     log-softmax outputs and negative log likelihood loss that is typically
     used for classification in PyTorch.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 74-77
-
 Loading and preprocessing the dataset
 -------------------------------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 80-83
 
 Loading and preprocessing stays the same as in the `Trialwise decoding
 tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 83-110
+.. GENERATED FROM PYTHON SOURCE LINES 70-97
 
 .. code-block:: default
 
 
-    from braindecode.datasets.moabb import MOABBDataset
+    from braindecode.datasets import MOABBDataset
 
     subject_id = 3
     dataset = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[subject_id])
 
-    from braindecode.datautil.preprocess import (
-        exponential_moving_standardize, preprocess, Preprocessor)
+    from braindecode.preprocessing import (
+        exponential_moving_standardize, preprocess, Preprocessor, scale)
 
     low_cut_hz = 4.  # low cut frequency for filtering
     high_cut_hz = 38.  # high cut frequency for filtering
@@ -119,7 +106,7 @@ tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
 
     preprocessors = [
         Preprocessor('pick_types', eeg=True, meg=False, stim=False),  # Keep EEG sensors
-        Preprocessor(lambda x: x * 1e6),  # Convert from V to uV
+        Preprocessor(scale, factor=1e6, apply_on_array=True),  # Convert from V to uV
         Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
         Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
                      factor_new=factor_new, init_block_size=init_block_size)
@@ -139,217 +126,22 @@ tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__.
 
  .. code-block:: none
 
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    48 events found
-    Event IDs: [1 2 3 4]
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
+      warnings.warn(msg, category=FutureWarning)
 
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
-
-    Filtering raw data in 1 contiguous segment
-    Setting up band-pass filter from 4 - 38 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal bandpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Lower passband edge: 4.00
-    - Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-    - Upper passband edge: 38.00 Hz
-    - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-    - Filter length: 413 samples (1.652 sec)
+    <braindecode.datasets.moabb.MOABBDataset object at 0x7f10f22f2bd0>
 
 
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 111-114
+.. GENERATED FROM PYTHON SOURCE LINES 98-112
 
 Create model and compute windowing parameters
 ---------------------------------------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 117-122
 
 In contrast to trialwise decoding, we first have to create the model
 before we can cut the dataset into windows. This is because we need to
 know the receptive field of the network to know how large the window
 stride should be.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 125-131
 
 We first choose the compute/input window size that will be fed to the
 network during training This has to be larger than the networks
@@ -358,7 +150,7 @@ efficiency (see explanations in the beginning of this tutorial). Here we
 choose 1000 samples, which are 4 seconds for the 250 Hz sampling rate.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-135
+.. GENERATED FROM PYTHON SOURCE LINES 112-116
 
 .. code-block:: default
 
@@ -373,7 +165,7 @@ choose 1000 samples, which are 4 seconds for the 250 Hz sampling rate.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-142
+.. GENERATED FROM PYTHON SOURCE LINES 117-123
 
 Now we create the model. To enable it to be used in cropped decoding
 efficiently, we manually set the length of the final convolution layer
@@ -382,7 +174,7 @@ than ``input_window_samples`` (see ``final_conv_length=30`` in the model
 definition).
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-172
+.. GENERATED FROM PYTHON SOURCE LINES 123-158
 
 .. code-block:: default
 
@@ -396,8 +188,13 @@ definition).
     device = 'cuda' if cuda else 'cpu'
     if cuda:
         torch.backends.cudnn.benchmark = True
-    seed = 20200220  # random seed to make results reproducible
-    # Set random seed to be able to reproduce results
+    # Set random seed to be able to roughly reproduce results
+    # Note that with cudnn benchmark set to True, GPU indeterminism
+    # may still make results substantially different between runs.
+    # To obtain more consistent results at the cost of increased computation time,
+    # you can set `cudnn_benchmark=False` in `set_random_seeds`
+    # or remove `torch.backends.cudnn.benchmark = True`
+    seed = 20200220
     set_random_seeds(seed=seed, cuda=cuda)
 
     n_classes = 4
@@ -423,19 +220,20 @@ definition).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-177
+.. GENERATED FROM PYTHON SOURCE LINES 159-163
 
 And now we transform model with strides to a model that outputs dense
 prediction, so we can use it to obtain predictions for all
 crops.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-182
+.. GENERATED FROM PYTHON SOURCE LINES 163-169
 
 .. code-block:: default
 
 
-    from braindecode.models.util import to_dense_prediction_model, get_output_shape
+    from braindecode.models import to_dense_prediction_model, get_output_shape
+
     to_dense_prediction_model(model)
 
 
@@ -446,13 +244,13 @@ crops.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-186
+.. GENERATED FROM PYTHON SOURCE LINES 170-173
 
 To know the models’ receptive field, we calculate the shape of model
 output for a dummy input.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-190
+.. GENERATED FROM PYTHON SOURCE LINES 173-177
 
 .. code-block:: default
 
@@ -467,24 +265,21 @@ output for a dummy input.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-194
+.. GENERATED FROM PYTHON SOURCE LINES 178-184
 
 Cut the data into windows
 -------------------------
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 197-200
-
-In contrast to trialwise decoding, we have to supply an explicit window size and window stride to the
-``create_windows_from_events`` function.
+In contrast to trialwise decoding, we have to supply an explicit window size and
+window stride to the ``create_windows_from_events`` function.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-224
+.. GENERATED FROM PYTHON SOURCE LINES 184-208
 
 .. code-block:: default
 
 
-    from braindecode.datautil.windowers import create_windows_from_events
+    from braindecode.preprocessing import create_windows_from_events
 
     trial_start_offset_seconds = -0.5
     # Extract sampling frequency, check that they are same in all datasets
@@ -511,113 +306,10 @@ In contrast to trialwise decoding, we have to supply an explicit window size and
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['feet', 'left_hand', 'right_hand', 'tongue']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    96 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 96 events and 1000 original time points ...
-    0 bad epochs dropped
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 225-230
+.. GENERATED FROM PYTHON SOURCE LINES 209-214
 
 Split the dataset
 -----------------
@@ -625,7 +317,7 @@ Split the dataset
 This code is the same as in trialwise decoding.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 230-236
+.. GENERATED FROM PYTHON SOURCE LINES 214-220
 
 .. code-block:: default
 
@@ -642,21 +334,15 @@ This code is the same as in trialwise decoding.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-240
+.. GENERATED FROM PYTHON SOURCE LINES 221-235
 
 Training
 --------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 243-248
 
 In difference to trialwise decoding, we now should supply
 ``cropped=True`` to the EEGClassifier, and ``CroppedLoss`` as the
 criterion, as well as ``criterion__loss_function`` as the loss function
 applied to the meaned predictions.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 251-257
 
 .. note::
    In this tutorial, we use some default parameters that we
@@ -665,7 +351,7 @@ applied to the meaned predictions.
    cross validation on your training data.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 257-296
+.. GENERATED FROM PYTHON SOURCE LINES 235-274
 
 .. code-block:: default
 
@@ -674,7 +360,7 @@ applied to the meaned predictions.
     from skorch.helper import predefined_split
 
     from braindecode import EEGClassifier
-    from braindecode.training.losses import CroppedLoss
+    from braindecode.training import CroppedLoss
 
     # These values we found good for shallow network:
     lr = 0.0625 * 0.01
@@ -720,10 +406,10 @@ applied to the meaned predictions.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr      dur
     -------  ----------------  ------------  ----------------  ------------  ------  -------
-          1            [36m0.2500[0m        [32m1.4505[0m            [35m0.2500[0m        [31m5.5330[0m  0.0006  14.7940
-          2            [36m0.2569[0m        [32m1.2306[0m            0.2500        [31m3.7171[0m  0.0005  14.4600
-          3            [36m0.3576[0m        [32m1.1416[0m            [35m0.3264[0m        [31m2.2903[0m  0.0002  14.3627
-          4            [36m0.4410[0m        [32m1.1129[0m            [35m0.4236[0m        [31m1.4426[0m  0.0000  14.2163
+          1            0.2500        1.4486            0.2500        5.4387  0.0006  15.9902
+          2            0.2569        1.2315            0.2500        3.6824  0.0005  15.6374
+          3            0.3958        1.1476            0.3611        2.2702  0.0002  15.5420
+          4            0.4340        1.1225            0.4410        1.4375  0.0000  15.5164
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -744,13 +430,10 @@ applied to the meaned predictions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-300
+.. GENERATED FROM PYTHON SOURCE LINES 275-284
 
 Plot Results
 ------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 303-309
 
 This is again the same code as in trialwise decoding.
 
@@ -759,7 +442,7 @@ This is again the same code as in trialwise decoding.
     loss as in the trialwise decoding tutorial.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 309-346
+.. GENERATED FROM PYTHON SOURCE LINES 284-323
 
 .. code-block:: default
 
@@ -803,20 +486,75 @@ This is again the same code as in trialwise decoding.
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png
-    :alt: plot bcic iv 2a moabb cropped
-    :class: sphx-glr-single-img
 
 
+.. image-sg:: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png
+   :alt: plot bcic iv 2a moabb cropped
+   :srcset: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 324-329
+
+Plot Confusion Matrix
+---------------------
+
+Generate a confusion matrix as in https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 329-349
+
+.. code-block:: default
+
+
+    from sklearn.metrics import confusion_matrix
+    from braindecode.visualization import plot_confusion_matrix
+
+    # generate confusion matrices
+    # get the targets
+    y_true = valid_set.get_metadata().target
+    y_pred = clf.predict(valid_set)
+
+    # generating confusion matrix
+    confusion_mat = confusion_matrix(y_true, y_pred)
+
+    # add class labels
+    # label_dict is class_name : str -> i_class : int
+    label_dict = valid_set.datasets[0].windows.event_id.items()
+    # sort the labels by values (values are integer class labels)
+    labels = list(dict(sorted(list(label_dict), key=lambda kv: kv[1])).keys())
+
+    # plot the basic conf. matrix
+    plot_confusion_matrix(confusion_mat, class_names=labels)
+
+
+
+.. image-sg:: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_002.png
+   :alt: plot bcic iv 2a moabb cropped
+   :srcset: /auto_examples/images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <Figure size 800x550 with 1 Axes>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  19.995 seconds)
+   **Total running time of the script:** ( 1 minutes  31.397 seconds)
 
-**Estimated memory usage:**  1696 MB
+**Estimated memory usage:**  1435 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_bcic_iv_2a_moabb_cropped.py:

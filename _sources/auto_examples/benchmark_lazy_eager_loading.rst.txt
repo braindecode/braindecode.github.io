@@ -68,7 +68,7 @@ have been instantiated with parameter `preload=False`.
     import seaborn as sns
 
     from braindecode.datasets import TUHAbnormal
-    from braindecode.datautil.windowers import create_fixed_length_windows
+    from braindecode.preprocessing import create_fixed_length_windows
     from braindecode.models import ShallowFBCSPNet, Deep4Net
 
 
@@ -80,7 +80,7 @@ have been instantiated with parameter `preload=False`.
 We start by setting two pytorch internal parameters that can affect the
 comparison::
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-61
+.. GENERATED FROM PYTHON SOURCE LINES 57-62
 
 .. code-block:: default
 
@@ -89,7 +89,8 @@ comparison::
     torch.set_num_threads(N_JOBS)  # Sets the available number of threads
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 62-69
+
+.. GENERATED FROM PYTHON SOURCE LINES 63-70
 
 Next, we define a few functions to automate the benchmarking.
 For the purpose of this example, we load some recordings from the TUH Abnormal
@@ -99,7 +100,7 @@ We then train a neural network for a few epochs.
 Each one of these steps will be timed, so we can report the total time taken
 to prepare the data and train the model.
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-214
+.. GENERATED FROM PYTHON SOURCE LINES 70-215
 
 .. code-block:: default
 
@@ -229,7 +230,7 @@ to prepare the data and train the model.
         """
         for i in range(n_epochs):
             loss_vals = list()
-            for X, y, _  in dataloader:
+            for X, y, _ in dataloader:
                 model.train()
                 model.zero_grad()
 
@@ -249,11 +250,11 @@ to prepare the data and train the model.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 215-216
+.. GENERATED FROM PYTHON SOURCE LINES 216-217
 
 Next, we define the different hyperparameters that we want to compare:
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-230
+.. GENERATED FROM PYTHON SOURCE LINES 217-231
 
 .. code-block:: default
 
@@ -269,27 +270,28 @@ Next, we define the different hyperparameters that we want to compare:
     PIN_MEMORY = [False]  # whether to use pinned memory
     CUDA = [True, False] if torch.cuda.is_available() else [False]  # whether to use a CUDA device
 
-    N_REPETITIONS = 3  #3 # Number of times to repeat the experiment (to get better time estimates)
+    N_REPETITIONS = 3  # Number of times to repeat the experiment (to get better time estimates)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 231-233
+.. GENERATED FROM PYTHON SOURCE LINES 232-234
 
 The following path needs to be changed to your local folder containing the
 TUH Abnormal corpus:
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-235
+.. GENERATED FROM PYTHON SOURCE LINES 234-237
 
 .. code-block:: default
 
-    TUH_PATH = '/storage/store/data/tuh_eeg/www.isip.piconepress.com/projects/tuh_eeg/downloads/tuh_eeg_abnormal/v2.0.0/edf/'
+    TUH_PATH = ('/storage/store/data/tuh_eeg/www.isip.piconepress.com/projects/'
+                'tuh_eeg/downloads/tuh_eeg_abnormal/v2.0.0/edf/')
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 236-238
+.. GENERATED FROM PYTHON SOURCE LINES 238-240
 
 We can finally cycle through all the different combinations of the parameters
 we set above to evaluate their execution time:
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-292
+.. GENERATED FROM PYTHON SOURCE LINES 240-294
 
 .. code-block:: default
 
@@ -344,16 +346,16 @@ we set above to evaluate their execution time:
         # Record timing results
         results['data_preparation'] = data_loading_end - data_loading_start
         results['training_setup'] = training_setup_end - training_setup_start
-        results ['model_training'] = model_training_end - model_training_start
+        results['model_training'] = model_training_end - model_training_start
         all_results.append(results)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 293-295
+.. GENERATED FROM PYTHON SOURCE LINES 295-297
 
 The results are formatted into a pandas DataFrame and saved locally as a CSV
 file.
 
-.. GENERATED FROM PYTHON SOURCE LINES 295-301
+.. GENERATED FROM PYTHON SOURCE LINES 297-303
 
 .. code-block:: default
 
@@ -364,11 +366,11 @@ file.
     print(f'Results saved under {fname}.')
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 302-303
+.. GENERATED FROM PYTHON SOURCE LINES 304-305
 
 We can finally summarize this information into the following plot:
 
-.. GENERATED FROM PYTHON SOURCE LINES 303-308
+.. GENERATED FROM PYTHON SOURCE LINES 305-310
 
 .. code-block:: default
 
@@ -378,13 +380,13 @@ We can finally summarize this information into the following plot:
         hue='num_workers', col='preload', kind='strip')
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 309-312
+.. GENERATED FROM PYTHON SOURCE LINES 311-314
 
 .. warning::
   The results of this comparison will change depending on the hyperparameters
   that were set above, and on the actual hardware that is being used.
 
-.. GENERATED FROM PYTHON SOURCE LINES 314-318
+.. GENERATED FROM PYTHON SOURCE LINES 316-320
 
 Generally speaking, we expect lazy loading to be slower than eager loading
 during model training, but to potentially be pretty competitive if multiple

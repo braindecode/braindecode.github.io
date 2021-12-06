@@ -1,5 +1,6 @@
-"""MNE Dataset Example
-======================
+"""
+MNE Dataset Example
+===================
 """
 ##############################################################################
 # This example shows how to convert data from mne.Raws or mne.Epochs to a
@@ -11,7 +12,7 @@
 
 import mne
 
-from braindecode.datautil import (
+from braindecode.datasets import (
     create_from_mne_raw, create_from_mne_epochs)
 
 ###############################################################################
@@ -32,10 +33,10 @@ parts = [mne.io.read_raw_edf(path, preload=True, stim_channel='auto')
          for path in physionet_paths]
 
 ###############################################################################
-# Convert mne.RawArrays to a compatible data format:
+# Convert Raw objects to a compatible data format:
 descriptions = [{"event_code": code, "subject": subject_id}
                 for code in event_codes]
-windows_datasets = create_from_mne_raw(
+windows_dataset = create_from_mne_raw(
     parts,
     trial_start_offset_samples=0,
     trial_stop_offset_samples=0,
@@ -49,9 +50,11 @@ windows_datasets = create_from_mne_raw(
 # If trials were already cut beforehand and are available as mne.Epochs:
 list_of_epochs = [mne.Epochs(raw, [[0, 0, 0]], tmin=0, baseline=None)
                   for raw in parts]
-windows_datasets = create_from_mne_epochs(
+windows_dataset = create_from_mne_epochs(
     list_of_epochs,
     window_size_samples=50,
     window_stride_samples=50,
     drop_last_window=False
 )
+
+windows_dataset.description

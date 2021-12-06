@@ -17,12 +17,13 @@
 
 .. _sphx_glr_auto_examples_plot_split_dataset.py:
 
+
 Split Dataset Example
-========================
+=====================
 
 In this example, we show multiple ways of how to split datasets.
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-16
+.. GENERATED FROM PYTHON SOURCE LINES 7-15
 
 .. code-block:: default
 
@@ -31,10 +32,8 @@ In this example, we show multiple ways of how to split datasets.
     #
     # License: BSD (3-clause)
 
-    from IPython.display import display
-
     from braindecode.datasets import MOABBDataset
-    from braindecode.datautil.windowers import create_windows_from_events
+    from braindecode.preprocessing import create_windows_from_events
 
 
 
@@ -43,15 +42,15 @@ In this example, we show multiple ways of how to split datasets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-18
+.. GENERATED FROM PYTHON SOURCE LINES 16-17
 
 First, we create a dataset based on BCIC IV 2a fetched with MOABB,
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-20
+.. GENERATED FROM PYTHON SOURCE LINES 17-19
 
 .. code-block:: default
 
-    ds = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[1])
+    dataset = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[1])
 
 
 
@@ -91,56 +90,140 @@ First, we create a dataset based on BCIC IV 2a fetched with MOABB,
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-22
+.. GENERATED FROM PYTHON SOURCE LINES 20-21
 
 ds has a pandas DataFrame with additional description of its internal datasets
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-24
+.. GENERATED FROM PYTHON SOURCE LINES 21-23
 
 .. code-block:: default
 
-    display(ds.description)
+    dataset.description
 
 
 
 
 
-.. rst-class:: sphx-glr-script-out
 
- Out:
+.. raw:: html
 
- .. code-block:: none
+    <div class="output_subarea output_html rendered_html output_result">
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
 
-        subject    session    run
-    0         1  session_T  run_0
-    1         1  session_T  run_1
-    2         1  session_T  run_2
-    3         1  session_T  run_3
-    4         1  session_T  run_4
-    5         1  session_T  run_5
-    6         1  session_E  run_0
-    7         1  session_E  run_1
-    8         1  session_E  run_2
-    9         1  session_E  run_3
-    10        1  session_E  run_4
-    11        1  session_E  run_5
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
 
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>subject</th>
+          <th>session</th>
+          <th>run</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_0</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_2</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_3</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_4</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_5</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_0</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_1</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_2</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_3</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_4</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <br />
+    <br />
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 25-28
+.. GENERATED FROM PYTHON SOURCE LINES 24-27
 
 We can split the dataset based on the info in the description, for example
 based on different runs. The returned dictionary will have string keys
 corresponding to unique entries in the description DataFrame column
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-32
+.. GENERATED FROM PYTHON SOURCE LINES 27-31
 
 .. code-block:: default
 
-    splits = ds.split("run")
-    display(splits)
-    display(splits["run_4"].description)
+    splits = dataset.split("run")
+    print(splits)
+    splits["run_4"].description
 
 
 
@@ -152,27 +235,68 @@ corresponding to unique entries in the description DataFrame column
 
  .. code-block:: none
 
-    {'run_0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747f9e2b50>, 'run_1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747fa6e6d0>, 'run_2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2410>, 'run_3': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2090>, 'run_4': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2250>, 'run_5': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a26d0>}
-       subject    session    run
-    0        1  session_T  run_4
-    1        1  session_E  run_4
+    {'run_0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f2434ed0>, 'run_1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f2132bd0>, 'run_2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f21f8a90>, 'run_3': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f212b850>, 'run_4': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f22f2950>, 'run_5': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f216ead0>}
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-36
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>subject</th>
+          <th>session</th>
+          <th>run</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_4</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_4</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 32-35
 
 We can also split the dataset based on a list of integers corresponding to
 rows in the description. In this case, the returned dictionary will have
 '0' as the only key
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-40
+.. GENERATED FROM PYTHON SOURCE LINES 35-39
 
 .. code-block:: default
 
-    splits = ds.split([0, 1, 5])
-    display(splits)
-    display(splits["0"].description)
+    splits = dataset.split([0, 1, 5])
+    print(splits)
+    splits["0"].description
 
 
 
@@ -184,29 +308,75 @@ rows in the description. In this case, the returned dictionary will have
 
  .. code-block:: none
 
-    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747f9e2a90>}
-       subject    session    run
-    0        1  session_T  run_0
-    1        1  session_T  run_1
-    2        1  session_T  run_5
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f219cd90>}
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-45
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>subject</th>
+          <th>session</th>
+          <th>run</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_0</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1</td>
+          <td>session_T</td>
+          <td>run_5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 40-44
 
 If we want multiple splits based on indices, we can also specify a list of
 list of integers. In this case, the dictionary will have string keys
 representing the id of the dataset split in the order of the given list of
 integers
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-49
+.. GENERATED FROM PYTHON SOURCE LINES 44-48
 
 .. code-block:: default
 
-    splits = ds.split([[0, 1, 5], [2, 3, 4], [6, 7, 8, 9, 10, 11]])
-    display(splits)
-    display(splits["2"].description)
+    splits = dataset.split([[0, 1, 5], [2, 3, 4], [6, 7, 8, 9, 10, 11]])
+    print(splits)
+    splits["2"].description
 
 
 
@@ -218,34 +388,190 @@ integers
 
  .. code-block:: none
 
-    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2050>, '1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2c10>, '2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2610>}
-       subject    session    run
-    0        1  session_E  run_0
-    1        1  session_E  run_1
-    2        1  session_E  run_2
-    3        1  session_E  run_3
-    4        1  session_E  run_4
-    5        1  session_E  run_5
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10eb40b690>, '1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f2188250>, '2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f220cfd0>}
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>subject</th>
+          <th>session</th>
+          <th>run</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_0</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_2</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_3</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_4</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 49-51
+
+If we want to split based on a list of indices but you want to specify
+the keys in the output dictionary you can pass a dict as:
+
+.. GENERATED FROM PYTHON SOURCE LINES 51-57
+
+.. code-block:: default
+
+    splits = dataset.split(
+        {"train": [0, 1, 5], "valid": [2, 3, 4], "test": [6, 7, 8, 9, 10, 11]}
+    )
+    print(splits)
+    splits["test"].description
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-51
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    {'train': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f2203850>, 'valid': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f22f2950>, 'test': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10eb4233d0>}
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>subject</th>
+          <th>session</th>
+          <th>run</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_0</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_2</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_3</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_4</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>1</td>
+          <td>session_E</td>
+          <td>run_5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 58-59
 
 Similarly, we can split datasets after creating windows
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-59
+.. GENERATED FROM PYTHON SOURCE LINES 59-64
 
 .. code-block:: default
 
     windows = create_windows_from_events(
-        ds, trial_start_offset_samples=0, trial_stop_offset_samples=0)
+        dataset, trial_start_offset_samples=0, trial_stop_offset_samples=0)
     splits = windows.split("run")
-    display(splits)
-    splits = windows.split([4, 8])
-    display(splits)
-    splits = windows.split([[4, 8], [5, 9, 11]])
-    display(splits)
+    splits
+
 
 
 
@@ -352,19 +678,82 @@ Similarly, we can split datasets after creating windows
     0 projection items activated
     Loading data for 48 events and 1000 original time points ...
     0 bad epochs dropped
-    {'run_0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747f5c1710>, 'run_1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2990>, 'run_2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a2750>, 'run_3': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a7190>, 'run_4': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747f5b8290>, 'run_5': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747f5b8350>}
-    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a21d0>}
-    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747d1a7a10>, '1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f747f5b8410>}
 
+    {'run_0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f246d750>, 'run_1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f209fc90>, 'run_2': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f22eead0>, 'run_3': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f216ead0>, 'run_4': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f24dfa10>, 'run_5': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10eb438610>}
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 65-68
+
+.. code-block:: default
+
+    splits = windows.split([4, 8])
+    splits
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f2167f90>}
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 69-72
+
+.. code-block:: default
+
+    splits = windows.split([[4, 8], [5, 9, 11]])
+    splits
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    {'0': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f219ce50>, '1': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f212b850>}
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 73-75
+
+.. code-block:: default
+
+    splits = windows.split(dict(train=[4, 8], test=[5, 9, 11]))
+    splits
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    {'train': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f219cd90>, 'test': <braindecode.datasets.base.BaseConcatDataset object at 0x7f10eb3e5ed0>}
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.082 seconds)
+   **Total running time of the script:** ( 0 minutes  3.788 seconds)
 
-**Estimated memory usage:**  338 MB
+**Estimated memory usage:**  368 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_split_dataset.py:

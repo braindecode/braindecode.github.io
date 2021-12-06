@@ -72,26 +72,19 @@ low-labels data regimes [1]_.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-50
+.. GENERATED FROM PYTHON SOURCE LINES 47-56
 
 Loading and preprocessing the dataset
 -------------------------------------
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 52-55
-
 Loading the raw recordings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 57-61
 
 First, we load a few recordings from the Sleep Physionet dataset. Running
 this example with more recordings should yield better representations and
 downstream classification performance.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 61-68
+.. GENERATED FROM PYTHON SOURCE LINES 56-63
 
 .. code-block:: default
 
@@ -106,52 +99,29 @@ downstream classification performance.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4001E0-PSG.edf...
-    EDF file detected
-    Setting channel info structure...
-    Creating raw.info structure...
-    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4011E0-PSG.edf...
-    EDF file detected
-    Setting channel info structure...
-    Creating raw.info structure...
-    Extracting EDF parameters from /home/runner/mne_data/physionet-sleep-data/SC4021E0-PSG.edf...
-    EDF file detected
-    Setting channel info structure...
-    Creating raw.info structure...
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 69-72
+.. GENERATED FROM PYTHON SOURCE LINES 64-70
 
 Preprocessing
 ~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 75-79
 
 Next, we preprocess the raw data. We convert the data to microvolts and apply
 a lowpass filter. Since the Sleep Physionet data is already sampled at 100 Hz
 we don't need to apply resampling.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 79-93
+.. GENERATED FROM PYTHON SOURCE LINES 70-84
 
 .. code-block:: default
 
 
-    from braindecode.datautil.preprocess import preprocess, Preprocessor
+    from braindecode.preprocessing.preprocess import preprocess, Preprocessor, scale
 
     high_cut_hz = 30
 
     preprocessors = [
-        Preprocessor(lambda x: x * 1e6),
+        Preprocessor(scale, factor=1e6, apply_on_array=True),
         Preprocessor('filter', l_freq=None, h_freq=high_cut_hz, n_jobs=n_jobs)
     ]
 
@@ -169,56 +139,17 @@ we don't need to apply resampling.
 
  .. code-block:: none
 
-    Reading 0 ... 2508000  =      0.000 ... 25080.000 secs...
-    Filtering raw data in 1 contiguous segment
-    Setting up low-pass filter at 30 Hz
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
+      warnings.warn(msg, category=FutureWarning)
 
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal lowpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Upper passband edge: 30.00 Hz
-    - Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-    - Filter length: 45 samples (0.450 sec)
-
-    Reading 0 ... 3261000  =      0.000 ... 32610.000 secs...
-    Filtering raw data in 1 contiguous segment
-    Setting up low-pass filter at 30 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal lowpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Upper passband edge: 30.00 Hz
-    - Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-    - Filter length: 45 samples (0.450 sec)
-
-    Reading 0 ... 3060000  =      0.000 ... 30600.000 secs...
-    Filtering raw data in 1 contiguous segment
-    Setting up low-pass filter at 30 Hz
-
-    FIR filter parameters
-    ---------------------
-    Designing a one-pass, zero-phase, non-causal lowpass filter:
-    - Windowed time-domain design (firwin) method
-    - Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-    - Upper passband edge: 30.00 Hz
-    - Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-    - Filter length: 45 samples (0.450 sec)
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f10eb347610>
 
 
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 94-97
+.. GENERATED FROM PYTHON SOURCE LINES 85-94
 
 Extracting windows
 ~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 100-107
 
 We extract 30-s windows to be used in both the pretext and downstream tasks.
 As RP (and SSL in general) don't require labelled data, the pretext task
@@ -227,13 +158,12 @@ could be performed using unlabelled windows extracted with
 Here however, purely for convenience, we directly extract labelled windows so
 that we can reuse them in the sleep staging downstream task later.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 107-129
+.. GENERATED FROM PYTHON SOURCE LINES 94-116
 
 .. code-block:: default
 
 
-    from braindecode.datautil.windowers import create_windows_from_events
+    from braindecode.preprocessing.windowers import create_windows_from_events
 
     window_size_s = 30
     sfreq = 100
@@ -258,83 +188,52 @@ that we can reuse them in the sleep staging downstream task later.
 
 
 
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 117-121
+
+Preprocessing windows
+~~~~~~~~~~~~~~~~~~~~~
+
+We also preprocess the windows by applying channel-wise z-score normalization.
+
+.. GENERATED FROM PYTHON SOURCE LINES 121-127
+
+.. code-block:: default
+
+
+    from sklearn.preprocessing import scale as standard_scale
+
+    preprocess(windows_dataset, [Preprocessor(standard_scale, channel_wise=True)])
+
+
+
+
+
+
 .. rst-class:: sphx-glr-script-out
 
  Out:
 
  .. code-block:: none
 
-    Used Annotations descriptions: ['Sleep stage 1', 'Sleep stage 2', 'Sleep stage 3', 'Sleep stage 4', 'Sleep stage R', 'Sleep stage W']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    837 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 837 events and 3000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['Sleep stage 1', 'Sleep stage 2', 'Sleep stage 3', 'Sleep stage 4', 'Sleep stage R', 'Sleep stage W']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    1088 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 1088 events and 3000 original time points ...
-    0 bad epochs dropped
-    Used Annotations descriptions: ['Sleep stage 1', 'Sleep stage 2', 'Sleep stage 3', 'Sleep stage 4', 'Sleep stage R', 'Sleep stage W']
-    Adding metadata with 4 columns
-    Replacing existing metadata with 4 columns
-    1021 matching events found
-    No baseline correction applied
-    0 projection items activated
-    Loading data for 1021 events and 3000 original time points ...
-    0 bad epochs dropped
+
+    <braindecode.datasets.base.BaseConcatDataset object at 0x7f10f2210dd0>
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 130-133
-
-Preprocessing windows
-~~~~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 136-138
-
-We also preprocess the windows by applying channel-wise z-score normalization.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 138-144
-
-.. code-block:: default
-
-
-    from braindecode.datautil.preprocess import zscore
-
-    preprocess(windows_dataset, [Preprocessor(zscore)])
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 145-148
+.. GENERATED FROM PYTHON SOURCE LINES 128-135
 
 Splitting dataset into train, valid and test sets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 150-155
 
 We randomly split the recordings by subject into train, validation and
 testing sets. We further define a new Dataset class which can receive a pair
 of indices and return the corresponding windows. This will be needed when
 training and evaluating on the pretext task.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 155-199
+.. GENERATED FROM PYTHON SOURCE LINES 135-179
 
 .. code-block:: default
 
@@ -389,13 +288,10 @@ training and evaluating on the pretext task.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-203
+.. GENERATED FROM PYTHON SOURCE LINES 180-198
 
 Creating samplers
 ~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 205-221
 
 Next, we need to create samplers. These samplers will be used to randomly
 sample pairs of examples to train and validate our model with
@@ -413,13 +309,12 @@ The samplers also control the number of pairs to be sampled (defined with
 training, for instance 2,000 pairs per recording as in [1]_. Here, we use a
 lower number of 250 pairs per recording to reduce training time.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 221-242
+.. GENERATED FROM PYTHON SOURCE LINES 198-219
 
 .. code-block:: default
 
 
-    from braindecode.samplers.ssl import RelativePositioningSampler
+    from braindecode.samplers import RelativePositioningSampler
 
     tau_pos, tau_neg = int(sfreq * 60), int(sfreq * 15 * 60)
     n_examples_train = 250 * len(splitted['train'].datasets)
@@ -446,13 +341,10 @@ lower number of 250 pairs per recording to reduce training time.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 243-246
+.. GENERATED FROM PYTHON SOURCE LINES 220-233
 
 Creating the model
 ------------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 248-259
 
 We can now create the deep learning model. In this tutorial, we use a
 modified version of the sleep staging architecture introduced in [4]_ -
@@ -465,8 +357,7 @@ We further wrap the model into a siamese architecture using the
 # :class:`ContrastiveNet` class defined below. This allows us to train the
 feature extractor end-to-end.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 259-315
+.. GENERATED FROM PYTHON SOURCE LINES 233-294
 
 .. code-block:: default
 
@@ -479,7 +370,12 @@ feature extractor end-to-end.
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if device == 'cuda':
         torch.backends.cudnn.benchmark = True
-    # Set random seed to be able to reproduce results
+    # Set random seed to be able to roughly reproduce results
+    # Note that with cudnn benchmark set to True, GPU indeterminism
+    # may still make results substantially different between runs.
+    # To obtain more consistent results at the cost of increased computation time,
+    # you can set `cudnn_benchmark=False` in `set_random_seeds`
+    # or remove `torch.backends.cudnn.benchmark = True`
     set_random_seeds(seed=random_state, cuda=device == 'cuda')
 
     # Extract number of channels and time steps from dataset
@@ -533,22 +429,19 @@ feature extractor end-to-end.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 316-319
+.. GENERATED FROM PYTHON SOURCE LINES 295-301
 
 Training
 --------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 322-326
 
 We can now train our network on the pretext task. We use similar
 hyperparameters as in [1]_, but reduce the number of epochs and increase the
 learning rate to account for the smaller setting of this example.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 326-375
+.. GENERATED FROM PYTHON SOURCE LINES 301-351
 
 .. code-block:: default
+
 
     import os
 
@@ -611,60 +504,52 @@ learning rate to account for the smaller setting of this example.
 
       epoch    train_acc    train_loss    valid_acc    valid_loss    cp     dur
     -------  -----------  ------------  -----------  ------------  ----  ------
-          1       [36m0.5520[0m        [32m0.7133[0m       [35m0.6040[0m        [31m0.6830[0m     +  4.1098
-          2       [36m0.5920[0m        [32m0.6791[0m       0.5720        [31m0.6325[0m     +  3.1396
-          3       0.5160        0.8718       [35m0.6880[0m        0.6441        3.0230
-          4       0.5360        0.6845       0.5520        0.6825        3.2426
-          5       0.5560        0.7046       0.6320        0.6565        2.9375
-          6       [36m0.6440[0m        [32m0.6461[0m       [35m0.6960[0m        [31m0.6131[0m     +  2.8849
-          7       0.6000        [32m0.6460[0m       0.6800        [31m0.5898[0m     +  2.9360
-          8       0.6280        [32m0.5980[0m       0.6840        [31m0.5811[0m     +  3.2741
-          9       0.5880        0.6493       [35m0.7280[0m        [31m0.5766[0m     +  3.2780
-         10       [36m0.6680[0m        0.6185       0.7000        0.5787        3.0240
-         11       [36m0.7200[0m        [32m0.5608[0m       0.6960        0.5779        3.4585
-         12       0.6320        0.6330       0.7160        [31m0.5669[0m     +  3.3220
-         13       0.6920        0.5720       0.7240        [31m0.5572[0m     +  2.9065
-         14       0.7040        0.5761       0.7240        [31m0.5500[0m     +  3.0400
-         15       [36m0.7320[0m        [32m0.5545[0m       0.6960        [31m0.5434[0m     +  2.9624
-         16       0.6560        0.5829       0.7120        [31m0.5397[0m     +  3.1691
-         17       0.6800        0.5859       [35m0.7360[0m        [31m0.5396[0m     +  2.9499
-         18       0.7040        0.5573       0.7360        [31m0.5394[0m     +  3.0224
-         19       0.7200        0.5630       [35m0.7520[0m        [31m0.5391[0m     +  2.9657
-         20       0.7040        0.5860       0.7440        [31m0.5320[0m     +  3.2766
-         21       [36m0.7440[0m        [32m0.5240[0m       0.7360        [31m0.5274[0m     +  3.1445
-         22       0.7120        0.5562       0.7440        [31m0.5254[0m     +  3.1388
-         23       0.7040        0.5464       0.7400        0.5254        2.9646
-         24       0.7440        0.5757       0.7520        [31m0.5249[0m     +  2.9517
-         25       0.7200        0.5421       [35m0.7560[0m        [31m0.5154[0m     +  3.0513
+          1       0.5520        0.7133       0.6080        0.6830     +  3.3016
+          2       0.5920        0.6791       0.5720        0.6326     +  3.1844
+          3       0.5160        0.8718       0.6880        0.6442        2.9554
+          4       0.5360        0.6845       0.5560        0.6826        3.0569
+          5       0.5560        0.7046       0.6320        0.6564        3.2626
+          6       0.6440        0.6461       0.7000        0.6129     +  3.3566
+          7       0.6000        0.6461       0.6800        0.5896     +  3.2135
+          8       0.6240        0.5982       0.6880        0.5809     +  3.2516
+          9       0.5880        0.6488       0.7280        0.5761     +  3.1981
+         10       0.6720        0.6187       0.7080        0.5782        3.3184
+         11       0.7200        0.5594       0.7000        0.5781        3.1318
+         12       0.6280        0.6336       0.7160        0.5674     +  3.1532
+         13       0.6880        0.5741       0.7320        0.5575     +  3.0464
+         14       0.6960        0.5754       0.7200        0.5501     +  3.1578
+         15       0.7360        0.5558       0.7160        0.5435     +  3.2883
+         16       0.6600        0.5821       0.7240        0.5396     +  3.0324
+         17       0.6840        0.5851       0.7400        0.5396        3.3820
+         18       0.7040        0.5593       0.7400        0.5396        3.0859
+         19       0.7160        0.5599       0.7520        0.5394     +  3.0870
+         20       0.7040        0.5823       0.7360        0.5334     +  3.2652
+         21       0.7520        0.5260       0.7360        0.5308     +  3.2272
+         22       0.7160        0.5532       0.7280        0.5312        3.1342
+         23       0.7120        0.5458       0.7280        0.5292     +  3.0385
+         24       0.7360        0.5734       0.7480        0.5227     +  3.1230
+         25       0.7320        0.5355       0.7480        0.5122     +  3.0971
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 376-379
+.. GENERATED FROM PYTHON SOURCE LINES 352-360
 
 Visualizing the results
 -----------------------
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 381-384
-
 Inspecting pretext task performance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 386-389
 
 We plot the loss and pretext task performance for the training and validation
 sets.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 389-428
+.. GENERATED FROM PYTHON SOURCE LINES 360-398
 
 .. code-block:: default
 
 
     import matplotlib.pyplot as plt
-    from matplotlib.lines import Line2D
     import pandas as pd
 
     # Extract loss and balanced accuracy values for plotting from history object
@@ -704,21 +589,21 @@ sets.
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_relative_positioning_001.png
-    :alt: plot relative positioning
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_relative_positioning_001.png
+   :alt: plot relative positioning
+   :srcset: /auto_examples/images/sphx_glr_plot_relative_positioning_001.png
+   :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 429-432
+.. GENERATED FROM PYTHON SOURCE LINES 399-401
 
 We also display the confusion matrix and classification report for the
 pretext task:
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 432-445
+.. GENERATED FROM PYTHON SOURCE LINES 401-414
 
 .. code-block:: default
 
@@ -745,35 +630,31 @@ pretext task:
 
  .. code-block:: none
 
-    [[72 49]
-     [31 98]]
+    [[ 71  50]
+     [ 29 100]]
                   precision    recall  f1-score   support
 
-             0.0       0.70      0.60      0.64       121
-             1.0       0.67      0.76      0.71       129
+             0.0       0.71      0.59      0.64       121
+             1.0       0.67      0.78      0.72       129
 
         accuracy                           0.68       250
-       macro avg       0.68      0.68      0.68       250
-    weighted avg       0.68      0.68      0.68       250
+       macro avg       0.69      0.68      0.68       250
+    weighted avg       0.69      0.68      0.68       250
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 446-449
+.. GENERATED FROM PYTHON SOURCE LINES 415-421
 
 Using the learned representation for sleep staging
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 451-455
 
 We can now use the trained convolutional neural network as a feature
 extractor. We perform sleep stage classification from the learned feature
 representation using a linear logistic regression classifier.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 455-497
+.. GENERATED FROM PYTHON SOURCE LINES 421-463
 
 .. code-block:: default
 
@@ -829,54 +710,52 @@ representation using a linear logistic regression classifier.
 
  .. code-block:: none
 
-    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/linear_model/_logistic.py:765: ConvergenceWarning: lbfgs failed to converge (status=1):
+    /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/linear_model/_logistic.py:818: ConvergenceWarning: lbfgs failed to converge (status=1):
     STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
 
     Increase the number of iterations (max_iter) or scale the data as shown in:
         https://scikit-learn.org/stable/modules/preprocessing.html
     Please also refer to the documentation for alternative solver options:
         https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
-      extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG)
+      extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG,
     Sleep staging performance with logistic regression:
-    Train bal acc: 0.9287
-    Valid bal acc: 0.5512
-    Test bal acc: 0.5244
+    Train bal acc: 0.9366
+    Valid bal acc: 0.5442
+    Test bal acc: 0.5261
     Results on test set:
-    [[102  28   3   0   9]
-     [ 15  53   8   1  32]
-     [  1  29 330   0 202]
+    [[103  26   3   0  10]
+     [ 15  55   7   2  30]
+     [  1  28 327   0 206]
      [  0   0  87  18   0]
-     [  2  20  36   0 112]]
+     [  2  21  37   0 110]]
                   precision    recall  f1-score   support
 
-               0       0.85      0.72      0.78       142
-               1       0.41      0.49      0.44       109
-               2       0.71      0.59      0.64       562
-               3       0.95      0.17      0.29       105
-               4       0.32      0.66      0.43       170
+               0       0.85      0.73      0.78       142
+               1       0.42      0.50      0.46       109
+               2       0.71      0.58      0.64       562
+               3       0.90      0.17      0.29       105
+               4       0.31      0.65      0.42       170
 
-        accuracy                           0.57      1088
-       macro avg       0.65      0.52      0.52      1088
-    weighted avg       0.66      0.57      0.57      1088
-
-
+        accuracy                           0.56      1088
+       macro avg       0.64      0.53      0.52      1088
+    weighted avg       0.66      0.56      0.57      1088
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 498-502
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 464-467
 
 The balanced accuracy is much higher than chance-level (i.e., 20% for our
 5-class classification problem). Finally, we perform a quick 2D visualization
 of the feature space using a PCA:
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 502-523
+.. GENERATED FROM PYTHON SOURCE LINES 467-487
 
 .. code-block:: default
 
 
     from sklearn.decomposition import PCA
-    # from sklearn.manifold import TSNE
     from matplotlib import cm
 
     X = np.concatenate([v[0] for k, v in data.items()])
@@ -898,9 +777,10 @@ of the feature space using a PCA:
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_relative_positioning_002.png
-    :alt: plot relative positioning
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_relative_positioning_002.png
+   :alt: plot relative positioning
+   :srcset: /auto_examples/images/sphx_glr_plot_relative_positioning_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -910,25 +790,19 @@ of the feature space using a PCA:
  .. code-block:: none
 
 
-    <matplotlib.legend.Legend object at 0x7f747f231890>
+    <matplotlib.legend.Legend object at 0x7f10eb180450>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 524-529
+.. GENERATED FROM PYTHON SOURCE LINES 488-534
 
 We see that there is sleep stage-related structure in the embedding. A
 nonlinear projection method (e.g., tSNE, UMAP) might yield more insightful
 visualizations. Using a similar approach, the embedding space could also be
 explored with respect to subject-level features, e.g., age and sex.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 531-534
-
 Conclusion
 ----------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 536-574
 
 In this example, we used self-supervised learning (SSL) as a way to learn
 representations from unlabelled raw EEG data. Specifically, we used the
@@ -972,9 +846,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  31.579 seconds)
+   **Total running time of the script:** ( 1 minutes  34.928 seconds)
 
-**Estimated memory usage:**  2005 MB
+**Estimated memory usage:**  2140 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_relative_positioning.py:

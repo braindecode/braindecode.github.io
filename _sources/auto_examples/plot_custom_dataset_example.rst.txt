@@ -17,15 +17,14 @@
 
 .. _sphx_glr_auto_examples_plot_custom_dataset_example.py:
 
+
 Custom Dataset Example
-=========================
+======================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-7
-
-This example shows how to convert data from X and y to a braindecode
+This example shows how to convert data X and y as numpy arrays to a braindecode
 compatible data format.
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-16
+.. GENERATED FROM PYTHON SOURCE LINES 8-17
 
 .. code-block:: default
 
@@ -36,7 +35,7 @@ compatible data format.
 
     import mne
 
-    from braindecode.datautil import create_from_X_y
+    from braindecode.datasets import create_from_X_y
 
 
 
@@ -45,11 +44,11 @@ compatible data format.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-18
+.. GENERATED FROM PYTHON SOURCE LINES 18-19
 
 To set up the example, we first fetch some data using mne:
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-33
+.. GENERATED FROM PYTHON SOURCE LINES 19-34
 
 .. code-block:: default
 
@@ -112,13 +111,13 @@ To set up the example, we first fetch some data using mne:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 34-37
+.. GENERATED FROM PYTHON SOURCE LINES 35-38
 
 We take the required data, targets and additional information sampling
 frequency and channel names from the loaded data. Note that this data and
 information can originate from any source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-42
+.. GENERATED FROM PYTHON SOURCE LINES 38-43
 
 .. code-block:: default
 
@@ -134,11 +133,11 @@ information can originate from any source.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-44
+.. GENERATED FROM PYTHON SOURCE LINES 44-45
 
 Convert to data format compatible with skorch and braindecode:
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-49
+.. GENERATED FROM PYTHON SOURCE LINES 45-53
 
 .. code-block:: default
 
@@ -147,6 +146,9 @@ Convert to data format compatible with skorch and braindecode:
         window_stride_samples=500,
         window_size_samples=500,
     )
+
+    windows_dataset.description  # look as dataset description
+
 
 
 
@@ -219,14 +221,124 @@ Convert to data format compatible with skorch and braindecode:
     0 bad epochs dropped
 
 
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>5</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>6</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>9</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>10</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>13</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>14</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 54-55
+
+You can manipulate the dataset
+
+.. GENERATED FROM PYTHON SOURCE LINES 55-57
+
+.. code-block:: default
+
+    print(len(windows_dataset))  # get the number of samples
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    240
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 58-59
+
+You can now index the data
+
+.. GENERATED FROM PYTHON SOURCE LINES 59-65
+
+.. code-block:: default
+
+    i = 0
+    x_i, y_i, window_ind = windows_dataset[0]
+    n_channels, n_times = x_i.shape  # the EEG data
+    _, start_ind, stop_ind = window_ind
+    print(f"n_channels={n_channels}  -- n_times={n_times} -- y_i={y_i}")
+    print(f"start_ind={start_ind} -- stop_ind={stop_ind}")
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Loading data for 1 events and 500 original time points ...
+    n_channels=64  -- n_times=500 -- y_i=5
+    start_ind=0 -- stop_ind=500
+
+
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.506 seconds)
+   **Total running time of the script:** ( 0 minutes  1.005 seconds)
 
-**Estimated memory usage:**  126 MB
+**Estimated memory usage:**  96 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_custom_dataset_example.py:
