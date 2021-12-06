@@ -86,15 +86,18 @@ sleep staging example).
 .. _MNE: https://mne.tools/stable/auto_tutorials/sample-datasets/plot_sleep.html
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-64
+.. GENERATED FROM PYTHON SOURCE LINES 57-67
 
 .. code-block:: default
 
 
-    from braindecode.datasets.sleep_physionet import SleepPhysionet
+    from braindecode.datasets import SleepPhysionet
 
+    subject_ids = [0, 1]
+    crop = (0, 30 * 400)  # we only keep 400 windows of 30s to speed example
     dataset = SleepPhysionet(
-        subject_ids=[0, 1], recording_ids=[2], crop_wake_mins=30)
+        subject_ids=subject_ids, recording_ids=[2], crop_wake_mins=30,
+        crop=crop)
 
 
 
@@ -104,7 +107,7 @@ sleep staging example).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-72
+.. GENERATED FROM PYTHON SOURCE LINES 68-75
 
 Preprocessing
 ~~~~~~~~~~~~~
@@ -114,7 +117,7 @@ have zero median and unit interquartile range. We don't upsample to 128 Hz as
 done in [1]_ so that we keep the example as light as possible. No filtering
 is described in [1]_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-82
+.. GENERATED FROM PYTHON SOURCE LINES 75-85
 
 .. code-block:: default
 
@@ -139,18 +142,18 @@ is described in [1]_.
  .. code-block:: none
 
 
-    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7ff8b42389d0>
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7fb29ce0b5d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-87
+.. GENERATED FROM PYTHON SOURCE LINES 86-90
 
 Extract windows
 ~~~~~~~~~~~~~~~
 
 We extract 30-s windows to be used in the classification task.
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-115
+.. GENERATED FROM PYTHON SOURCE LINES 90-117
 
 .. code-block:: default
 
@@ -188,42 +191,22 @@ We extract 30-s windows to be used in the classification task.
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 116-123
+.. GENERATED FROM PYTHON SOURCE LINES 118-123
 
 Split dataset into train and valid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We split the dataset into training and validation set using additional info
-stored in the `description` attribute of
-:class:`braindecode.datasets.BaseDataset`, in this case using the ``subject``
-column.
+We split the dataset into training and validation set taking
+every other subject as train or valid.
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-146
+.. GENERATED FROM PYTHON SOURCE LINES 123-128
 
 .. code-block:: default
 
 
-    import numpy as np
-    from sklearn.model_selection import train_test_split
-    from braindecode.datasets import BaseConcatDataset
-
-    random_state = 31
-    subjects = np.unique(windows_dataset.description['subject'])
-    subj_train, subj_valid = train_test_split(
-        subjects, test_size=0.5, random_state=random_state
-    )
-
-    split_ids = {'train': subj_train, 'valid': subj_valid}
-    splitted = dict()
-    for name, values in split_ids.items():
-        splitted[name] = BaseConcatDataset(
-            [ds for ds in windows_dataset.datasets
-             if ds.description['subject'] in values]
-        )
-
-    train_set = splitted['train']
-    valid_set = splitted['valid']
+    split_ids = dict(train=subject_ids[::2], valid=subject_ids[1::2])
+    splits = windows_dataset.split(split_ids)
+    train_set, valid_set = splits["train"], splits["valid"]
 
 
 
@@ -232,8 +215,7 @@ column.
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 147-156
+.. GENERATED FROM PYTHON SOURCE LINES 129-138
 
 Create sequence samplers
 ------------------------
@@ -245,7 +227,7 @@ Non-overlapping sequences of 35 windows are used in [1]_, however to limit
 the memory requirements for this example we use shorter sequences of 3
 windows.
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-170
+.. GENERATED FROM PYTHON SOURCE LINES 138-152
 
 .. code-block:: default
 
@@ -273,25 +255,26 @@ windows.
 
  .. code-block:: none
 
-    372
-    383
+    133
+    133
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-175
+.. GENERATED FROM PYTHON SOURCE LINES 153-157
 
 Finally, since some sleep stages appear a lot more often than others (e.g.
 most of the night is spent in the N2 stage), the classes are imbalanced. To
 avoid overfitting to the more frequent classes, we compute weights that we
 will provide to the loss function when training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-182
+.. GENERATED FROM PYTHON SOURCE LINES 157-165
 
 .. code-block:: default
 
 
-    from sklearn.utils.class_weight import compute_class_weight
+    import numpy as np
+    from sklearn.utils import compute_class_weight
 
     y_train = [train_set[idx][1][1] for idx in train_sampler]
     class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
@@ -304,7 +287,7 @@ will provide to the loss function when training.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-189
+.. GENERATED FROM PYTHON SOURCE LINES 166-172
 
 Create model
 ------------
@@ -313,7 +296,7 @@ We can now create the deep learning model. In this tutorial, we use the
 U-Sleep architecture introduced in [1]_, which is fully convolutional
 neural network.
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-225
+.. GENERATED FROM PYTHON SOURCE LINES 172-208
 
 .. code-block:: default
 
@@ -332,7 +315,7 @@ neural network.
     # To obtain more consistent results at the cost of increased computation time,
     # you can set `cudnn_benchmark=False` in `set_random_seeds`
     # or remove `torch.backends.cudnn.benchmark = True`
-    set_random_seeds(seed=random_state, cuda=cuda)
+    set_random_seeds(seed=31, cuda=cuda)
 
     n_classes = 5
     # Extract number of channels and time steps from dataset
@@ -360,7 +343,7 @@ neural network.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-241
+.. GENERATED FROM PYTHON SOURCE LINES 209-224
 
 Training
 --------
@@ -378,7 +361,7 @@ training logic is the same as in
    optimization if reusing this code on a different dataset or with more
    recordings.
 
-.. GENERATED FROM PYTHON SOURCE LINES 241-292
+.. GENERATED FROM PYTHON SOURCE LINES 224-276
 
 .. code-block:: default
 
@@ -389,7 +372,7 @@ training logic is the same as in
 
     lr = 1e-3
     batch_size = 32
-    n_epochs = 1  # this number is kept too small to reduce running time in the doc
+    n_epochs = 3  # we use few epochs for speed and but more than one for plotting
 
     from sklearn.metrics import balanced_accuracy_score
 
@@ -411,8 +394,10 @@ training logic is the same as in
         name='valid_bal_acc',
         lower_is_better=False,
     )
-    callbacks = [('train_bal_acc', train_bal_acc),
-                 ('valid_bal_acc', valid_bal_acc)]
+    callbacks = [
+        ('train_bal_acc', train_bal_acc),
+        ('valid_bal_acc', valid_bal_acc)
+    ]
 
     clf = EEGClassifier(
         model,
@@ -436,7 +421,6 @@ training logic is the same as in
 
 
 
-
 .. rst-class:: sphx-glr-script-out
 
  Out:
@@ -445,9 +429,11 @@ training logic is the same as in
 
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/torch/nn/modules/conv.py:298: UserWarning: Using padding='same' with even kernel lengths and odd dilation may require a zero-padded copy of the input be created (Triggered internally at  /home/conda/feedstock_root/build_artifacts/pytorch-recipe_1635217150696/work/aten/src/ATen/native/Convolution.cpp:647.)
       self.padding, self.dilation, self.groups)
-      epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss       dur
-    -------  ---------------  ------------  ---------------  ------------  --------
-          1           0.2138        1.5860           0.1908        1.6218  128.4099
+      epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss      dur
+    -------  ---------------  ------------  ---------------  ------------  -------
+          1           0.2365        1.5797           0.1606        1.5795  41.4691
+          2           0.2132        1.5550           0.1453        1.5837  40.6304
+          3           0.2404        1.5350           0.1787        1.5915  40.6849
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=USleep(
@@ -738,62 +724,35 @@ training logic is the same as in
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 293-300
+.. GENERATED FROM PYTHON SOURCE LINES 277-283
 
 Plot results
 ------------
 
 We use the history stored by Skorch during training to plot the performance of
 the model throughout training. Specifically, we plot the loss and the balanced
-misclassification rate (1 - balanced accuracy) for the training and validation
-sets.
+balanced accuracy for the training and validation sets.
 
-.. GENERATED FROM PYTHON SOURCE LINES 300-343
+.. GENERATED FROM PYTHON SOURCE LINES 283-300
 
 .. code-block:: default
 
 
     import matplotlib.pyplot as plt
-    from matplotlib.lines import Line2D
     import pandas as pd
 
     # Extract loss and balanced accuracy values for plotting from history object
     df = pd.DataFrame(clf.history.to_list())
-    df[['train_mis_clf', 'valid_mis_clf']] = (
-        100 - df[['train_bal_acc', 'valid_bal_acc']] * 100
-    )
-
-    # get percent of misclass for better visual comparison to loss
-    plt.style.use('seaborn-talk')
-    fig, ax1 = plt.subplots(figsize=(8, 3))
-    df.loc[:, ['train_loss', 'valid_loss']].plot(
-        ax=ax1, style=['-', ':'], marker='o', color='tab:blue', legend=False, fontsize=14
-    )
-
-    ax1.tick_params(axis='y', labelcolor='tab:blue', labelsize=14)
-    ax1.set_ylabel('Loss', color='tab:blue', fontsize=14)
-
-    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
-    df.loc[:, ['train_mis_clf', 'valid_mis_clf']].plot(
-        ax=ax2, style=['-', ':'], marker='o', color='tab:red', legend=False
-    )
-    ax2.tick_params(axis='y', labelcolor='tab:red', labelsize=14)
-    ax2.set_ylabel('Balanced misclassification rate [%]', color='tab:red', fontsize=14)
-    ax2.set_ylim(ax2.get_ylim()[0], 85)  # make some room for legend
-    ax1.set_xlabel('Epoch', fontsize=14)
-
-    # where some data has already been plotted to ax
-    handles = []
-    handles.append(
-        Line2D([0], [0], color='black', linewidth=1, linestyle='-', label='Train')
-    )
-    handles.append(
-        Line2D([0], [0], color='black', linewidth=1, linestyle=':', label='Valid')
-    )
-    plt.legend(handles, [h.get_label() for h in handles], fontsize=14)
-    plt.tight_layout()
-
+    df.index.name = "Epoch"
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True)
+    df[['train_loss', 'valid_loss']].plot(color=['r', 'b'], ax=ax1)
+    df[['train_bal_acc', 'valid_bal_acc']].plot(color=['r', 'b'], ax=ax2)
+    ax1.set_ylabel('Loss')
+    ax2.set_ylabel('Balanced accuracy')
+    ax1.legend(['Train', 'Valid'])
+    ax2.legend(['Train', 'Valid'])
+    fig.tight_layout()
+    plt.show()
 
 
 
@@ -807,11 +766,11 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 344-345
+.. GENERATED FROM PYTHON SOURCE LINES 301-302
 
 Finally, we also display the confusion matrix and classification report:
 
-.. GENERATED FROM PYTHON SOURCE LINES 345-355
+.. GENERATED FROM PYTHON SOURCE LINES 302-311
 
 .. code-block:: default
 
@@ -828,35 +787,34 @@ Finally, we also display the confusion matrix and classification report:
 
 
 
-
 .. rst-class:: sphx-glr-script-out
 
  Out:
 
  .. code-block:: none
 
-    [[ 32  30  35  23   5]
-     [ 52   9  23   5   3]
-     [252  67 205 113  23]
-     [ 37   7  26  24   2]
-     [ 71  21  52  25   7]]
+    [[10 17 15 20  2]
+     [12  5  3  2  0]
+     [69 33 38 53  4]
+     [29 12 19 24  0]
+     [13  5  6  7  1]]
                   precision    recall  f1-score   support
 
-               0       0.07      0.26      0.11       125
-               1       0.07      0.10      0.08        92
-               2       0.60      0.31      0.41       660
-               3       0.13      0.25      0.17        96
-               4       0.17      0.04      0.06       176
+               0       0.08      0.16      0.10        64
+               1       0.07      0.23      0.11        22
+               2       0.47      0.19      0.27       197
+               3       0.23      0.29      0.25        84
+               4       0.14      0.03      0.05        32
 
-        accuracy                           0.24      1149
-       macro avg       0.21      0.19      0.17      1149
-    weighted avg       0.40      0.24      0.28      1149
-
-
+        accuracy                           0.20       399
+       macro avg       0.20      0.18      0.16       399
+    weighted avg       0.31      0.20      0.21       399
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 356-361
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 312-317
 
 Our model was able to learn, as shown by the decreasing training and
 validation loss values, despite the low amount of data that was available
@@ -867,9 +825,9 @@ trained for more epochs and hyperparameters should be optimized.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  13.616 seconds)
+   **Total running time of the script:** ( 2 minutes  25.312 seconds)
 
-**Estimated memory usage:**  182 MB
+**Estimated memory usage:**  403 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_sleep_staging_usleep.py:

@@ -46,25 +46,23 @@ transform on the input signals.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-23
+.. GENERATED FROM PYTHON SOURCE LINES 21-26
 
 Loading and preprocessing the dataset
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-28
-
 Loading
 ~~~~~~~
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 28-37
+.. GENERATED FROM PYTHON SOURCE LINES 26-36
 
 .. code-block:: default
 
 
-    from braindecode import EEGClassifier
     from skorch.helper import predefined_split
     from skorch.callbacks import LRScheduler
+
+    from braindecode import EEGClassifier
     from braindecode.datasets import MOABBDataset
 
     subject_id = 3
@@ -77,13 +75,13 @@ Loading
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-41
+.. GENERATED FROM PYTHON SOURCE LINES 37-40
 
 Preprocessing
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-61
+.. GENERATED FROM PYTHON SOURCE LINES 40-60
 
 .. code-block:: default
 
@@ -120,17 +118,17 @@ Preprocessing
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.moabb.MOABBDataset object at 0x7ff8a3839950>
+    <braindecode.datasets.moabb.MOABBDataset object at 0x7fb29ca64050>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 62-65
+.. GENERATED FROM PYTHON SOURCE LINES 61-64
 
 Extracting windows
 ~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-84
+.. GENERATED FROM PYTHON SOURCE LINES 64-83
 
 .. code-block:: default
 
@@ -160,13 +158,13 @@ Extracting windows
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-88
+.. GENERATED FROM PYTHON SOURCE LINES 84-87
 
 Split dataset into train and valid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-93
+.. GENERATED FROM PYTHON SOURCE LINES 87-92
 
 .. code-block:: default
 
@@ -182,26 +180,22 @@ Split dataset into train and valid
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-97
+.. GENERATED FROM PYTHON SOURCE LINES 93-102
 
 Defining a Transform
 --------------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 99-103
 
 Data can be manipulated by transforms, which are callable objects. A
 transform is usually handled by a custom data loader, but can also be called
 directly on input data, as demonstrated below for illutrative purposes.
 
+First, we need to define a Transform. Here we chose the FrequencyShift, which
+randomly translates all frequencies within a given range.
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-115
+.. GENERATED FROM PYTHON SOURCE LINES 102-111
 
 .. code-block:: default
 
-
-    # First, we need to define a Transform. Here we chose the FrequencyShift, which
-    # randomly translates all frequencies within a given range.
 
     from braindecode.augmentation import FrequencyShift
 
@@ -218,19 +212,19 @@ directly on input data, as demonstrated below for illutrative purposes.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-119
+.. GENERATED FROM PYTHON SOURCE LINES 112-118
 
 Manipulating one session and visualizing the transformed data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-131
+Next, let us augment one session to show the resulting frequency shift. The
+data of an mne Epoch is used here to make usage of mne functions.
+
+.. GENERATED FROM PYTHON SOURCE LINES 118-127
 
 .. code-block:: default
 
-
-    # Next, let us augment one session to show the resulting frequency shift. The
-    # data of an mne Epoch is used here to make usage of mne functions.
 
     import torch
 
@@ -247,12 +241,12 @@ Manipulating one session and visualizing the transformed data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-134
+.. GENERATED FROM PYTHON SOURCE LINES 128-130
 
 The psd of the transformed session has now been shifted by 10 Hz, as one can
 see on the psd plot.
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-157
+.. GENERATED FROM PYTHON SOURCE LINES 130-153
 
 .. code-block:: default
 
@@ -291,7 +285,7 @@ see on the psd plot.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-168
+.. GENERATED FROM PYTHON SOURCE LINES 154-165
 
 Training a model with data augmentation
 ---------------------------------------
@@ -303,12 +297,9 @@ Let's first create a model.
 Create model
 ~~~~~~~~~~~~
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 170-171
-
 The model to be trained is defined as usual.
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-202
+.. GENERATED FROM PYTHON SOURCE LINES 165-196
 
 .. code-block:: default
 
@@ -350,19 +341,16 @@ The model to be trained is defined as usual.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-206
+.. GENERATED FROM PYTHON SOURCE LINES 197-203
 
 Create an EEGClassifier with the desired augmentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 208-211
 
 In order to train with data augmentation, a custom data loader can be
 for the training. Multiple transforms can be passed to it and will be applied
 sequentially to the batched data within the ``AugmentedDataLoader`` object.
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-231
+.. GENERATED FROM PYTHON SOURCE LINES 203-223
 
 .. code-block:: default
 
@@ -393,13 +381,13 @@ sequentially to the batched data within the ``AugmentedDataLoader`` object.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-235
+.. GENERATED FROM PYTHON SOURCE LINES 224-227
 
 The model is now trained as in the trial-wise example. The
 ``AugmentedDataLoader`` is used as the train iterator and the list of
 transforms are passed as arguments.
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-262
+.. GENERATED FROM PYTHON SOURCE LINES 227-254
 
 .. code-block:: default
 
@@ -442,10 +430,10 @@ transforms are passed as arguments.
 
       epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
     -------  ----------------  ------------  ----------------  ------------  ------  ------
-          1            0.2569        1.6225            0.2431        5.5634  0.0006  4.8703
-          2            0.2535        1.2218            0.2535        6.3996  0.0005  4.7558
-          3            0.2535        1.0973            0.2535        5.2946  0.0002  4.8490
-          4            0.2639        1.0922            0.2535        4.0276  0.0000  4.7998
+          1            0.2569        1.6225            0.2431        5.5634  0.0006  5.4430
+          2            0.2535        1.2218            0.2535        6.3996  0.0005  5.3699
+          3            0.2535        1.0973            0.2535        5.2946  0.0002  5.3264
+          4            0.2639        1.0922            0.2535        4.0276  0.0000  5.2388
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=ShallowFBCSPNet(
@@ -466,7 +454,7 @@ transforms are passed as arguments.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 263-268
+.. GENERATED FROM PYTHON SOURCE LINES 255-260
 
 Manually composing Transforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -474,7 +462,7 @@ Manually composing Transforms
 It would be equivalent (although more verbose) to pass to ``EEGClassifier`` a
 composition of the same transforms:
 
-.. GENERATED FROM PYTHON SOURCE LINES 268-273
+.. GENERATED FROM PYTHON SOURCE LINES 260-265
 
 .. code-block:: default
 
@@ -490,7 +478,7 @@ composition of the same transforms:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 274-282
+.. GENERATED FROM PYTHON SOURCE LINES 266-274
 
 Setting the data augmentation at the Dataset level
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -501,7 +489,7 @@ most commonly done in other libraries. However, it is advised to use the
 ``AugmentedDataLoader`` as above, as it is compatible with all transforms and
 can be more efficient.
 
-.. GENERATED FROM PYTHON SOURCE LINES 282-284
+.. GENERATED FROM PYTHON SOURCE LINES 274-276
 
 .. code-block:: default
 
@@ -517,9 +505,9 @@ can be more efficient.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  31.650 seconds)
+   **Total running time of the script:** ( 0 minutes  34.836 seconds)
 
-**Estimated memory usage:**  1556 MB
+**Estimated memory usage:**  1498 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_data_augmentation.py:

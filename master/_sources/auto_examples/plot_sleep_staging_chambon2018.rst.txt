@@ -77,16 +77,17 @@ sleep staging example).
 .. _MNE: https://mne.tools/stable/auto_tutorials/sample-datasets/plot_sleep.html
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-56
+.. GENERATED FROM PYTHON SOURCE LINES 48-57
 
 .. code-block:: default
 
 
     from numbers import Integral
-    from braindecode.datasets.sleep_physionet import SleepPhysionet
+    from braindecode.datasets import SleepPhysionet
 
+    subject_ids = [0, 1]
     dataset = SleepPhysionet(
-        subject_ids=[0, 1], recording_ids=[2], crop_wake_mins=30)
+        subject_ids=subject_ids, recording_ids=[2], crop_wake_mins=30)
 
 
 
@@ -96,7 +97,7 @@ sleep staging example).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-63
+.. GENERATED FROM PYTHON SOURCE LINES 58-64
 
 Preprocessing
 ~~~~~~~~~~~~~
@@ -105,12 +106,12 @@ Next, we preprocess the raw data. We convert the data to microvolts and apply
 a lowpass filter. We omit the downsampling step of [1]_ as the Sleep
 Physionet data is already sampled at a lower 100 Hz.
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-77
+.. GENERATED FROM PYTHON SOURCE LINES 64-78
 
 .. code-block:: default
 
 
-    from braindecode.preprocessing.preprocess import preprocess, Preprocessor, scale
+    from braindecode.preprocessing import preprocess, Preprocessor, scale
 
     high_cut_hz = 30
 
@@ -136,18 +137,18 @@ Physionet data is already sampled at a lower 100 Hz.
     /usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
       warnings.warn(msg, category=FutureWarning)
 
-    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7ff8c38fb510>
+    <braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7fb29ee5ae10>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-82
+.. GENERATED FROM PYTHON SOURCE LINES 79-83
 
 Extract windows
 ~~~~~~~~~~~~~~~
 
 We extract 30-s windows to be used in the classification task.
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-110
+.. GENERATED FROM PYTHON SOURCE LINES 83-111
 
 .. code-block:: default
 
@@ -186,7 +187,7 @@ We extract 30-s windows to be used in the classification task.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-116
+.. GENERATED FROM PYTHON SOURCE LINES 112-117
 
 Window preprocessing
 ~~~~~~~~~~~~~~~~~~~~
@@ -194,7 +195,7 @@ Window preprocessing
 We also preprocess the windows by applying channel-wise z-score normalization
 in each window.
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-122
+.. GENERATED FROM PYTHON SOURCE LINES 117-123
 
 .. code-block:: default
 
@@ -215,43 +216,26 @@ in each window.
  .. code-block:: none
 
 
-    <braindecode.datasets.base.BaseConcatDataset object at 0x7ff8a1939590>
+    <braindecode.datasets.base.BaseConcatDataset object at 0x7fb29ef12590>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-130
+.. GENERATED FROM PYTHON SOURCE LINES 124-129
 
 Split dataset into train and valid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We split the dataset into training and validation set using additional info
-stored in the `description` attribute of
-:class:`braindecode.datasets.BaseDataset`, in this case using the ``subject``
-column.
+We split the dataset into training and validation set taking
+every other subject as train or valid.
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-150
+.. GENERATED FROM PYTHON SOURCE LINES 129-134
 
 .. code-block:: default
 
 
-    import numpy as np
-    from sklearn.model_selection import train_test_split
-    from braindecode.datasets import BaseConcatDataset
-
-    random_state = 31
-    subjects = np.unique(windows_dataset.description['subject'])
-    subj_train, subj_valid = train_test_split(
-        subjects, test_size=0.5, random_state=random_state)
-
-    split_ids = {'train': subj_train, 'valid': subj_valid}
-    splitted = dict()
-    for name, values in split_ids.items():
-        splitted[name] = BaseConcatDataset(
-            [ds for ds in windows_dataset.datasets
-             if ds.description['subject'] in values])
-
-    train_set = splitted['train']
-    valid_set = splitted['valid']
+    split_ids = dict(train=subject_ids[::2], valid=subject_ids[1::2])
+    splits = windows_dataset.split(split_ids)
+    train_set, valid_set = splits["train"], splits["valid"]
 
 
 
@@ -260,7 +244,7 @@ column.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-164
+.. GENERATED FROM PYTHON SOURCE LINES 135-148
 
 Create sequence samplers
 ------------------------
@@ -276,11 +260,12 @@ extractor on single windows, then freezing its weights and training the
 classifier).
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-177
+.. GENERATED FROM PYTHON SOURCE LINES 148-162
 
 .. code-block:: default
 
 
+    import numpy as np
     from braindecode.samplers import SequenceSampler
 
     n_windows = 3  # Sequences of 3 consecutive windows
@@ -309,12 +294,12 @@ classifier).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+.. GENERATED FROM PYTHON SOURCE LINES 163-165
 
 We also implement a transform to extract the label of the center window of a
 sequence to use it as target.
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-192
+.. GENERATED FROM PYTHON SOURCE LINES 165-177
 
 .. code-block:: default
 
@@ -337,19 +322,19 @@ sequence to use it as target.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-197
+.. GENERATED FROM PYTHON SOURCE LINES 178-182
 
 Finally, since some sleep stages appear a lot more often than others (e.g.
 most of the night is spent in the N2 stage), the classes are imbalanced. To
 avoid overfitting on the more frequent classes, we compute weights that we
 will provide to the loss function when training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-204
+.. GENERATED FROM PYTHON SOURCE LINES 182-189
 
 .. code-block:: default
 
 
-    from sklearn.utils.class_weight import compute_class_weight
+    from sklearn.utils import compute_class_weight
 
     y_train = [train_set[idx][1] for idx in train_sampler]
     class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
@@ -362,7 +347,7 @@ will provide to the loss function when training.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-214
+.. GENERATED FROM PYTHON SOURCE LINES 190-199
 
 Create model
 ------------
@@ -374,7 +359,7 @@ feature vectors of a sequence of windows are concatenated and passed to a
 linear layer for classification.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-258
+.. GENERATED FROM PYTHON SOURCE LINES 199-243
 
 .. code-block:: default
 
@@ -394,7 +379,7 @@ linear layer for classification.
     # To obtain more consistent results at the cost of increased computation time,
     # you can set `cudnn_benchmark=False` in `set_random_seeds`
     # or remove `torch.backends.cudnn.benchmark = True`
-    set_random_seeds(seed=random_state, cuda=cuda)
+    set_random_seeds(seed=31, cuda=cuda)
 
     n_classes = 5
     # Extract number of channels and time steps from dataset
@@ -429,7 +414,7 @@ linear layer for classification.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 259-275
+.. GENERATED FROM PYTHON SOURCE LINES 244-260
 
 Training
 --------
@@ -448,7 +433,7 @@ training logic is the same as in
    with more recordings.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 275-312
+.. GENERATED FROM PYTHON SOURCE LINES 260-299
 
 .. code-block:: default
 
@@ -467,8 +452,10 @@ training logic is the same as in
     valid_bal_acc = EpochScoring(
         scoring='balanced_accuracy', on_train=False, name='valid_bal_acc',
         lower_is_better=False)
-    callbacks = [('train_bal_acc', train_bal_acc),
-                 ('valid_bal_acc', valid_bal_acc)]
+    callbacks = [
+        ('train_bal_acc', train_bal_acc),
+        ('valid_bal_acc', valid_bal_acc)
+    ]
 
     clf = EEGClassifier(
         model,
@@ -501,16 +488,16 @@ training logic is the same as in
 
       epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss     dur
     -------  ---------------  ------------  ---------------  ------------  ------
-          1           0.1199        1.6479           0.1962        1.6122  3.7707
-          2           0.1818        1.6060           0.2113        1.6092  2.9654
-          3           0.2338        1.5971           0.2000        1.6173  2.9178
-          4           0.2100        1.5664           0.2000        1.6141  2.9126
-          5           0.2300        1.5202           0.2000        1.6408  3.0679
-          6           0.2200        1.4405           0.2000        1.6752  2.9743
-          7           0.2563        1.3843           0.2000        1.7847  2.9318
-          8           0.2620        1.3200           0.2056        1.8087  2.9612
-          9           0.2818        1.2864           0.2113        1.8648  2.9583
-         10           0.3058        1.2526           0.2258        1.8307  2.9246
+          1           0.1199        1.6479           0.1962        1.6122  3.7278
+          2           0.1818        1.6060           0.2113        1.6092  3.0601
+          3           0.2338        1.5971           0.2000        1.6173  3.0688
+          4           0.2100        1.5664           0.2000        1.6141  3.1929
+          5           0.2300        1.5202           0.2000        1.6408  3.1192
+          6           0.2200        1.4405           0.2000        1.6752  3.1913
+          7           0.2563        1.3843           0.2000        1.7847  3.0813
+          8           0.2620        1.3200           0.2056        1.8087  3.0946
+          9           0.2818        1.2864           0.2113        1.8648  3.1044
+         10           0.3058        1.2526           0.2258        1.8307  3.7602
 
     <class 'braindecode.classifier.EEGClassifier'>[initialized](
       module_=Sequential(
@@ -539,60 +526,35 @@ training logic is the same as in
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 313-321
+.. GENERATED FROM PYTHON SOURCE LINES 300-306
 
 Plot results
 ------------
 
 We use the history stored by Skorch during training to plot the performance of
 the model throughout training. Specifically, we plot the loss and the balanced
-misclassification rate (1 - balanced accuracy) for the training and validation
-sets.
+balanced accuracy for the training and validation sets.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 321-361
+.. GENERATED FROM PYTHON SOURCE LINES 306-323
 
 .. code-block:: default
 
 
     import matplotlib.pyplot as plt
-    from matplotlib.lines import Line2D
     import pandas as pd
 
     # Extract loss and balanced accuracy values for plotting from history object
     df = pd.DataFrame(clf.history.to_list())
-    df[['train_mis_clf', 'valid_mis_clf']] = 100 - df[
-        ['train_bal_acc', 'valid_bal_acc']] * 100
-
-    # get percent of misclass for better visual comparison to loss
-    plt.style.use('seaborn-talk')
-    fig, ax1 = plt.subplots(figsize=(8, 3))
-    df.loc[:, ['train_loss', 'valid_loss']].plot(
-        ax=ax1, style=['-', ':'], marker='o', color='tab:blue', legend=False,
-        fontsize=14)
-
-    ax1.tick_params(axis='y', labelcolor='tab:blue', labelsize=14)
-    ax1.set_ylabel("Loss", color='tab:blue', fontsize=14)
-
-    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
-    df.loc[:, ['train_mis_clf', 'valid_mis_clf']].plot(
-        ax=ax2, style=['-', ':'], marker='o', color='tab:red', legend=False)
-    ax2.tick_params(axis='y', labelcolor='tab:red', labelsize=14)
-    ax2.set_ylabel('Balanced misclassification rate [%]', color='tab:red',
-                   fontsize=14)
-    ax2.set_ylim(ax2.get_ylim()[0], 85)  # make some room for legend
-    ax1.set_xlabel('Epoch', fontsize=14)
-
-    # where some data has already been plotted to ax
-    handles = []
-    handles.append(
-        Line2D([0], [0], color='black', linewidth=1, linestyle='-', label='Train'))
-    handles.append(
-        Line2D([0], [0], color='black', linewidth=1, linestyle=':', label='Valid'))
-    plt.legend(handles, [h.get_label() for h in handles], fontsize=14)
-    plt.tight_layout()
-
+    df.index.name = "Epoch"
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True)
+    df[['train_loss', 'valid_loss']].plot(color=['r', 'b'], ax=ax1)
+    df[['train_bal_acc', 'valid_bal_acc']].plot(color=['r', 'b'], ax=ax2)
+    ax1.set_ylabel('Loss')
+    ax2.set_ylabel('Balanced accuracy')
+    ax1.legend(['Train', 'Valid'])
+    ax2.legend(['Train', 'Valid'])
+    fig.tight_layout()
+    plt.show()
 
 
 
@@ -606,12 +568,12 @@ sets.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 362-364
+.. GENERATED FROM PYTHON SOURCE LINES 324-326
 
 Finally, we also display the confusion matrix and classification report:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 364-374
+.. GENERATED FROM PYTHON SOURCE LINES 326-336
 
 .. code-block:: default
 
@@ -662,7 +624,7 @@ Finally, we also display the confusion matrix and classification report:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 375-385
+.. GENERATED FROM PYTHON SOURCE LINES 337-347
 
 Our model was able to learn despite the low amount of data that was available
 (only two recordings in this example) and reached a balanced accuracy of
@@ -678,7 +640,7 @@ data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  40.048 seconds)
+   **Total running time of the script:** ( 0 minutes  41.883 seconds)
 
 **Estimated memory usage:**  254 MB
 
