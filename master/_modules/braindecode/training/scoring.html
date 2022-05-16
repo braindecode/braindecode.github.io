@@ -910,7 +910,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_record_score</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">history</span><span class="p">,</span> <span class="n">current_score</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="predict_trials"><a class="viewcode-back" href="../../../generated/braindecode.training.predict_trials.html#braindecode.training.predict_trials">[docs]</a><span class="k">def</span> <span class="nf">predict_trials</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">return_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="predict_trials"><a class="viewcode-back" href="../../../generated/braindecode.training.predict_trials.html#braindecode.training.predict_trials">[docs]</a><span class="k">def</span> <span class="nf">predict_trials</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">return_targets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create trialwise predictions and optionally also return trialwise</span>
 <span class="sd">    labels from cropped dataset given module.</span>
 
@@ -922,6 +922,10 @@
 <span class="sd">        A braindecode dataset to be predicted.</span>
 <span class="sd">    return_targets: bool</span>
 <span class="sd">        If True, additionally returns the trial targets.</span>
+<span class="sd">    batch_size: int</span>
+<span class="sd">        The batch size used to iterate the dataset.</span>
+<span class="sd">    num_workers: int</span>
+<span class="sd">        Number of workers used in DataLoader to iterate the dataset.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -944,12 +948,15 @@
                       <span class="s1">&#39;window per trial.&#39;</span><span class="p">)</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
         <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
         <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">device</span>
     <span class="n">all_preds</span><span class="p">,</span> <span class="n">all_ys</span><span class="p">,</span> <span class="n">all_inds</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
             <span class="n">preds</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="n">all_preds</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
             <span class="n">all_ys</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
