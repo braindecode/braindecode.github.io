@@ -541,7 +541,60 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    in_chans : int</span>
-<span class="sd">        XXX</span>
+<span class="sd">     Number of EEG input channels.</span>
+<span class="sd">    n_classes: int</span>
+<span class="sd">        Number of classes to predict (number of output filters of last layer).</span>
+<span class="sd">    input_window_samples: int | None</span>
+<span class="sd">        Only used to determine the length of the last convolutional kernel if</span>
+<span class="sd">        final_conv_length is &quot;auto&quot;.</span>
+<span class="sd">    final_conv_length: int | str</span>
+<span class="sd">        Length of the final convolution layer.</span>
+<span class="sd">        If set to &quot;auto&quot;, input_window_samples must not be None.</span>
+<span class="sd">    n_filters_time: int</span>
+<span class="sd">        Number of temporal filters.</span>
+<span class="sd">    n_filters_spat: int</span>
+<span class="sd">        Number of spatial filters.</span>
+<span class="sd">    filter_time_length: int</span>
+<span class="sd">        Length of the temporal filter in layer 1.</span>
+<span class="sd">    pool_time_length: int</span>
+<span class="sd">        Length of temporal pooling filter.</span>
+<span class="sd">    pool_time_stride: int</span>
+<span class="sd">        Length of stride between temporal pooling filters.</span>
+<span class="sd">    n_filters_2: int</span>
+<span class="sd">        Number of temporal filters in layer 2.</span>
+<span class="sd">    filter_length_2: int</span>
+<span class="sd">        Length of the temporal filter in layer 2.</span>
+<span class="sd">    n_filters_3: int</span>
+<span class="sd">        Number of temporal filters in layer 3.</span>
+<span class="sd">    filter_length_3: int</span>
+<span class="sd">        Length of the temporal filter in layer 3.</span>
+<span class="sd">    n_filters_4: int</span>
+<span class="sd">        Number of temporal filters in layer 4.</span>
+<span class="sd">    filter_length_4: int</span>
+<span class="sd">        Length of the temporal filter in layer 4.</span>
+<span class="sd">    first_conv_nonlin: callable</span>
+<span class="sd">        Non-linear activation function to be used after convolution in layer 1.</span>
+<span class="sd">    first_pool_mode: str</span>
+<span class="sd">        Pooling mode in layer 1. &quot;max&quot; or &quot;mean&quot;.</span>
+<span class="sd">    first_pool_nonlin: callable</span>
+<span class="sd">        Non-linear activation function to be used after pooling in layer 1.</span>
+<span class="sd">    later_conv_nonlin: callable</span>
+<span class="sd">        Non-linear activation function to be used after convolution in later layers.</span>
+<span class="sd">    later_pool_mode: str</span>
+<span class="sd">        Pooling mode in later layers. &quot;max&quot; or &quot;mean&quot;.</span>
+<span class="sd">    later_pool_nonlin: callable</span>
+<span class="sd">        Non-linear activation function to be used after pooling in later layers.</span>
+<span class="sd">    drop_prob: float</span>
+<span class="sd">        Dropout probability.</span>
+<span class="sd">    split_first_layer: bool</span>
+<span class="sd">        Split first layer into temporal and spatial layers (True) or just use temporal (False).</span>
+<span class="sd">        There would be no non-linearity between the split layers.</span>
+<span class="sd">    batch_norm: bool</span>
+<span class="sd">        Whether to use batch normalisation.</span>
+<span class="sd">    batch_norm_alpha: float</span>
+<span class="sd">        Momentum for BatchNorm2d.</span>
+<span class="sd">    stride_before_pool: bool</span>
+<span class="sd">        Stride before pooling.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -571,14 +624,13 @@
         <span class="n">filter_length_3</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="n">n_filters_4</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
         <span class="n">filter_length_4</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-        <span class="n">first_nonlin</span><span class="o">=</span><span class="n">elu</span><span class="p">,</span>
+        <span class="n">first_conv_nonlin</span><span class="o">=</span><span class="n">elu</span><span class="p">,</span>
         <span class="n">first_pool_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
         <span class="n">first_pool_nonlin</span><span class="o">=</span><span class="n">identity</span><span class="p">,</span>
-        <span class="n">later_nonlin</span><span class="o">=</span><span class="n">elu</span><span class="p">,</span>
+        <span class="n">later_conv_nonlin</span><span class="o">=</span><span class="n">elu</span><span class="p">,</span>
         <span class="n">later_pool_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
         <span class="n">later_pool_nonlin</span><span class="o">=</span><span class="n">identity</span><span class="p">,</span>
         <span class="n">drop_prob</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">double_time_convs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">split_first_layer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">batch_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">batch_norm_alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
@@ -602,14 +654,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filter_length_3</span> <span class="o">=</span> <span class="n">filter_length_3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_filters_4</span> <span class="o">=</span> <span class="n">n_filters_4</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filter_length_4</span> <span class="o">=</span> <span class="n">filter_length_4</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">first_nonlin</span> <span class="o">=</span> <span class="n">first_nonlin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_nonlin</span> <span class="o">=</span> <span class="n">first_conv_nonlin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">first_pool_mode</span> <span class="o">=</span> <span class="n">first_pool_mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">first_pool_nonlin</span> <span class="o">=</span> <span class="n">first_pool_nonlin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">later_nonlin</span> <span class="o">=</span> <span class="n">later_nonlin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">later_conv_nonlin</span> <span class="o">=</span> <span class="n">later_conv_nonlin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">later_pool_mode</span> <span class="o">=</span> <span class="n">later_pool_mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">later_pool_nonlin</span> <span class="o">=</span> <span class="n">later_pool_nonlin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_prob</span> <span class="o">=</span> <span class="n">drop_prob</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">double_time_convs</span> <span class="o">=</span> <span class="n">double_time_convs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">split_first_layer</span> <span class="o">=</span> <span class="n">split_first_layer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_norm</span> <span class="o">=</span> <span class="n">batch_norm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_norm_alpha</span> <span class="o">=</span> <span class="n">batch_norm_alpha</span>
@@ -703,7 +754,7 @@
                         <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
                     <span class="p">),</span>
                 <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;nonlin&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">later_nonlin</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;nonlin&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">later_conv_nonlin</span><span class="p">))</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
                 <span class="s2">&quot;pool&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
