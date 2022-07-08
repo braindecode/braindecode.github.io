@@ -83,6 +83,18 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#loading">Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#cut-compute-windows">Cut Compute Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#create-model">Create model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html#training">Training</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plot_sleep_staging_usleep.html#references">References</a></li>
@@ -700,27 +712,27 @@ as it has more interesting age/gender labels (compare to the last row of the dat
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x: [[ 1.08827583]
- [-0.99884314]
- [-0.2963868 ]
- [-0.1123866 ]
- [-0.92222001]
- [ 0.64053701]
- [ 0.69094349]
- [-1.92833996]
- [ 2.46351397]
- [-0.16146721]
- [ 0.76053381]
- [ 0.28120843]
- [ 2.75719273]
- [ 0.73536307]
- [ 0.910101  ]
- [ 0.95648924]
- [-0.54106294]
- [-1.72034091]
- [-1.81058129]
- [-0.45117343]
- [-1.1457719 ]]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x: [[ 0.89826044]
+ [ 0.58615402]
+ [-0.66088139]
+ [ 0.07239737]
+ [ 0.35591764]
+ [-0.70529508]
+ [-0.16301323]
+ [ 0.90639073]
+ [-0.99849029]
+ [ 1.64308197]
+ [ 1.6262809 ]
+ [-1.78607371]
+ [-1.76429341]
+ [ 1.07432942]
+ [-1.3364613 ]
+ [ 0.37539916]
+ [ 0.90339259]
+ [ 0.33709839]
+ [-0.20575028]
+ [-1.79280465]
+ [ 0.146142  ]]
 y: [83, &#39;F&#39;]
 </pre></div>
 </div>
@@ -750,19 +762,19 @@ decoding.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ind:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ind</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x: [[-0.24963608  0.75717974  0.39514446 ... -0.37658378  0.62884897
-   1.0882758 ]
- [-2.7183723   0.3594773   0.76709884 ...  0.4946851   0.49954304
-  -0.99884313]
- [-0.3555013  -1.287893    0.5413376  ...  0.42744014 -1.2286215
-  -0.2963868 ]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x: [[ 1.0216033  -1.0451688  -0.23984894 ... -1.6014366  -1.0979351
+   0.8982604 ]
+ [-0.90069085  0.23551893 -2.0932133  ... -1.1080687   0.5726101
+   0.58615404]
+ [ 0.38125703 -1.6246499   0.38267478 ... -0.05868057  0.7561085
+  -0.6608814 ]
  ...
- [ 0.33432725 -0.21092685  0.83899534 ...  1.2126721   2.4555223
-  -1.8105813 ]
- [ 0.40411624  0.8527179   0.4359038  ...  1.271093   -1.805571
-  -0.45117342]
- [-1.3437794   0.28555322 -0.9933905  ...  0.3882015  -0.44475272
-  -1.1457719 ]]
+ [ 0.66667634 -1.3671235  -0.67509973 ... -1.0770171   1.5252944
+  -0.20575029]
+ [ 0.823229   -0.47330648 -1.3147982  ... -0.26663572 -0.65655285
+  -1.7928046 ]
+ [ 2.2357345   0.87234336 -1.0914208  ...  0.36904913  2.9148037
+   0.14614199]]
 y: [83, 1]
 ind: [3, 2600, 3600]
 </pre></div>
@@ -786,42 +798,42 @@ again.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;batch_ind:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_ind</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>batch_X: tensor([[[-1.4616, -0.3980, -1.6316,  ..., -0.9080,  0.4950, -0.8456],
-         [-1.2293, -0.0045, -0.7012,  ...,  2.4639,  0.0972, -1.3631],
-         [-0.1137, -1.4958, -2.0082,  ..., -0.9083,  0.9449,  0.2486],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>batch_X: tensor([[[ 1.7780, -1.4346,  2.1304,  ...,  1.5648,  0.3661, -1.4339],
+         [-1.8915,  1.0991,  0.5208,  ..., -0.5334,  1.2845,  0.8867],
+         [ 0.5254,  1.1393,  1.4227,  ..., -0.4837, -0.2610, -0.5988],
          ...,
-         [-0.5395, -0.3732, -0.9877,  ..., -0.8058, -0.2782, -0.2623],
-         [ 0.4268, -0.2317, -1.0141,  ...,  0.6511,  0.7256,  0.3535],
-         [ 0.4345,  0.5948, -0.9139,  ...,  1.0799, -0.6326,  0.3443]],
+         [ 0.2682, -0.0952,  1.4636,  ...,  0.7898, -0.6476, -0.3110],
+         [ 0.0241, -0.6622,  2.0250,  ..., -0.2053,  0.4336, -0.8527],
+         [-0.9024,  0.7344, -0.1378,  ...,  1.3765,  0.0672, -2.2247]],
 
-        [[-0.8075, -0.5131, -0.4304,  ..., -0.1931,  0.4862, -1.2459],
-         [ 1.2352,  1.3246,  0.1217,  ...,  0.1485,  0.9693, -0.6175],
-         [ 0.9975, -0.0720, -0.0430,  ...,  1.8802, -1.4637,  0.2957],
+        [[-1.5205, -0.2108, -0.0328,  ..., -0.7151,  0.4443, -0.3216],
+         [ 1.7874, -0.8524, -0.1258,  ..., -2.2933,  0.2702,  0.4370],
+         [ 0.4534,  0.1537,  0.3800,  ..., -0.5315, -0.0346, -0.3804],
          ...,
-         [-0.3127,  1.2991, -2.7240,  ..., -0.6477, -0.3974, -0.7384],
-         [ 0.2961, -1.2033, -0.5758,  ...,  0.5858,  0.1677, -0.5721],
-         [-0.4907,  0.5645, -1.1100,  ..., -1.1617,  0.3371, -1.2155]],
+         [ 1.0183,  1.3423,  0.3127,  ...,  0.9573, -2.1159,  1.5929],
+         [-0.0756, -0.4853,  0.5822,  ...,  1.3761, -0.0529,  0.6917],
+         [ 0.3527, -0.2754, -0.5856,  ...,  2.1311,  1.6798, -1.9069]],
 
-        [[ 0.6389,  0.4110, -0.1106,  ..., -1.0640,  0.7614,  0.8801],
-         [ 0.4184, -1.8467,  0.6269,  ..., -0.4185,  0.2993,  0.5318],
-         [-1.2125, -0.1787,  0.6443,  ...,  0.7840, -0.6079,  0.4468],
+        [[-2.4179,  0.2954,  0.2161,  ..., -0.2690,  0.3659, -0.1564],
+         [-0.2029, -0.5600, -0.6948,  ...,  0.1874,  0.1647, -0.0409],
+         [ 0.0810,  0.1826, -0.0399,  ...,  0.0182,  1.2394,  0.7698],
          ...,
-         [ 1.1096, -1.0621,  0.4465,  ..., -0.9194, -1.2360,  1.2636],
-         [ 0.8873,  1.6699, -0.0092,  ...,  0.3970, -0.2201, -1.1084],
-         [ 0.8207, -1.1270, -0.5066,  ...,  1.4207, -0.9224,  0.4652]],
+         [ 0.3443, -0.6298, -0.0709,  ..., -0.2163, -1.1836,  0.4461],
+         [ 0.8279,  0.3512, -2.6159,  ..., -1.3798, -0.3908,  1.1629],
+         [ 0.4724,  0.2485,  0.0453,  ..., -1.3434, -0.8271, -1.1698]],
 
-        [[-0.2496,  0.7572,  0.3951,  ..., -0.3766,  0.6288,  1.0883],
-         [-2.7184,  0.3595,  0.7671,  ...,  0.4947,  0.4995, -0.9988],
-         [-0.3555, -1.2879,  0.5413,  ...,  0.4274, -1.2286, -0.2964],
+        [[ 1.0216, -1.0452, -0.2398,  ..., -1.6014, -1.0979,  0.8983],
+         [-0.9007,  0.2355, -2.0932,  ..., -1.1081,  0.5726,  0.5862],
+         [ 0.3813, -1.6246,  0.3827,  ..., -0.0587,  0.7561, -0.6609],
          ...,
-         [ 0.3343, -0.2109,  0.8390,  ...,  1.2127,  2.4555, -1.8106],
-         [ 0.4041,  0.8527,  0.4359,  ...,  1.2711, -1.8056, -0.4512],
-         [-1.3438,  0.2856, -0.9934,  ...,  0.3882, -0.4448, -1.1458]]])
+         [ 0.6667, -1.3671, -0.6751,  ..., -1.0770,  1.5253, -0.2058],
+         [ 0.8232, -0.4733, -1.3148,  ..., -0.2666, -0.6566, -1.7928],
+         [ 2.2357,  0.8723, -1.0914,  ...,  0.3690,  2.9148,  0.1461]]])
 batch_y: [tensor([83, 83, 83, 83]), tensor([1, 1, 1, 1])]
 batch_ind: [tensor([0, 1, 2, 3]), tensor([   0, 1000, 2000, 2600]), tensor([1000, 2000, 3000, 3600])]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.532 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.092 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  10 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-tuh-discrete-multitarget-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
