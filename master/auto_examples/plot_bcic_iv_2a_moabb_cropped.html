@@ -464,18 +464,15 @@ data-efficient cropped decoding!</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
   warnings.warn(msg, category=FutureWarning)
 
-&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7f26d5c6e3d0&gt;
+&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7f93ee11dd90&gt;
 </pre></div>
 </div>
 <section id="create-model-and-compute-windowing-parameters">
 <h2>Create model and compute windowing parameters<a class="headerlink" href="#create-model-and-compute-windowing-parameters" title="Permalink to this heading">#</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># In contrast to trialwise decoding, we first have to create the model</span>
-<span class="c1"># before we can cut the dataset into windows. This is because we need to</span>
-<span class="c1"># know the receptive field of the network to know how large the window</span>
-<span class="c1"># stride should be.</span>
-<span class="c1">#</span>
-</pre></div>
-</div>
+<p>In contrast to trialwise decoding, we first have to create the model
+before we can cut the dataset into windows. This is because we need to
+know the receptive field of the network to know how large the window
+stride should be.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># We first choose the compute/input window size that will be fed to the</span>
 <span class="c1"># network during training This has to be larger than the networks</span>
 <span class="c1"># receptive field size and can otherwise be chosen for computational</span>
@@ -538,9 +535,12 @@ output for a dummy input.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a> <span class="o">=</span> <a href="../generated/braindecode.models.get_output_shape.html#braindecode.models.get_output_shape" title="braindecode.models.get_output_shape" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-function"><span class="n">get_output_shape</span></a><span class="p">(</span><a href="../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>Cut the data into windows</dt><dd></dd>
-</dl>
+</section>
+<section id="cut-the-data-into-windows">
+<h2>Cut the data into windows<a class="headerlink" href="#cut-the-data-into-windows" title="Permalink to this heading">#</a></h2>
+<p>In contrast to trialwise decoding, we have to supply an explicit
+window size and window stride to the <code class="docutils literal notranslate"><span class="pre">create_windows_from_events</span></code>
+function.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_seconds</span></a> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>
@@ -633,10 +633,10 @@ warnings.filterwarnings(&#39;ignore&#39;, category=SkorchWarning)&#39;.
   warnings.warn(warning_msg, SkorchWarning)
   epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr      dur
 -------  ----------------  ------------  ----------------  ------------  ------  -------
-      1            0.2500        1.4486            0.2500        5.4385  0.0006  16.7678
-      2            0.2569        1.2315            0.2500        3.6823  0.0005  16.5296
-      3            0.3958        1.1476            0.3611        2.2702  0.0002  16.4972
-      4            0.4340        1.1225            0.4410        1.4375  0.0000  16.4813
+      1            0.2500        1.4486            0.2500        5.4385  0.0006  16.8452
+      2            0.2569        1.2315            0.2500        3.6823  0.0005  16.5225
+      3            0.3958        1.1476            0.3611        2.2702  0.0002  17.3658
+      4            0.4340        1.1225            0.4410        1.4375  0.0000  16.5533
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=ShallowFBCSPNet(
@@ -656,19 +656,17 @@ warnings.filterwarnings(&#39;ignore&#39;, category=SkorchWarning)&#39;.
 )
 </pre></div>
 </div>
-<dl class="simple">
-<dt>Plot Results</dt><dd></dd>
-</dl>
-<hr class="docutils" />
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is again the same code as in trialwise decoding.</span>
-<span class="c1">#</span>
-<span class="c1"># .. note::</span>
-<span class="c1">#</span>
-<span class="c1">#     Note that we drop further in the classification error and</span>
-<span class="c1">#     loss as in the trialwise decoding tutorial.</span>
-<span class="c1">#</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</section>
+<section id="plot-results">
+<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">#</a></h2>
+<section id="this-is-again-the-same-code-as-in-trialwise-decoding">
+<h3>This is again the same code as in trialwise decoding.<a class="headerlink" href="#this-is-again-the-same-code-as-in-trialwise-decoding" title="Permalink to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that we drop further in the classification error and
+loss as in the trialwise decoding tutorial.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="matplotlib.lines.Line2D" class="sphx-glr-backref-module-matplotlib-lines sphx-glr-backref-type-py-class"><span class="n">Line2D</span></a>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -707,6 +705,7 @@ warnings.filterwarnings(&#39;ignore&#39;, category=SkorchWarning)&#39;.
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png" srcset="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_001.png" alt="plot bcic iv 2a moabb cropped" class = "sphx-glr-single-img"/></section>
+</section>
 <section id="plot-confusion-matrix">
 <h2>Plot Confusion Matrix<a class="headerlink" href="#plot-confusion-matrix" title="Permalink to this heading">#</a></h2>
 <p>Generate a confusion matrix as in <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730">https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730</a></p>
@@ -734,8 +733,8 @@ warnings.filterwarnings(&#39;ignore&#39;, category=SkorchWarning)&#39;.
 <img src="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_002.png" srcset="../_images/sphx_glr_plot_bcic_iv_2a_moabb_cropped_002.png" alt="plot bcic iv 2a moabb cropped" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x550 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  33.708 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1109 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  35.268 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  912 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-bcic-iv-2a-moabb-cropped-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/995f58ef1b3d29dce64caee24e5bf457/plot_bcic_iv_2a_moabb_cropped.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bcic_iv_2a_moabb_cropped.py</span></code></a></p>
@@ -792,9 +791,26 @@ warnings.filterwarnings(&#39;ignore&#39;, category=SkorchWarning)&#39;.
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cut-the-data-into-windows">
+   Cut the data into windows
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#split-the-dataset">
    Split the dataset
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#plot-results">
+   Plot Results
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#this-is-again-the-same-code-as-in-trialwise-decoding">
+     This is again the same code as in trialwise decoding.
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#plot-confusion-matrix">
