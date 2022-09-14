@@ -329,7 +329,8 @@
   <h1>Source code for braindecode.augmentation.base</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Authors: Cédric Rommel &lt;cedric.rommel@inria.fr&gt;</span>
 <span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@inria.fr&gt;</span>
-<span class="c1">#</span>
+<span class="c1">#          Bruno Aristimunha &lt;b.aristimunha@gmail.com&gt;</span>
+<span class="c1">#          Martin Wimpff &lt;martin.wimpff@iss.uni-stuttgart.de&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span>
@@ -471,11 +472,20 @@
         <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">_make_collateable</span><span class="p">(</span><span class="n">transform</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_make_collateable</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Wraps a transform to make it collateable.</span>
+<span class="sd">        with device control. &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">):</span>
         <span class="n">collated_batch</span> <span class="o">=</span> <span class="n">default_collate</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">collated_batch</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="o">*</span><span class="n">collated_batch</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+
     <span class="k">return</span> <span class="n">_collate_fn</span>
 
 
@@ -488,24 +498,26 @@
 <span class="sd">        The dataset containing the signals.</span>
 <span class="sd">    transforms : list | Transform, optional</span>
 <span class="sd">        Transform or sequence of Transform to be applied to each batch.</span>
+<span class="sd">    device : str | torch.device | None, optional</span>
+<span class="sd">        Device on which to transform the data. Defaults to None.</span>
 <span class="sd">    **kwargs : dict, optional</span>
 <span class="sd">        keyword arguments to pass to standard DataLoader class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;collate_fn&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;collate_fn cannot be used in this context because it is used &quot;</span>
                 <span class="s2">&quot;to pass transform&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">transforms</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">collated_tr</span> <span class="o">=</span> <span class="n">_make_collateable</span><span class="p">(</span><span class="n">IdentityTransform</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">collated_tr</span> <span class="o">=</span> <span class="n">_make_collateable</span><span class="p">(</span><span class="n">IdentityTransform</span><span class="p">(),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="p">(</span><span class="n">Transform</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">collated_tr</span> <span class="o">=</span> <span class="n">_make_collateable</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">collated_tr</span> <span class="o">=</span> <span class="n">_make_collateable</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">collated_tr</span> <span class="o">=</span> <span class="n">_make_collateable</span><span class="p">(</span><span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">collated_tr</span> <span class="o">=</span> <span class="n">_make_collateable</span><span class="p">(</span><span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;transforms can be either a Transform object&quot;</span> <span class="o">+</span>
                             <span class="s2">&quot; or a list of Transform objects.&quot;</span><span class="p">)</span>
