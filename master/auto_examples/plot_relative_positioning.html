@@ -331,8 +331,8 @@
 <li class="toctree-l1"><a class="reference internal" href="plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
@@ -453,12 +453,15 @@ downstream classification performance.</p>
 <p>Next, we preprocess the raw data. We convert the data to microvolts and apply
 a lowpass filter. Since the Sleep Physionet data is already sampled at 100 Hz
 we don’t need to apply resampling.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing.preprocess</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing.preprocess</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a> <span class="o">=</span> <span class="mi">30</span>
+<span class="c1"># Factor to convert from V to uV</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a> <span class="o">=</span> <span class="mf">1e6</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">apply_on_array</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="k">lambda</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a><span class="p">)),</span>  <span class="c1"># Convert from V to uV</span>
     <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_jobs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_jobs</span></a><span class="p">)</span>
 <span class="p">]</span>
 
@@ -466,10 +469,10 @@ we don’t need to apply resampling.</p>
 <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
-  warnings.warn(msg, category=FutureWarning)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:55: UserWarning: Preprocessing choices with lambda functions cannot be saved.
+  warn(&#39;Preprocessing choices with lambda functions cannot be saved.&#39;)
 
-&lt;braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f44b7837990&gt;
+&lt;braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7fc5d509b890&gt;
 </pre></div>
 </div>
 </section>
@@ -506,12 +509,12 @@ that we can reuse them in the sleep staging downstream task later.</p>
 <section id="preprocessing-windows">
 <h3><a class="toc-backref" href="#id23">Preprocessing windows</a><a class="headerlink" href="#preprocessing-windows" title="Permalink to this heading">#</a></h3>
 <p>We also preprocess the windows by applying channel-wise z-score normalization.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">standard_scale</span></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">scale</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">standard_scale</span></a>
 
 <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">,</span> <span class="p">[</span><a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">standard_scale</span></a><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f44b5c5b810&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fc5d7fcbf90&gt;
 </pre></div>
 </div>
 </section>
@@ -731,31 +734,31 @@ this example.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_acc    train_loss    valid_acc    valid_loss    cp     dur
 -------  -----------  ------------  -----------  ------------  ----  ------
-      1       0.5547        0.7113       0.6000        0.6843     +  1.7897
-      2       0.6328        0.6624       0.5600        0.6505     +  1.5070
-      3       0.4922        0.8274       0.5560        0.6834        1.4866
-      4       0.5078        0.7217       0.5360        0.7066        1.4302
-      5       0.5859        0.6870       0.6240        0.6799        1.4283
-      6       0.6016        0.6796       0.6640        0.6374     +  1.4247
-      7       0.6016        0.6640       0.6560        0.6086     +  1.4264
-      8       0.5312        0.6652       0.6600        0.5995     +  1.4578
-      9       0.6250        0.6280       0.6480        0.5983     +  1.4195
-     10       0.6250        0.6371       0.6520        0.5872     +  1.4223
-     11       0.6016        0.6539       0.6720        0.5716     +  1.4308
-     12       0.6641        0.6481       0.6840        0.5585     +  1.4269
-     13       0.6172        0.6784       0.7080        0.5460     +  1.4195
-     14       0.6250        0.6074       0.7200        0.5350     +  1.4230
-     15       0.7109        0.6056       0.7320        0.5279     +  1.4317
-     16       0.7031        0.5857       0.7360        0.5259     +  1.4168
-     17       0.6250        0.6123       0.7440        0.5328        1.4303
-     18       0.6562        0.5821       0.7360        0.5331        1.4214
-     19       0.7344        0.5464       0.7400        0.5277        1.4248
-     20       0.6484        0.6304       0.7320        0.5234     +  1.4213
-     21       0.6953        0.5459       0.7400        0.5264        1.4201
-     22       0.7422        0.5492       0.7280        0.5297        1.4650
-     23       0.6562        0.5958       0.7160        0.5296        1.4673
-     24       0.7188        0.6367       0.7240        0.5252        1.4789
-     25       0.6875        0.5745       0.7200        0.5237        1.4242
+      1       0.5547        0.7113       0.6000        0.6843     +  1.7349
+      2       0.6328        0.6624       0.5600        0.6505     +  1.5865
+      3       0.4922        0.8274       0.5560        0.6834        1.5907
+      4       0.5078        0.7217       0.5360        0.7066        1.5810
+      5       0.5859        0.6870       0.6240        0.6799        1.5828
+      6       0.6016        0.6796       0.6640        0.6374     +  1.5831
+      7       0.6016        0.6640       0.6560        0.6086     +  1.5897
+      8       0.5312        0.6652       0.6600        0.5995     +  1.5872
+      9       0.6250        0.6280       0.6480        0.5983     +  1.5919
+     10       0.6250        0.6371       0.6520        0.5872     +  1.5869
+     11       0.6016        0.6539       0.6720        0.5716     +  1.5970
+     12       0.6641        0.6481       0.6840        0.5585     +  1.5887
+     13       0.6172        0.6784       0.7080        0.5460     +  1.5798
+     14       0.6250        0.6074       0.7200        0.5350     +  1.5831
+     15       0.7109        0.6056       0.7320        0.5279     +  1.5783
+     16       0.7031        0.5857       0.7360        0.5259     +  1.5823
+     17       0.6250        0.6123       0.7440        0.5328        1.5817
+     18       0.6562        0.5821       0.7360        0.5331        1.5754
+     19       0.7344        0.5464       0.7400        0.5277        1.5802
+     20       0.6484        0.6304       0.7320        0.5234     +  1.5764
+     21       0.6953        0.5459       0.7400        0.5264        1.5737
+     22       0.7422        0.5492       0.7280        0.5297        1.5760
+     23       0.6562        0.5958       0.7160        0.5296        1.5711
+     24       0.7188        0.6367       0.7240        0.5252        1.5738
+     25       0.6875        0.5745       0.7200        0.5237        1.5696
 </pre></div>
 </div>
 </section>
@@ -929,7 +932,7 @@ of the feature space using a PCA:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_relative_positioning_002.png" srcset="../_images/sphx_glr_plot_relative_positioning_002.png" alt="plot relative positioning" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f44b5e9df50&gt;
+<img src="../_images/sphx_glr_plot_relative_positioning_002.png" srcset="../_images/sphx_glr_plot_relative_positioning_002.png" alt="plot relative positioning" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fc5d5237c10&gt;
 </pre></div>
 </div>
 <p>We see that there is sleep stage-related structure in the embedding. A
@@ -981,8 +984,8 @@ IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:
 (758-769)</p>
 </dd>
 </dl>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  50.951 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  243 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  55.087 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  281 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-relative-positioning-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e21937efe066fc624a4b536dced68cd1/plot_relative_positioning.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_relative_positioning.py</span></code></a></p>

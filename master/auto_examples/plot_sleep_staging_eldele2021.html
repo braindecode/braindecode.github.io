@@ -49,7 +49,7 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Searching the best data augmentation on BCIC IV 2a Dataset" href="plot_data_augmentation_search.html" />
+    <link rel="next" title="Sleep staging on the Sleep Physionet dataset using Chambon2018 network" href="plot_sleep_staging_chambon2018.html" />
     <link rel="prev" title="Data Augmentation on BCIC IV 2a Dataset" href="plot_data_augmentation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -331,8 +331,8 @@
 <li class="toctree-l1"><a class="reference internal" href="plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Trialwise Decoding on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
@@ -436,12 +436,15 @@ sleep staging example).</p>
 <h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this heading">#</a></h3>
 <p>Next, we preprocess the raw data. We convert the data to microvolts and apply
 a lowpass filter.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a> <span class="o">=</span> <span class="mi">30</span>
+<span class="c1"># Factor to convert from V to uV</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a> <span class="o">=</span> <span class="mf">1e6</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">apply_on_array</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a><span class="p">)),</span>  <span class="c1"># Convert from V to uV</span>
     <a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a><span class="p">)</span>
 <span class="p">]</span>
 
@@ -449,10 +452,10 @@ a lowpass filter.</p>
 <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/braindecode/lib/python3.7/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function scale is deprecated; will be removed in 0.7.0. Use numpy.multiply instead.
-  warnings.warn(msg, category=FutureWarning)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:55: UserWarning: Preprocessing choices with lambda functions cannot be saved.
+  warn(&#39;Preprocessing choices with lambda functions cannot be saved.&#39;)
 
-&lt;braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7f44e0630e90&gt;
+&lt;braindecode.datasets.sleep_physionet.SleepPhysionet object at 0x7fc5dd03cc90&gt;
 </pre></div>
 </div>
 </section>
@@ -493,12 +496,12 @@ was found to give better performance than using the Pz-Oz channel</p>
 <h3>Window preprocessing<a class="headerlink" href="#window-preprocessing" title="Permalink to this heading">#</a></h3>
 <p>We also preprocess the windows by applying channel-wise z-score normalization
 in each window.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">scale</span></a> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">standard_scale</span></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">scale</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">standard_scale</span></a>
 
 <a href="../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">,</span> <span class="p">[</span><a href="../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html#sklearn.preprocessing.scale" title="sklearn.preprocessing.scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">standard_scale</span></a><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f44e0703a50&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fc5d77f2190&gt;
 </pre></div>
 </div>
 </section>
@@ -659,9 +662,9 @@ training logic is the same as in
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_bal_acc    train_loss    valid_bal_acc    valid_loss     dur
 -------  ---------------  ------------  ---------------  ------------  ------
-      1           0.0522        4.4700           0.2000        4.9062  2.0844
-      2           0.4802        1.6978           0.1991        2.7382  1.4842
-      3           0.3317        1.8455           0.2000        3.4288  1.5117
+      1           0.0522        4.4700           0.2000        4.9062  2.1295
+      2           0.4802        1.6978           0.1991        2.7382  1.5894
+      3           0.3317        1.8455           0.2000        3.4288  1.5637
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=Sequential(
@@ -877,7 +880,7 @@ accuracy on training data and around 43% on held out validation data.
 Increasing the number of training recordings and optimizing the hyperparameters
 will also help increase performance</p>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.418 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.045 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  18 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-sleep-staging-eldele2021-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -906,10 +909,10 @@ will also help increase performance</p>
           <p class="prev-next-title">Data Augmentation on BCIC IV 2a Dataset</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="plot_data_augmentation_search.html" title="next page">
+  <a class='right-next' id="next-link" href="plot_sleep_staging_chambon2018.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Searching the best data augmentation on BCIC IV 2a Dataset</p>
+      <p class="prev-next-title">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
