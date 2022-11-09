@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>braindecode.models.eeginception &#8212; Braindecode 0.7 documentation</title>
+    <title>braindecode.models.eeginception_erp &#8212; Braindecode 0.7 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -41,7 +41,7 @@
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/braindecode/models/eeginception';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/braindecode/models/eeginception_erp';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
@@ -359,13 +359,11 @@
             
             <article class="bd-article" role="main">
               
-  <h1>Source code for braindecode.models.eeginception</h1><div class="highlight"><pre>
+  <h1>Source code for braindecode.models.eeginception_erp</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Authors: Bruno Aristimunha &lt;b.aristimunha@gmail.com&gt;</span>
 <span class="c1">#          Cedric Rommel &lt;cedric.rommel@inria.fr&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
-
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">prod</span>
 
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
@@ -378,13 +376,8 @@
     <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EEGInception"><a class="viewcode-back" href="../../../generated/braindecode.models.EEGInception.html#braindecode.models.EEGInception">[docs]</a><span class="k">class</span> <span class="nc">EEGInception</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; EEG Inception for ERP-based classification</span>
-
-<span class="sd">    --&gt; DEPERECATED &lt;--</span>
-<span class="sd">    THIS CLASS IS DEPRECATED AND WILL BE REMOVED IN THE RELEASE 0.9 OF</span>
-<span class="sd">    BRAINDECODE. PLEASE USE braindecode.models.EEGInceptionERP INSTEAD IN THE</span>
-<span class="sd">    FUTURE.</span>
+<div class="viewcode-block" id="EEGInceptionERP"><a class="viewcode-back" href="../../../generated/braindecode.models.EEGInceptionERP.html#braindecode.models.EEGInceptionERP">[docs]</a><span class="k">class</span> <span class="nc">EEGInceptionERP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;EEG Inception for ERP-based classification</span>
 
 <span class="sd">    The code for the paper and this model is also available at [Santamaria2020]_</span>
 <span class="sd">    and an adaptation for PyTorch [2]_.</span>
@@ -412,28 +405,33 @@
 <span class="sd">        Number of EEG channels.</span>
 <span class="sd">    n_classes : int</span>
 <span class="sd">        Number of classes.</span>
-<span class="sd">    input_size_ms : int</span>
-<span class="sd">        Size of the input, in milliseconds. Set to 1000 in [Santamaria2020]_.</span>
-<span class="sd">    sfreq : float</span>
-<span class="sd">        EEG sampling frequency.</span>
-<span class="sd">    drop_prob : float</span>
-<span class="sd">        Dropout rate inside all the network.</span>
-<span class="sd">    scales_time: list(int)</span>
-<span class="sd">        Windows for inception block, must be a list with proportional values of</span>
-<span class="sd">        the input_size_ms.</span>
-<span class="sd">        According to the authors: temporal scale (ms) of the convolutions</span>
-<span class="sd">        on each Inception module.</span>
-<span class="sd">        This parameter determines the kernel sizes of the filters.</span>
-<span class="sd">    n_filters : int</span>
-<span class="sd">        Initial number of convolutional filters. Set to 8 in [Santamaria2020]_.</span>
-<span class="sd">    activation: nn.Module</span>
-<span class="sd">        Activation function, default: ELU activation.</span>
-<span class="sd">    batch_norm_alpha: float</span>
-<span class="sd">        Momentum for BatchNorm2d.</span>
-<span class="sd">    depth_multiplier: int</span>
-<span class="sd">        Depth multiplier for the depthwise convolution.</span>
-<span class="sd">    pooling_sizes: list(int)</span>
-<span class="sd">        Pooling sizes for the inception block.</span>
+<span class="sd">    input_window_samples : int, optional</span>
+<span class="sd">        Size of the input, in number of sampels. Set to 128 (1s) as in</span>
+<span class="sd">        [Santamaria2020]_.</span>
+<span class="sd">    sfreq : float, optional</span>
+<span class="sd">        EEG sampling frequency. Defaults to 128 as in [Santamaria2020]_.</span>
+<span class="sd">    drop_prob : float, optional</span>
+<span class="sd">        Dropout rate inside all the network. Defaults to 0.5 as in</span>
+<span class="sd">        [Santamaria2020]_.</span>
+<span class="sd">    scales_samples_s: list(float), optional</span>
+<span class="sd">        Windows for inception block. Temporal scale (s) of the convolutions on</span>
+<span class="sd">        each Inception module. This parameter determines the kernel sizes of</span>
+<span class="sd">        the filters. Defaults to 0.5, 0.25, 0.125 seconds, as in</span>
+<span class="sd">        [Santamaria2020]_.</span>
+<span class="sd">    n_filters : int, optional</span>
+<span class="sd">        Initial number of convolutional filters. Defaults to 8 as in</span>
+<span class="sd">        [Santamaria2020]_.</span>
+<span class="sd">    activation: nn.Module, optional</span>
+<span class="sd">        Activation function. Defaults to ELU activation as in</span>
+<span class="sd">        [Santamaria2020]_.</span>
+<span class="sd">    batch_norm_alpha: float, optional</span>
+<span class="sd">        Momentum for BatchNorm2d. Defaults to 0.01.</span>
+<span class="sd">    depth_multiplier: int, optional</span>
+<span class="sd">        Depth multiplier for the depthwise convolution. Defaults to 2 as in</span>
+<span class="sd">        [Santamaria2020]_.</span>
+<span class="sd">    pooling_sizes: list(int), optional</span>
+<span class="sd">        Pooling sizes for the inception blocks. Defaults to 4, 2, 2 and 2, as</span>
+<span class="sd">        in [Santamaria2020]_.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -471,13 +469,6 @@
             <span class="n">pooling_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;The class EEGInception is deprecated and will be removed in the &quot;</span>
-            <span class="s2">&quot;release 0.9 of braindecode. Please use &quot;</span>
-            <span class="s2">&quot;braindecode.models.EEGInceptionERP instead in the future.&quot;</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span>
-        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="n">n_classes</span>
