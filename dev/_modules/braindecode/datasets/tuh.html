@@ -491,13 +491,10 @@ document.write(`
         <span class="c1"># without actually touching the files</span>
         <span class="n">file_paths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;**/*.edf&#39;</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">descriptions</span> <span class="o">=</span> <span class="n">_create_description</span><span class="p">(</span><span class="n">file_paths</span><span class="p">)</span>
+        <span class="c1"># sort the descriptions chronologicaly</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">_sort_chronologically</span><span class="p">(</span><span class="n">descriptions</span><span class="p">)</span>
         <span class="c1"># limit to specified recording ids before doing slow stuff</span>
         <span class="k">if</span> <span class="n">recording_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Using recording_ids currently leads to recordings &quot;</span>
-                <span class="s2">&quot;being selected before chronological sorting, which may &quot;</span>
-                <span class="s2">&quot;lead to unexpected results. Consider loading all data&quot;</span>
-                <span class="s2">&quot;and selecting specific recordings after loading&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">recording_ids</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
                 <span class="c1"># Assume it is an integer specifying number</span>
                 <span class="c1"># of recordings to load</span>
@@ -516,12 +513,6 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">_create_dataset</span><span class="p">)(</span>
                 <span class="n">descriptions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">target_name</span><span class="p">,</span> <span class="n">preload</span><span class="p">,</span> <span class="n">add_physician_reports</span>
             <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">descriptions</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-        <span class="c1"># get the updated full descriptions including year, month, and day</span>
-        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">description</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">base_datasets</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="c1"># sort the descriptions chronologicaly</span>
-        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">_sort_chronologically</span><span class="p">(</span><span class="n">descriptions</span><span class="p">)</span>
-        <span class="c1"># sort the datasets accordingly</span>
-        <span class="n">base_datasets</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_datasets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">descriptions</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base_datasets</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -578,6 +569,28 @@ document.write(`
     <span class="k">return</span> <span class="n">descriptions</span>
 
 
+<span class="k">def</span> <span class="nf">_read_date</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="n">date_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;_date.txt&#39;</span><span class="p">)</span>
+    <span class="c1"># if date file exists, read it</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">date_path</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">date_path</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="s1">&#39;series&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="c1"># otherwise read edf file, extract date and store to file</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+            <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+            <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># if the txt file storing the recording date does not exist, create it</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">description</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">date_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot save date file to </span><span class="si">{</span><span class="n">date_path</span><span class="si">}</span><span class="s1">. &#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39;This might slow down creation of the dataset.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">description</span>
+
+
 <span class="k">def</span> <span class="nf">_parse_description_from_file_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
     <span class="c1"># stackoverflow.com/questions/3167154/how-to-split-a-dos-path-into-its-components-in-python  # noqa</span>
     <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
@@ -609,14 +622,14 @@ document.write(`
         <span class="n">subject_id</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">segment</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="n">description</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">_read_date</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">description</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
             <span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="n">file_path</span><span class="p">,</span>
             <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span>
             <span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">subject_id</span><span class="p">,</span>
             <span class="s1">&#39;session&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
             <span class="s1">&#39;segment&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
-        <span class="p">}</span>
+        <span class="p">})</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">abnormal</span><span class="p">:</span>
             <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
             <span class="n">description</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
@@ -720,10 +733,13 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;pathological&#39;</span><span class="p">,</span>
                  <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
-                         <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span>
-                         <span class="n">add_physician_reports</span><span class="o">=</span><span class="n">add_physician_reports</span><span class="p">,</span>
-                         <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+                <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;.*not in description. &#39;__getitem__&#39;&quot;</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
+                             <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span>
+                             <span class="n">add_physician_reports</span><span class="o">=</span><span class="n">add_physician_reports</span><span class="p">,</span>
+                             <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
         <span class="n">additional_descriptions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
             <span class="n">additional_description</span> <span class="o">=</span> <span class="p">(</span>
@@ -781,10 +797,10 @@ document.write(`
 <span class="p">}</span>
 <span class="n">_TUH_EEG_ABNORMAL_PATHS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># these are actual file paths and edf headers from TUH Abnormal EEG Corpus (v2.0.0)</span>
-    <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/train/abnormal/01_tcp_ar/012/00001200/s003_2010_12_06/00001200_s003_t000.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00001200 M 01-JAN-1963 00001200 Age:47                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
     <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/train/normal/01_tcp_ar/078/00007871/s001_2011_07_05/00007871_s001_t001.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00007871 F 01-JAN-1988 00007871 Age:23                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
-    <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/train/abnormal/01_tcp_ar/083/00008393/s002_2012_02_21/00008393_s002_t000.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00008393 M 01-JAN-1960 00008393 Age:52                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
     <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/train/normal/01_tcp_ar/097/00009777/s001_2012_09_17/00009777_s001_t000.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00009777 M 01-JAN-1986 00009777 Age:26                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/train/abnormal/01_tcp_ar/083/00008393/s002_2012_02_21/00008393_s002_t000.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00008393 M 01-JAN-1960 00008393 Age:52                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/train/abnormal/01_tcp_ar/012/00001200/s003_2010_12_06/00001200_s003_t000.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00001200 M 01-JAN-1963 00001200 Age:47                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
     <span class="s1">&#39;tuh_abnormal_eeg/v2.0.0/edf/eval/abnormal/01_tcp_ar/059/00005932/s004_2013_03_14/00005932_s004_t000.edf&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;0       00005932 M 01-JAN-1963 00005932 Age:50                                          &#39;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
 <span class="p">}</span>
 
@@ -797,10 +813,13 @@ document.write(`
                 <span class="n">new</span><span class="o">=</span><span class="n">_get_header</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_glob</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
-                         <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span>
-                         <span class="n">add_physician_reports</span><span class="o">=</span><span class="n">add_physician_reports</span><span class="p">,</span>
-                         <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+                <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Cannot save date file&quot;</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
+                             <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span>
+                             <span class="n">add_physician_reports</span><span class="o">=</span><span class="n">add_physician_reports</span><span class="p">,</span>
+                             <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">_TUHAbnormalMock</span><span class="p">(</span><span class="n">TUHAbnormal</span><span class="p">):</span>
@@ -814,10 +833,13 @@ document.write(`
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_glob</span><span class="p">,</span> <span class="n">mock_report</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;pathological&#39;</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
-                         <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span>
-                         <span class="n">add_physician_reports</span><span class="o">=</span><span class="n">add_physician_reports</span><span class="p">,</span>
-                         <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+                <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Cannot save date file&quot;</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
+                             <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span>
+                             <span class="n">add_physician_reports</span><span class="o">=</span><span class="n">add_physician_reports</span><span class="p">,</span>
+                             <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
 </pre></div>
 
                 </article>
