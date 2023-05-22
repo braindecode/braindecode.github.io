@@ -666,11 +666,19 @@ regardless of the verbose setting.</p></li>
 GPU acceleration, data in torch tensors will be pushed to cuda
 tensors before being sent to the module. If set to None, then
 all compute devices will be left unmodified.</p></li>
+<li><p><strong>compile</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> (</em><em>default=False</em><em>)</em>) – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, compile all modules using <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code>. For this
+to work, the installed torch version has to support <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code>.
+Compiled modules should work identically to non-compiled modules but
+should run faster on new GPU architectures (Volta and Ampere for
+instance).
+Additional arguments for <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> can be passed using the dunder
+notation, e.g. when initializing the net with <code class="docutils literal notranslate"><span class="pre">compile__dynamic=True</span></code>,
+<code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> will be called with <code class="docutils literal notranslate"><span class="pre">dynamic=True</span></code>.</p></li>
 <li><p><strong>cropped</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> (</em><em>default=False</em><em>)</em>) – Defines whether torch model passed to this class is cropped or not.
 Currently used for callbacks definition.</p></li>
 <li><p><strong>callbacks</strong> (<em>None</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><em>strings</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><em>Callback instances</em><em> (</em><em>default=None</em><em>)</em>) – More callbacks, in addition to those returned by
 <code class="docutils literal notranslate"><span class="pre">get_default_callbacks</span></code>. Each callback should inherit from
-<a class="reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.Callback" title="(in skorch v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.callbacks.Callback</span></code></a>. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, callbacks can be a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.callbacks.Callback</span></code>. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, callbacks can be a
 list of strings specifying <cite>sklearn</cite> scoring functions (for scoring
 functions names see: <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter">https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter</a>)
 or a list of callbacks where the callback names are inferred from the
@@ -693,8 +701,9 @@ cropped mode.</p></li>
 <dt class="sig sig-object py" id="braindecode.classifier.EEGClassifier.prefixes_">
 <span class="sig-name descname"><span class="pre">prefixes_</span></span><a class="headerlink" href="#braindecode.classifier.EEGClassifier.prefixes_" title="Permalink to this definition">#</a></dt>
 <dd><p>Contains the prefixes to special parameters. E.g., since there
-is the <code class="docutils literal notranslate"><span class="pre">'module'</span></code> prefix, it is possible to set parameters like
-so: <code class="docutils literal notranslate"><span class="pre">NeuralNet(...,</span> <span class="pre">optimizer__momentum=0.95)</span></code>.</p>
+is the <code class="docutils literal notranslate"><span class="pre">'optimizer'</span></code> prefix, it is possible to set parameters like
+so: <code class="docutils literal notranslate"><span class="pre">NeuralNet(...,</span> <span class="pre">optimizer__momentum=0.95)</span></code>. Some prefixes are
+populated dynamically, based on what modules and criteria are defined.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
