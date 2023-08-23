@@ -447,8 +447,9 @@ document.write(`
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">init</span>
 <span class="kn">from</span> <span class="nn">torch.nn.functional</span> <span class="kn">import</span> <span class="n">elu</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 
-<span class="kn">from</span> <span class="nn">.functions</span> <span class="kn">import</span> <span class="n">transpose_time_to_spat</span><span class="p">,</span> <span class="n">squeeze_final_output</span>
+<span class="kn">from</span> <span class="nn">.functions</span> <span class="kn">import</span> <span class="n">squeeze_final_output</span>
 <span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">AvgPool2dWithConv</span><span class="p">,</span> <span class="n">Ensure4d</span>
 
 
@@ -495,7 +496,8 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;ensuredims&quot;</span><span class="p">,</span> <span class="n">Ensure4d</span><span class="p">())</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_first_layer</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;dimshuffle&#39;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">transpose_time_to_spat</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;dimshuffle&#39;</span><span class="p">,</span>
+                            <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch C T 1 -&gt; batch 1 T C&quot;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;conv_time&#39;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_first_filters</span><span class="p">,</span>
                                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_filter_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                                                    <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>

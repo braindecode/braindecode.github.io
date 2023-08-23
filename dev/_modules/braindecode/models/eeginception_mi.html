@@ -442,8 +442,9 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 
-<span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">Ensure4d</span>
+<span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Ensure4d</span>
 
 
 <div class="viewcode-block" id="EEGInceptionMI"><a class="viewcode-back" href="../../../generated/braindecode.models.EEGInceptionMI.html#braindecode.models.EEGInceptionMI">[docs]</a><span class="k">class</span> <span class="nc">EEGInceptionMI</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -519,7 +520,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ensuredims</span> <span class="o">=</span> <span class="n">Ensure4d</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dimshuffle</span> <span class="o">=</span> <span class="n">Expression</span><span class="p">(</span><span class="n">_transpose_to_b_c_1_t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimshuffle</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch C T 1 -&gt; batch C 1 T&quot;</span><span class="p">)</span>
 
         <span class="c1"># ======== Inception branches ========================</span>
 
@@ -721,10 +722,6 @@ document.write(`
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_transpose_to_b_c_1_t</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
                 </article>

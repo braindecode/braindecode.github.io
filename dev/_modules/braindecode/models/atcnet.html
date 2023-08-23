@@ -443,9 +443,9 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 
-<span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">Ensure4d</span><span class="p">,</span> <span class="n">MaxNormLinear</span><span class="p">,</span> <span class="n">CausalConv1d</span>
-<span class="kn">from</span> <span class="nn">.functions</span> <span class="kn">import</span> <span class="n">transpose_time_to_spat</span>
+<span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Ensure4d</span><span class="p">,</span> <span class="n">MaxNormLinear</span><span class="p">,</span> <span class="n">CausalConv1d</span>
 
 
 <div class="viewcode-block" id="ATCNet"><a class="viewcode-back" href="../../../generated/braindecode.models.ATCNet.html#braindecode.models.ATCNet">[docs]</a><span class="k">class</span> <span class="nc">ATCNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -581,8 +581,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">concat</span> <span class="o">=</span> <span class="n">concat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_norm_const</span> <span class="o">=</span> <span class="n">max_norm_const</span>
 
+        <span class="c1"># Check later if we want to keep the Ensure4d. Not sure if we can</span>
+        <span class="c1"># remove it or replace it with eipsum.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ensuredims</span> <span class="o">=</span> <span class="n">Ensure4d</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dimshuffle</span> <span class="o">=</span> <span class="n">Expression</span><span class="p">(</span><span class="n">transpose_time_to_spat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimshuffle</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch C T 1 -&gt; batch 1 T C&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">conv_block</span> <span class="o">=</span> <span class="n">_ConvBlock</span><span class="p">(</span>
             <span class="n">n_channels</span><span class="o">=</span><span class="n">n_channels</span><span class="p">,</span>  <span class="c1"># input shape: (batch_size, 1, T, C)</span>
@@ -817,7 +819,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span> <span class="o">=</span> <span class="n">num_heads</span>
 
         <span class="c1"># Puts time dimension at -2 and feature dim at -1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dimshuffle</span> <span class="o">=</span> <span class="n">Expression</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimshuffle</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch C T -&gt; batch T C&quot;</span><span class="p">)</span>
 
         <span class="c1"># Layer normalization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ln</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">normalized_shape</span><span class="o">=</span><span class="n">in_shape</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>

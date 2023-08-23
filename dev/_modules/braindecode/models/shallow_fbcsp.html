@@ -443,11 +443,12 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">init</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 
 <span class="kn">from</span> <span class="nn">..util</span> <span class="kn">import</span> <span class="n">np_to_th</span>
 <span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">Ensure4d</span>
 <span class="kn">from</span> <span class="nn">.functions</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">safe_log</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">transpose_time_to_spat</span><span class="p">,</span> <span class="n">squeeze_final_output</span>
+    <span class="n">safe_log</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">squeeze_final_output</span>
 <span class="p">)</span>
 
 
@@ -547,7 +548,8 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;ensuredims&quot;</span><span class="p">,</span> <span class="n">Ensure4d</span><span class="p">())</span>
         <span class="n">pool_class</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">pool_mode</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_first_layer</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;dimshuffle&quot;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">transpose_time_to_spat</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;dimshuffle&quot;</span><span class="p">,</span>
+                            <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch C T 1 -&gt; batch 1 T C&quot;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
                 <span class="s2">&quot;conv_time&quot;</span><span class="p">,</span>
                 <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>

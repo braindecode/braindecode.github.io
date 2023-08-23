@@ -442,8 +442,9 @@ document.write(`
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">init</span>
 <span class="kn">from</span> <span class="nn">torch.nn.utils</span> <span class="kn">import</span> <span class="n">weight_norm</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 
-<span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Ensure4d</span><span class="p">,</span> <span class="n">Expression</span>
+<span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Ensure4d</span>
 
 
 <span class="k">class</span> <span class="nc">_BatchNormZG</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">):</span>
@@ -569,22 +570,9 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">input_windows_samples</span> <span class="o">=</span> <span class="n">input_window_samples</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temp_len</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">temp_span</span> <span class="o">*</span> <span class="n">input_window_samples</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_permute</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Permutes data:</span>
-
-<span class="sd">            from dim:</span>
-<span class="sd">            batch, chans, time, 1</span>
-
-<span class="sd">            to dim:</span>
-<span class="sd">            batch, 1, chans, time</span>
-
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
             <span class="n">Ensure4d</span><span class="p">(),</span>
-            <span class="n">Expression</span><span class="p">(</span><span class="n">_permute</span><span class="p">),</span>
+            <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch C T 1 -&gt; batch 1 C T&quot;</span><span class="p">),</span>
             <span class="n">_TemporalFilter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">t_filters</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">temp_layers</span><span class="p">,</span> <span class="n">temp_len</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_len</span><span class="p">),</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">pooling</span><span class="p">)),</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Dropout2d</span><span class="p">(</span><span class="n">drop_prob</span><span class="p">),</span>

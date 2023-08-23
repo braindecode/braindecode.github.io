@@ -443,6 +443,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.nn.functional</span> <span class="kn">import</span> <span class="n">elu</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 
 <span class="kn">from</span> <span class="nn">.modules</span> <span class="kn">import</span> <span class="n">Expression</span><span class="p">,</span> <span class="n">Ensure4d</span>
 <span class="kn">from</span> <span class="nn">.functions</span> <span class="kn">import</span> <span class="n">squeeze_final_output</span>
@@ -515,10 +516,9 @@ document.write(`
 
         <span class="n">pool_class</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">pool_mode</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;ensuredims&quot;</span><span class="p">,</span> <span class="n">Ensure4d</span><span class="p">())</span>
-        <span class="c1"># b c 0 1</span>
-        <span class="c1"># now to b 1 0 c</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;dimshuffle&quot;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">_transpose_to_b_1_c_0</span><span class="p">))</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;dimshuffle&quot;</span><span class="p">,</span>
+                        <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch ch t 1 -&gt; batch 1 ch t&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
             <span class="s2">&quot;conv_temporal&quot;</span><span class="p">,</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
@@ -616,18 +616,11 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;softmax&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
         <span class="c1"># Transpose back to the the logic of braindecode,</span>
         <span class="c1"># so time in third dimension (axis=2)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;permute_back&quot;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">_transpose_1_0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;permute_back&quot;</span><span class="p">,</span>
+                        <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch x y z -&gt; batch x z y&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">squeeze_final_output</span><span class="p">))</span>
 
         <span class="n">_glorot_weight_zero_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
-
-
-<span class="k">def</span> <span class="nf">_transpose_to_b_1_c_0</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_transpose_1_0</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="EEGNetv1"><a class="viewcode-back" href="../../../generated/braindecode.models.EEGNetv1.html#braindecode.models.EEGNetv1">[docs]</a><span class="k">class</span> <span class="nc">EEGNetv1</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
@@ -766,7 +759,7 @@ document.write(`
         <span class="c1"># Transpose back to the the logic of braindecode,</span>
         <span class="c1"># so time in third dimension (axis=2)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;permute_2&quot;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="s2">&quot;permute_2&quot;</span><span class="p">,</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch x y z -&gt; batch x z y&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">squeeze_final_output</span><span class="p">))</span>
         <span class="n">_glorot_weight_zero_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
