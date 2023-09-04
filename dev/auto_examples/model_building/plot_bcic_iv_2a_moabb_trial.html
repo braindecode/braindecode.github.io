@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Trialwise Decoding on BCIC IV 2a Dataset &#8212; Braindecode 0.7 documentation</title>
+    <title>Basic Brain Decoding on EEG Data &#8212; Braindecode 0.7 documentation</title>
   
   
   
@@ -376,16 +376,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_split_dataset.html">Split Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Basic model building and training</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Trialwise Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Basic Brain Decoding on EEG Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_how_train_test_and_tune.html">How to train, test and tune your model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Regression example on fake data</a></li>
@@ -449,7 +449,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Basic model building and training</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Trialwise Decoding on BCIC IV 2a Dataset</li>
+    <li class="breadcrumb-item active" aria-current="page">Basic Brain Decoding on EEG Data</li>
   </ul>
 </nav>
 </div>
@@ -468,19 +468,36 @@ document.write(`
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="trialwise-decoding-on-bcic-iv-2a-dataset">
-<span id="sphx-glr-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></span><h1>Trialwise Decoding on BCIC IV 2a Dataset<a class="headerlink" href="#trialwise-decoding-on-bcic-iv-2a-dataset" title="Link to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="basic-brain-decoding-on-eeg-data">
+<span id="sphx-glr-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></span><h1>Basic Brain Decoding on EEG Data<a class="headerlink" href="#basic-brain-decoding-on-eeg-data" title="Link to this heading">#</a></h1>
 <p>This tutorial shows you how to train and test deep learning models with
 Braindecode in a classical EEG setting: you have trials of data with
 labels (e.g., Right Hand, Left Hand, etc.).</p>
-<section id="loading-and-preprocessing-the-dataset">
-<h2>Loading and preprocessing the dataset<a class="headerlink" href="#loading-and-preprocessing-the-dataset" title="Link to this heading">#</a></h2>
-<section id="loading">
-<h3>Loading<a class="headerlink" href="#loading" title="Link to this heading">#</a></h3>
-<p>First, we load the data. In this tutorial, we use the functionality of
-braindecode to load datasets through
-<a class="reference external" href="https://github.com/NeuroTechX/moabb">MOABB</a> to load the BCI
-Competition IV 2a data.</p>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#loading-and-preparing-the-data" id="id4">Loading and preparing the data</a></p>
+<ul>
+<li><p><a class="reference internal" href="#loading-a-moabb-dataset" id="id5">Loading a MOABB dataset</a></p></li>
+<li><p><a class="reference internal" href="#preprocessing" id="id6">Preprocessing</a></p></li>
+<li><p><a class="reference internal" href="#cutting-compute-windows" id="id7">Cutting Compute Windows</a></p></li>
+<li><p><a class="reference internal" href="#splitting-the-dataset-into-training-and-validation-sets" id="id8">Splitting the dataset into training and validation sets</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#creating-a-model" id="id9">Creating a model</a></p></li>
+<li><p><a class="reference internal" href="#model-training" id="id10">Model Training</a></p></li>
+<li><p><a class="reference internal" href="#plotting-results" id="id11">Plotting Results</a></p></li>
+<li><p><a class="reference internal" href="#plotting-a-confusion-matrix" id="id12">Plotting a  Confusion Matrix</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id13">References</a></p></li>
+</ul>
+</nav>
+<section id="loading-and-preparing-the-data">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Loading and preparing the data</a><a class="headerlink" href="#loading-and-preparing-the-data" title="Link to this heading">#</a></h2>
+<section id="loading-a-moabb-dataset">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Loading a MOABB dataset</a><a class="headerlink" href="#loading-a-moabb-dataset" title="Link to this heading">#</a></h3>
+<p>First, we load the data. In this tutorial, we load the BCI Competition
+IV 2a data by using braindecode to load through
+<a class="reference external" href="https://github.com/NeuroTechX/moabb">MOABB</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>To load your own datasets either via mne or from
@@ -496,7 +513,7 @@ Tutorial</a>.</p>
 </div>
 </section>
 <section id="preprocessing">
-<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Preprocessing</a><a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
 <p>Now we apply preprocessing like bandpass filtering to our dataset. You
 can either apply functions provided by
 <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html">mne.Raw</a> or
@@ -505,8 +522,8 @@ or apply your own functions, either to the MNE object or the underlying
 numpy array.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>These prepocessings are now directly applied to the loaded
-data, and not on-the-fly applied as transformations in
+<p>Generally, braindecode prepocessing is directly applied to the loaded
+data, and not applied on-the-fly as transformations, such as in
 PyTorch-libraries like
 <a class="reference external" href="https://pytorch.org/docs/stable/torchvision/index.html">torchvision</a>.</p>
 </div>
@@ -537,17 +554,17 @@ PyTorch-libraries like
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:55: UserWarning: Preprocessing choices with lambda functions cannot be saved.
   warn(&#39;Preprocessing choices with lambda functions cannot be saved.&#39;)
 
-&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7f5f346b8c40&gt;
+&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7fecb1444d90&gt;
 </pre></div>
 </div>
 </section>
-<section id="cut-compute-windows">
-<h3>Cut Compute Windows<a class="headerlink" href="#cut-compute-windows" title="Link to this heading">#</a></h3>
-<p>Now we cut out compute windows, the inputs for the deep networks during
-training. In the case of trialwise decoding, we just have to decide if
-we want to cut out some part before and/or after the trial. For this
-dataset, in our work, it often was beneficial to also cut out 500 ms
-before the trial.</p>
+<section id="cutting-compute-windows">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Cutting Compute Windows</a><a class="headerlink" href="#cutting-compute-windows" title="Link to this heading">#</a></h3>
+<p>Now we cut compute windows from the signals, these will be the inputs
+for the deep networks during training. In the case of trialwise
+decoding, we just have to decide if we want to include some part
+before and/or after the trial. For our work with this dataset,
+it was often beneficial to also include the 500 ms before the trial.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_seconds</span></a> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>
@@ -568,8 +585,8 @@ before the trial.</p>
 </pre></div>
 </div>
 </section>
-<section id="split-dataset-into-train-and-valid">
-<h3>Split dataset into train and valid<a class="headerlink" href="#split-dataset-into-train-and-valid" title="Link to this heading">#</a></h3>
+<section id="splitting-the-dataset-into-training-and-validation-sets">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Splitting the dataset into training and validation sets</a><a class="headerlink" href="#splitting-the-dataset-into-training-and-validation-sets" title="Link to this heading">#</a></h3>
 <p>We can easily split the dataset using additional info stored in the
 description attribute, in this case <code class="docutils literal notranslate"><span class="pre">session</span></code> column. We select
 <code class="docutils literal notranslate"><span class="pre">session_T</span></code> for training and <code class="docutils literal notranslate"><span class="pre">session_E</span></code> for validation.</p>
@@ -580,13 +597,11 @@ description attribute, in this case <code class="docutils literal notranslate"><
 </div>
 </section>
 </section>
-<section id="create-model">
-<h2>Create model<a class="headerlink" href="#create-model" title="Link to this heading">#</a></h2>
+<section id="creating-a-model">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Creating a model</a><a class="headerlink" href="#creating-a-model" title="Link to this heading">#</a></h2>
 <p>Now we create the deep learning model! Braindecode comes with some
 predefined convolutional neural network architectures for raw
-time-domain EEG. Here, we use the shallow ConvNet model from <a class="reference external" href="https://arxiv.org/abs/1703.05051">Deep
-learning with convolutional neural networks for EEG decoding and
-visualization</a>. These models are
+time-domain EEG. Here, we use the shallow ConvNet model from <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. These models are
 pure <a class="reference external" href="https://pytorch.org">PyTorch</a> deep learning models, therefore
 to use your own model, it just has to be a normal PyTorch
 <a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.Module">nn.Module</a>.</p>
@@ -626,9 +641,9 @@ to use your own model, it just has to be a normal PyTorch
 </pre></div>
 </div>
 </section>
-<section id="training">
-<h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
-<p>Now we train the network! EEGClassifier is a Braindecode object
+<section id="model-training">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Model Training</a><a class="headerlink" href="#model-training" title="Link to this heading">#</a></h2>
+<p>Now we will train the network! <code class="docutils literal notranslate"><span class="pre">EEGClassifier</span></code> is a Braindecode object
 responsible for managing the training of neural networks. It inherits
 from skorch.NeuralNetClassifier, so the training logic is the same as in
 <a class="reference external" href="https://skorch.readthedocs.io/en/stable/">Skorch</a>.</p>
@@ -640,7 +655,7 @@ cross validation on your training data.</p>
 <span class="kn">from</span> <span class="nn">skorch.helper</span> <span class="kn">import</span> <span class="n">predefined_split</span>
 
 <span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
-<span class="c1"># These values we found good for shallow network:</span>
+<span class="c1"># We found these values to be good for the shallow network:</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lr</span></a> <span class="o">=</span> <span class="mf">0.0625</span> <span class="o">*</span> <span class="mf">0.01</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weight_decay</span></a> <span class="o">=</span> <span class="mi">0</span>
 
@@ -665,17 +680,17 @@ cross validation on your training data.</p>
     <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classes</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classes</span></a><span class="p">,</span>
 <span class="p">)</span>
-<span class="c1"># Model training for a specified number of epochs. `y` is None as it is already supplied</span>
+<span class="c1"># Model training for the specified number of epochs. `y` is None as it is already supplied</span>
 <span class="c1"># in the dataset.</span>
 <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier.fit" title="skorch.classifier.NeuralNetClassifier.fit" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-method"><span class="n">clf</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  ----------------  ------------  ------  ------
-      1            0.2535        1.6382            0.2500        5.2099  0.0006  6.9116
-      2            0.2708        1.2828            0.2465        5.6989  0.0005  6.3878
-      3            0.2604        1.1267            0.2500        5.0719  0.0002  6.3251
-      4            0.2708        1.1386            0.2500        4.2095  0.0000  6.3249
+      1            0.2535        1.6382            0.2500        5.2099  0.0006  7.9266
+      2            0.2708        1.2828            0.2465        5.6989  0.0005  7.1801
+      3            0.2604        1.1267            0.2500        5.0719  0.0002  7.0177
+      4            0.2708        1.1386            0.2500        4.2095  0.0000  7.1570
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=ShallowFBCSPNet(
@@ -696,8 +711,8 @@ cross validation on your training data.</p>
 </pre></div>
 </div>
 </section>
-<section id="plot-results">
-<h2>Plot Results<a class="headerlink" href="#plot-results" title="Link to this heading">#</a></h2>
+<section id="plotting-results">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Plotting Results</a><a class="headerlink" href="#plotting-results" title="Link to this heading">#</a></h2>
 <p>Now we use the history stored by Skorch throughout training to plot
 accuracy and loss curves.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -738,14 +753,14 @@ accuracy and loss curves.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" srcset="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" alt="plot bcic iv 2a moabb trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/model_building/plot_bcic_iv_2a_moabb_trial.py:268: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
+<img src="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" srcset="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" alt="plot bcic iv 2a moabb trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/model_building/plot_bcic_iv_2a_moabb_trial.py:269: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
   plt.style.use(&#39;seaborn&#39;)
 </pre></div>
 </div>
 </section>
-<section id="plot-confusion-matrix">
-<h2>Plot Confusion Matrix<a class="headerlink" href="#plot-confusion-matrix" title="Link to this heading">#</a></h2>
-<p>Generate a confusion matrix as in <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730">https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.23730</a></p>
+<section id="plotting-a-confusion-matrix">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Plotting a  Confusion Matrix</a><a class="headerlink" href="#plotting-a-confusion-matrix" title="Link to this heading">#</a></h2>
+<p>Here we generate a confusion matrix as in <a class="footnote-reference brackets" href="#id3" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html#sklearn.metrics.confusion_matrix" title="sklearn.metrics.confusion_matrix" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">confusion_matrix</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.visualization</span> <span class="kn">import</span> <a href="../../generated/braindecode.visualization.plot_confusion_matrix.html#braindecode.visualization.plot_confusion_matrix" title="braindecode.visualization.plot_confusion_matrix" class="sphx-glr-backref-module-braindecode-visualization sphx-glr-backref-type-py-function"><span class="n">plot_confusion_matrix</span></a>
 
@@ -770,8 +785,21 @@ accuracy and loss curves.</p>
 <img src="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png" alt="plot bcic iv 2a moabb trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x550 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 42.040 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  900 MB</p>
+</section>
+<section id="references">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Schirrmeister, R.T., Springenberg, J.T., Fiederer, L.D.J., Glasstetter, M.,
+Eggensperger, K., Tangermann, M., Hutter, F., Burgard, W. and Ball, T. (2017),
+Deep learning with convolutional neural networks for EEG decoding and visualization.
+Hum. Brain Mapp., 38: 5391-5420. <a class="reference external" href="https://doi.org/10.1002/hbm.23730">https://doi.org/10.1002/hbm.23730</a>.</p>
+</aside>
+</aside>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.205 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  875 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0a8b8bc2f1b933515b7b4101626dd179/plot_bcic_iv_2a_moabb_trial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bcic_iv_2a_moabb_trial.py</span></code></a></p>
@@ -832,17 +860,18 @@ accuracy and loss curves.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading">Loading</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-and-preparing-the-data">Loading and preparing the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-a-moabb-dataset">Loading a MOABB dataset</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing">Preprocessing</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cut-compute-windows">Cut Compute Windows</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#split-dataset-into-train-and-valid">Split dataset into train and valid</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cutting-compute-windows">Cutting Compute Windows</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-the-dataset-into-training-and-validation-sets">Splitting the dataset into training and validation sets</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-model">Create model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-results">Plot Results</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-confusion-matrix">Plot Confusion Matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-model">Creating a model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-training">Model Training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-results">Plotting Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-a-confusion-matrix">Plotting a  Confusion Matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
   </nav></div>
 
