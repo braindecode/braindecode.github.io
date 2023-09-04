@@ -258,6 +258,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -466,8 +470,11 @@ to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="multiple-discrete-targets-with-the-tuh-eeg-corpus">
 <span id="sphx-glr-auto-examples-datasets-io-plot-tuh-discrete-multitarget-py"></span><h1>Multiple discrete targets with the TUH EEG Corpus<a class="headerlink" href="#multiple-discrete-targets-with-the-tuh-eeg-corpus" title="Link to this heading">#</a></h1>
-<p>In this example, we showcase usage of multiple discrete targets per recording
-with the TUH EEG Corpus.</p>
+<dl class="simple">
+<dt>Welcome to this tutorial where we demonstrate how to work with multiple discrete</dt><dd><p>targets for each recording in the TUH EEG Corpus. We’ll guide you through the
+process step by step.</p>
+</dd>
+</dl>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Lukas Gemein &lt;l.gemein@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
@@ -478,6 +485,12 @@ with the TUH EEG Corpus.</p>
 <span class="kn">from</span> <span class="nn">braindecode.datasets</span> <span class="kn">import</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a>
 
+<span class="c1"># Setting Logging Level</span>
+<span class="c1"># ----------------------</span>
+<span class="c1">#</span>
+<span class="c1"># We&#39;ll set the logging level to &#39;ERROR&#39; to avoid excessive messages when</span>
+<span class="c1"># extracting windows:</span>
+
 <a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>  <span class="c1"># avoid messages everytime a window is extracted</span>
 </pre></div>
 </div>
@@ -487,7 +500,9 @@ is not available at creation time of this example.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datasets.tuh</span> <span class="kn">import</span> <span class="n">_TUHMock</span> <span class="k">as</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a>  <span class="c1"># noqa F811</span>
 </pre></div>
 </div>
-<p>We start by creating a TUH dataset. Instead of just a str, we give it
+<section id="creating-temple-university-hospital-tuh-eeg-corpus-dataset">
+<h2>Creating Temple University Hospital (TUH) EEG Corpus Dataset<a class="headerlink" href="#creating-temple-university-hospital-tuh-eeg-corpus-dataset" title="Link to this heading">#</a></h2>
+<p>We start by creating a TUH dataset. Instead of just a <a href="#id1"><span class="problematic" id="id2">`</span></a>str, we give it
 multiple strings as target names. Each of the strings has to exist as a
 column in the description DataFrame.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUH_PATH</span></a> <span class="o">=</span> <span class="s1">&#39;please insert actual path to data here&#39;</span>
@@ -498,143 +513,59 @@ column in the description DataFrame.</p>
     <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">tuh</span><span class="o">.</span><span class="n">description</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tuh</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="output_subarea output_html rendered_html output_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                                                path version  ...  age  gender
+0  tuh_eeg/v1.1.0/edf/02_tcp_le/000/00000058/s001...  v1.1.0  ...    0       M
+1  tuh_eeg/v1.1.0/edf/01_tcp_ar/099/00009932/s004...  v1.1.0  ...   53       F
+2  tuh_eeg/v1.1.0/edf/03_tcp_ar_a/123/00012331/s0...  v1.1.0  ...   39       M
+3  tuh_eeg/v1.1.0/edf/01_tcp_ar/000/00000000/s001...  v1.1.0  ...   37       M
+4  tuh_eeg/v1.2.0/edf/03_tcp_ar_a/149/00014928/s0...  v1.2.0  ...   83       F
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>path</th>
-      <th>version</th>
-      <th>year</th>
-      <th>month</th>
-      <th>day</th>
-      <th>subject</th>
-      <th>session</th>
-      <th>segment</th>
-      <th>age</th>
-      <th>gender</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>tuh_eeg/v1.1.0/edf/02_tcp_le/000/00000058/s001...</td>
-      <td>v1.1.0</td>
-      <td>2003</td>
-      <td>2</td>
-      <td>5</td>
-      <td>58</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>M</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>tuh_eeg/v1.1.0/edf/01_tcp_ar/099/00009932/s004...</td>
-      <td>v1.1.0</td>
-      <td>2014</td>
-      <td>9</td>
-      <td>30</td>
-      <td>9932</td>
-      <td>4</td>
-      <td>13</td>
-      <td>53</td>
-      <td>F</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>tuh_eeg/v1.1.0/edf/03_tcp_ar_a/123/00012331/s0...</td>
-      <td>v1.1.0</td>
-      <td>2014</td>
-      <td>12</td>
-      <td>14</td>
-      <td>12331</td>
-      <td>3</td>
-      <td>2</td>
-      <td>39</td>
-      <td>M</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>tuh_eeg/v1.1.0/edf/01_tcp_ar/000/00000000/s001...</td>
-      <td>v1.1.0</td>
-      <td>2015</td>
-      <td>12</td>
-      <td>30</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>37</td>
-      <td>M</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>tuh_eeg/v1.2.0/edf/03_tcp_ar_a/149/00014928/s0...</td>
-      <td>v1.2.0</td>
-      <td>2016</td>
-      <td>1</td>
-      <td>15</td>
-      <td>14928</td>
-      <td>4</td>
-      <td>7</td>
-      <td>83</td>
-      <td>F</td>
-    </tr>
-  </tbody>
-</table>
+[5 rows x 10 columns]
+</pre></div>
 </div>
-</div>
-<br />
-<br /><p>Iterating through the dataset gives x as ndarray(n_channels x 1) as well as
-the target as [age of the subject, gender of the subject]. Let’s look at the last example
-as it has more interesting age/gender labels (compare to the last row of the dataframe above).</p>
+</section>
+<section id="exploring-data">
+<h2>Exploring Data<a class="headerlink" href="#exploring-data" title="Link to this heading">#</a></h2>
+<p>Iterating through the dataset gives <cite>x</cite> as an ndarray with shape
+<cite>(n_channels x 1)</cite> and <cite>y</cite> as a list containing <cite>[age of the subject, gender
+of the subject]</cite>.
+Let’s look at the last example as it has more interesting age/gender labels
+(compare to the last row of the dataframe above).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <span class="n">tuh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x:&#39;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x: [[ 2.71933539e+00]
- [ 3.02863628e-01]
- [-6.67938958e-01]
- [ 7.02300455e-01]
- [-2.12847043e-01]
- [-2.15859536e-01]
- [-9.98338598e-04]
- [-1.93660846e-01]
- [ 2.93663333e-01]
- [ 1.33105119e+00]
- [-1.20737712e+00]
- [ 2.26872652e-01]
- [-2.85644090e-01]
- [ 4.79617301e-01]
- [ 4.38843394e-01]
- [-1.51001224e+00]
- [ 3.14028817e-01]
- [ 7.54160012e-01]
- [ 3.46375382e-02]
- [ 1.70186031e+00]
- [ 8.86488958e-02]]
-y: [83, &#39;F&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x=array([[-0.90305584],
+       [ 0.75042864],
+       [ 1.77596186],
+       [ 0.02427181],
+       [-0.26221317],
+       [-0.99742093],
+       [ 0.11273301],
+       [ 0.38723091],
+       [ 0.28237267],
+       [ 0.38234778],
+       [-0.14173132],
+       [ 0.59458232],
+       [-1.12009991],
+       [-0.48663488],
+       [ 1.32130482],
+       [-1.47339923],
+       [ 2.08234872],
+       [-0.48290087],
+       [ 2.80278372],
+       [ 1.14851366],
+       [ 0.7321378 ]])
+y=[83, &#39;F&#39;]
 </pre></div>
 </div>
+</section>
+<section id="creating-windows">
+<h2>Creating Windows<a class="headerlink" href="#creating-windows" title="Link to this heading">#</a></h2>
 <p>We will skip preprocessing steps for now, since it is not the aim of this
 example. Instead, we will directly create compute windows. We specify a
 mapping from genders ‘M’ and ‘F’ to integers, since this is required for
@@ -653,31 +584,36 @@ decoding.</p>
     <span class="s2">&quot;n_windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_windows</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">]})</span>
 </pre></div>
 </div>
-<p>Iterating through the dataset gives x as ndarray(n_channels x 1000), y as
-[age, gender], and ind. Let’s look at the last example again.</p>
+</section>
+<section id="exploring-windows">
+<h2>Exploring Windows<a class="headerlink" href="#exploring-windows" title="Link to this heading">#</a></h2>
+<p>Iterating through the dataset gives <cite>x</cite> as an ndarray with shape
+<cite>(n_channels x 1000)</cite>, <cite>y</cite> as <cite>[age, gender]</cite>, and <cite>ind</cite>.
+Let’s look at the last example again.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ind</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_windows</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x:&#39;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ind:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ind</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ind</span></a><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x: [[-0.0737265   1.1442304  -0.28871349 ... -0.03547284 -0.8483267
-   2.7193353 ]
- [-0.20446515 -0.5745265  -2.0439548  ...  0.8524068  -0.9384228
-   0.30286363]
- [-0.5101486  -0.8308108  -0.6384418  ...  1.5407579   0.61609995
-  -0.66793895]
- ...
- [-0.07198475 -0.40527195 -0.9289417  ... -0.9291127   0.14231025
-   0.03463754]
- [-1.4763843  -0.27468792 -1.5208578  ...  1.6176372  -0.5571285
-   1.7018603 ]
- [ 0.55512387  0.49444732  1.6771377  ...  0.6836047   0.00873638
-   0.08864889]]
-y: [83, 1]
-ind: [3, 2600, 3600]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x=array([[-0.07529705,  0.64908576, -2.2880425 , ...,  0.6839316 ,
+        -0.50705993, -0.90305585],
+       [-0.87069875, -0.5119254 ,  0.46457404, ..., -0.6260002 ,
+         0.28584242,  0.7504286 ],
+       [ 0.8840105 ,  0.06653626,  1.1475549 , ...,  0.5967825 ,
+        -2.3171406 ,  1.7759619 ],
+       ...,
+       [-0.03032737, -0.40009043, -0.56293213, ..., -0.5400609 ,
+         1.3862859 ,  2.8027837 ],
+       [ 0.42841035,  0.30429286,  0.26698807, ...,  1.2748963 ,
+        -0.01353891,  1.1485137 ],
+       [-0.0733614 ,  1.020905  ,  0.38243428, ..., -0.47691673,
+        -0.55230033,  0.7321378 ]], dtype=float32)
+y=[83, 1]
+ind=[3, 2600, 3600]
 </pre></div>
 </div>
+</section>
+<section id="dataloader-for-model-training">
+<h2>DataLoader for Model Training<a class="headerlink" href="#dataloader-for-model-training" title="Link to this heading">#</a></h2>
 <p>We give the dataset to a pytorch DataLoader, such that it can be used for
 model training.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dl</span></a> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
@@ -686,53 +622,55 @@ model training.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Iterating through the DataLoader gives batch_X as tensor(4 x n_channels x
-1000), batch_y as [tensor([4 x age of subject]), tensor([4 x gender of
-subject])], and batch_ind. We will iterate to the end to look at the last example
-again.</p>
+</section>
+<section id="exploring-dataloader">
+<h2>Exploring DataLoader<a class="headerlink" href="#exploring-dataloader" title="Link to this heading">#</a></h2>
+<p>When iterating through the DataLoader, we get <cite>batch_X</cite> as a tensor with shape
+<cite>(4 x n_channels x 1000)</cite>, <cite>batch_y</cite> as <cite>[tensor([4 x age of subject]),
+tensor([4 x gender of subject])]</cite>, and <cite>batch_ind</cite>. To view the last example,
+simply iterate through the DataLoader:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_X</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_y</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_ind</span></a> <span class="ow">in</span> <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dl</span></a><span class="p">:</span>
     <span class="k">pass</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;batch_X:&#39;</span><span class="p">,</span> <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_X</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;batch_y:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_y</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;batch_ind:&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_ind</span></a><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_X</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_y</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_ind</span></a><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>batch_X: tensor([[[ 1.0753, -0.2278, -1.7843,  ...,  0.4060,  0.8154, -0.6417],
-         [ 0.3002,  2.1763,  0.0932,  ..., -0.4526,  1.6299, -0.5684],
-         [-3.1231,  1.5550, -1.0343,  ..., -0.2022,  1.1980,  0.1601],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>batch_X=tensor([[[-0.8197, -1.7037, -0.1065,  ...,  0.9272,  0.4244, -0.5229],
+         [ 1.0530, -0.4215, -1.1418,  ..., -0.7086,  0.5945,  1.7105],
+         [-2.5537, -2.4363, -0.8495,  ..., -0.9007,  0.8981, -0.5845],
          ...,
-         [-0.7973, -0.3213,  0.8514,  ...,  0.9244, -1.8328, -0.9081],
-         [ 1.2121, -0.5651, -1.7451,  ..., -1.5672, -0.2476,  1.0201],
-         [ 0.5562,  1.2531, -0.6140,  ..., -0.6534, -0.0843,  1.5263]],
+         [ 0.0071, -0.7081, -1.7356,  ..., -0.2918, -0.1121, -1.0264],
+         [-0.2665,  0.5477,  0.6626,  ...,  1.5195, -0.9126, -0.4690],
+         [ 2.1122, -0.7481, -1.1561,  ..., -0.0194, -1.2510,  1.1226]],
 
-        [[-0.7354, -2.8145,  1.9810,  ...,  1.4325, -0.9696, -1.5265],
-         [ 1.7483, -0.9983,  1.1218,  ...,  0.4616,  0.9253,  0.8670],
-         [ 1.8548, -0.5062,  3.4838,  ..., -1.0341,  0.2405, -0.7681],
+        [[ 0.1708,  1.8577, -0.5175,  ...,  1.4716, -0.0058, -0.0197],
+         [-0.4930,  0.3600, -0.8530,  ..., -0.5067,  0.7538, -0.2737],
+         [-1.2316,  2.3490,  0.6898,  ..., -0.4866, -1.1588, -0.7888],
          ...,
-         [-0.8012, -1.5667, -1.4511,  ..., -2.0352, -2.3206, -1.1884],
-         [ 0.2775,  1.1695, -0.8061,  ...,  0.4897,  1.7916, -0.2411],
-         [-1.4404,  0.5872,  1.1151,  ..., -1.0688, -0.8760, -1.3648]],
+         [-1.9834,  0.2164,  0.0397,  ..., -0.8771,  1.0457, -0.1153],
+         [-0.7761, -1.4788,  0.4231,  ...,  0.3113, -1.4419,  1.0305],
+         [-2.0803,  1.0553, -1.0917,  ..., -0.0692, -0.4358, -1.8238]],
 
-        [[-0.7414, -0.7099, -1.4888,  ...,  1.5290,  1.0715,  0.2946],
-         [ 0.0157,  1.5699, -1.4228,  ..., -0.8349, -0.9148, -1.2459],
-         [-0.1654, -0.7477,  1.3015,  ...,  1.4926, -1.2837,  1.4788],
+        [[-0.1913, -0.8807, -1.4283,  ..., -1.2168,  0.1841, -1.5377],
+         [-0.1934, -0.3283,  1.3318,  ...,  0.3782,  0.8861,  0.6233],
+         [-0.4275,  1.2609,  0.5213,  ..., -2.0371,  1.2004, -1.3233],
          ...,
-         [ 0.9126,  1.2061,  1.9767,  ..., -1.2504, -0.5725,  0.8684],
-         [ 1.4202, -0.5739,  0.7364,  ..., -0.2174,  1.4132,  0.9099],
-         [ 0.7933,  0.1187,  1.2071,  ...,  1.7361, -1.8189, -0.1680]],
+         [-1.2228, -0.0277, -0.7971,  ..., -1.3371,  0.3601, -0.6580],
+         [-1.6254,  0.4287,  1.8850,  ...,  1.4433, -0.3020, -0.8156],
+         [ 0.5596,  1.4541,  0.3309,  ..., -1.3256,  0.3324,  0.5521]],
 
-        [[-0.0737,  1.1442, -0.2887,  ..., -0.0355, -0.8483,  2.7193],
-         [-0.2045, -0.5745, -2.0440,  ...,  0.8524, -0.9384,  0.3029],
-         [-0.5101, -0.8308, -0.6384,  ...,  1.5408,  0.6161, -0.6679],
+        [[-0.0753,  0.6491, -2.2880,  ...,  0.6839, -0.5071, -0.9031],
+         [-0.8707, -0.5119,  0.4646,  ..., -0.6260,  0.2858,  0.7504],
+         [ 0.8840,  0.0665,  1.1476,  ...,  0.5968, -2.3171,  1.7760],
          ...,
-         [-0.0720, -0.4053, -0.9289,  ..., -0.9291,  0.1423,  0.0346],
-         [-1.4764, -0.2747, -1.5209,  ...,  1.6176, -0.5571,  1.7019],
-         [ 0.5551,  0.4944,  1.6771,  ...,  0.6836,  0.0087,  0.0886]]])
-batch_y: [tensor([83, 83, 83, 83]), tensor([1, 1, 1, 1])]
-batch_ind: [tensor([0, 1, 2, 3]), tensor([   0, 1000, 2000, 2600]), tensor([1000, 2000, 3000, 3600])]
+         [-0.0303, -0.4001, -0.5629,  ..., -0.5401,  1.3863,  2.8028],
+         [ 0.4284,  0.3043,  0.2670,  ...,  1.2749, -0.0135,  1.1485],
+         [-0.0734,  1.0209,  0.3824,  ..., -0.4769, -0.5523,  0.7321]]])
+batch_y=[tensor([83, 83, 83, 83]), tensor([1, 1, 1, 1])]
+batch_ind=[tensor([0, 1, 2, 3]), tensor([   0, 1000, 2000, 2600]), tensor([1000, 2000, 3000, 3600])]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.009 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.557 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  18 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-tuh-discrete-multitarget-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -743,6 +681,7 @@ batch_ind: [tensor([0, 1, 2, 3]), tensor([   0, 1000, 2000, 2600]), tensor([1000
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
 </section>
 
 
@@ -784,6 +723,25 @@ batch_ind: [tensor([0, 1, 2, 3]), tensor([   0, 1000, 2000, 2600]), tensor([1000
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-temple-university-hospital-tuh-eeg-corpus-dataset">Creating Temple University Hospital (TUH) EEG Corpus Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-data">Exploring Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-windows">Creating Windows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-windows">Exploring Windows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dataloader-for-model-training">DataLoader for Model Training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-dataloader">Exploring DataLoader</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
