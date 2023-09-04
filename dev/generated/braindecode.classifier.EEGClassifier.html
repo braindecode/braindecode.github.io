@@ -649,11 +649,23 @@ instance).
 Additional arguments for <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> can be passed using the dunder
 notation, e.g. when initializing the net with <code class="docutils literal notranslate"><span class="pre">compile__dynamic=True</span></code>,
 <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> will be called with <code class="docutils literal notranslate"><span class="pre">dynamic=True</span></code>.</p></li>
+<li><p><strong>use_caching</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> or </em><em>'auto'</em><em> (</em><em>default='auto'</em><em>)</em>) – Optionally override the caching behavior of scoring callbacks. Callbacks
+such as <code class="xref py py-class docutils literal notranslate"><span class="pre">EpochScoring</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">BatchScoring</span></code> allow to cache
+the inference call to save time when calculating scores during training at
+the expense of memory. In certain situations, e.g. when memory is tight,
+you may want to disable caching. As it is cumbersome to change the setting
+on each callback individually, this parameter allows to override their
+behavior globally.
+By default (<code class="docutils literal notranslate"><span class="pre">'auto'</span></code>), the callbacks will determine if caching is used
+or not. If this argument is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, caching will be disabled on
+all callbacks. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, caching will be enabled on all
+callbacks.
+Implementation note: It is the job of the callbacks to honor this setting.</p></li>
 <li><p><strong>cropped</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> (</em><em>default=False</em><em>)</em>) – Defines whether torch model passed to this class is cropped or not.
 Currently used for callbacks definition.</p></li>
 <li><p><strong>callbacks</strong> (<em>None</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><em>strings</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><em>Callback instances</em><em> (</em><em>default=None</em><em>)</em>) – More callbacks, in addition to those returned by
 <code class="docutils literal notranslate"><span class="pre">get_default_callbacks</span></code>. Each callback should inherit from
-<a class="reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.Callback" title="(in skorch v0.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.callbacks.Callback</span></code></a>. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, callbacks can be a
+<a class="reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.Callback" title="(in skorch v0.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.callbacks.Callback</span></code></a>. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, callbacks can be a
 list of strings specifying <cite>sklearn</cite> scoring functions (for scoring
 functions names see: <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter">https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter</a>)
 or a list of callbacks where the callback names are inferred from the
