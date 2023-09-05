@@ -377,7 +377,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Regression example on fake data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -472,50 +472,58 @@ to download the full example code</p>
 <span id="sphx-glr-auto-examples-advanced-training-plot-data-augmentation-search-py"></span><h1>Searching the best data augmentation on BCIC IV 2a Dataset<a class="headerlink" href="#searching-the-best-data-augmentation-on-bcic-iv-2a-dataset" title="Link to this heading">#</a></h1>
 <p>This tutorial shows how to search data augmentations using braindecode.
 Indeed, it is known that the best augmentation to use often dependent on the task
-or phenomenon studied. Here we follow the methodology proposed in [1] on the
+or phenomenon studied. Here we follow the methodology proposed in <a class="footnote-reference brackets" href="#id6" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> on the
 openly available BCI IV 2a Dataset.</p>
 <aside class="topic">
 <p class="topic-title">Data Augmentation</p>
 <p>Data augmentation could be a step in training deep learning models.
 For decoding brain signals, recent studies have shown that artificially
-generating samples may increase the final performance of a deep learning model <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+generating samples may increase the final performance of a deep learning model <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
 Other studies have shown that data augmentation can be used to cast
 a self-supervised paradigm, presenting a more diverse
-view of the data, both with pretext tasks and contrastive learning <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+view of the data, both with pretext tasks and contrastive learning <a href="#id19"><span class="problematic" id="id3">[2]_</span></a>.</p>
 </aside>
-<p>Both approaches demand an intense comparison to find the best fit with the data.
-This view is supported by Rommel, C., Paillard, J., Moreau, T., &amp; Gramfort, A. (2022),
-who demonstrate the importance of the selection the right transformation and
-strength for each different type of task considered.
-Here, we use the augmentation module present in braindecode in the context of
-trialwise decoding with the BCI IV 2a dataset.</p>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id3" role="note">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
-<p>Rommel, C., Paillard, J., Moreau, T., &amp; Gramfort, A. (2022)
-Data augmentation for learning predictive models on EEG:
-a systematic comparison. <a class="reference external" href="https://arxiv.org/abs/2206.14483">https://arxiv.org/abs/2206.14483</a></p>
-</aside>
-<aside class="footnote brackets" id="id4" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Banville, H., Chehab, O., Hyvärinen, A., Engemann, D. A., &amp; Gramfort, A. (2021).
-Uncovering the structure of clinical EEG signals with self-supervised learning.
-Journal of Neural Engineering, 18(4), 046020.</p>
-</aside>
-</aside>
+<p>Data augmentation and self-supervised learning approaches demand an intense comparison
+to find the best fit with the data. This view is demonstrated in <a class="footnote-reference brackets" href="#id6" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and shows the
+importance of selecting the right transformation and strength for different type of
+task considered. Here, we use the augmentation module present in braindecode in
+the context of trialwise decoding with the BCI IV 2a dataset.</p>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#loading-and-preprocessing-the-dataset" id="id7">Loading and preprocessing the dataset</a></p>
+<ul>
+<li><p><a class="reference internal" href="#loading" id="id8">Loading</a></p></li>
+<li><p><a class="reference internal" href="#preprocessing" id="id9">Preprocessing</a></p></li>
+<li><p><a class="reference internal" href="#extracting-windows" id="id10">Extracting windows</a></p></li>
+<li><p><a class="reference internal" href="#split-dataset-into-train-and-valid" id="id11">Split dataset into train and valid</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#defining-a-list-of-transforms" id="id12">Defining a list of transforms</a></p></li>
+<li><p><a class="reference internal" href="#training-a-model-with-data-augmentation" id="id13">Training a model with data augmentation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#create-model" id="id14">Create model</a></p></li>
+<li><p><a class="reference internal" href="#create-an-eegclassifier-with-the-desired-augmentation" id="id15">Create an EEGClassifier with the desired augmentation</a></p></li>
+<li><p><a class="reference internal" href="#analysing-the-best-fit" id="id16">Analysing the best fit</a></p></li>
+<li><p><a class="reference internal" href="#plot-results" id="id17">Plot results</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id18">References</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Bruno Aristimunha &lt;a.bruno@ufabc.edu.br&gt;</span>
 <span class="c1">#          Cédric Rommel &lt;cedric.rommel@inria.fr&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
-</section>
 <section id="loading-and-preprocessing-the-dataset">
-<h2>Loading and preprocessing the dataset<a class="headerlink" href="#loading-and-preprocessing-the-dataset" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Loading and preprocessing the dataset</a><a class="headerlink" href="#loading-and-preprocessing-the-dataset" title="Link to this heading">#</a></h2>
 <section id="loading">
-<h3>Loading<a class="headerlink" href="#loading" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Loading</a><a class="headerlink" href="#loading" title="Link to this heading">#</a></h3>
+<p>First, we load the data. In this tutorial, we use the functionality of braindecode
+to load BCI IV competition dataset 1. The dataset is available on the BNCI website.
+There is 9 subjects recorded with 22 electrodes while doing a motor imagery task,
+with 144 trials per class. We will load this dataset through the MOABB librairy.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">LRScheduler</span></a>
 
 <span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
@@ -527,7 +535,9 @@ Journal of Neural Engineering, 18(4), 046020.</p>
 </div>
 </section>
 <section id="preprocessing">
-<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Preprocessing</a><a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
+<p>We apply a bandpass filter, from 4 to 38 Hz to focus motor imagery-related
+brain activity</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <span class="p">(</span>
     <a href="../../generated/braindecode.preprocessing.exponential_moving_standardize.html#braindecode.preprocessing.exponential_moving_standardize" title="braindecode.preprocessing.exponential_moving_standardize" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">exponential_moving_standardize</span></a><span class="p">,</span> <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a>
@@ -539,8 +549,13 @@ Journal of Neural Engineering, 18(4), 046020.</p>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">init_block_size</span></a> <span class="o">=</span> <span class="mi">1000</span>
 <span class="c1"># Factor to convert from V to uV</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a> <span class="o">=</span> <span class="mf">1e6</span>
-
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
+</pre></div>
+</div>
+<p>In time series targets setup, targets variables are stored in mne.Raw object as channels
+of type <cite>misc</cite>. Thus those channels have to be selected for further processing. However,
+many mne functions ignore <cite>misc</cite> channels and perform operations only on data channels
+(see <a class="reference external" href="https://mne.tools/stable/glossary.html#term-data-channels">https://mne.tools/stable/glossary.html#term-data-channels</a>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;pick_types&#39;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Keep EEG sensors</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a><span class="p">)),</span>  <span class="c1"># Convert from V to uV</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">low_cut_hz</span></a><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">high_cut_hz</span></a><span class="p">),</span>  <span class="c1"># Bandpass filter</span>
@@ -554,12 +569,15 @@ Journal of Neural Engineering, 18(4), 046020.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:55: UserWarning: Preprocessing choices with lambda functions cannot be saved.
   warn(&#39;Preprocessing choices with lambda functions cannot be saved.&#39;)
 
-&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7fd999c9e230&gt;
+&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7f1845467af0&gt;
 </pre></div>
 </div>
 </section>
 <section id="extracting-windows">
-<h3>Extracting windows<a class="headerlink" href="#extracting-windows" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Extracting windows</a><a class="headerlink" href="#extracting-windows" title="Link to this heading">#</a></h3>
+<p>Now we cut out compute windows, the inputs for the deep networks during
+training. We use the braindecode function for this, provinding parameters
+to define how trials should be used.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 <span class="kn">from</span> <span class="nn">skorch.helper</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="collections.abc.Sequence" class="sphx-glr-backref-module-collections-abc sphx-glr-backref-type-py-class"><span class="n">SliceDataset</span></a>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">array</span></a>
@@ -571,8 +589,6 @@ Journal of Neural Engineering, 18(4), 046020.</p>
 <span class="c1"># Calculate the trial start offset in samples.</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_samples</span></a> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_seconds</span></a> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">)</span>
 
-<span class="c1"># Create windows using braindecode function for this. It needs parameters to</span>
-<span class="c1"># define how trials should be used.</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
     <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_start_offset_samples</span></a><span class="p">,</span>
@@ -583,8 +599,8 @@ Journal of Neural Engineering, 18(4), 046020.</p>
 </div>
 </section>
 <section id="split-dataset-into-train-and-valid">
-<h3>Split dataset into train and valid<a class="headerlink" href="#split-dataset-into-train-and-valid" title="Link to this heading">#</a></h3>
-<p>Following the rules of the BCI competition</p>
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Split dataset into train and valid</a><a class="headerlink" href="#split-dataset-into-train-and-valid" title="Link to this heading">#</a></h3>
+<p>Following the split defined in the BCI competition</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows_dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;session_T&#39;</span><span class="p">]</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eval_set</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splitted</span></a><span class="p">[</span><span class="s1">&#39;session_E&#39;</span><span class="p">]</span>
@@ -593,13 +609,17 @@ Journal of Neural Engineering, 18(4), 046020.</p>
 </section>
 </section>
 <section id="defining-a-list-of-transforms">
-<h2>Defining a list of transforms<a class="headerlink" href="#defining-a-list-of-transforms" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Defining a list of transforms</a><a class="headerlink" href="#defining-a-list-of-transforms" title="Link to this heading">#</a></h2>
 <p>In this tutorial, we will use three categories of augmentations.
-This categorization has been proposed by <a class="footnote-reference brackets" href="#id3" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> to explain and aggregate
-the several possibilities of augmentations in EEG, being them: a) Frequency domain
-augmentations, b) Time domain augmentations, and c) Spatial domain augmentations.</p>
-<p>From this same paper, we selected the best augmentations in each type: FTSurrogate,
-SmoothTimeMask, ChannelsDropout, respectively.</p>
+This categorization has been proposed by <a class="footnote-reference brackets" href="#id6" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> to explain and aggregate
+the several possibilities of augmentations in EEG, being them:</p>
+<ol class="loweralpha simple">
+<li><p>Frequency domain augmentations,</p></li>
+<li><p>Time domain augmentations,</p></li>
+<li><p>Spatial domain augmentations.</p></li>
+</ol>
+<p>From this same paper, we selected the best augmentations in each type: <code class="docutils literal notranslate"><span class="pre">FTSurrogate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SmoothTimeMask</span></code>, <code class="docutils literal notranslate"><span class="pre">ChannelsDropout</span></code>, respectively.</p>
 <p>For each augmentation, we adjustable two values from a range for one parameter
 inside the transformation.</p>
 <p>It is important to remember that you can increase the range.
@@ -623,12 +643,12 @@ For the method ChannelsDropout, we analyse the parameter p_drop ∈ [0, 1].</p>
 </div>
 </section>
 <section id="training-a-model-with-data-augmentation">
-<h2>Training a model with data augmentation<a class="headerlink" href="#training-a-model-with-data-augmentation" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Training a model with data augmentation</a><a class="headerlink" href="#training-a-model-with-data-augmentation" title="Link to this heading">#</a></h2>
 <p>Now that we know how to instantiate three list of <code class="docutils literal notranslate"><span class="pre">Transforms</span></code>, it is time to learn how
 to use them to train a model and try to search the best for the dataset.
 Let’s first create a model for search a parameter.</p>
 <section id="create-model">
-<h3>Create model<a class="headerlink" href="#create-model" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Create model</a><a class="headerlink" href="#create-model" title="Link to this heading">#</a></h3>
 <p>The model to be trained is defined as usual.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 
@@ -639,14 +659,15 @@ Let’s first create a model for search a parameter.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
     <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span></a> <span class="o">=</span> <span class="kc">True</span>
-
-<span class="c1"># Set random seed to be able to roughly reproduce results</span>
-<span class="c1"># Note that with cudnn benchmark set to True, GPU indeterminism</span>
-<span class="c1"># may still make results substantially different between runs.</span>
-<span class="c1"># To obtain more consistent results at the cost of increased computation time,</span>
-<span class="c1"># you can set `cudnn_benchmark=False` in `set_random_seeds`</span>
-<span class="c1"># or remove `torch.backends.cudnn.benchmark = True`</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a> <span class="o">=</span> <span class="mi">20200220</span>
+</pre></div>
+</div>
+<p>Set random seed to be able to roughly reproduce results
+Note that with cudnn benchmark set to True, GPU indeterminism
+may still make results substantially different between runs.
+To obtain more consistent results at the cost of increased computation time,
+you can set <code class="docutils literal notranslate"><span class="pre">cudnn_benchmark=False</span></code> in <code class="docutils literal notranslate"><span class="pre">set_random_seeds</span></code>
+or remove <code class="docutils literal notranslate"><span class="pre">torch.backends.cudnn.benchmark</span> <span class="pre">=</span> <span class="pre">True</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a> <span class="o">=</span> <span class="mi">20200220</span>
 <a href="../../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a> <span class="o">=</span> <span class="mi">4</span>
@@ -665,7 +686,7 @@ Let’s first create a model for search a parameter.</p>
 </div>
 </section>
 <section id="create-an-eegclassifier-with-the-desired-augmentation">
-<h3>Create an EEGClassifier with the desired augmentation<a class="headerlink" href="#create-an-eegclassifier-with-the-desired-augmentation" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Create an EEGClassifier with the desired augmentation</a><a class="headerlink" href="#create-an-eegclassifier-with-the-desired-augmentation" title="Link to this heading">#</a></h3>
 <p>In order to train with data augmentation, a custom data loader can be
 for the training. Multiple transforms can be passed to it and will be applied
 sequentially to the batched data within the <code class="docutils literal notranslate"><span class="pre">AugmentedDataLoader</span></code> object.</p>
@@ -818,7 +839,7 @@ GridSearchCV.</p>
 <br />
 <br /></section>
 <section id="analysing-the-best-fit">
-<h3>Analysing the best fit<a class="headerlink" href="#analysing-the-best-fit" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Analysing the best fit</a><a class="headerlink" href="#analysing-the-best-fit" title="Link to this heading">#</a></h3>
 <p>Next, just perform an analysis of the best fit, and the parameters,
 remembering the order that was adjusted.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -846,7 +867,38 @@ remembering the order that was adjusted.</p>
 Eval accuracy is 26.39%.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 49.853 seconds)</p>
+</section>
+<section id="plot-results">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Plot results</a><a class="headerlink" href="#plot-results" title="Link to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<span class="n">search_results</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;param_iterator_train__transforms&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;mean_train_score&quot;</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="s2">&quot;std_train_score&quot;</span><span class="p">,</span>
+    <span class="n">rot</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="s2">&quot;C1&quot;</span><span class="p">,</span> <span class="s2">&quot;C1&quot;</span><span class="p">,</span> <span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="s2">&quot;C2&quot;</span><span class="p">],</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Data augmentation strategy&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.32</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_data_augmentation_search_001.png" srcset="../../_images/sphx_glr_plot_data_augmentation_search_001.png" alt="plot data augmentation search" class = "sphx-glr-single-img"/></section>
+<section id="references">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h3>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id6" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id4">3</a>,<a role="doc-backlink" href="#id5">4</a>)</span>
+<p>Rommel, C., Paillard, J., Moreau, T., &amp; Gramfort, A. (2022)
+Data augmentation for learning predictive models on EEG:
+a systematic comparison. <a class="reference external" href="https://arxiv.org/abs/2206.14483">https://arxiv.org/abs/2206.14483</a></p>
+</aside>
+</aside>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># .. [2] Banville, H., Chehab, O., Hyvärinen, A., Engemann, D. A., &amp; Gramfort, A. (2021).</span>
+<span class="c1">#        Uncovering the structure of clinical EEG signals with self-supervised learning.</span>
+<span class="c1">#        Journal of Neural Engineering, 18(4), 046020.</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 1.419 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  569 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-data-augmentation-search-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -909,7 +961,6 @@ Eval accuracy is 26.39%.
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-and-preprocessing-the-dataset">Loading and preprocessing the dataset</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading">Loading</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing">Preprocessing</a></li>
@@ -922,6 +973,8 @@ Eval accuracy is 26.39%.
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-model">Create model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-eegclassifier-with-the-desired-augmentation">Create an EEGClassifier with the desired augmentation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analysing-the-best-fit">Analysing the best fit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-results">Plot results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
