@@ -258,6 +258,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -469,6 +473,19 @@ to download the full example code</p>
 <p>In this example, we showcase usage of the Temple University Hospital EEG Corpus
 (<a class="reference external" href="https://www.isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml#c_tueg">https://www.isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml#c_tueg</a>)
 including simple preprocessing steps as well as cutting of compute windows.</p>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#creating-the-dataset-using-tuhmock" id="id1">Creating the dataset using TUHMock</a></p></li>
+<li><p><a class="reference internal" href="#preprocessing" id="id2">Preprocessing</a></p>
+<ul>
+<li><p><a class="reference internal" href="#selecting-recordings" id="id3">Selecting recordings</a></p></li>
+<li><p><a class="reference internal" href="#combining-preprocessing-steps" id="id4">Combining preprocessing steps</a></p></li>
+<li><p><a class="reference internal" href="#cut-compute-windows" id="id5">Cut Compute Windows</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Lukas Gemein &lt;l.gemein@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
@@ -483,71 +500,113 @@ including simple preprocessing steps as well as cutting of compute windows.</p>
 <span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <span class="p">(</span>
     <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span> <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">,</span> <span class="n">scale</span> <span class="k">as</span> <a href="../../generated/braindecode.preprocessing.scale.html#braindecode.preprocessing.scale" title="braindecode.preprocessing.scale" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">multiply</span></a><span class="p">)</span>
 
-
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn&#39;</span><span class="p">)</span>
 <a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>  <span class="c1"># avoid messages everytime a window is extracted</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/applied_examples/plot_tuh_eeg_corpus.py:25: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/applied_examples/plot_tuh_eeg_corpus.py:30: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
   plt.style.use(&#39;seaborn&#39;)
 </pre></div>
 </div>
-<p>If you want to try this code with the actual data, please delete the next
-section. We are required to mock some dataset functionality, since the data
-is not available at creation time of this example.</p>
+<section id="creating-the-dataset-using-tuhmock">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Creating the dataset using TUHMock</a><a class="headerlink" href="#creating-the-dataset-using-tuhmock" title="Link to this heading">#</a></h2>
+<p>Since the data is not available at the time of the creation of this example,
+we are required to mock some of the dataset functionality. Therefore, if you
+want to try this code with the actual data, please disconsider this section.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">braindecode.datasets.tuh</span> <span class="kn">import</span> <span class="n">_TUHMock</span> <span class="k">as</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a>  <span class="c1"># noqa F811</span>
 </pre></div>
 </div>
-<p>We start by creating a TUH dataset. First, the class generates a description
-of the recordings in <cite>TUH_PATH</cite> (which is later accessible as
-<cite>tuh.description</cite>) without actually touching the files. This will parse
-information from file paths such as patient id, recording data, etc and should
-be really fast. Afterwards, the files are sorted chronologically by year,
-month, day, patient id, recording session and segment.
-In the following, a subset of the description corresponding to <cite>recording_ids</cite>
-is used.
-Afterwards, the files will be iterated a second time, slower than before.
-The files are now actually touched. Additional information about subjects
-like age and gender are parsed directly from the EDF file header. If existent,
-the physician report is added to the description. Furthermore, the recordings
-are read with <cite>mne.io.read_raw_edf</cite> with <cite>preload=False</cite>. Finally, we will get
-a <cite>BaseConcatDataset</cite> of <cite>BaseDatasets</cite> each holding a single
-<cite>nme.io.Raw</cite> which is fully compatible with other braindecode functionalities.</p>
+<p>Firstly, we start by creating a TUH mock dataset using braindecode’s _TUHMock class.
+The complete code can be found at <a class="reference internal" href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.TUH()</span></code></a>, but we will give
+a small description of how it works.
+This class is able to read the recordings from TUH_PATH and generate a description
+by parsing information from file paths, such as patient id and recording data.
+THis description can later be accessed by the object’s .description method.
+After that, the files are sorted chronologically by year, month, day,
+patient id, recording session and segment, and then use the description corresponding
+to the specified by recording ids.
+FInally, additional information regarding age and gender of the subjects are parsed
+directly to the description.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUH_PATH</span></a> <span class="o">=</span> <span class="s1">&#39;please insert actual path to data here&#39;</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># specify the number of jobs for loading and windowing</span>
+<span class="c1"># specify the number of jobs for loading and windowing</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a> <span class="o">=</span> <span class="mi">2</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a><span class="p">(</span>
     <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUH_PATH</span></a><span class="p">,</span>
     <span class="n">recording_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">target_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;_TUHMock&#39;</span> <span class="k">else</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">,</span>  <span class="c1"># Mock dataset can&#39;t</span>
-    <span class="c1"># be loaded in parallel</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;_TUHMock&#39;</span> <span class="k">else</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>We can easily create descriptive statistics using the description <cite>DataFrame</cite>,
-for example an age histogram split by gender of patients.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">genders</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">gender</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <span class="p">[</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">age</span><span class="p">[</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">genders</span></a><span class="p">]</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.hist.html#matplotlib.axes.Axes.hist" title="matplotlib.axes.Axes.hist" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">hist</span></a><span class="p">(</span>
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span>
-    <span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">bins</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span>
-    <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
-<span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">genders</span></a><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s1">&#39;Age [years]&#39;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+<p>We can visualize our data’s statistics using the class’ “description” method</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plt_histogram</span><span class="p">(</span><span class="n">df_of_ages_genders</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">show_title</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># Dafarame containing info about gender and age of subjects</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df_of_ages_genders</span>
+    <span class="n">male_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;M&#39;</span><span class="p">]</span>
+    <span class="n">female_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;F&#39;</span><span class="p">]</span>
+
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">show_title</span><span class="p">:</span>
+        <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.suptitle.html#matplotlib.pyplot.suptitle" title="matplotlib.pyplot.suptitle" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Age information&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># First plot: Male individuals</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html#matplotlib.pyplot.subplot" title="matplotlib.pyplot.subplot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span></a><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html#matplotlib.pyplot.hist" title="matplotlib.pyplot.hist" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">hist</span></a><span class="p">(</span><span class="n">male_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">101</span><span class="p">),</span>
+             <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html#matplotlib.pyplot.axhline" title="matplotlib.pyplot.axhline" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">male_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;mean age </span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">male_df</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;(±</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.std.html#numpy.std" title="numpy.std" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">male_df</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.barh.html#matplotlib.pyplot.barh" title="matplotlib.pyplot.barh" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">barh</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">male_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]),</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.std.html#numpy.std" title="numpy.std" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">male_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]),</span>
+             <span class="n">width</span><span class="o">=</span><span class="n">ylim</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+    <span class="c1"># Legend</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.xlim.html#matplotlib.pyplot.xlim" title="matplotlib.pyplot.xlim" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html#matplotlib.pyplot.legend" title="matplotlib.pyplot.legend" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="matplotlib.pyplot.title" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;male (</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">male_df</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">,</span>
+              <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.yticks.html#matplotlib.pyplot.yticks" title="matplotlib.pyplot.yticks" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">yticks</span></a><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.gca.html#matplotlib.pyplot.gca" title="matplotlib.pyplot.gca" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">gca</span></a><span class="p">()</span><span class="o">.</span><span class="n">invert_xaxis</span><span class="p">()</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.yticks.html#matplotlib.pyplot.yticks" title="matplotlib.pyplot.yticks" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">yticks</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tick_params.html#matplotlib.pyplot.tick_params" title="matplotlib.pyplot.tick_params" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">fs</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># First plot: Female individuals</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html#matplotlib.pyplot.subplot" title="matplotlib.pyplot.subplot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span></a><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html#matplotlib.pyplot.hist" title="matplotlib.pyplot.hist" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">hist</span></a><span class="p">(</span><span class="n">female_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">101</span><span class="p">),</span>
+             <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html#matplotlib.pyplot.axhline" title="matplotlib.pyplot.axhline" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">female_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;mean age </span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">female_df</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> (&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;±</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.std.html#numpy.std" title="numpy.std" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">female_df</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.barh.html#matplotlib.pyplot.barh" title="matplotlib.pyplot.barh" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">barh</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">female_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]),</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.std.html#numpy.std" title="numpy.std" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">female_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]),</span>
+             <span class="n">width</span><span class="o">=</span><span class="n">ylim</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+    <span class="c1"># Label</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html#matplotlib.pyplot.legend" title="matplotlib.pyplot.legend" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.xlim.html#matplotlib.pyplot.xlim" title="matplotlib.pyplot.xlim" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ylim</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="matplotlib.pyplot.title" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;female (</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">female_df</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">,</span>
+              <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.ylim.html#matplotlib.pyplot.ylim" title="matplotlib.pyplot.ylim" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots_adjust.html#matplotlib.pyplot.subplots_adjust" title="matplotlib.pyplot.subplots_adjust" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span></a><span class="p">(</span><span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.ylabel.html#matplotlib.pyplot.ylabel" title="matplotlib.pyplot.ylabel" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span></a><span class="p">(</span><span class="s2">&quot;age [years]&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.xlabel.html#matplotlib.pyplot.xlabel" title="matplotlib.pyplot.xlabel" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span></a><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.yticks.html#matplotlib.pyplot.yticks" title="matplotlib.pyplot.yticks" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">yticks</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fs</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tick_params.html#matplotlib.pyplot.tick_params" title="matplotlib.pyplot.tick_params" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">fs</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+
+
+<span class="n">df</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="o">.</span><span class="n">description</span>
+<span class="n">plt_histogram</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_tuh_eeg_corpus_001.png" srcset="../../_images/sphx_glr_plot_tuh_eeg_corpus_001.png" alt="plot tuh eeg corpus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(152.84722222222223, 0.5, &#39;Count&#39;)
-</pre></div>
-</div>
-<p>Next, we will perform some preprocessing steps. First, we will do some
-selection of available recordings based on the duration. We will select those
-recordings, that have at least five minutes duration. Data is not loaded here.</p>
+<img src="../../_images/sphx_glr_plot_tuh_eeg_corpus_001.png" srcset="../../_images/sphx_glr_plot_tuh_eeg_corpus_001.png" alt="Age information, male (60.0%), female (40.0%)" class = "sphx-glr-single-img"/></section>
+<section id="preprocessing">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Preprocessing</a><a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h2>
+<section id="selecting-recordings">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Selecting recordings</a><a class="headerlink" href="#selecting-recordings" title="Link to this heading">#</a></h3>
+<p>First, we will do some selection of available recordings based on the duration.
+We will select those recordings that have at least five minutes duration.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">select_by_duration</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">inf</span></a>
@@ -555,6 +614,7 @@ recordings, that have at least five minutes duration. Data is not loaded here.</
     <span class="n">split_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">d_i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">):</span>
         <span class="n">duration</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">n_times</span> <span class="o">/</span> <span class="n">d</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+        <span class="c1"># select the ones in the required duration range</span>
         <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a> <span class="o">&lt;=</span> <span class="n">duration</span> <span class="o">&lt;=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="p">:</span>
             <span class="n">split_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_i</span><span class="p">)</span>
     <span class="n">splits</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_ids</span><span class="p">)</span>
@@ -568,14 +628,15 @@ recordings, that have at least five minutes duration. Data is not loaded here.</
 </pre></div>
 </div>
 <p>Next, we will discard all recordings that have an incomplete channel
-configuration (wrt the channels that we are interested in, i.e. the 21
-channels of the international 10-20-placement). The dataset is subdivided into
-recordings with ‘le’ and ‘ar’ reference which we will have to consider. Data
-is not loaded here.</p>
+configuration on the channels that we are interested. The subdivisions of the
+recordings into ‘le’ and ‘ar’ labels represents the channels for
+the re-referencing of the signals.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span>
     <span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="s1">&#39;A2&#39;</span><span class="p">,</span>
     <span class="s1">&#39;FP1&#39;</span><span class="p">,</span> <span class="s1">&#39;FP2&#39;</span><span class="p">,</span> <span class="s1">&#39;F3&#39;</span><span class="p">,</span> <span class="s1">&#39;F4&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="s1">&#39;P3&#39;</span><span class="p">,</span> <span class="s1">&#39;P4&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span>
     <span class="s1">&#39;F7&#39;</span><span class="p">,</span> <span class="s1">&#39;F8&#39;</span><span class="p">,</span> <span class="s1">&#39;T3&#39;</span><span class="p">,</span> <span class="s1">&#39;T4&#39;</span><span class="p">,</span> <span class="s1">&#39;T5&#39;</span><span class="p">,</span> <span class="s1">&#39;T6&#39;</span><span class="p">,</span> <span class="s1">&#39;FZ&#39;</span><span class="p">,</span> <span class="s1">&#39;CZ&#39;</span><span class="p">,</span> <span class="s1">&#39;PZ&#39;</span><span class="p">])</span>
+
+<span class="c1"># TUH data is subdivided into &#39;le&#39; and &#39;ar&#39; recordings references</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ar_ch_names</span></a> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span>
     <span class="s1">&#39;EEG A1-REF&#39;</span><span class="p">,</span> <span class="s1">&#39;EEG A2-REF&#39;</span><span class="p">,</span>
     <span class="s1">&#39;EEG FP1-REF&#39;</span><span class="p">,</span> <span class="s1">&#39;EEG FP2-REF&#39;</span><span class="p">,</span> <span class="s1">&#39;EEG F3-REF&#39;</span><span class="p">,</span> <span class="s1">&#39;EEG F4-REF&#39;</span><span class="p">,</span> <span class="s1">&#39;EEG C3-REF&#39;</span><span class="p">,</span>
@@ -613,18 +674,20 @@ is not loaded here.</p>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a> <span class="o">=</span> <span class="n">select_by_channels</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mapping</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>Next, we will chain several preprocessing steps that are realized through
-<cite>mne</cite>. Data will be loaded by the first preprocessor that has a mention of it
-in brackets:</p>
-<ol class="arabic simple">
-<li><p>crop the recordings to a region of interest</p></li>
-<li><p>re-reference all recordings to ‘ar’ (requires load)</p></li>
-<li><p>rename channels to short channel names</p></li>
-<li><p>pick channels of interest</p></li>
-<li><p>scale signals to micro volts (requires load)</p></li>
-<li><p>clip outlier values to +/- 800 micro volts (requires load)</p></li>
-<li><p>resample recordings to a common frequency (requires load)</p></li>
-</ol>
+</section>
+<section id="combining-preprocessing-steps">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Combining preprocessing steps</a><a class="headerlink" href="#combining-preprocessing-steps" title="Link to this heading">#</a></h3>
+<p>Next, we use braindecode’s preprocess to combine and execute several preprocessing
+steps that are executed through ‘mne’:</p>
+<ul class="simple">
+<li><p>Crop the recordings to a region of interest</p></li>
+<li><p>Re-reference all recordings to ‘ar’ (requires load)</p></li>
+<li><p>Rename channels to short channel names</p></li>
+<li><p>Pick channels of interest</p></li>
+<li><p>Scale signals to micro volts (requires load)</p></li>
+<li><p>Clip outlier values to +/- 800 micro volts (requires load)</p></li>
+<li><p>Resample recordings to a common frequency (requires load)</p></li>
+</ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">custom_rename_channels</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
     <span class="c1"># rename channels which are dependent on referencing:</span>
     <span class="c1"># le: EEG 01-LE, ar: EEG 01-REF</span>
@@ -661,11 +724,12 @@ in brackets:</p>
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>Next, we apply the preprocessors on the selected recordings in parallel.
+<p>Next, we can apply the defined preprocessors on the selected recordings in parallel.
 We additionally use the serialization functionality of
 <a class="reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess()</span></code></a> to limit memory usage during
-preprocessing (as each file must be loaded into memory for some of the
-preprocessing steps to work). This also makes it possible to use the lazy
+preprocessing, as each file must be loaded into memory for some of the
+preprocessing steps to work.
+This also makes it possible to use the lazy
 loading capabilities of <a class="reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a>, as
 the preprocessed data is automatically reloaded with <code class="docutils literal notranslate"><span class="pre">preload=False</span></code>.</p>
 <div class="admonition note">
@@ -683,11 +747,14 @@ that is available for preprocessing.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="cut-compute-windows">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Cut Compute Windows</a><a class="headerlink" href="#cut-compute-windows" title="Link to this heading">#</a></h3>
 <p>We can finally generate compute windows. The resulting dataset is now ready
 to be used for model training.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a> <span class="o">=</span> <span class="mi">1000</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_stride_samples</span></a> <span class="o">=</span> <span class="mi">1000</span>
-<span class="c1"># generate compute windows here and store them to disk</span>
+<span class="c1"># Generate compute windows here and store them to disk</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_windows</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
     <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_preproc</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">window_size_samples</span></a><span class="p">,</span>
@@ -695,12 +762,9 @@ to be used for model training.</p>
     <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="k">for</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ind</span></a> <span class="ow">in</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh_windows</span></a><span class="p">:</span>
-    <span class="k">break</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.020 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.386 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-applied-examples-plot-tuh-eeg-corpus-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -711,6 +775,8 @@ to be used for model training.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
 </section>
 
 
@@ -752,6 +818,26 @@ to be used for model training.</p>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-dataset-using-tuhmock">Creating the dataset using TUHMock</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing">Preprocessing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-recordings">Selecting recordings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-preprocessing-steps">Combining preprocessing steps</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cut-compute-windows">Cut Compute Windows</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

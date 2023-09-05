@@ -258,6 +258,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -466,7 +470,21 @@ to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="split-dataset-example">
 <span id="sphx-glr-auto-examples-datasets-io-plot-split-dataset-py"></span><h1>Split Dataset Example<a class="headerlink" href="#split-dataset-example" title="Link to this heading">#</a></h1>
-<p>In this example, we show multiple ways of how to split datasets.</p>
+<p>In this example, we aim to show multiple ways of how you can split your datasets for
+training, testing, and evaluating your models.</p>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#loading-the-dataset" id="id1">Loading the dataset</a></p></li>
+<li><p><a class="reference internal" href="#splitting" id="id2">Splitting</a></p>
+<ul>
+<li><p><a class="reference internal" href="#by-description-information" id="id3">By description information</a></p></li>
+<li><p><a class="reference internal" href="#by-row-index" id="id4">By row index</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#observation" id="id5">Observation</a></p></li>
+</ul>
+</nav>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Lukas Gemein &lt;l.gemein@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
@@ -475,7 +493,11 @@ to download the full example code</p>
 <span class="kn">from</span> <span class="nn">braindecode.preprocessing</span> <span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 </pre></div>
 </div>
-<p>First, we create a dataset based on BCIC IV 2a fetched with MOABB,</p>
+<section id="loading-the-dataset">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Loading the dataset</a><a class="headerlink" href="#loading-the-dataset" title="Link to this heading">#</a></h2>
+<p>Firstly, we create a dataset using the braindecode class &lt;MOABBDataset&gt; to load
+it fetched from MOABB. In this example, we’re using Dataset 2a from BCI
+Competition IV.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;BNCI2014001&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -505,7 +527,14 @@ Event IDs: [1 2 3 4]
 Event IDs: [1 2 3 4]
 </pre></div>
 </div>
-<p>ds has a pandas DataFrame with additional description of its internal datasets</p>
+</section>
+<section id="splitting">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Splitting</a><a class="headerlink" href="#splitting" title="Link to this heading">#</a></h2>
+<section id="by-description-information">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">By description information</a><a class="headerlink" href="#by-description-information" title="Link to this heading">#</a></h3>
+<p>The class &lt;MOABBDataset&gt; has a pandas DataFrame containing additional
+description of its internal datasets, which can be used to help splitting the data
+based on recording information, such as subject, session, and run of each trial.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
@@ -611,15 +640,15 @@ Event IDs: [1 2 3 4]
 </div>
 </div>
 <br />
-<br /><p>We can split the dataset based on the info in the description, for example
-based on different runs. The returned dictionary will have string keys
-corresponding to unique entries in the description DataFrame column</p>
+<br /><p>Here, we’re splitting the data based on different runs. The method split returns
+a dictionary with string keys corresponding to unique entries in the description
+DataFrame column.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">[</span><span class="s2">&quot;run_4&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;run_0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f538cf77e50&gt;, &#39;run_1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647b20&gt;, &#39;run_2&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f6473d0&gt;, &#39;run_3&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647b80&gt;, &#39;run_4&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647730&gt;, &#39;run_5&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647430&gt;}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;run_0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9a16e0190&gt;, &#39;run_1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9998a6050&gt;, &#39;run_2&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9a13a89d0&gt;, &#39;run_3&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9a13a8be0&gt;, &#39;run_4&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996778b0&gt;, &#39;run_5&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996765c0&gt;}
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -664,15 +693,18 @@ corresponding to unique entries in the description DataFrame column</p>
 </div>
 </div>
 <br />
-<br /><p>We can also split the dataset based on a list of integers corresponding to
+<br /></section>
+<section id="by-row-index">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">By row index</a><a class="headerlink" href="#by-row-index" title="Link to this heading">#</a></h3>
+<p>Another way we can split the dataset is based on a list of integers corresponding to
 rows in the description. In this case, the returned dictionary will have
-‘0’ as the only key</p>
+‘0’ as the only key.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f640fd0&gt;}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996d8220&gt;}
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -723,16 +755,16 @@ rows in the description. In this case, the returned dictionary will have
 </div>
 </div>
 <br />
-<br /><p>If we want multiple splits based on indices, we can also specify a list of
-list of integers. In this case, the dictionary will have string keys
-representing the id of the dataset split in the order of the given list of
-integers</p>
+<br /><p>However, if we want multiple splits based on indices, we can also define a list
+containing lists of integers. In this case, the dictionary will have string keys
+representing the index of the dataset split in the order of the given list of
+integers.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]])</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647430&gt;, &#39;1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f646e60&gt;, &#39;2&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f645a20&gt;}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996756c0&gt;, &#39;1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996760e0&gt;, &#39;2&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999676ef0&gt;}
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -801,8 +833,8 @@ integers</p>
 </div>
 </div>
 <br />
-<br /><p>If we want to split based on a list of indices but you want to specify
-the keys in the output dictionary you can pass a dict as:</p>
+<br /><p>You can also name each split in the output dictionary by specifying the keys
+of each list of indexes in the input dictionary:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span>
     <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]}</span>
 <span class="p">)</span>
@@ -810,7 +842,7 @@ the keys in the output dictionary you can pass a dict as:</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">description</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;train&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f646aa0&gt;, &#39;valid&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f645ea0&gt;, &#39;test&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f645f00&gt;}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;train&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999675300&gt;, &#39;valid&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999677d00&gt;, &#39;test&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999677d60&gt;}
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -879,11 +911,13 @@ the keys in the output dictionary you can pass a dict as:</p>
 </div>
 </div>
 <br />
-<br /><p>Similarly, we can split datasets after creating windows</p>
+<br /></section>
+</section>
+<section id="observation">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Observation</a><a class="headerlink" href="#observation" title="Link to this heading">#</a></h2>
+<p>Similarly, we can split datasets after creating windows using the same methods.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
     <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;feet&#39;, &#39;left_hand&#39;, &#39;right_hand&#39;, &#39;tongue&#39;]
@@ -922,33 +956,46 @@ Using data from preloaded Raw for 48 events and 1000 original time points ...
 Used Annotations descriptions: [&#39;feet&#39;, &#39;left_hand&#39;, &#39;right_hand&#39;, &#39;tongue&#39;]
 Using data from preloaded Raw for 48 events and 1000 original time points ...
 0 bad epochs dropped
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Splitting by different runs</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using description info&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
 
-{&#39;run_0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647040&gt;, &#39;run_1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647cd0&gt;, &#39;run_2&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f6478e0&gt;, &#39;run_3&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f645840&gt;, &#39;run_4&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f645d50&gt;, &#39;run_5&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647fd0&gt;}
+<span class="c1"># Splitting by row index</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Splitting by row index&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Multiple row index split&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Specifying output&#39;s keys</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Specifying keys&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">train</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="n">test</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using description info
+{&#39;run_0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996d8220&gt;, &#39;run_1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999675f60&gt;, &#39;run_2&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999674790&gt;, &#39;run_3&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999677c10&gt;, &#39;run_4&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996749d0&gt;, &#39;run_5&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999676da0&gt;}
+
+Splitting by row index
+{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999677d60&gt;}
+
+Multiple row index split
+{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996d82e0&gt;, &#39;1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999676da0&gt;}
+
+Specifying keys
+{&#39;train&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd999677d60&gt;, &#39;test&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fd9996749d0&gt;}
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f6413c0&gt;}
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">]])</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;0&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f6474c0&gt;, &#39;1&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647070&gt;}
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">train</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="n">test</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">]))</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">splits</span></a>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;train&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f646e00&gt;, &#39;test&#39;: &lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f539f647fd0&gt;}
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.505 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.120 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  8 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-split-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8cc351cf606ecc565831d11752d2d9a2/plot_split_dataset.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_split_dataset.py</span></code></a></p>
@@ -958,6 +1005,7 @@ Using data from preloaded Raw for 48 events and 1000 original time points ...
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
 </section>
 
 
@@ -999,6 +1047,26 @@ Using data from preloaded Raw for 48 events and 1000 original time points ...
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-the-dataset">Loading the dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting">Splitting</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#by-description-information">By description information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#by-row-index">By row index</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#observation">Observation</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
