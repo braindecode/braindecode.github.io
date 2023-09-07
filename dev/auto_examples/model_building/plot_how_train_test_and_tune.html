@@ -615,7 +615,7 @@ Event IDs: [1 2 3 4]
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:55: UserWarning: Preprocessing choices with lambda functions cannot be saved.
   warn(&#39;Preprocessing choices with lambda functions cannot be saved.&#39;)
 
-&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7f6d7056f460&gt;
+&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7fc00ab5f610&gt;
 </pre></div>
 </div>
 </section>
@@ -681,9 +681,42 @@ Used Annotations descriptions: [&#39;feet&#39;, &#39;left_hand&#39;, &#39;right_
     <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="c1"># Display torchinfo table describing the model</span>
+<span class="nb">print</span><span class="p">(</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+
 <span class="c1"># Send model to GPU</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.cuda" title="torch.nn.Module.cuda" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">cuda</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/models/base.py:18: UserWarning: ShallowFBCSPNet: &#39;input_window_samples&#39; is depreciated. Use &#39;n_times&#39; instead.
+  warnings.warn(
+============================================================================================================================================
+Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
+============================================================================================================================================
+ShallowFBCSPNet (ShallowFBCSPNet)        [1, 22, 1125]             [1, 4]                    --                        --
+├─Ensure4d (ensuredims): 1-1             [1, 22, 1125]             [1, 22, 1125, 1]          --                        --
+├─Rearrange (dimshuffle): 1-2            [1, 22, 1125, 1]          [1, 1, 1125, 22]          --                        --
+├─CombinedConv (conv_time_spat): 1-3     [1, 1, 1125, 22]          [1, 40, 1101, 1]          36,240                    --
+├─BatchNorm2d (bnorm): 1-4               [1, 40, 1101, 1]          [1, 40, 1101, 1]          80                        --
+├─Expression (conv_nonlin_exp): 1-5      [1, 40, 1101, 1]          [1, 40, 1101, 1]          --                        --
+├─AvgPool2d (pool): 1-6                  [1, 40, 1101, 1]          [1, 40, 69, 1]            --                        [75, 1]
+├─Expression (pool_nonlin_exp): 1-7      [1, 40, 69, 1]            [1, 40, 69, 1]            --                        --
+├─Dropout (drop): 1-8                    [1, 40, 69, 1]            [1, 40, 69, 1]            --                        --
+├─Conv2d (conv_classifier): 1-9          [1, 40, 69, 1]            [1, 4, 1, 1]              11,044                    [69, 1]
+├─LogSoftmax (softmax): 1-10             [1, 4, 1, 1]              [1, 4, 1, 1]              --                        --
+├─Expression (squeeze): 1-11             [1, 4, 1, 1]              [1, 4]                    --                        --
+============================================================================================================================================
+Total params: 47,364
+Trainable params: 47,364
+Non-trainable params: 0
+Total mult-adds (M): 0.01
+============================================================================================================================================
+Input size (MB): 0.10
+Forward/backward pass size (MB): 0.35
+Params size (MB): 0.04
+Estimated Total Size (MB): 0.50
+============================================================================================================================================
 </pre></div>
 </div>
 </section>
@@ -760,9 +793,9 @@ performance of your model less credible.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss      lr     dur
 -------  ----------------  ------------  ------  ------
-      1            0.2535        1.6382  0.0006  1.8404
-      2            0.2535        1.3088  0.0000  1.7118
-Test acc: 25.35%
+      1            0.2500        1.6001  0.0006  2.2393
+      2            0.2500        1.2351  0.0000  2.0692
+Test acc: 25.00%
 </pre></div>
 </div>
 </section>
@@ -887,9 +920,9 @@ performance less meaningful.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  ----------------  ------------  ------  ------
-      1            0.2478        1.3272            0.2586        5.6748  0.0006  1.5094
-      2            0.2478        1.0666            0.2586        4.9513  0.0000  1.3309
-Test acc: 25.00%
+      1            0.3348        1.2877            0.3448        4.0762  0.0006  1.9235
+      2            0.3522        1.0681            0.3621        3.5753  0.0000  1.7408
+Test acc: 28.82%
 </pre></div>
 </div>
 </section>
@@ -1005,7 +1038,7 @@ will take care of the splitting.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Validation accuracy: 30.88+-5.64%
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Validation accuracy: 30.17+-5.87%
 </pre></div>
 </div>
 </section>
@@ -1120,11 +1153,11 @@ will take care of the splitting.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_how_train_test_and_tune_003.png" srcset="../../_images/sphx_glr_plot_how_train_test_and_tune_003.png" alt="Training, testing with k-Fold Cross Validation" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/model_building/plot_how_train_test_and_tune.py:541: UserWarning: No data for colormapping provided via &#39;c&#39;. Parameters &#39;vmin&#39;, &#39;vmax&#39; will be ignored
+<img src="../../_images/sphx_glr_plot_how_train_test_and_tune_003.png" srcset="../../_images/sphx_glr_plot_how_train_test_and_tune_003.png" alt="Training, testing with k-Fold Cross Validation" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/model_building/plot_how_train_test_and_tune.py:544: UserWarning: No data for colormapping provided via &#39;c&#39;. Parameters &#39;vmin&#39;, &#39;vmax&#39; will be ignored
   axes[&quot;B&quot;].scatter(
-/home/runner/work/braindecode/braindecode/examples/model_building/plot_how_train_test_and_tune.py:559: UserWarning: FixedFormatter should only be used together with FixedLocator
+/home/runner/work/braindecode/braindecode/examples/model_building/plot_how_train_test_and_tune.py:562: UserWarning: FixedFormatter should only be used together with FixedLocator
   axes[&quot;a&quot;].set(
-/home/runner/work/braindecode/braindecode/examples/model_building/plot_how_train_test_and_tune.py:596: UserWarning: This figure was using a layout engine that is incompatible with subplots_adjust and/or tight_layout; not calling subplots_adjust.
+/home/runner/work/braindecode/braindecode/examples/model_building/plot_how_train_test_and_tune.py:599: UserWarning: This figure was using a layout engine that is incompatible with subplots_adjust and/or tight_layout; not calling subplots_adjust.
   plt.subplots_adjust(wspace=0.075)
 </pre></div>
 </div>
@@ -1181,8 +1214,8 @@ you want</a>).</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fitting 1 folds for each of 2 candidates, totalling 2 fits
   epoch    train_accuracy    train_loss      lr     dur
 -------  ----------------  ------------  ------  ------
-      1            0.2951        1.1262  0.0006  1.7882
-      2            0.3194        1.0479  0.0000  1.6592
+      1            0.2535        1.1950  0.0006  2.3487
+      2            0.2639        0.9855  0.0000  2.1444
 </pre></div>
 </div>
 </section>
@@ -1193,8 +1226,8 @@ above with the <code class="docutils literal notranslate"><span class="pre">KFol
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html#sklearn.model_selection.KFold" title="sklearn.model_selection.KFold" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_val_split</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html#sklearn.model_selection.KFold" title="sklearn.model_selection.KFold" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">KFold</span></a><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 51.317 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  281 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 1.290 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  194 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-how-train-test-and-tune-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/71d05f0d0d0121cf9eb0a58dd5404e6e/plot_how_train_test_and_tune.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_how_train_test_and_tune.py</span></code></a></p>

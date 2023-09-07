@@ -580,7 +580,7 @@ PyTorch-libraries like
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:55: UserWarning: Preprocessing choices with lambda functions cannot be saved.
   warn(&#39;Preprocessing choices with lambda functions cannot be saved.&#39;)
 
-&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7f6d81bdb820&gt;
+&lt;braindecode.datasets.moabb.MOABBDataset object at 0x7fc012a04c10&gt;
 </pre></div>
 </div>
 </section>
@@ -675,9 +675,42 @@ to use your own model, it just has to be a normal PyTorch
     <span class="n">final_conv_length</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="c1"># Display torchinfo table describing the model</span>
+<span class="nb">print</span><span class="p">(</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+
 <span class="c1"># Send model to GPU</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.cuda" title="torch.nn.Module.cuda" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">cuda</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/models/base.py:18: UserWarning: ShallowFBCSPNet: &#39;input_window_samples&#39; is depreciated. Use &#39;n_times&#39; instead.
+  warnings.warn(
+============================================================================================================================================
+Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
+============================================================================================================================================
+ShallowFBCSPNet (ShallowFBCSPNet)        [1, 22, 1125]             [1, 4]                    --                        --
+├─Ensure4d (ensuredims): 1-1             [1, 22, 1125]             [1, 22, 1125, 1]          --                        --
+├─Rearrange (dimshuffle): 1-2            [1, 22, 1125, 1]          [1, 1, 1125, 22]          --                        --
+├─CombinedConv (conv_time_spat): 1-3     [1, 1, 1125, 22]          [1, 40, 1101, 1]          36,240                    --
+├─BatchNorm2d (bnorm): 1-4               [1, 40, 1101, 1]          [1, 40, 1101, 1]          80                        --
+├─Expression (conv_nonlin_exp): 1-5      [1, 40, 1101, 1]          [1, 40, 1101, 1]          --                        --
+├─AvgPool2d (pool): 1-6                  [1, 40, 1101, 1]          [1, 40, 69, 1]            --                        [75, 1]
+├─Expression (pool_nonlin_exp): 1-7      [1, 40, 69, 1]            [1, 40, 69, 1]            --                        --
+├─Dropout (drop): 1-8                    [1, 40, 69, 1]            [1, 40, 69, 1]            --                        --
+├─Conv2d (conv_classifier): 1-9          [1, 40, 69, 1]            [1, 4, 1, 1]              11,044                    [69, 1]
+├─LogSoftmax (softmax): 1-10             [1, 4, 1, 1]              [1, 4, 1, 1]              --                        --
+├─Expression (squeeze): 1-11             [1, 4, 1, 1]              [1, 4]                    --                        --
+============================================================================================================================================
+Total params: 47,364
+Trainable params: 47,364
+Non-trainable params: 0
+Total mult-adds (M): 0.01
+============================================================================================================================================
+Input size (MB): 0.10
+Forward/backward pass size (MB): 0.35
+Params size (MB): 0.04
+Estimated Total Size (MB): 0.50
+============================================================================================================================================
 </pre></div>
 </div>
 </section>
@@ -727,28 +760,38 @@ cross validation on your training data.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  ----------------  ------------  ------  ------
-      1            0.2535        1.6382            0.2500        5.2095  0.0006  2.3162
-      2            0.2708        1.2828            0.2465        5.6985  0.0005  2.1834
-      3            0.2604        1.1267            0.2465        5.0716  0.0002  2.1936
-      4            0.2708        1.1386            0.2500        4.2094  0.0000  2.1791
+      1            0.2500        1.6001            0.2500        6.6724  0.0006  3.0233
+      2            0.2500        1.2570            0.2500        6.9811  0.0005  2.8458
+      3            0.2569        1.1473            0.2535        6.0234  0.0002  2.7070
+      4            0.2569        1.0680            0.2431        4.9948  0.0000  2.6588
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
-  module_=ShallowFBCSPNet(
-    (ensuredims): Ensure4d()
-    (dimshuffle): Rearrange(&#39;batch C T 1 -&gt; batch 1 T C&#39;)
-    (conv_time_spat): CombinedConv(
-      (conv_time): Conv2d(1, 40, kernel_size=(25, 1), stride=(1, 1))
-      (conv_spat): Conv2d(40, 40, kernel_size=(1, 22), stride=(1, 1), bias=False)
-    )
-    (bnorm): BatchNorm2d(40, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (conv_nonlin_exp): Expression(expression=square)
-    (pool): AvgPool2d(kernel_size=(75, 1), stride=(15, 1), padding=0)
-    (pool_nonlin_exp): Expression(expression=safe_log)
-    (drop): Dropout(p=0.5, inplace=False)
-    (conv_classifier): Conv2d(40, 4, kernel_size=(69, 1), stride=(1, 1))
-    (softmax): LogSoftmax(dim=1)
-    (squeeze): Expression(expression=squeeze_final_output)
-  ),
+  module_=============================================================================================================================================
+  Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
+  ============================================================================================================================================
+  ShallowFBCSPNet (ShallowFBCSPNet)        [1, 22, 1125]             [1, 4]                    --                        --
+  ├─Ensure4d (ensuredims): 1-1             [1, 22, 1125]             [1, 22, 1125, 1]          --                        --
+  ├─Rearrange (dimshuffle): 1-2            [1, 22, 1125, 1]          [1, 1, 1125, 22]          --                        --
+  ├─CombinedConv (conv_time_spat): 1-3     [1, 1, 1125, 22]          [1, 40, 1101, 1]          36,240                    --
+  ├─BatchNorm2d (bnorm): 1-4               [1, 40, 1101, 1]          [1, 40, 1101, 1]          80                        --
+  ├─Expression (conv_nonlin_exp): 1-5      [1, 40, 1101, 1]          [1, 40, 1101, 1]          --                        --
+  ├─AvgPool2d (pool): 1-6                  [1, 40, 1101, 1]          [1, 40, 69, 1]            --                        [75, 1]
+  ├─Expression (pool_nonlin_exp): 1-7      [1, 40, 69, 1]            [1, 40, 69, 1]            --                        --
+  ├─Dropout (drop): 1-8                    [1, 40, 69, 1]            [1, 40, 69, 1]            --                        --
+  ├─Conv2d (conv_classifier): 1-9          [1, 40, 69, 1]            [1, 4, 1, 1]              11,044                    [69, 1]
+  ├─LogSoftmax (softmax): 1-10             [1, 4, 1, 1]              [1, 4, 1, 1]              --                        --
+  ├─Expression (squeeze): 1-11             [1, 4, 1, 1]              [1, 4]                    --                        --
+  ============================================================================================================================================
+  Total params: 47,364
+  Trainable params: 47,364
+  Non-trainable params: 0
+  Total mult-adds (M): 0.01
+  ============================================================================================================================================
+  Input size (MB): 0.10
+  Forward/backward pass size (MB): 0.35
+  Params size (MB): 0.04
+  Estimated Total Size (MB): 0.50
+  ============================================================================================================================================,
 )
 </pre></div>
 </div>
@@ -795,7 +838,7 @@ accuracy and loss curves.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" srcset="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" alt="plot bcic iv 2a moabb trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/model_building/plot_bcic_iv_2a_moabb_trial.py:269: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
+<img src="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" srcset="../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png" alt="plot bcic iv 2a moabb trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/model_building/plot_bcic_iv_2a_moabb_trial.py:272: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as &#39;seaborn-v0_8-&lt;style&gt;&#39;. Alternatively, directly use the seaborn API instead.
   plt.style.use(&#39;seaborn&#39;)
 </pre></div>
 </div>
@@ -840,8 +883,8 @@ Deep learning with convolutional neural networks for EEG decoding and visualizat
 Hum. Brain Mapp., 38: 5391-5420. <a class="reference external" href="https://doi.org/10.1002/hbm.23730">https://doi.org/10.1002/hbm.23730</a>.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 19.662 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  502 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.917 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  105 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0a8b8bc2f1b933515b7b4101626dd179/plot_bcic_iv_2a_moabb_trial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bcic_iv_2a_moabb_trial.py</span></code></a></p>
