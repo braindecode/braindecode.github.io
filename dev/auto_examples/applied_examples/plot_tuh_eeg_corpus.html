@@ -570,6 +570,8 @@ directly to the description.</p>
     <span class="n">target_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">add_physician_reports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">rename_channels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">set_montage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <a href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">TUH</span></a><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;_TUHMock&quot;</span> <span class="k">else</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_JOBS</span></a><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -699,15 +701,13 @@ We will select those recordings that have at least five minutes duration.</p>
 </pre></div>
 </div>
 <p>Next, we will discard all recordings that have an incomplete channel
-configuration on the channels that we are interested. The subdivisions of the
-recordings into ‘le’ and ‘ar’ labels represents the channels for
-the re-referencing of the signals.</p>
+configuration on the channels that we are interested.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
     <span class="p">[</span>
         <span class="s2">&quot;A1&quot;</span><span class="p">,</span>
         <span class="s2">&quot;A2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;FP1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;FP2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Fp1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Fp2&quot;</span><span class="p">,</span>
         <span class="s2">&quot;F3&quot;</span><span class="p">,</span>
         <span class="s2">&quot;F4&quot;</span><span class="p">,</span>
         <span class="s2">&quot;C3&quot;</span><span class="p">,</span>
@@ -722,81 +722,18 @@ the re-referencing of the signals.</p>
         <span class="s2">&quot;T4&quot;</span><span class="p">,</span>
         <span class="s2">&quot;T5&quot;</span><span class="p">,</span>
         <span class="s2">&quot;T6&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;FZ&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;CZ&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;PZ&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Fz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Cz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pz&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 <span class="p">)</span>
 
-<span class="c1"># TUH data is subdivided into &#39;le&#39; and &#39;ar&#39; recordings references</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ar_ch_names</span></a> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="s2">&quot;EEG A1-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG A2-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG FP1-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG FP2-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F3-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F4-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG C3-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG C4-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG P3-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG P4-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG O1-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG O2-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F7-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F8-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T3-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T4-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T5-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T6-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG FZ-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG CZ-REF&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG PZ-REF&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">le_ch_names</span></a> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="s2">&quot;EEG A1-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG A2-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG FP1-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG FP2-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F3-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F4-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG C3-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG C4-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG P3-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG P4-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG O1-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG O2-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F7-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG F8-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T3-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T4-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T5-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG T6-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG FZ-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG CZ-LE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;EEG PZ-LE&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ar_ch_names</span></a><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">le_ch_names</span></a><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ar_ch_mapping</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">ch_name</span><span class="p">:</span> <span class="n">short_ch_name</span>
-    <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">short_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ar_ch_names</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a><span class="p">)</span>
-<span class="p">}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">le_ch_mapping</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">ch_name</span><span class="p">:</span> <span class="n">short_ch_name</span>
-    <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">short_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">le_ch_names</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a><span class="p">)</span>
-<span class="p">}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mapping</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ar&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ar_ch_mapping</span></a><span class="p">,</span> <span class="s2">&quot;le&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">le_ch_mapping</span></a><span class="p">}</span>
 
-
-<span class="k">def</span> <span class="nf">select_by_channels</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mapping</span></a><span class="p">):</span>
+<span class="k">def</span> <span class="nf">select_by_channels</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">):</span>
+    <span class="c1"># these are the channels we are looking for</span>
+    <span class="n">seta</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span>
     <span class="n">split_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">):</span>
-        <span class="n">ref</span> <span class="o">=</span> <span class="s2">&quot;ar&quot;</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-REF&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;le&quot;</span>
-        <span class="c1"># these are the channels we are looking for</span>
-        <span class="n">seta</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mapping</span></a><span class="p">[</span><span class="n">ref</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="c1"># these are the channels of the recoding</span>
         <span class="n">setb</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span>
         <span class="c1"># if recording contains all channels we are looking for, include it</span>
@@ -805,7 +742,7 @@ the re-referencing of the signals.</p>
     <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_ids</span><span class="p">)[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>
 
 
-<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a> <span class="o">=</span> <span class="n">select_by_channels</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mapping</span></a><span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a> <span class="o">=</span> <span class="n">select_by_channels</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tuh</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -816,24 +753,12 @@ steps that are executed through ‘mne’:</p>
 <ul class="simple">
 <li><p>Crop the recordings to a region of interest</p></li>
 <li><p>Re-reference all recordings to ‘ar’ (requires load)</p></li>
-<li><p>Rename channels to short channel names</p></li>
 <li><p>Pick channels of interest</p></li>
 <li><p>Scale signals to micro volts (requires load)</p></li>
 <li><p>Clip outlier values to +/- 800 micro volts (requires load)</p></li>
 <li><p>Resample recordings to a common frequency (requires load)</p></li>
 </ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">custom_rename_channels</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
-    <span class="c1"># rename channels which are dependent on referencing:</span>
-    <span class="c1"># le: EEG 01-LE, ar: EEG 01-REF</span>
-    <span class="c1"># mne fails if the mapping contains channels as keys that are not present</span>
-    <span class="c1"># in the raw</span>
-    <span class="n">reference</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">reference</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;le&quot;</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">],</span> <span class="s2">&quot;unexpected referencing&quot;</span>
-    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;le&quot;</span> <span class="k">if</span> <span class="n">reference</span> <span class="o">==</span> <span class="s2">&quot;le&quot;</span> <span class="k">else</span> <span class="s2">&quot;ar&quot;</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">(</span><span class="n">mapping</span><span class="p">[</span><span class="n">reference</span><span class="p">])</span>
-
-
-<span class="k">def</span> <span class="nf">custom_crop</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">custom_crop</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="c1"># crop recordings to tmin – tmax. can be incomplete if recording</span>
     <span class="c1"># has lower duration than tmax</span>
     <span class="c1"># by default mne fails if tmax is bigger than duration</span>
@@ -851,7 +776,6 @@ steps that are executed through ‘mne’:</p>
         <span class="n">custom_crop</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">apply_on_array</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">),</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;set_eeg_reference&quot;</span><span class="p">,</span> <span class="n">ref_channels</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span> <span class="n">ch_type</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">),</span>
-    <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="n">custom_rename_channels</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mapping</span></a><span class="p">,</span> <span class="n">apply_on_array</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;pick_channels&quot;</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">short_ch_names</span></a><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multiply</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">factor</span></a><span class="p">),</span> <span class="n">apply_on_array</span><span class="o">=</span><span class="kc">True</span>
@@ -902,7 +826,7 @@ to be used for model training.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.549 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.424 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  10 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-applied-examples-plot-tuh-eeg-corpus-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
