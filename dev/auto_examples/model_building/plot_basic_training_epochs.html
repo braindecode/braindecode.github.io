@@ -602,7 +602,7 @@ conv_nonlin: callable
     Non-linear function to be used after convolution layers.
 pool_mode: str
     Method to use on pooling layers. &quot;max&quot; or &quot;mean&quot;.
-pool_nonlin: callable
+activation_pool_nonlin: callable
     Non-linear function to be used after pooling layers.
 split_first_layer: bool
     Split first layer into temporal and spatial layers (True) or just use temporal (False).
@@ -674,15 +674,16 @@ values for now:</p>
 Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
 ============================================================================================================================================
 ShallowFBCSPNet (ShallowFBCSPNet)        [1, 32, 1000]             [1, 2]                    --                        --
-├─Ensure4d (ensuredims): 1-1             [1, 32, 1000]             [1, 32, 1000, 1]          --                        --
-├─Rearrange (dimshuffle): 1-2            [1, 32, 1000, 1]          [1, 1, 1000, 32]          --                        --
-├─CombinedConv (conv_time_spat): 1-3     [1, 1, 1000, 32]          [1, 40, 976, 1]           52,240                    --
-├─BatchNorm2d (bnorm): 1-4               [1, 40, 976, 1]           [1, 40, 976, 1]           80                        --
-├─Expression (conv_nonlin_exp): 1-5      [1, 40, 976, 1]           [1, 40, 976, 1]           --                        --
-├─AvgPool2d (pool): 1-6                  [1, 40, 976, 1]           [1, 40, 61, 1]            --                        [75, 1]
-├─Expression (pool_nonlin_exp): 1-7      [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
-├─Dropout (drop): 1-8                    [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
-├─Sequential (final_layer): 1-9          [1, 40, 61, 1]            [1, 2]                    --                        --
+├─SafeLog (pool_nonlin_exp): 1-1         [1, 32, 1000]             [1, 32, 1000]             --                        --
+├─Ensure4d (ensuredims): 1-2             [1, 32, 1000]             [1, 32, 1000, 1]          --                        --
+├─Rearrange (dimshuffle): 1-3            [1, 32, 1000, 1]          [1, 1, 1000, 32]          --                        --
+├─CombinedConv (conv_time_spat): 1-4     [1, 1, 1000, 32]          [1, 40, 976, 1]           52,240                    --
+├─BatchNorm2d (bnorm): 1-5               [1, 40, 976, 1]           [1, 40, 976, 1]           80                        --
+├─Expression (conv_nonlin_exp): 1-6      [1, 40, 976, 1]           [1, 40, 976, 1]           --                        --
+├─AvgPool2d (pool): 1-7                  [1, 40, 976, 1]           [1, 40, 61, 1]            --                        [75, 1]
+├─SafeLog (pool_nonlin_exp): 1-8         [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
+├─Dropout (drop): 1-9                    [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
+├─Sequential (final_layer): 1-10         [1, 40, 61, 1]            [1, 2]                    --                        --
 │    └─Conv2d (conv_classifier): 2-1     [1, 40, 61, 1]            [1, 2, 1, 1]              4,882                     [61, 1]
 │    └─Expression (squeeze): 2-2         [1, 2, 1, 1]              [1, 2]                    --                        --
 ============================================================================================================================================
@@ -774,31 +775,32 @@ we can train it by simply calling the <code class="docutils literal notranslate"
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    valid_acc    valid_loss     dur
 -------  -----------  ------------  ------
-      1       0.3000       14.9513  0.0148
-      2       0.3000       14.9513  0.0107
-      3       0.3000       14.9513  0.0087
-      4       0.3000       14.9513  0.0085
-      5       0.3000       14.9513  0.0083
-      6       0.3000       14.9513  0.0083
-      7       0.3000       14.9513  0.0086
-      8       0.3000       14.9513  0.0084
-      9       0.3000       14.9513  0.0082
-     10       0.3000       14.9513  0.0083
+      1       0.3500        3.9947  0.0151
+      2       0.3500        3.9947  0.0099
+      3       0.3500        3.9947  0.0101
+      4       0.3500        3.9947  0.0087
+      5       0.3500        3.9947  0.0084
+      6       0.3500        3.9947  0.0084
+      7       0.3500        3.9947  0.0085
+      8       0.3500        3.9947  0.0087
+      9       0.3500        3.9947  0.0085
+     10       0.3500        3.9947  0.0085
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_=============================================================================================================================================
   Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
   ============================================================================================================================================
   ShallowFBCSPNet (ShallowFBCSPNet)        [1, 3, 1024]              [1, 4]                    --                        --
-  ├─Ensure4d (ensuredims): 1-1             [1, 3, 1024]              [1, 3, 1024, 1]           --                        --
-  ├─Rearrange (dimshuffle): 1-2            [1, 3, 1024, 1]           [1, 1, 1024, 3]           --                        --
-  ├─CombinedConv (conv_time_spat): 1-3     [1, 1, 1024, 3]           [1, 40, 1000, 1]          5,840                     --
-  ├─BatchNorm2d (bnorm): 1-4               [1, 40, 1000, 1]          [1, 40, 1000, 1]          80                        --
-  ├─Expression (conv_nonlin_exp): 1-5      [1, 40, 1000, 1]          [1, 40, 1000, 1]          --                        --
-  ├─AvgPool2d (pool): 1-6                  [1, 40, 1000, 1]          [1, 40, 62, 1]            --                        [75, 1]
-  ├─Expression (pool_nonlin_exp): 1-7      [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
-  ├─Dropout (drop): 1-8                    [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
-  ├─Sequential (final_layer): 1-9          [1, 40, 62, 1]            [1, 4]                    --                        --
+  ├─SafeLog (pool_nonlin_exp): 1-1         [1, 3, 1024]              [1, 3, 1024]              --                        --
+  ├─Ensure4d (ensuredims): 1-2             [1, 3, 1024]              [1, 3, 1024, 1]           --                        --
+  ├─Rearrange (dimshuffle): 1-3            [1, 3, 1024, 1]           [1, 1, 1024, 3]           --                        --
+  ├─CombinedConv (conv_time_spat): 1-4     [1, 1, 1024, 3]           [1, 40, 1000, 1]          5,840                     --
+  ├─BatchNorm2d (bnorm): 1-5               [1, 40, 1000, 1]          [1, 40, 1000, 1]          80                        --
+  ├─Expression (conv_nonlin_exp): 1-6      [1, 40, 1000, 1]          [1, 40, 1000, 1]          --                        --
+  ├─AvgPool2d (pool): 1-7                  [1, 40, 1000, 1]          [1, 40, 62, 1]            --                        [75, 1]
+  ├─SafeLog (pool_nonlin_exp): 1-8         [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
+  ├─Dropout (drop): 1-9                    [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
+  ├─Sequential (final_layer): 1-10         [1, 40, 62, 1]            [1, 4]                    --                        --
   │    └─Conv2d (conv_classifier): 2-1     [1, 40, 62, 1]            [1, 4, 1, 1]              9,924                     [62, 1]
   │    └─Expression (squeeze): 2-2         [1, 4, 1, 1]              [1, 4]                    --                        --
   ============================================================================================================================================
@@ -823,15 +825,16 @@ we can train it by simply calling the <code class="docutils literal notranslate"
 Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
 ============================================================================================================================================
 ShallowFBCSPNet (ShallowFBCSPNet)        [1, 3, 1024]              [1, 4]                    --                        --
-├─Ensure4d (ensuredims): 1-1             [1, 3, 1024]              [1, 3, 1024, 1]           --                        --
-├─Rearrange (dimshuffle): 1-2            [1, 3, 1024, 1]           [1, 1, 1024, 3]           --                        --
-├─CombinedConv (conv_time_spat): 1-3     [1, 1, 1024, 3]           [1, 40, 1000, 1]          5,840                     --
-├─BatchNorm2d (bnorm): 1-4               [1, 40, 1000, 1]          [1, 40, 1000, 1]          80                        --
-├─Expression (conv_nonlin_exp): 1-5      [1, 40, 1000, 1]          [1, 40, 1000, 1]          --                        --
-├─AvgPool2d (pool): 1-6                  [1, 40, 1000, 1]          [1, 40, 62, 1]            --                        [75, 1]
-├─Expression (pool_nonlin_exp): 1-7      [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
-├─Dropout (drop): 1-8                    [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
-├─Sequential (final_layer): 1-9          [1, 40, 62, 1]            [1, 4]                    --                        --
+├─SafeLog (pool_nonlin_exp): 1-1         [1, 3, 1024]              [1, 3, 1024]              --                        --
+├─Ensure4d (ensuredims): 1-2             [1, 3, 1024]              [1, 3, 1024, 1]           --                        --
+├─Rearrange (dimshuffle): 1-3            [1, 3, 1024, 1]           [1, 1, 1024, 3]           --                        --
+├─CombinedConv (conv_time_spat): 1-4     [1, 1, 1024, 3]           [1, 40, 1000, 1]          5,840                     --
+├─BatchNorm2d (bnorm): 1-5               [1, 40, 1000, 1]          [1, 40, 1000, 1]          80                        --
+├─Expression (conv_nonlin_exp): 1-6      [1, 40, 1000, 1]          [1, 40, 1000, 1]          --                        --
+├─AvgPool2d (pool): 1-7                  [1, 40, 1000, 1]          [1, 40, 62, 1]            --                        [75, 1]
+├─SafeLog (pool_nonlin_exp): 1-8         [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
+├─Dropout (drop): 1-9                    [1, 40, 62, 1]            [1, 40, 62, 1]            --                        --
+├─Sequential (final_layer): 1-10         [1, 40, 62, 1]            [1, 4]                    --                        --
 │    └─Conv2d (conv_classifier): 2-1     [1, 40, 62, 1]            [1, 4, 1, 1]              9,924                     [62, 1]
 │    └─Expression (squeeze): 2-2         [1, 4, 1, 1]              [1, 4]                    --                        --
 ============================================================================================================================================
@@ -885,8 +888,8 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.809 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  674 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.842 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  671 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fff46913db5173d3ae22c1113acffb45/plot_basic_training_epochs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_basic_training_epochs.ipynb</span></code></a></p>
