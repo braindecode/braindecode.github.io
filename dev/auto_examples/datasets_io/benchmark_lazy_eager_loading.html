@@ -618,9 +618,11 @@ to prepare the data and train the model.</p>
     <span class="c1"># Drop bad epochs</span>
     <span class="c1"># XXX: This could be parallelized.</span>
     <span class="c1"># XXX: Also, this could be implemented in the Dataset object itself.</span>
-    <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">windows_ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-        <span class="n">ds</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">drop_bad</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">preload</span> <span class="o">==</span> <span class="n">preload</span>
+    <span class="c1"># We don&#39;t support drop_bad since the last version braindecode,</span>
+    <span class="c1"># to optimize the dataset speed. If you know how to fix, please open a PR.</span>
+    <span class="c1"># for ds in windows_ds.datasets:</span>
+    <span class="c1">#    ds.raw.drop_bad()</span>
+    <span class="c1">#   assert ds.raw.preload == preload</span>
 
     <span class="k">return</span> <span class="n">windows_ds</span>
 
@@ -688,7 +690,6 @@ to prepare the data and train the model.</p>
             <span class="n">first_pool_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
             <span class="n">later_pool_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
             <span class="n">drop_prob</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-            <span class="n">double_time_convs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">split_first_layer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">batch_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">batch_norm_alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
@@ -832,10 +833,9 @@ we set above to evaluate their execution time:</p>
         <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
         <span class="n">worker_init_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
-
     <span class="c1"># Instantiate model and optimizer</span>
-    <span class="n">n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span>
-    <span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_times</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">n_classes</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">model</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">create_example_model</span><span class="p">(</span>
         <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">model_kind</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span>
