@@ -605,7 +605,7 @@ To obtain full results whole datasets should be used.</p>
 <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_set</span></a><span class="p">,</span> <span class="p">[</span><a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">24</span><span class="p">)],</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f9de52995a0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f65203c92d0&gt;
 </pre></div>
 </div>
 <p>In time series targets setup, targets variables are stored in mne.Raw object as channels
@@ -653,7 +653,7 @@ network during training This has to be larger than the networks
 receptive field size and can otherwise be chosen for computational
 efficiency (see explanations in the beginning of this tutorial). Here we
 choose 1000 samples, which is 1 second for the 1000 Hz sampling rate.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a> <span class="o">=</span> <span class="mi">1000</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a> <span class="o">=</span> <span class="mi">1000</span>
 </pre></div>
 </div>
 <p>Now we create the deep learning model! Braindecode comes with some
@@ -689,15 +689,15 @@ to use your own model, it just has to be a normal PyTorch
 <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_classes</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">,</span>
     <span class="n">final_conv_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">add_log_softmax</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Send model to GPU</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
     <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.cuda" title="torch.nn.Module.cuda" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">cuda</span></a><span class="p">()</span>
 
-<span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <span class="n">get_output_shape</span><span class="p">,</span> <span class="n">to_dense_prediction_model</span>
+<span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <span class="n">to_dense_prediction_model</span>
 
 <span class="n">to_dense_prediction_model</span><span class="p">(</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
 </pre></div>
@@ -708,11 +708,7 @@ to use your own model, it just has to be a normal PyTorch
 </div>
 <p>To know the models’ receptive field, we calculate the shape of model
 output for a dummy input.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a> <span class="o">=</span> <span class="n">get_output_shape</span><span class="p">(</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_chans</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/.local/lib/python3.10/site-packages/sklearn/utils/deprecation.py:87: FutureWarning: Function get_output_shape is deprecated; will be removed in version 1.0. Use EEGModuleMixin.get_output_shape method directly on the model object.
-  warnings.warn(msg, category=FutureWarning)
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.get_output_shape" title="braindecode.models.EEGModuleMixin.get_output_shape" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">get_output_shape</span></a><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="cut-compute-windows">
@@ -726,7 +722,7 @@ output for a dummy input.</p>
     <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a><span class="p">,</span>
     <span class="n">start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">stop_offset_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">,</span>
     <span class="n">window_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a><span class="p">,</span>
     <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">targets_from</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span>
@@ -738,7 +734,7 @@ output for a dummy input.</p>
     <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">valid_set</span></a><span class="p">,</span>
     <span class="n">start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">stop_offset_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">,</span>
     <span class="n">window_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a><span class="p">,</span>
     <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">targets_from</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span>
@@ -750,7 +746,7 @@ output for a dummy input.</p>
     <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_set</span></a><span class="p">,</span>
     <span class="n">start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">stop_offset_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">input_window_samples</span></a><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">,</span>
     <span class="n">window_stride_samples</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_preds_per_input</span></a><span class="p">,</span>
     <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">targets_from</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span>
@@ -842,14 +838,14 @@ in the dataset.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    r2_train    r2_valid    train_loss    valid_loss      lr     dur
 -------  ----------  ----------  ------------  ------------  ------  ------
-      1    -23.7826     -4.6087        1.8225       11.7419  0.0006  0.5052
-      2     -1.1990     -0.1716        1.5134        2.6475  0.0006  0.4639
-      3     -0.3654     -0.4985        1.2625        3.4645  0.0005  0.4692
-      4     -0.4383     -0.2731        1.2058        2.9438  0.0004  0.4563
-      5     -0.5982     -0.1512        1.1027        2.6529  0.0002  0.4551
-      6     -0.6090     -0.1255        1.1121        2.5886  0.0001  0.4492
-      7     -0.4455     -0.1445        0.9618        2.6339  0.0000  0.4615
-      8     -0.2790     -0.1755        1.0927        2.7063  0.0000  0.4491
+      1    -23.7826     -4.6087        1.8225       11.7419  0.0006  0.5212
+      2     -1.1990     -0.1716        1.5134        2.6475  0.0006  0.4524
+      3     -0.3654     -0.4985        1.2625        3.4645  0.0005  0.4642
+      4     -0.4383     -0.2731        1.2058        2.9438  0.0004  0.4441
+      5     -0.5982     -0.1512        1.1027        2.6529  0.0002  0.4571
+      6     -0.6090     -0.1255        1.1121        2.5886  0.0001  0.4807
+      7     -0.4455     -0.1445        0.9618        2.6339  0.0000  0.4420
+      8     -0.2790     -0.1755        1.0927        2.7063  0.0000  0.4569
 </pre></div>
 </div>
 <p>Obtaining predictions and targets for the test, train, and validation dataset</p>
@@ -970,8 +966,8 @@ Extract loss and accuracy values for plotting from history object</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" alt="plot bcic iv 4 ecog cropped" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 25.993 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1600 MB</p>
+<img src="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" alt="plot bcic iv 4 ecog cropped" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 39.279 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1518 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-bcic-iv-4-ecog-cropped-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/10fc813a8f78253f4bf301264950f5c1/plot_bcic_iv_4_ecog_cropped.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bcic_iv_4_ecog_cropped.ipynb</span></code></a></p>
