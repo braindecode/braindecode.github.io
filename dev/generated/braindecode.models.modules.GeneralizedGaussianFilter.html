@@ -579,8 +579,8 @@
 <h1>braindecode.models.modules.GeneralizedGaussianFilter<a class="headerlink" href="#braindecode-models-modules-generalizedgaussianfilter" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.modules.GeneralizedGaussianFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.modules.</span></span><span class="sig-name descname"><span class="pre">GeneralizedGaussianFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse_fourier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine_group_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(23.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(44.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_f_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1.0,</span> <span class="pre">45.0)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L258-L527"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter" title="Link to this definition">#</a></dt>
-<dd><p>Generalized Gaussian Filter from <a class="reference internal" href="#r9d2e5f5ce220-eegminer" id="id1">[eegminer]</a>.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.modules.</span></span><span class="sig-name descname"><span class="pre">GeneralizedGaussianFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse_fourier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine_group_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(23.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(44.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2.0,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_f_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1.0,</span> <span class="pre">45.0)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L259-L539"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter" title="Link to this definition">#</a></dt>
+<dd><p>Generalized Gaussian Filter from Ludwig et al (2024) <a class="reference internal" href="#r9d2e5f5ce220-eegminer" id="id1">[eegminer]</a>.</p>
 <p>Implements trainable temporal filters based on generalized Gaussian functions
 in the frequency domain.</p>
 <p>This module creates filters in the frequency domain using the generalized
@@ -589,6 +589,24 @@ bandwidth (<cite>bandwidth</cite>), and shape (<cite>shape</cite>) parameters.</
 <p>The filters are applied to the input signal in the frequency domain, and can
 be optionally transformed back to the time domain using the inverse
 Fourier transform.</p>
+<p>The generalized Gaussian function in the frequency domain is defined as:</p>
+<div class="math notranslate nohighlight">
+\[F(x) = \exp\left( - \left( \frac{abs(x - \mu)}{\alpha} \right)^{\beta} \right)\]</div>
+<dl>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>μ (mu) is the center frequency (<cite>f_mean</cite>).</p></li>
+<li><p>α (alpha) is the scale parameter, reparameterized in terms of the full width at half maximum (FWHM) <cite>h</cite> as:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\alpha = \frac{h}{2 \left( \ln(2) \right)^{1/\beta}}\]</div>
+<ul class="simple">
+<li><p>β (beta) is the shape parameter (<cite>shape</cite>), controlling the shape of the filter.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The filters are constructed in the frequency domain to allow full control
+over the magnitude and phase responses.</p>
+<p>A linear phase response is used, with an optional trainable group delay (<cite>group_delay</cite>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -608,30 +626,11 @@ Specified as (min_f_mean, max_f_mean). Default is (1.0, 45.0).</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="braindecode.models.modules.GeneralizedGaussianFilter.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L489-L527"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter.forward" title="Link to this definition">#</a></dt>
-<dd><p>Applies the filters to the input tensor <cite>x</cite> and returns the filtered signal.</p>
-</dd></dl>
-
 <p class="rubric">Notes</p>
-<p>The generalized Gaussian function in the frequency domain is defined as:</p>
-<blockquote>
-<div><p>F(x) = exp(- (<a href="#id2"><span class="problematic" id="id3">|x - μ|</span></a> / α) ** β)</p>
-</div></blockquote>
-<p>where:
-- μ (mu) is the center frequency (<cite>f_mean</cite>).
-- α (alpha) is the scale parameter, reparameterized in terms of the full
-width at half maximum (FWHM) <cite>h</cite> as:</p>
-<blockquote>
-<div><p>α = h / (2 * (ln(2)) ** (1/β))</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>β (beta) is the shape parameter (<cite>shape</cite>), controlling the shape of the filter.</p></li>
-</ul>
-<p>The filters are constructed in the frequency domain to allow full control
-over the magnitude and phase responses.</p>
-<p>A linear phase response is used, with an optional trainable group delay (<cite>group_delay</cite>).</p>
+<p>The model and the module <strong>have a patent</strong> <a class="reference internal" href="#r9d2e5f5ce220-eegminercode" id="id2">[eegminercode]</a>, and the <strong>code is CC BY-NC 4.0</strong>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.9.</span></p>
+</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r9d2e5f5ce220-eegminer" role="doc-biblioentry">
@@ -641,11 +640,21 @@ Y., &amp; Zafeiriou, S. (2024). EEGMiner: discovering interpretable features
 of brain activity with learnable filters. Journal of Neural Engineering,
 21(3), 036010.</p>
 </div>
+<div class="citation" id="r9d2e5f5ce220-eegminercode" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">eegminercode</a><span class="fn-bracket">]</span></span>
+<p>Ludwig, S., Bakas, S., Adamos, D. A., Laskaris, N., Panagakis,
+Y., &amp; Zafeiriou, S. (2024). EEGMiner: discovering interpretable features
+of brain activity with learnable filters.
+<a class="github reference external" href="https://github.com/SMLudwig/EEGminer/">SMLudwig/EEGminer</a>.
+Cogitat, Ltd. “Learnable filters for EEG classification.”
+Patent GB2609265.
+<a class="reference external" href="https://www.ipo.gov.uk/p-ipsum/Case/ApplicationNumber/GB2113420.0">https://www.ipo.gov.uk/p-ipsum/Case/ApplicationNumber/GB2113420.0</a></p>
+</div>
 </div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.modules.GeneralizedGaussianFilter.construct_filters">
-<span class="sig-name descname"><span class="pre">construct_filters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L440-L487"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter.construct_filters" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">construct_filters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L452-L499"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter.construct_filters" title="Link to this definition">#</a></dt>
 <dd><p>Constructs the filters in the frequency domain based on current parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -659,57 +668,42 @@ of brain activity with learnable filters. Journal of Neural Engineering,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.modules.GeneralizedGaussianFilter.exponential_power">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exponential_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L395-L438"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter.exponential_power" title="Link to this definition">#</a></dt>
-<dd><blockquote>
-<div><p>Computes the generalized Gaussian function:</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exponential_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L406-L450"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter.exponential_power" title="Link to this definition">#</a></dt>
+<dd><p>Computes the generalized Gaussian function:</p>
 <div class="math notranslate nohighlight">
-\[F(x) = \exp\left( - \left(\]</div>
-</div></blockquote>
-<p>rac{<a href="#id4"><span class="problematic" id="id5">|x - \mu|</span></a>}{lpha}
-ight)^{eta}
-ight)</p>
+\[F(x) = \exp\left( - \left( \frac{|x - \mu|}{\alpha} \right)^{\beta} \right)\]</div>
+<p>where:</p>
 <blockquote>
-<div><p>where:</p>
-<ul>
+<div><ul>
 <li><p><span class="math notranslate nohighlight">\(\mu\)</span> is the mean (<cite>mean</cite>).</p></li>
-<li><p><span class="math notranslate nohighlight">\(lpha\)</span> is the scale parameter, reparameterized using the FWHM <span class="math notranslate nohighlight">\(h\)</span> as:</p>
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> is the scale parameter, reparameterized using the FWHM <span class="math notranslate nohighlight">\(h\)</span> as:</p>
 <div class="math notranslate nohighlight">
-\[lpha =\]</div>
+\[\alpha = \frac{h}{2 \left( \ln(2) \right)^{1/\beta}}\]</div>
 </li>
-</ul>
-</div></blockquote>
-<p>rac{h}{2 left( ln(2)
-ight)^{1/eta}}</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(eta\)</span> is the shape parameter (<cite>shape</cite>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta\)</span> is the shape parameter (<cite>shape</cite>).</p></li>
 </ul>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>x</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor representing frequencies, normalized between 0 and 1.</p>
-</dd>
-<dt><strong>mean</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The center frequency (<cite>f_mean</cite>), normalized between 0 and 1.</p>
-</dd>
-<dt><strong>fwhm</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The full width at half maximum (<cite>bandwidth</cite>), normalized between 0 and 1.</p>
-</dd>
-<dt><strong>shape</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The shape parameter (<cite>shape</cite>) of the generalized Gaussian.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.5)"><em>torch.Tensor</em></a>) – The input tensor representing frequencies, normalized between 0 and 1.</p></li>
+<li><p><strong>mean</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.5)"><em>torch.Tensor</em></a>) – The center frequency (<cite>f_mean</cite>), normalized between 0 and 1.</p></li>
+<li><p><strong>fwhm</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.5)"><em>torch.Tensor</em></a>) – The full width at half maximum (<cite>bandwidth</cite>), normalized between 0 and 1.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.5)"><em>torch.Tensor</em></a>) – The shape parameter (<cite>shape</cite>) of the generalized Gaussian.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The computed generalized Gaussian function values at frequencies <cite>x</cite>.</p>
+<dd class="field-even"><p>The computed generalized Gaussian function values at frequencies <cite>x</cite>.</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.5)">torch.Tensor</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L489-L527"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="braindecode.models.modules.GeneralizedGaussianFilter.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegminer.py#L501-L539"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.modules.GeneralizedGaussianFilter.forward" title="Link to this definition">#</a></dt>
 <dd><p>Applies the generalized Gaussian filters to the input signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -779,10 +773,9 @@ frequency domain with shape <cite>(…, out_channels, freq_bins, 2)</cite>.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.models.modules.GeneralizedGaussianFilter"><code class="docutils literal notranslate"><span class="pre">GeneralizedGaussianFilter</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.models.modules.GeneralizedGaussianFilter.forward"><code class="docutils literal notranslate"><span class="pre">GeneralizedGaussianFilter.forward()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.models.modules.GeneralizedGaussianFilter.construct_filters"><code class="docutils literal notranslate"><span class="pre">GeneralizedGaussianFilter.construct_filters()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.models.modules.GeneralizedGaussianFilter.exponential_power"><code class="docutils literal notranslate"><span class="pre">GeneralizedGaussianFilter.exponential_power()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">GeneralizedGaussianFilter.forward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.models.modules.GeneralizedGaussianFilter.forward"><code class="docutils literal notranslate"><span class="pre">GeneralizedGaussianFilter.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
