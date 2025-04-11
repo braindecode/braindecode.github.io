@@ -462,7 +462,7 @@
 <figure class="align-center" id="id1">
 <img alt="Braindecode Models" src="_images/models_analysis.png" />
 <figcaption>
-<p><span class="caption-text">Visualization comparing the models based on their total number of parameters (left plot) and the primary experimental they were designed for (right plot).</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">Visualization comparing the models based on their total number of parameters (left plot) and the primary experimental paradigm they were designed for (right plot).</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <dl class="simple">
@@ -476,7 +476,8 @@
 </ul>
 </dd>
 </dl>
-<table border="1" class="dataframe sortable">
+<!-- Dropdown filter container -->
+<div id="custom-filters" style="margin-bottom: 15px;"></div><table border="1" class="dataframe sortable">
   <thead>
     <tr style="text-align: right;">
       <th>Model</th>
@@ -784,15 +785,78 @@
 <p>Want to contribute a new model to Braindecode? Great! You can propose a new model by opening an <a class="reference external" href="https://github.com/braindecode/braindecode/issues">issue</a> (please include a link to the relevant publication or description) or, even better, directly submit your implementation via a <a class="reference external" href="https://github.com/braindecode/braindecode/pulls">pull request</a>. We appreciate your contributions to expanding the library!</p>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bm/dt-1.13.4/datatables.min.js"></script>
 <script type="text/javascript">
- $(document).ready(function() {
-  var table = $('.sortable').DataTable({
-    "paging": false,
-    "searching": true,
-    "info": false,
-    language: {
-      "search": "Filter models:"
-    }
-  });
+ $(document).ready(function () {
+   var table = $('.sortable').DataTable({
+     paging: false,
+     searching: true,
+     info: false,
+     language: {
+       search: "Filter models:"
+     }
+   });
+
+   var filterColumns = {
+     1: "Select Paradigm",
+     2: "Choose Model Type",
+     4: "Select Required Hyperparameter"
+   };
+
+   var $filterContainer = $('#custom-filters');
+   var dropdowns = {};
+
+   $.each(filterColumns, function (colIdx, label) {
+     var select = $('<select><option value="" disabled selected>' + label + '</option></select>')
+       .css({ 'margin-right': '10px', 'padding': '5px', 'margin-bottom': '10px' });
+
+     var uniqueTags = new Set();
+
+     table.column(colIdx).data().each(function (d) {
+       if (d) {
+         var tags = [];
+         var $temp = $('<div>' + d + '</div>');
+         var $foundTags = $temp.find('.tag');
+
+         if ($foundTags.length > 0) {
+           $foundTags.each(function () {
+             var tag = $(this).text().trim();
+             if (tag) tags.push(tag);
+           });
+         } else {
+           var plainText = $temp.text();
+           tags = plainText.split(/,\s*|\s+/).map(function (tag) {
+             return tag.trim();
+           });
+         }
+
+         tags.forEach(function (tag) {
+           if (tag) uniqueTags.add(tag);
+         });
+       }
+     });
+
+     Array.from(uniqueTags).sort().forEach(function (tag) {
+       select.append('<option value="' + tag + '">' + tag + '</option>');
+     });
+
+     select.on('change', function () {
+       var val = $(this).val();
+       table.column(colIdx).search(val ? val : '', true, false).draw();
+     });
+
+     dropdowns[colIdx] = select;
+     $filterContainer.append(select);
+   });
+
+   var clearBtn = $('<button>Clear Filters</button>')
+     .css({ 'margin-left': '10px', 'padding': '5px 10px', 'cursor': 'pointer' })
+     .on('click', function () {
+       $.each(dropdowns, function (colIdx, select) {
+         select.prop('selectedIndex', 0);
+         table.column(colIdx).search('').draw();
+       });
+     });
+
+   $filterContainer.append(clearBtn);
  });
 </script></section>
 
