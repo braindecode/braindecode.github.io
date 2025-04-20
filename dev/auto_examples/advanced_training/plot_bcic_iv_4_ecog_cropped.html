@@ -502,7 +502,7 @@
 to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="fingers-flexion-cropped-decoding-on-bcic-iv-4-ecog-dataset">
-<span id="sphx-glr-auto-examples-advanced-training-plot-bcic-iv-4-ecog-cropped-py"></span><h1>Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset<a class="headerlink" href="#fingers-flexion-cropped-decoding-on-bcic-iv-4-ecog-dataset" title="Link to this heading">#</a></h1>
+<span id="bcic-iv-4-ecog-cropped-decoding"></span><span id="sphx-glr-auto-examples-advanced-training-plot-bcic-iv-4-ecog-cropped-py"></span><h1>Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset<a class="headerlink" href="#fingers-flexion-cropped-decoding-on-bcic-iv-4-ecog-dataset" title="Link to this heading">#</a></h1>
 <p>This tutorial shows you how to train and test deep learning models with
 Braindecode on ECoG BCI IV competition dataset 4 using cropped mode. For this
 dataset we will predict 5 regression targets corresponding to flexion of each finger.
@@ -556,9 +556,7 @@ for training and validation and <cite>test</cite> for final evaluation.</p>
 <section id="preprocessing">
 <h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
 <p>Now we apply preprocessing like bandpass filtering to our dataset. You
-can either apply functions provided by
-<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html">mne.Raw</a> or
-<a class="reference external" href="https://mne.tools/0.11/generated/mne.Epochs.html#mne.Epochs">mne.Epochs</a>
+can either apply functions provided by <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> or <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>
 or apply your own functions, either to the MNE object or the underlying
 numpy array.</p>
 <div class="admonition note">
@@ -572,7 +570,7 @@ decoding other preprocessing steps may be needed.</p>
 <p>These prepocessings are now directly applied to the loaded
 data, and not on-the-fly applied as transformations in
 PyTorch-libraries like
-<a class="reference external" href="https://pytorch.org/docs/stable/torchvision/index.html">torchvision</a>.</p>
+<a class="reference external" href="https://pytorch.org/vision/stable/index.html">torchvision</a>.</p>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span>
@@ -597,13 +595,13 @@ To obtain full results whole datasets should be used.</p>
 <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_set</span></a><span class="p">,</span> <span class="p">[</span><a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">24</span><span class="p">)],</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f7cf1cd2570&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7fe70bb9c7d0&gt;
 </pre></div>
 </div>
 <p>In time series targets setup, targets variables are stored in mne.Raw object as channels
 of type <cite>misc</cite>. Thus those channels have to be selected for further processing. However,
 many mne functions ignore <cite>misc</cite> channels and perform operations only on data channels
-(see <a class="reference external" href="https://mne.tools/stable/glossary.html#term-data-channels">https://mne.tools/stable/glossary.html#term-data-channels</a>).</p>
+(see <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-data-channels">MNE’s glossary on data channels</a>).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
     <span class="c1"># TODO: ensure that misc is not removed</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;pick_types&quot;</span><span class="p">,</span> <span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
@@ -650,12 +648,10 @@ choose 1000 samples, which is 1 second for the 1000 Hz sampling rate.</p>
 </div>
 <p>Now we create the deep learning model! Braindecode comes with some
 predefined convolutional neural network architectures for raw
-time-domain EEG. Here, we use the shallow ConvNet model from <a class="reference external" href="https://arxiv.org/abs/1703.05051">Deep
-learning with convolutional neural networks for EEG decoding and
-visualization</a>. These models are
+time-domain EEG. Here, we use the <a class="reference internal" href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShallowFBCSPNet</span></code></a> model from <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. These models are
 pure <a class="reference external" href="https://pytorch.org">PyTorch</a> deep learning models, therefore
 to use your own model, it just has to be a normal PyTorch
-<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.Module">nn.Module</a>.</p>
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
@@ -763,8 +759,8 @@ We encourage you to find your own way to use braindecode models to predict finge
 <section id="training">
 <h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
 <p>In difference to trialwise decoding, we now should supply
-<code class="docutils literal notranslate"><span class="pre">cropped=True</span></code> to the EEGClassifier, and <code class="docutils literal notranslate"><span class="pre">CroppedLoss</span></code> as the
-criterion, as well as <code class="docutils literal notranslate"><span class="pre">criterion__loss_function</span></code> as the loss function
+<code class="docutils literal notranslate"><span class="pre">cropped=True</span></code> to the <a class="reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.classifier.EEGClassifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGClassifer</span></code></a>, and <a class="reference internal" href="../../generated/braindecode.training.CroppedLoss.html#braindecode.training.CroppedLoss" title="braindecode.training.CroppedLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">CroppedLoss</span></code></a> as the criterion,
+as well as <code class="docutils literal notranslate"><span class="pre">criterion__loss_function</span></code> as the loss function
 applied to the meaned predictions.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -823,21 +819,21 @@ cross validation on your training data.</p>
 <a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Model training for a specified number of epochs. <code class="docutils literal notranslate"><span class="pre">y</span></code> is None as it is already supplied
+<p>Model training for a specified number of epochs. <code class="docutils literal notranslate"><span class="pre">y</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> as it is already supplied
 in the dataset.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://skorch.readthedocs.io/en/stable/regressor.html#skorch.regressor.NeuralNetRegressor.fit" title="skorch.regressor.NeuralNetRegressor.fit" class="sphx-glr-backref-module-skorch-regressor sphx-glr-backref-type-py-method"><span class="n">regressor</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    r2_train    r2_valid    train_loss    valid_loss      lr     dur
 -------  ----------  ----------  ------------  ------------  ------  ------
-      1    -23.7826     -4.6087        1.8225       11.7419  0.0006  0.4929
-      2     -1.1990     -0.1716        1.5134        2.6475  0.0006  0.4526
-      3     -0.3654     -0.4985        1.2625        3.4645  0.0005  0.4633
-      4     -0.4383     -0.2731        1.2058        2.9438  0.0004  0.4488
-      5     -0.5982     -0.1512        1.1027        2.6529  0.0002  0.4646
-      6     -0.6090     -0.1255        1.1121        2.5886  0.0001  0.4485
-      7     -0.4455     -0.1445        0.9618        2.6339  0.0000  0.4730
-      8     -0.2790     -0.1755        1.0927        2.7063  0.0000  0.4494
+      1    -23.7826     -4.6087        1.8225       11.7419  0.0006  0.4934
+      2     -1.1990     -0.1716        1.5134        2.6475  0.0006  0.4579
+      3     -0.3654     -0.4985        1.2625        3.4645  0.0005  0.4495
+      4     -0.4383     -0.2731        1.2058        2.9438  0.0004  0.4621
+      5     -0.5982     -0.1512        1.1027        2.6529  0.0002  0.4493
+      6     -0.6090     -0.1255        1.1121        2.5886  0.0001  0.4674
+      7     -0.4455     -0.1445        0.9618        2.6339  0.0000  0.4499
+      8     -0.2790     -0.1755        1.0927        2.7063  0.0000  0.4499
 </pre></div>
 </div>
 <p>Obtaining predictions and targets for the test, train, and validation dataset</p>
@@ -958,8 +954,20 @@ Extract loss and accuracy values for plotting from history object</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" alt="plot bcic iv 4 ecog cropped" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.749 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1668 MB</p>
+<img src="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_4_ecog_cropped_002.png" alt="plot bcic iv 4 ecog cropped" class = "sphx-glr-single-img"/></section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Schirrmeister, R.T., Springenberg, J.T., Fiederer, L.D.J., Glasstetter, M.,
+Eggensperger, K., Tangermann, M., Hutter, F., Burgard, W. and Ball, T. (2017),
+Deep learning with convolutional neural networks for EEG decoding and visualization.
+Hum. Brain Mapping, 38: 5391-5420. <a class="reference external" href="https://doi.org/10.1002/hbm.23730">https://doi.org/10.1002/hbm.23730</a>.</p>
+</aside>
+</aside>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.337 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1879 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-bcic-iv-4-ecog-cropped-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/10fc813a8f78253f4bf301264950f5c1/plot_bcic_iv_4_ecog_cropped.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bcic_iv_4_ecog_cropped.ipynb</span></code></a></p>
@@ -1035,6 +1043,7 @@ Extract loss and accuracy values for plotting from history object</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-results">Plot Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
   </nav></div>
 

@@ -502,7 +502,7 @@
 to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="fingers-flexion-decoding-on-bcic-iv-4-ecog-dataset">
-<span id="sphx-glr-auto-examples-applied-examples-plot-bcic-iv-4-ecog-trial-py"></span><h1>Fingers flexion decoding on BCIC IV 4 ECoG Dataset<a class="headerlink" href="#fingers-flexion-decoding-on-bcic-iv-4-ecog-dataset" title="Link to this heading">#</a></h1>
+<span id="bcic-iv-4-ecog-decoding"></span><span id="sphx-glr-auto-examples-applied-examples-plot-bcic-iv-4-ecog-trial-py"></span><h1>Fingers flexion decoding on BCIC IV 4 ECoG Dataset<a class="headerlink" href="#fingers-flexion-decoding-on-bcic-iv-4-ecog-dataset" title="Link to this heading">#</a></h1>
 <p>This tutorial shows you how to train and test deep learning models with
 Braindecode on ECoG BCI IV competition dataset 4. For this dataset we will
 predict 5 regression targets corresponding to flexion of each finger.
@@ -542,8 +542,7 @@ and are recorded with sampling frequency equals to 25 Hz.</p>
 <h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
 <p>Now we apply preprocessing like bandpass filtering to our dataset. You
 can either apply functions provided by
-<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html">mne.Raw</a> or
-<a class="reference external" href="https://mne.tools/0.11/generated/mne.Epochs.html#mne.Epochs">mne.Epochs</a>
+<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> or <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>
 or apply your own functions, either to the MNE object or the underlying
 numpy array.</p>
 <div class="admonition note">
@@ -556,8 +555,7 @@ decoding other preprocessing steps may be needed.</p>
 <p class="admonition-title">Note</p>
 <p>These prepocessings are now directly applied to the loaded
 data, and not on-the-fly applied as transformations in
-PyTorch-libraries like
-<a class="reference external" href="https://pytorch.org/docs/stable/torchvision/index.html">torchvision</a>.</p>
+PyTorch-libraries like <a class="reference external" href="https://pytorch.org/vision/stable/index.html">torchvision</a>.</p>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">,</span>
@@ -577,13 +575,13 @@ to run this example. To obtain results on the whole datasets you should remove t
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BCICompetitionIVDataset4.html#braindecode.datasets.BCICompetitionIVDataset4" title="braindecode.datasets.BCICompetitionIVDataset4" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="p">[</span><a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">30</span><span class="p">)])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.bcicomp.BCICompetitionIVDataset4 object at 0x7f7dc6d8a240&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.bcicomp.BCICompetitionIVDataset4 object at 0x7fe7f8685370&gt;
 </pre></div>
 </div>
 <p>In time series targets setup, targets variables are stored in mne.Raw object as channels
 of type <cite>misc</cite>. Thus those channels have to be selected for further processing. However,
 many mne functions ignore <cite>misc</cite> channels and perform operations only on data channels
-(see <a class="reference external" href="https://mne.tools/stable/glossary.html#term-data-channels">https://mne.tools/stable/glossary.html#term-data-channels</a>).</p>
+(see <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-data-channels">MNE’s glossary on data channels</a>).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors</span></a> <span class="o">=</span> <span class="p">[</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;pick_types&quot;</span><span class="p">,</span> <span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
     <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;ecog&quot;</span><span class="p">),</span>  <span class="c1"># Convert from V to uV</span>
@@ -638,15 +636,15 @@ We encourage you to find your own way to use braindecode models to predict finer
 <section id="split-dataset-into-train-valid-and-test">
 <h3>Split dataset into train, valid, and test<a class="headerlink" href="#split-dataset-into-train-valid-and-test" title="Link to this heading">#</a></h3>
 <p>We can easily split the dataset using additional info stored in the
-description attribute, in this case <code class="docutils literal notranslate"><span class="pre">session</span></code> column. We select <cite>train</cite> dataset
-for training and validation and <cite>test</cite> for final evaluation.</p>
+description attribute, in this case <code class="docutils literal notranslate"><span class="pre">session</span></code> column. We select <code class="docutils literal notranslate"><span class="pre">train</span></code> dataset
+for training and validation and <code class="docutils literal notranslate"><span class="pre">test</span></code> for final evaluation.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subsets</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows_dataset</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
 <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.Subset" title="torch.utils.data.Subset" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_set</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subsets</span></a><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_set</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subsets</span></a><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>We can split train dataset into training and validation datasets using
-<code class="docutils literal notranslate"><span class="pre">sklearn.model_selection.train_test_split</span></code> and <code class="docutils literal notranslate"><span class="pre">torch.utils.data.Subset</span></code>.</p>
+<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="(in scikit-learn v1.6)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.train_test_split()</span></code></a> and <a class="reference external" href="https://pytorch.org/docs/stable/data.html#torch.utils.data.Subset" title="(in PyTorch v2.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Subset</span></code></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="sklearn.model_selection.train_test_split" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">train_test_split</span></a>
 
@@ -669,7 +667,7 @@ learning with convolutional neural networks for EEG decoding and
 visualization</a>. These models are
 pure <a class="reference external" href="https://pytorch.org">PyTorch</a> deep learning models, therefore
 to use your own model, it just has to be a normal PyTorch
-<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.Module">nn.Module</a>.</p>
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.util</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
 
@@ -706,10 +704,10 @@ to use your own model, it just has to be a normal PyTorch
 </section>
 <section id="training">
 <h2>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h2>
-<p>Now we train the network! EEGRegressor is a Braindecode object
-responsible for managing the training of neural networks. It inherits
-from skorch.NeuralNetRegressor, so the training logic is the same as in
-<a class="reference external" href="https://skorch.readthedocs.io/en/stable/">Skorch</a>.</p>
+<p>Now we train the network! <a class="reference internal" href="../../generated/braindecode.regressor.EEGRegressor.html#braindecode.regressor.EEGRegressor" title="braindecode.regressor.EEGRegressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.regressor.EEGRegressor</span></code></a>
+is a Braindecode object responsible for managing the training of neural networks.
+It inherits from <a class="reference external" href="https://skorch.readthedocs.io/en/stable/regressor.html#skorch.regressor.NeuralNetRegressor" title="(in skorch v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.regressor.NeuralNetRegressor</span></code></a>, so the training
+logic is the same as in <a class="reference external" href="https://skorch.readthedocs.io/en/stable">skorch</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In this tutorial, we use some default parameters that we
@@ -781,8 +779,8 @@ in the dataset.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss    train_pearson_r    train_r2    valid_loss    valid_pearson_r    valid_r2      lr     dur
 -------  ------------  -----------------  ----------  ------------  -----------------  ----------  ------  ------
-      1        1.9859             0.0806     -0.8304        5.0944            -0.0381     -1.3224  0.0006  6.4972
-      2        1.2818             0.3930     -0.0261        4.1415            -0.0461     -0.8881  0.0000  6.3749
+      1        1.9859             0.0806     -0.8304        5.0944            -0.0381     -1.3224  0.0006  6.4293
+      2        1.2818             0.3930     -0.0261        4.1415            -0.0461     -0.8881  0.0000  6.3236
 </pre></div>
 </div>
 <p>Obtaining predictions and targets for the test, train, and validation dataset</p>
@@ -897,7 +895,7 @@ Extract loss and accuracy values for plotting from history object</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_bcic_iv_4_ecog_trial_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_4_ecog_trial_002.png" alt="plot bcic iv 4 ecog trial" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.965 seconds)</p>
+<img src="../../_images/sphx_glr_plot_bcic_iv_4_ecog_trial_002.png" srcset="../../_images/sphx_glr_plot_bcic_iv_4_ecog_trial_002.png" alt="plot bcic iv 4 ecog trial" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.516 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  734 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-applied-examples-plot-bcic-iv-4-ecog-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
