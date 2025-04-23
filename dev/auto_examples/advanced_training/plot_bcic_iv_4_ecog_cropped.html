@@ -595,7 +595,7 @@ To obtain full results whole datasets should be used.</p>
 <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_set</span></a><span class="p">,</span> <span class="p">[</span><a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">24</span><span class="p">)],</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f5766bea2d0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;braindecode.datasets.base.BaseConcatDataset object at 0x7f8981e3c290&gt;
 </pre></div>
 </div>
 <p>In time series targets setup, targets variables are stored in mne.Raw object as channels
@@ -651,7 +651,7 @@ predefined convolutional neural network architectures for raw
 time-domain EEG. Here, we use the <a class="reference internal" href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShallowFBCSPNet</span></code></a> model from <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. These models are
 pure <a class="reference external" href="https://pytorch.org">PyTorch</a> deep learning models, therefore
 to use your own model, it just has to be a normal PyTorch
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>.</p>
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">ShallowFBCSPNet</span></a>
@@ -689,33 +689,34 @@ to use your own model, it just has to be a normal PyTorch
 <span class="nb">print</span><span class="p">(</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>============================================================================================================================================
-Layer (type (var_name):depth-idx)        Input Shape               Output Shape              Param #                   Kernel Shape
-============================================================================================================================================
-ShallowFBCSPNet (ShallowFBCSPNet)        [1, 62, 1000]             [1, 1, 60]                --                        --
-├─SafeLog (pool_nonlin_exp): 1-1         [1, 62, 1000]             [1, 62, 1000]             --                        --
-├─Ensure4d (ensuredims): 1-2             [1, 62, 1000]             [1, 62, 1000, 1]          --                        --
-├─Rearrange (dimshuffle): 1-3            [1, 62, 1000, 1]          [1, 1, 1000, 62]          --                        --
-├─CombinedConv (conv_time_spat): 1-4     [1, 1, 1000, 62]          [1, 40, 976, 1]           100,240                   --
-├─BatchNorm2d (bnorm): 1-5               [1, 40, 976, 1]           [1, 40, 976, 1]           80                        --
-├─Expression (conv_nonlin_exp): 1-6      [1, 40, 976, 1]           [1, 40, 976, 1]           --                        --
-├─AvgPool2d (pool): 1-7                  [1, 40, 976, 1]           [1, 40, 61, 1]            --                        [75, 1]
-├─SafeLog (pool_nonlin_exp): 1-8         [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
-├─Dropout (drop): 1-9                    [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
-├─Sequential (final_layer): 1-10         [1, 40, 61, 1]            [1, 1, 60]                --                        --
-│    └─Conv2d (conv_classifier): 2-1     [1, 40, 61, 1]            [1, 1, 60, 1]             81                        [2, 1]
-│    └─Expression (squeeze): 2-2         [1, 1, 60, 1]             [1, 1, 60]                --                        --
-============================================================================================================================================
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>=================================================================================================================================================
+Layer (type (var_name):depth-idx)             Input Shape               Output Shape              Param #                   Kernel Shape
+=================================================================================================================================================
+ShallowFBCSPNet (ShallowFBCSPNet)             [1, 62, 1000]             [1, 1, 60]                --                        --
+├─SafeLog (pool_nonlin_exp): 1-1              [1, 62, 1000]             [1, 62, 1000]             --                        --
+├─Ensure4d (ensuredims): 1-2                  [1, 62, 1000]             [1, 62, 1000, 1]          --                        --
+├─Rearrange (dimshuffle): 1-3                 [1, 62, 1000, 1]          [1, 1, 1000, 62]          --                        --
+├─CombinedConv (conv_time_spat): 1-4          [1, 1, 1000, 62]          [1, 40, 976, 1]           100,240                   --
+├─BatchNorm2d (bnorm): 1-5                    [1, 40, 976, 1]           [1, 40, 976, 1]           80                        --
+├─Expression (conv_nonlin_exp): 1-6           [1, 40, 976, 1]           [1, 40, 976, 1]           --                        --
+├─AvgPool2d (pool): 1-7                       [1, 40, 976, 1]           [1, 40, 61, 1]            --                        [75, 1]
+├─SafeLog (pool_nonlin_exp): 1-8              [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
+├─Dropout (drop): 1-9                         [1, 40, 61, 1]            [1, 40, 61, 1]            --                        --
+├─Sequential (final_layer): 1-10              [1, 40, 61, 1]            [1, 1, 60]                --                        --
+│    └─Conv2d (conv_classifier): 2-1          [1, 40, 61, 1]            [1, 1, 60, 1]             81                        [2, 1]
+│    └─SqueezeFinalOutput (squeeze): 2-2      [1, 1, 60, 1]             [1, 1, 60]                --                        --
+│    │    └─Rearrange (squeeze): 3-1          [1, 1, 60, 1]             [1, 1, 60]                --                        --
+=================================================================================================================================================
 Total params: 100,401
 Trainable params: 100,401
 Non-trainable params: 0
 Total mult-adds (Units.MEGABYTES): 0.00
-============================================================================================================================================
+=================================================================================================================================================
 Input size (MB): 0.25
 Forward/backward pass size (MB): 0.31
 Params size (MB): 0.00
 Estimated Total Size (MB): 0.56
-============================================================================================================================================
+=================================================================================================================================================
 </pre></div>
 </div>
 <p>To know the models’ receptive field, we calculate the shape of model
@@ -850,14 +851,14 @@ in the dataset.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    r2_train    r2_valid    train_loss    valid_loss      lr     dur
 -------  ----------  ----------  ------------  ------------  ------  ------
-      1     -1.6902     -0.1796        1.9048        2.7409  0.0006  4.3163
-      2     -0.4685     -1.4428        1.2980        5.6986  0.0006  4.1998
-      3      0.1027     -0.7988        1.0566        4.1977  0.0005  4.2150
-      4      0.2576     -0.7423        0.7952        4.0658  0.0004  4.2020
-      5      0.4070     -0.6200        0.7970        3.7821  0.0002  4.2026
-      6      0.4323     -0.6516        0.6464        3.8563  0.0001  4.1986
-      7      0.4362     -0.6534        0.6931        3.8602  0.0000  4.2145
-      8      0.4389     -0.6385        0.6387        3.8255  0.0000  4.2141
+      1     -0.3411     -1.1395        1.7131        4.9934  0.0006  4.5226
+      2      0.1217     -0.8671        1.2512        4.3610  0.0006  4.5195
+      3      0.0400     -0.8067        1.0241        4.2227  0.0005  4.4183
+      4      0.2754     -0.5804        0.7041        3.6882  0.0004  4.4410
+      5      0.4202     -0.5842        0.7908        3.6978  0.0002  4.4300
+      6      0.4114     -0.5328        0.6600        3.5766  0.0001  4.4192
+      7      0.4611     -0.5641        0.6749        3.6510  0.0000  4.4235
+      8      0.4632     -0.5713        0.5886        3.6679  0.0000  4.4240
 </pre></div>
 </div>
 <p>Obtaining predictions and targets for the test, train, and validation dataset</p>
@@ -936,7 +937,7 @@ pipeline which may be not optimal for ECoG.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Correlation coefficient for each dimension: &quot;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.round.html#numpy.round" title="numpy.round" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">round</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr_coeffs</span></a><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Correlation coefficient for each dimension:  [-0.06]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Correlation coefficient for each dimension:  [-0.05]
 </pre></div>
 </div>
 <p>Now we use the history stored by Skorch throughout training to plot
@@ -990,8 +991,8 @@ Deep learning with convolutional neural networks for EEG decoding and visualizat
 Hum. Brain Mapping, 38: 5391-5420. <a class="reference external" href="https://doi.org/10.1002/hbm.23730">https://doi.org/10.1002/hbm.23730</a>.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 9.374 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1138 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 23.266 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1505 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-bcic-iv-4-ecog-cropped-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/10fc813a8f78253f4bf301264950f5c1/plot_bcic_iv_4_ecog_cropped.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bcic_iv_4_ecog_cropped.ipynb</span></code></a></p>
