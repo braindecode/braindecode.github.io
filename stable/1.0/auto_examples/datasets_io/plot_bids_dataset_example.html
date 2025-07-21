@@ -1,0 +1,1806 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BIDS Dataset Example &#8212; Braindecode 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=09706775" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=a12e3537"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-7Q43R82K6D');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/datasets_io/plot_bids_dataset_example';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Custom Dataset Example" href="plot_custom_dataset_example.html" />
+    <link rel="prev" title="Benchmarking preprocessing with parallelization and serialization" href="plot_benchmark_preprocessing.html" />
+    <link rel="canonical" href="braindecode.org/index.html" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_symbol.png" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_symbol.png" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models_summary.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models_summary.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model_building/index.html">Basic model building and training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Loading and organizing data</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_training/index.html">Advanced neural network training strategies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Loading and organizing data</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">BIDS Dataset Example</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-datasets-io-plot-bids-dataset-example-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="bids-dataset-example">
+<span id="sphx-glr-auto-examples-datasets-io-plot-bids-dataset-example-py"></span><span id="id1"></span><h1>BIDS Dataset Example<a class="headerlink" href="#bids-dataset-example" title="Link to this heading">#</a></h1>
+<p>In this example, we show how to fetch and prepare a BIDS dataset for usage
+with Braindecode.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">openneuro</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../source/braindecode.datasets.html#braindecode.datasets.BIDSDataset" title="braindecode.datasets.BIDSDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BIDSDataset</span></a>
+</pre></div>
+</div>
+<p>First, we download a collection of (fake/empty) BIDS datasets.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import tempfile</span>
+<span class="c1"># data_dir = tempfile.mkdtemp()</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><span class="s2">&quot;~/mne_data/openneuro/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a> <span class="o">=</span> <span class="s2">&quot;ds004745&quot;</span>  <span class="c1"># 200Mb dataset</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">/</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a>
+
+<span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.exists" title="pathlib.Path.exists" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">dataset_root</span><span class="o">.</span><span class="n">exists</span></a><span class="p">():</span>
+    <span class="n">openneuro</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">,</span> <span class="n">target_dir</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>👋 Hello! This is openneuro-py 2025.1.0. Great to see you! 🤗
+
+   👉 Please report problems 🤯 and bugs 🪲 at
+      https://github.com/hoechenberger/openneuro-py/issues
+
+🌍 Preparing to download ds004745 …
+
+📁 Traversing directories for ds004745 : 0 entities [00:00, ? entities/s]
+📁 Traversing directories for ds004745 : 7 entities [00:00, 13.12 entities/s]
+📁 Traversing directories for ds004745 : 10 entities [00:00,  9.87 entities/s]
+📁 Traversing directories for ds004745 : 14 entities [00:01,  8.32 entities/s]
+📁 Traversing directories for ds004745 : 18 entities [00:02,  8.12 entities/s]
+📁 Traversing directories for ds004745 : 22 entities [00:02,  7.48 entities/s]
+📁 Traversing directories for ds004745 : 26 entities [00:03,  7.58 entities/s]
+📁 Traversing directories for ds004745 : 29 entities [00:03,  9.10 entities/s]
+📥 Retrieving up to 29 files (5 concurrent downloads).
+
+README:   0%|          | 0.00/435 [00:00&lt;?, ?B/s]
+
+
+CHANGES:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
+
+
+participants.json:   0%|          | 0.00/79.0 [00:00&lt;?, ?B/s]
+
+
+dataset_description.json:   0%|          | 0.00/543 [00:00&lt;?, ?B/s]
+
+
+participants.tsv:   0%|          | 0.00/63.0 [00:00&lt;?, ?B/s]
+
+
+task-unnamed_events.json:   0%|          | 0.00/1.88k [00:00&lt;?, ?B/s]
+
+
+sub-002_task-unnamed_channels.tsv:   0%|          | 0.00/96.0 [00:00&lt;?, ?B/s]
+
+
+sub-001_task-unnamed_channels.tsv:   0%|          | 0.00/96.0 [00:00&lt;?, ?B/s]
+
+
+sub-001_task-unnamed_events.tsv:   0%|          | 0.00/1.50k [00:00&lt;?, ?B/s]
+
+
+sub-002_task-unnamed_eeg.json:   0%|          | 0.00/621 [00:00&lt;?, ?B/s]
+
+
+sub-001_task-unnamed_eeg.json:   0%|          | 0.00/621 [00:00&lt;?, ?B/s]
+
+
+sub-002_task-unnamed_events.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
+
+
+sub-003_task-unnamed_channels.tsv:   0%|          | 0.00/96.0 [00:00&lt;?, ?B/s]
+
+
+sub-003_task-unnamed_eeg.json:   0%|          | 0.00/621 [00:00&lt;?, ?B/s]
+
+
+sub-003_task-unnamed_events.tsv:   0%|          | 0.00/1.51k [00:00&lt;?, ?B/s]
+
+
+sub-002_task-unnamed_eeg.set:   0%|          | 0.00/41.9M [00:00&lt;?, ?B/s]
+sub-002_task-unnamed_eeg.set:   0%|          | 78.0k/41.9M [00:00&lt;01:03, 691kB/s]
+
+sub-004_task-unnamed_channels.tsv:   0%|          | 0.00/96.0 [00:00&lt;?, ?B/s]
+
+
+
+sub-004_task-unnamed_eeg.json:   0%|          | 0.00/621 [00:00&lt;?, ?B/s]
+sub-002_task-unnamed_eeg.set:   0%|          | 196k/41.9M [00:00&lt;00:55, 794kB/s]
+
+
+
+sub-003_task-unnamed_eeg.set:   0%|          | 0.00/39.7M [00:00&lt;?, ?B/s]
+sub-002_task-unnamed_eeg.set:   2%|▏         | 809k/41.9M [00:00&lt;00:14, 2.94MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   0%|          | 0.00/42.0M [00:00&lt;?, ?B/s]
+
+sub-003_task-unnamed_eeg.set:   0%|          | 83.5k/39.7M [00:00&lt;01:21, 512kB/s]
+sub-002_task-unnamed_eeg.set:   3%|▎         | 1.27M/41.9M [00:00&lt;00:11, 3.69MB/s]
+
+
+
+sub-005_task-unnamed_channels.tsv:   0%|          | 0.00/96.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+sub-004_task-unnamed_eeg.set:   0%|          | 83.5k/42.0M [00:00&lt;01:26, 507kB/s]
+
+
+
+sub-004_task-unnamed_events.tsv:   0%|          | 0.00/1.56k [00:00&lt;?, ?B/s]
+
+
+
+
+sub-002_task-unnamed_eeg.set:   8%|▊         | 3.37M/41.9M [00:00&lt;00:04, 8.78MB/s]
+
+sub-003_task-unnamed_eeg.set:   0%|          | 152k/39.7M [00:00&lt;01:34, 438kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   0%|          | 135k/42.0M [00:00&lt;01:30, 484kB/s]
+sub-002_task-unnamed_eeg.set:  15%|█▍        | 6.11M/41.9M [00:00&lt;00:02, 14.7MB/s]
+
+sub-003_task-unnamed_eeg.set:   0%|          | 203k/39.7M [00:00&lt;01:32, 447kB/s]
+sub-002_task-unnamed_eeg.set:  19%|█▉        | 8.15M/41.9M [00:00&lt;00:02, 14.7MB/s]
+
+sub-003_task-unnamed_eeg.set:   1%|          | 271k/39.7M [00:00&lt;01:19, 523kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   0%|          | 203k/42.0M [00:00&lt;01:40, 435kB/s]
+
+
+
+sub-005_task-unnamed_events.tsv:   0%|          | 0.00/1.50k [00:00&lt;?, ?B/s]
+
+
+
+
+sub-002_task-unnamed_eeg.set:  27%|██▋       | 11.5M/41.9M [00:00&lt;00:01, 20.2MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   0%|          | 0.00/38.9M [00:00&lt;?, ?B/s]
+
+
+sub-004_task-unnamed_eeg.set:   1%|          | 288k/42.0M [00:00&lt;01:35, 459kB/s]
+
+sub-003_task-unnamed_eeg.set:   1%|          | 339k/39.7M [00:00&lt;01:29, 462kB/s]
+sub-002_task-unnamed_eeg.set:  34%|███▍      | 14.4M/41.9M [00:01&lt;00:01, 23.0MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   0%|          | 94.0k/38.9M [00:00&lt;01:16, 533kB/s]
+sub-002_task-unnamed_eeg.set:  40%|███▉      | 16.7M/41.9M [00:01&lt;00:01, 20.3MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   1%|          | 390k/42.0M [00:00&lt;01:25, 508kB/s]
+
+sub-003_task-unnamed_eeg.set:   1%|          | 407k/39.7M [00:00&lt;01:34, 438kB/s]
+
+
+
+
+sub-005_task-unnamed_eeg.json:   0%|          | 0.00/621 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+
+
+sub-005_task-unnamed_eeg.set:   1%|          | 366k/38.9M [00:00&lt;00:26, 1.51MB/s]
+sub-002_task-unnamed_eeg.set:  45%|████▌     | 19.0M/41.9M [00:01&lt;00:01, 20.7MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   2%|▏         | 655k/38.9M [00:00&lt;00:19, 2.06MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   1%|          | 492k/42.0M [00:00&lt;01:19, 546kB/s]
+
+sub-003_task-unnamed_eeg.set:   1%|▏         | 509k/39.7M [00:01&lt;01:22, 501kB/s]
+sub-002_task-unnamed_eeg.set:  51%|█████     | 21.2M/41.9M [00:01&lt;00:01, 20.7MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   2%|▏         | 995k/38.9M [00:00&lt;00:15, 2.56MB/s]
+sub-002_task-unnamed_eeg.set:  56%|█████▌    | 23.4M/41.9M [00:01&lt;00:00, 21.0MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   3%|▎         | 1.24M/38.9M [00:00&lt;00:15, 2.62MB/s]
+
+
+
+
+sub-006_task-unnamed_channels.tsv:   0%|          | 0.00/96.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+sub-003_task-unnamed_eeg.set:   2%|▏         | 611k/39.7M [00:01&lt;01:18, 521kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   1%|▏         | 577k/42.0M [00:01&lt;01:23, 518kB/s]
+sub-002_task-unnamed_eeg.set:  62%|██████▏   | 25.9M/41.9M [00:01&lt;00:00, 22.5MB/s]
+
+sub-003_task-unnamed_eeg.set:   2%|▏         | 679k/39.7M [00:01&lt;01:13, 558kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   1%|▏         | 645k/42.0M [00:01&lt;01:18, 555kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   4%|▍         | 1.67M/38.9M [00:00&lt;00:14, 2.76MB/s]
+sub-002_task-unnamed_eeg.set:  68%|██████▊   | 28.5M/41.9M [00:01&lt;00:00, 24.0MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   5%|▌         | 2.13M/38.9M [00:00&lt;00:11, 3.27MB/s]
+sub-002_task-unnamed_eeg.set:  74%|███████▎  | 30.9M/41.9M [00:01&lt;00:00, 24.1MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   2%|▏         | 730k/42.0M [00:01&lt;01:20, 535kB/s]
+
+sub-003_task-unnamed_eeg.set:   2%|▏         | 764k/39.7M [00:01&lt;01:16, 536kB/s]
+
+
+
+
+sub-006_task-unnamed_eeg.json:   0%|          | 0.00/621 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+
+
+sub-005_task-unnamed_eeg.set:   7%|▋         | 2.65M/38.9M [00:00&lt;00:09, 3.87MB/s]
+sub-002_task-unnamed_eeg.set:  79%|███████▉  | 33.2M/41.9M [00:01&lt;00:00, 24.1MB/s]
+
+sub-003_task-unnamed_eeg.set:   2%|▏         | 849k/39.7M [00:01&lt;01:07, 600kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   2%|▏         | 832k/42.0M [00:01&lt;01:07, 636kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   8%|▊         | 3.13M/38.9M [00:01&lt;00:09, 4.07MB/s]
+sub-002_task-unnamed_eeg.set:  86%|████████▌ | 36.0M/41.9M [00:02&lt;00:00, 25.7MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:   9%|▉         | 3.56M/38.9M [00:01&lt;00:09, 4.05MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   2%|▏         | 900k/42.0M [00:01&lt;01:19, 539kB/s]
+
+sub-003_task-unnamed_eeg.set:   2%|▏         | 917k/39.7M [00:01&lt;01:19, 515kB/s]
+sub-002_task-unnamed_eeg.set:  92%|█████████▏| 38.5M/41.9M [00:02&lt;00:00, 24.7MB/s]
+
+
+
+
+sub-006_task-unnamed_events.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+
+
+sub-005_task-unnamed_eeg.set:  11%|█         | 4.13M/38.9M [00:01&lt;00:08, 4.53MB/s]
+sub-002_task-unnamed_eeg.set:  97%|█████████▋| 40.8M/41.9M [00:02&lt;00:00, 22.8MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   2%|▏         | 0.98M/42.0M [00:01&lt;01:17, 553kB/s]
+
+sub-003_task-unnamed_eeg.set:   3%|▎         | 0.99M/39.7M [00:02&lt;01:15, 538kB/s]
+
+
+
+
+sub-005_task-unnamed_eeg.set:  12%|█▏        | 4.79M/38.9M [00:01&lt;00:07, 5.09MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  14%|█▍        | 5.50M/38.9M [00:01&lt;00:06, 5.18MB/s]
+
+sub-003_task-unnamed_eeg.set:   3%|▎         | 1.09M/39.7M [00:02&lt;01:12, 559kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   3%|▎         | 1.08M/42.0M [00:02&lt;01:15, 569kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  16%|█▌        | 6.18M/38.9M [00:01&lt;00:06, 5.69MB/s]
+
+sub-003_task-unnamed_eeg.set:   3%|▎         | 1.19M/39.7M [00:02&lt;01:01, 657kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   3%|▎         | 1.18M/42.0M [00:02&lt;01:04, 661kB/s]
+sub-006_task-unnamed_eeg.set:   0%|          | 0.00/41.2M [00:00&lt;?, ?B/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  18%|█▊        | 7.14M/38.9M [00:01&lt;00:04, 6.89MB/s]
+
+sub-003_task-unnamed_eeg.set:   3%|▎         | 1.28M/39.7M [00:02&lt;01:04, 622kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   3%|▎         | 1.26M/42.0M [00:02&lt;01:08, 627kB/s]
+sub-006_task-unnamed_eeg.set:   0%|          | 83.6k/41.2M [00:00&lt;01:26, 498kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  20%|██        | 7.86M/38.9M [00:01&lt;00:05, 6.31MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   3%|▎         | 1.34M/42.0M [00:02&lt;01:11, 593kB/s]
+
+sub-003_task-unnamed_eeg.set:   3%|▎         | 1.36M/39.7M [00:02&lt;01:08, 587kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  23%|██▎       | 8.85M/38.9M [00:01&lt;00:04, 7.33MB/s]
+sub-006_task-unnamed_eeg.set:   0%|          | 135k/41.2M [00:00&lt;01:51, 388kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  26%|██▌       | 9.97M/38.9M [00:02&lt;00:04, 7.47MB/s]
+
+sub-003_task-unnamed_eeg.set:   4%|▎         | 1.48M/39.7M [00:02&lt;01:04, 624kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   3%|▎         | 1.46M/42.0M [00:02&lt;01:07, 626kB/s]
+sub-006_task-unnamed_eeg.set:   1%|          | 220k/41.2M [00:00&lt;01:36, 446kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  28%|██▊       | 11.0M/38.9M [00:02&lt;00:03, 8.19MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   4%|▎         | 1.56M/42.0M [00:02&lt;01:07, 629kB/s]
+
+sub-003_task-unnamed_eeg.set:   4%|▍         | 1.59M/39.7M [00:02&lt;01:01, 650kB/s]
+sub-006_task-unnamed_eeg.set:   1%|          | 305k/41.2M [00:00&lt;01:30, 472kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  31%|███       | 12.1M/38.9M [00:02&lt;00:03, 9.32MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   4%|▍         | 1.63M/42.0M [00:02&lt;01:06, 635kB/s]
+
+sub-003_task-unnamed_eeg.set:   4%|▍         | 1.66M/39.7M [00:03&lt;01:00, 661kB/s]
+sub-006_task-unnamed_eeg.set:   1%|          | 390k/41.2M [00:00&lt;01:15, 565kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  34%|███▍      | 13.3M/38.9M [00:02&lt;00:02, 9.05MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   4%|▍         | 1.71M/42.0M [00:03&lt;01:01, 686kB/s]
+
+sub-003_task-unnamed_eeg.set:   4%|▍         | 1.76M/39.7M [00:03&lt;00:59, 668kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  37%|███▋      | 14.3M/38.9M [00:02&lt;00:02, 8.97MB/s]
+sub-006_task-unnamed_eeg.set:   1%|          | 458k/41.2M [00:00&lt;01:23, 511kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   4%|▍         | 1.79M/42.0M [00:03&lt;01:02, 675kB/s]
+
+sub-003_task-unnamed_eeg.set:   5%|▍         | 1.84M/39.7M [00:03&lt;00:57, 689kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  39%|███▉      | 15.3M/38.9M [00:02&lt;00:02, 9.36MB/s]
+sub-006_task-unnamed_eeg.set:   1%|          | 527k/41.2M [00:01&lt;01:16, 558kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   4%|▍         | 1.86M/42.0M [00:03&lt;01:04, 650kB/s]
+
+sub-003_task-unnamed_eeg.set:   5%|▍         | 1.91M/39.7M [00:03&lt;00:58, 673kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  42%|████▏     | 16.4M/38.9M [00:02&lt;00:02, 9.92MB/s]
+sub-006_task-unnamed_eeg.set:   1%|▏         | 594k/41.2M [00:01&lt;01:21, 522kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   5%|▍         | 1.92M/42.0M [00:03&lt;01:05, 640kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  47%|████▋     | 18.1M/38.9M [00:02&lt;00:01, 12.2MB/s]
+
+sub-003_task-unnamed_eeg.set:   5%|▌         | 2.01M/39.7M [00:03&lt;00:53, 742kB/s]
+sub-006_task-unnamed_eeg.set:   2%|▏         | 662k/41.2M [00:01&lt;01:17, 552kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   5%|▍         | 2.04M/42.0M [00:03&lt;00:54, 769kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  51%|█████     | 19.7M/38.9M [00:03&lt;00:01, 12.8MB/s]
+
+sub-003_task-unnamed_eeg.set:   5%|▌         | 2.09M/39.7M [00:03&lt;00:53, 743kB/s]
+sub-006_task-unnamed_eeg.set:   2%|▏         | 747k/41.2M [00:01&lt;01:14, 567kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  54%|█████▍    | 21.0M/38.9M [00:03&lt;00:01, 12.6MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   5%|▌         | 2.12M/42.0M [00:03&lt;01:00, 696kB/s]
+
+sub-003_task-unnamed_eeg.set:   5%|▌         | 2.17M/39.7M [00:03&lt;00:53, 732kB/s]
+sub-006_task-unnamed_eeg.set:   2%|▏         | 815k/41.2M [00:01&lt;01:12, 581kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  58%|█████▊    | 22.5M/38.9M [00:03&lt;00:01, 13.5MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   5%|▌         | 2.21M/42.0M [00:03&lt;00:58, 714kB/s]
+
+sub-003_task-unnamed_eeg.set:   6%|▌         | 2.26M/39.7M [00:03&lt;00:53, 739kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  62%|██████▏   | 23.9M/38.9M [00:03&lt;00:01, 13.4MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   5%|▌         | 2.29M/42.0M [00:03&lt;00:55, 744kB/s]
+sub-006_task-unnamed_eeg.set:   2%|▏         | 900k/41.2M [00:01&lt;01:13, 574kB/s]
+
+sub-003_task-unnamed_eeg.set:   6%|▌         | 2.34M/39.7M [00:04&lt;00:52, 743kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  66%|██████▌   | 25.7M/38.9M [00:03&lt;00:00, 14.2MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   6%|▌         | 2.37M/42.0M [00:04&lt;00:55, 753kB/s]
+
+sub-003_task-unnamed_eeg.set:   6%|▌         | 2.44M/39.7M [00:04&lt;00:48, 805kB/s]
+sub-006_task-unnamed_eeg.set:   2%|▏         | 0.98M/41.2M [00:01&lt;01:12, 583kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  71%|███████   | 27.6M/38.9M [00:03&lt;00:00, 15.9MB/s]
+
+
+sub-004_task-unnamed_eeg.set:   6%|▌         | 2.47M/42.0M [00:04&lt;00:52, 784kB/s]
+
+sub-003_task-unnamed_eeg.set:   6%|▋         | 2.52M/39.7M [00:04&lt;00:49, 791kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  77%|███████▋  | 29.8M/38.9M [00:03&lt;00:00, 18.0MB/s]
+sub-006_task-unnamed_eeg.set:   3%|▎         | 1.06M/41.2M [00:02&lt;01:06, 633kB/s]
+
+sub-003_task-unnamed_eeg.set:   7%|▋         | 2.61M/39.7M [00:04&lt;00:53, 721kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   6%|▌         | 2.57M/42.0M [00:04&lt;00:55, 750kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  81%|████████  | 31.5M/38.9M [00:03&lt;00:00, 17.8MB/s]
+sub-006_task-unnamed_eeg.set:   3%|▎         | 1.14M/41.2M [00:02&lt;01:12, 581kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   6%|▋         | 2.65M/42.0M [00:04&lt;00:54, 755kB/s]
+
+sub-003_task-unnamed_eeg.set:   7%|▋         | 2.72M/39.7M [00:04&lt;00:47, 809kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  86%|████████▌ | 33.3M/38.9M [00:03&lt;00:00, 16.7MB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  91%|█████████ | 35.2M/38.9M [00:03&lt;00:00, 16.7MB/s]
+sub-006_task-unnamed_eeg.set:   3%|▎         | 1.24M/41.2M [00:02&lt;01:11, 589kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   7%|▋         | 2.77M/42.0M [00:04&lt;00:54, 759kB/s]
+
+sub-003_task-unnamed_eeg.set:   7%|▋         | 2.82M/39.7M [00:04&lt;00:51, 755kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  95%|█████████▍| 36.9M/38.9M [00:04&lt;00:00, 16.7MB/s]
+
+sub-003_task-unnamed_eeg.set:   7%|▋         | 2.92M/39.7M [00:04&lt;00:47, 807kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   7%|▋         | 2.87M/42.0M [00:04&lt;00:51, 802kB/s]
+sub-006_task-unnamed_eeg.set:   3%|▎         | 1.36M/41.2M [00:02&lt;01:06, 633kB/s]
+
+
+
+sub-005_task-unnamed_eeg.set:  99%|█████████▉| 38.5M/38.9M [00:04&lt;00:00, 16.2MB/s]
+
+
+
+
+
+sub-003_task-unnamed_eeg.set:   8%|▊         | 3.04M/39.7M [00:04&lt;00:47, 815kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   7%|▋         | 2.99M/42.0M [00:04&lt;00:50, 802kB/s]
+sub-006_task-unnamed_eeg.set:   4%|▎         | 1.46M/41.2M [00:02&lt;01:06, 627kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   7%|▋         | 3.09M/42.0M [00:04&lt;00:48, 837kB/s]
+
+sub-003_task-unnamed_eeg.set:   8%|▊         | 3.15M/39.7M [00:05&lt;00:44, 870kB/s]
+sub-006_task-unnamed_eeg.set:   4%|▍         | 1.58M/41.2M [00:02&lt;01:03, 656kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   8%|▊         | 3.20M/42.0M [00:05&lt;00:46, 872kB/s]
+
+sub-003_task-unnamed_eeg.set:   8%|▊         | 3.25M/39.7M [00:05&lt;00:44, 853kB/s]
+sub-006_task-unnamed_eeg.set:   4%|▍         | 1.68M/41.2M [00:02&lt;00:56, 736kB/s]
+
+sub-003_task-unnamed_eeg.set:   8%|▊         | 3.34M/39.7M [00:05&lt;00:44, 855kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   8%|▊         | 3.29M/42.0M [00:05&lt;00:46, 868kB/s]
+
+sub-003_task-unnamed_eeg.set:   9%|▊         | 3.45M/39.7M [00:05&lt;00:41, 919kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   8%|▊         | 3.39M/42.0M [00:05&lt;00:45, 881kB/s]
+sub-006_task-unnamed_eeg.set:   4%|▍         | 1.76M/41.2M [00:03&lt;01:00, 680kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   8%|▊         | 3.50M/42.0M [00:05&lt;00:44, 906kB/s]
+sub-006_task-unnamed_eeg.set:   5%|▍         | 1.86M/41.2M [00:03&lt;00:54, 761kB/s]
+
+sub-003_task-unnamed_eeg.set:   9%|▉         | 3.57M/39.7M [00:05&lt;00:42, 895kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   9%|▊         | 3.60M/42.0M [00:05&lt;00:43, 931kB/s]
+
+sub-003_task-unnamed_eeg.set:   9%|▉         | 3.68M/39.7M [00:05&lt;00:39, 946kB/s]
+sub-006_task-unnamed_eeg.set:   5%|▍         | 1.94M/41.2M [00:03&lt;00:59, 696kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   9%|▉         | 3.70M/42.0M [00:05&lt;00:43, 933kB/s]
+sub-006_task-unnamed_eeg.set:   5%|▍         | 2.04M/41.2M [00:03&lt;00:53, 772kB/s]
+
+sub-003_task-unnamed_eeg.set:  10%|▉         | 3.80M/39.7M [00:05&lt;00:40, 933kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   9%|▉         | 3.82M/42.0M [00:05&lt;00:42, 939kB/s]
+
+sub-003_task-unnamed_eeg.set:  10%|▉         | 3.92M/39.7M [00:05&lt;00:39, 947kB/s]
+sub-006_task-unnamed_eeg.set:   5%|▌         | 2.12M/41.2M [00:03&lt;00:58, 703kB/s]
+
+
+sub-004_task-unnamed_eeg.set:   9%|▉         | 3.92M/42.0M [00:05&lt;00:42, 949kB/s]
+
+sub-003_task-unnamed_eeg.set:  10%|█         | 4.03M/39.7M [00:06&lt;00:39, 956kB/s]
+sub-006_task-unnamed_eeg.set:   5%|▌         | 2.22M/41.2M [00:03&lt;00:52, 781kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  10%|▉         | 4.02M/42.0M [00:05&lt;00:41, 948kB/s]
+
+sub-003_task-unnamed_eeg.set:  10%|█         | 4.15M/39.7M [00:06&lt;00:36, 1.01MB/s]
+sub-006_task-unnamed_eeg.set:   6%|▌         | 2.31M/41.2M [00:03&lt;00:58, 702kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  10%|▉         | 4.15M/42.0M [00:06&lt;00:39, 1.00MB/s]
+
+sub-003_task-unnamed_eeg.set:  11%|█         | 4.25M/39.7M [00:06&lt;00:37, 984kB/s]
+sub-006_task-unnamed_eeg.set:   6%|▌         | 2.41M/41.2M [00:03&lt;00:51, 786kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  10%|█         | 4.25M/42.0M [00:06&lt;00:39, 993kB/s]
+
+sub-003_task-unnamed_eeg.set:  11%|█         | 4.36M/39.7M [00:06&lt;00:38, 965kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  10%|█         | 4.35M/42.0M [00:06&lt;00:40, 978kB/s]
+sub-006_task-unnamed_eeg.set:   6%|▌         | 2.52M/41.2M [00:04&lt;00:54, 741kB/s]
+
+sub-003_task-unnamed_eeg.set:  11%|█▏        | 4.50M/39.7M [00:06&lt;00:34, 1.08MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  11%|█         | 4.48M/42.0M [00:06&lt;00:39, 1.00MB/s]
+
+sub-003_task-unnamed_eeg.set:  12%|█▏        | 4.61M/39.7M [00:06&lt;00:34, 1.07MB/s]
+sub-006_task-unnamed_eeg.set:   6%|▋         | 2.65M/41.2M [00:04&lt;00:52, 773kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  11%|█         | 4.60M/42.0M [00:06&lt;00:39, 997kB/s]
+
+sub-003_task-unnamed_eeg.set:  12%|█▏        | 4.73M/39.7M [00:06&lt;00:36, 1.01MB/s]
+sub-006_task-unnamed_eeg.set:   7%|▋         | 2.79M/41.2M [00:04&lt;00:51, 787kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  11%|█▏        | 4.75M/42.0M [00:06&lt;00:37, 1.05MB/s]
+
+sub-003_task-unnamed_eeg.set:  12%|█▏        | 4.86M/39.7M [00:06&lt;00:34, 1.06MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  12%|█▏        | 4.86M/42.0M [00:06&lt;00:37, 1.04MB/s]
+
+sub-003_task-unnamed_eeg.set:  13%|█▎        | 4.98M/39.7M [00:06&lt;00:35, 1.03MB/s]
+sub-006_task-unnamed_eeg.set:   7%|▋         | 2.94M/41.2M [00:04&lt;00:48, 829kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  12%|█▏        | 5.01M/42.0M [00:06&lt;00:36, 1.07MB/s]
+
+sub-003_task-unnamed_eeg.set:  13%|█▎        | 5.10M/39.7M [00:07&lt;00:33, 1.08MB/s]
+sub-006_task-unnamed_eeg.set:   7%|▋         | 3.09M/41.2M [00:04&lt;00:46, 861kB/s]
+
+sub-003_task-unnamed_eeg.set:  13%|█▎        | 5.21M/39.7M [00:07&lt;00:33, 1.08MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  12%|█▏        | 5.13M/42.0M [00:07&lt;00:36, 1.06MB/s]
+
+sub-003_task-unnamed_eeg.set:  13%|█▎        | 5.34M/39.7M [00:07&lt;00:33, 1.08MB/s]
+sub-006_task-unnamed_eeg.set:   8%|▊         | 3.24M/41.2M [00:05&lt;00:45, 875kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  13%|█▎        | 5.29M/42.0M [00:07&lt;00:33, 1.13MB/s]
+
+sub-003_task-unnamed_eeg.set:  14%|█▍        | 5.48M/39.7M [00:07&lt;00:30, 1.16MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  13%|█▎        | 5.41M/42.0M [00:07&lt;00:34, 1.10MB/s]
+sub-006_task-unnamed_eeg.set:   8%|▊         | 3.39M/41.2M [00:05&lt;00:44, 892kB/s]
+
+sub-003_task-unnamed_eeg.set:  14%|█▍        | 5.59M/39.7M [00:07&lt;00:31, 1.15MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  13%|█▎        | 5.56M/42.0M [00:07&lt;00:34, 1.12MB/s]
+
+sub-003_task-unnamed_eeg.set:  14%|█▍        | 5.73M/39.7M [00:07&lt;00:31, 1.12MB/s]
+sub-006_task-unnamed_eeg.set:   9%|▊         | 3.53M/41.2M [00:05&lt;00:43, 899kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  14%|█▎        | 5.68M/42.0M [00:07&lt;00:33, 1.14MB/s]
+
+sub-003_task-unnamed_eeg.set:  15%|█▍        | 5.86M/39.7M [00:07&lt;00:29, 1.19MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  14%|█▍        | 5.79M/42.0M [00:07&lt;00:33, 1.14MB/s]
+sub-006_task-unnamed_eeg.set:   9%|▉         | 3.69M/41.2M [00:05&lt;00:43, 910kB/s]
+
+sub-003_task-unnamed_eeg.set:  15%|█▌        | 5.98M/39.7M [00:07&lt;00:30, 1.16MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  14%|█▍        | 5.96M/42.0M [00:07&lt;00:31, 1.20MB/s]
+
+sub-003_task-unnamed_eeg.set:  15%|█▌        | 6.12M/39.7M [00:08&lt;00:29, 1.19MB/s]
+sub-006_task-unnamed_eeg.set:   9%|▉         | 3.85M/41.2M [00:05&lt;00:41, 940kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  15%|█▍        | 6.09M/42.0M [00:07&lt;00:30, 1.23MB/s]
+
+sub-003_task-unnamed_eeg.set:  16%|█▌        | 6.27M/39.7M [00:08&lt;00:28, 1.24MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  15%|█▍        | 6.21M/42.0M [00:08&lt;00:30, 1.22MB/s]
+sub-006_task-unnamed_eeg.set:  10%|▉         | 4.02M/41.2M [00:05&lt;00:40, 967kB/s]
+
+sub-003_task-unnamed_eeg.set:  16%|█▌        | 6.41M/39.7M [00:08&lt;00:27, 1.28MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  15%|█▌        | 6.39M/42.0M [00:08&lt;00:28, 1.30MB/s]
+sub-006_task-unnamed_eeg.set:  10%|█         | 4.17M/41.2M [00:05&lt;00:35, 1.09MB/s]
+
+sub-003_task-unnamed_eeg.set:  17%|█▋        | 6.56M/39.7M [00:08&lt;00:27, 1.27MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  16%|█▌        | 6.54M/42.0M [00:08&lt;00:27, 1.33MB/s]
+sub-006_task-unnamed_eeg.set:  10%|█         | 4.28M/41.2M [00:06&lt;00:39, 993kB/s]
+
+sub-003_task-unnamed_eeg.set:  17%|█▋        | 6.72M/39.7M [00:08&lt;00:25, 1.37MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  16%|█▌        | 6.71M/42.0M [00:08&lt;00:25, 1.43MB/s]
+
+sub-003_task-unnamed_eeg.set:  17%|█▋        | 6.87M/39.7M [00:08&lt;00:24, 1.38MB/s]
+sub-006_task-unnamed_eeg.set:  11%|█         | 4.43M/41.2M [00:06&lt;00:39, 975kB/s]
+
+
+sub-004_task-unnamed_eeg.set:  16%|█▋        | 6.89M/42.0M [00:08&lt;00:24, 1.47MB/s]
+
+sub-003_task-unnamed_eeg.set:  18%|█▊        | 7.05M/39.7M [00:08&lt;00:23, 1.44MB/s]
+sub-006_task-unnamed_eeg.set:  11%|█         | 4.60M/41.2M [00:06&lt;00:33, 1.13MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  17%|█▋        | 7.05M/42.0M [00:08&lt;00:24, 1.47MB/s]
+
+sub-003_task-unnamed_eeg.set:  18%|█▊        | 7.22M/39.7M [00:08&lt;00:22, 1.52MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  17%|█▋        | 7.24M/42.0M [00:08&lt;00:23, 1.58MB/s]
+sub-006_task-unnamed_eeg.set:  11%|█▏        | 4.71M/41.2M [00:06&lt;00:37, 1.02MB/s]
+
+sub-003_task-unnamed_eeg.set:  19%|█▊        | 7.40M/39.7M [00:08&lt;00:21, 1.61MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  18%|█▊        | 7.44M/42.0M [00:08&lt;00:22, 1.64MB/s]
+sub-006_task-unnamed_eeg.set:  12%|█▏        | 4.86M/41.2M [00:06&lt;00:33, 1.14MB/s]
+
+sub-003_task-unnamed_eeg.set:  19%|█▉        | 7.57M/39.7M [00:08&lt;00:20, 1.61MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  18%|█▊        | 7.64M/42.0M [00:08&lt;00:21, 1.67MB/s]
+sub-006_task-unnamed_eeg.set:  12%|█▏        | 4.98M/41.2M [00:06&lt;00:37, 1.02MB/s]
+
+sub-003_task-unnamed_eeg.set:  20%|█▉        | 7.77M/39.7M [00:09&lt;00:20, 1.66MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  19%|█▊        | 7.84M/42.0M [00:09&lt;00:20, 1.77MB/s]
+sub-006_task-unnamed_eeg.set:  12%|█▏        | 5.13M/41.2M [00:06&lt;00:33, 1.15MB/s]
+
+sub-003_task-unnamed_eeg.set:  20%|██        | 7.98M/39.7M [00:09&lt;00:18, 1.82MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  19%|█▉        | 8.05M/42.0M [00:09&lt;00:19, 1.82MB/s]
+
+sub-003_task-unnamed_eeg.set:  21%|██        | 8.17M/39.7M [00:09&lt;00:18, 1.78MB/s]
+sub-006_task-unnamed_eeg.set:  13%|█▎        | 5.25M/41.2M [00:07&lt;00:36, 1.02MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  20%|█▉        | 8.28M/42.0M [00:09&lt;00:18, 1.88MB/s]
+
+sub-003_task-unnamed_eeg.set:  21%|██        | 8.40M/39.7M [00:09&lt;00:16, 1.96MB/s]
+sub-006_task-unnamed_eeg.set:  13%|█▎        | 5.41M/41.2M [00:07&lt;00:31, 1.18MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  20%|██        | 8.52M/42.0M [00:09&lt;00:17, 2.03MB/s]
+
+sub-003_task-unnamed_eeg.set:  22%|██▏       | 8.60M/39.7M [00:09&lt;00:17, 1.91MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  21%|██        | 8.76M/42.0M [00:09&lt;00:16, 2.06MB/s]
+sub-006_task-unnamed_eeg.set:  13%|█▎        | 5.54M/41.2M [00:07&lt;00:34, 1.08MB/s]
+
+sub-003_task-unnamed_eeg.set:  22%|██▏       | 8.85M/39.7M [00:09&lt;00:15, 2.04MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  21%|██▏       | 9.00M/42.0M [00:09&lt;00:16, 2.16MB/s]
+sub-006_task-unnamed_eeg.set:  14%|█▍        | 5.69M/41.2M [00:07&lt;00:31, 1.20MB/s]
+
+sub-003_task-unnamed_eeg.set:  23%|██▎       | 9.10M/39.7M [00:09&lt;00:14, 2.19MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  22%|██▏       | 9.21M/42.0M [00:09&lt;00:15, 2.19MB/s]
+
+sub-003_task-unnamed_eeg.set:  23%|██▎       | 9.33M/39.7M [00:09&lt;00:15, 2.12MB/s]
+sub-006_task-unnamed_eeg.set:  14%|█▍        | 5.83M/41.2M [00:07&lt;00:33, 1.09MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  23%|██▎       | 9.44M/42.0M [00:09&lt;00:15, 2.26MB/s]
+
+sub-003_task-unnamed_eeg.set:  24%|██▍       | 9.58M/39.7M [00:09&lt;00:14, 2.25MB/s]
+sub-006_task-unnamed_eeg.set:  15%|█▍        | 5.99M/41.2M [00:07&lt;00:29, 1.25MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  23%|██▎       | 9.73M/42.0M [00:09&lt;00:13, 2.45MB/s]
+
+sub-003_task-unnamed_eeg.set:  25%|██▍       | 9.86M/39.7M [00:10&lt;00:12, 2.45MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  24%|██▍       | 9.98M/42.0M [00:10&lt;00:13, 2.44MB/s]
+sub-006_task-unnamed_eeg.set:  15%|█▍        | 6.12M/41.2M [00:07&lt;00:33, 1.11MB/s]
+
+sub-003_task-unnamed_eeg.set:  25%|██▌       | 10.1M/39.7M [00:10&lt;00:12, 2.48MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  24%|██▍       | 10.2M/42.0M [00:10&lt;00:13, 2.53MB/s]
+sub-006_task-unnamed_eeg.set:  15%|█▌        | 6.31M/41.2M [00:08&lt;00:32, 1.13MB/s]
+
+sub-003_task-unnamed_eeg.set:  26%|██▌       | 10.4M/39.7M [00:10&lt;00:12, 2.45MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  25%|██▌       | 10.5M/42.0M [00:10&lt;00:12, 2.59MB/s]
+
+sub-003_task-unnamed_eeg.set:  27%|██▋       | 10.7M/39.7M [00:10&lt;00:11, 2.54MB/s]
+sub-006_task-unnamed_eeg.set:  16%|█▌        | 6.49M/41.2M [00:08&lt;00:27, 1.31MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  26%|██▌       | 10.8M/42.0M [00:10&lt;00:12, 2.71MB/s]
+
+sub-003_task-unnamed_eeg.set:  28%|██▊       | 11.0M/39.7M [00:10&lt;00:10, 2.86MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  27%|██▋       | 11.2M/42.0M [00:10&lt;00:10, 2.98MB/s]
+sub-006_task-unnamed_eeg.set:  16%|█▌        | 6.62M/41.2M [00:08&lt;00:30, 1.18MB/s]
+
+sub-003_task-unnamed_eeg.set:  28%|██▊       | 11.3M/39.7M [00:10&lt;00:10, 2.89MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  27%|██▋       | 11.5M/42.0M [00:10&lt;00:10, 2.92MB/s]
+sub-006_task-unnamed_eeg.set:  17%|█▋        | 6.84M/41.2M [00:08&lt;00:25, 1.42MB/s]
+
+sub-003_task-unnamed_eeg.set:  29%|██▉       | 11.6M/39.7M [00:10&lt;00:10, 2.88MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  28%|██▊       | 11.8M/42.0M [00:10&lt;00:10, 2.97MB/s]
+sub-006_task-unnamed_eeg.set:  17%|█▋        | 6.99M/41.2M [00:08&lt;00:27, 1.30MB/s]
+
+sub-003_task-unnamed_eeg.set:  30%|███       | 11.9M/39.7M [00:10&lt;00:09, 2.93MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  29%|██▉       | 12.1M/42.0M [00:10&lt;00:10, 3.11MB/s]
+sub-006_task-unnamed_eeg.set:  17%|█▋        | 7.17M/41.2M [00:08&lt;00:24, 1.44MB/s]
+
+sub-003_task-unnamed_eeg.set:  31%|███       | 12.3M/39.7M [00:10&lt;00:08, 3.27MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  30%|██▉       | 12.5M/42.0M [00:10&lt;00:09, 3.38MB/s]
+
+sub-003_task-unnamed_eeg.set:  32%|███▏      | 12.7M/39.7M [00:11&lt;00:08, 3.33MB/s]
+sub-006_task-unnamed_eeg.set:  18%|█▊        | 7.37M/41.2M [00:08&lt;00:25, 1.40MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  31%|███       | 12.8M/42.0M [00:10&lt;00:09, 3.33MB/s]
+
+sub-003_task-unnamed_eeg.set:  33%|███▎      | 13.0M/39.7M [00:11&lt;00:08, 3.30MB/s]
+sub-006_task-unnamed_eeg.set:  18%|█▊        | 7.60M/41.2M [00:08&lt;00:21, 1.65MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  32%|███▏      | 13.2M/42.0M [00:11&lt;00:08, 3.46MB/s]
+
+sub-003_task-unnamed_eeg.set:  34%|███▍      | 13.4M/39.7M [00:11&lt;00:07, 3.50MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  32%|███▏      | 13.6M/42.0M [00:11&lt;00:08, 3.61MB/s]
+sub-006_task-unnamed_eeg.set:  19%|█▉        | 7.78M/41.2M [00:09&lt;00:23, 1.50MB/s]
+
+sub-003_task-unnamed_eeg.set:  35%|███▍      | 13.9M/39.7M [00:11&lt;00:07, 3.75MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  34%|███▎      | 14.1M/42.0M [00:11&lt;00:07, 3.91MB/s]
+sub-006_task-unnamed_eeg.set:  19%|█▉        | 8.03M/41.2M [00:09&lt;00:19, 1.77MB/s]
+
+sub-003_task-unnamed_eeg.set:  36%|███▌      | 14.3M/39.7M [00:11&lt;00:06, 3.87MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  34%|███▍      | 14.5M/42.0M [00:11&lt;00:07, 3.81MB/s]
+
+sub-003_task-unnamed_eeg.set:  37%|███▋      | 14.7M/39.7M [00:11&lt;00:06, 3.94MB/s]
+sub-006_task-unnamed_eeg.set:  20%|██        | 8.25M/41.2M [00:09&lt;00:20, 1.67MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  36%|███▌      | 14.9M/42.0M [00:11&lt;00:07, 3.98MB/s]
+sub-006_task-unnamed_eeg.set:  21%|██        | 8.48M/41.2M [00:09&lt;00:18, 1.85MB/s]
+
+sub-003_task-unnamed_eeg.set:  38%|███▊      | 15.1M/39.7M [00:11&lt;00:06, 3.80MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  37%|███▋      | 15.4M/42.0M [00:11&lt;00:06, 4.16MB/s]
+
+sub-003_task-unnamed_eeg.set:  39%|███▉      | 15.6M/39.7M [00:11&lt;00:05, 4.39MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  38%|███▊      | 15.9M/42.0M [00:11&lt;00:06, 4.45MB/s]
+sub-006_task-unnamed_eeg.set:  21%|██▏       | 8.76M/41.2M [00:09&lt;00:18, 1.86MB/s]
+
+sub-003_task-unnamed_eeg.set:  41%|████      | 16.1M/39.7M [00:11&lt;00:05, 4.43MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  39%|███▉      | 16.3M/42.0M [00:11&lt;00:06, 4.36MB/s]
+sub-006_task-unnamed_eeg.set:  22%|██▏       | 9.01M/41.2M [00:09&lt;00:16, 2.04MB/s]
+
+sub-003_task-unnamed_eeg.set:  42%|████▏     | 16.5M/39.7M [00:12&lt;00:05, 4.26MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  40%|███▉      | 16.7M/42.0M [00:11&lt;00:05, 4.49MB/s]
+sub-006_task-unnamed_eeg.set:  23%|██▎       | 9.31M/41.2M [00:09&lt;00:16, 2.04MB/s]
+
+sub-003_task-unnamed_eeg.set:  43%|████▎     | 17.0M/39.7M [00:12&lt;00:05, 4.39MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  41%|████      | 17.2M/42.0M [00:12&lt;00:05, 4.70MB/s]
+sub-006_task-unnamed_eeg.set:  23%|██▎       | 9.58M/41.2M [00:09&lt;00:14, 2.22MB/s]
+
+sub-003_task-unnamed_eeg.set:  44%|████▍     | 17.6M/39.7M [00:12&lt;00:04, 5.01MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  42%|████▏     | 17.8M/42.0M [00:12&lt;00:05, 4.95MB/s]
+
+sub-003_task-unnamed_eeg.set:  46%|████▌     | 18.1M/39.7M [00:12&lt;00:04, 5.12MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  44%|████▎     | 18.4M/42.0M [00:12&lt;00:04, 5.06MB/s]
+sub-006_task-unnamed_eeg.set:  24%|██▍       | 9.91M/41.2M [00:10&lt;00:14, 2.22MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  45%|████▍     | 18.9M/42.0M [00:12&lt;00:04, 5.11MB/s]
+
+sub-003_task-unnamed_eeg.set:  47%|████▋     | 18.7M/39.7M [00:12&lt;00:04, 4.88MB/s]
+sub-006_task-unnamed_eeg.set:  25%|██▍       | 10.2M/41.2M [00:10&lt;00:12, 2.52MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  46%|████▋     | 19.4M/42.0M [00:12&lt;00:04, 5.38MB/s]
+
+sub-003_task-unnamed_eeg.set:  48%|████▊     | 19.2M/39.7M [00:12&lt;00:04, 4.98MB/s]
+sub-006_task-unnamed_eeg.set:  26%|██▌       | 10.6M/41.2M [00:10&lt;00:13, 2.42MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  48%|████▊     | 20.0M/42.0M [00:12&lt;00:04, 5.53MB/s]
+
+sub-003_task-unnamed_eeg.set:  50%|█████     | 19.9M/39.7M [00:12&lt;00:03, 5.73MB/s]
+sub-006_task-unnamed_eeg.set:  27%|██▋       | 10.9M/41.2M [00:10&lt;00:11, 2.76MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  49%|████▉     | 20.7M/42.0M [00:12&lt;00:03, 5.94MB/s]
+
+sub-003_task-unnamed_eeg.set:  52%|█████▏    | 20.5M/39.7M [00:12&lt;00:03, 5.89MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  51%|█████     | 21.2M/42.0M [00:12&lt;00:03, 5.77MB/s]
+sub-006_task-unnamed_eeg.set:  27%|██▋       | 11.3M/41.2M [00:10&lt;00:11, 2.62MB/s]
+
+sub-003_task-unnamed_eeg.set:  53%|█████▎    | 21.1M/39.7M [00:12&lt;00:03, 5.41MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  52%|█████▏    | 21.9M/42.0M [00:12&lt;00:03, 5.84MB/s]
+sub-006_task-unnamed_eeg.set:  28%|██▊       | 11.7M/41.2M [00:10&lt;00:10, 2.98MB/s]
+
+sub-003_task-unnamed_eeg.set:  55%|█████▌    | 21.9M/39.7M [00:12&lt;00:03, 6.22MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  54%|█████▍    | 22.6M/42.0M [00:12&lt;00:03, 6.31MB/s]
+
+sub-003_task-unnamed_eeg.set:  57%|█████▋    | 22.6M/39.7M [00:13&lt;00:02, 6.43MB/s]
+sub-006_task-unnamed_eeg.set:  29%|██▉       | 12.1M/41.2M [00:10&lt;00:10, 2.85MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  56%|█████▌    | 23.3M/42.0M [00:13&lt;00:02, 6.62MB/s]
+
+sub-003_task-unnamed_eeg.set:  58%|█████▊    | 23.2M/39.7M [00:13&lt;00:02, 6.06MB/s]
+sub-006_task-unnamed_eeg.set:  30%|███       | 12.5M/41.2M [00:10&lt;00:09, 3.17MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  57%|█████▋    | 24.0M/42.0M [00:13&lt;00:02, 6.47MB/s]
+
+sub-003_task-unnamed_eeg.set:  60%|██████    | 23.8M/39.7M [00:13&lt;00:02, 6.17MB/s]
+sub-006_task-unnamed_eeg.set:  31%|███▏      | 12.9M/41.2M [00:11&lt;00:09, 3.12MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  59%|█████▉    | 24.7M/42.0M [00:13&lt;00:02, 6.64MB/s]
+
+sub-003_task-unnamed_eeg.set:  62%|██████▏   | 24.7M/39.7M [00:13&lt;00:02, 7.01MB/s]
+sub-006_task-unnamed_eeg.set:  32%|███▏      | 13.4M/41.2M [00:11&lt;00:08, 3.59MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  61%|██████    | 25.4M/42.0M [00:13&lt;00:02, 6.77MB/s]
+
+sub-003_task-unnamed_eeg.set:  64%|██████▍   | 25.5M/39.7M [00:13&lt;00:02, 7.32MB/s]
+sub-006_task-unnamed_eeg.set:  33%|███▎      | 13.8M/41.2M [00:11&lt;00:07, 3.71MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  62%|██████▏   | 26.2M/42.0M [00:13&lt;00:02, 7.27MB/s]
+
+sub-003_task-unnamed_eeg.set:  66%|██████▌   | 26.3M/39.7M [00:13&lt;00:02, 6.78MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  64%|██████▍   | 27.1M/42.0M [00:13&lt;00:02, 7.46MB/s]
+sub-006_task-unnamed_eeg.set:  34%|███▍      | 14.2M/41.2M [00:11&lt;00:08, 3.46MB/s]
+
+sub-003_task-unnamed_eeg.set:  68%|██████▊   | 27.0M/39.7M [00:13&lt;00:01, 6.86MB/s]
+sub-006_task-unnamed_eeg.set:  35%|███▌      | 14.6M/41.2M [00:11&lt;00:07, 3.79MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  66%|██████▋   | 27.9M/42.0M [00:13&lt;00:01, 7.56MB/s]
+
+sub-003_task-unnamed_eeg.set:  70%|███████   | 27.8M/39.7M [00:13&lt;00:01, 7.40MB/s]
+sub-006_task-unnamed_eeg.set:  37%|███▋      | 15.1M/41.2M [00:11&lt;00:06, 4.17MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  68%|██████▊   | 28.7M/42.0M [00:13&lt;00:01, 7.72MB/s]
+
+sub-003_task-unnamed_eeg.set:  72%|███████▏  | 28.7M/39.7M [00:13&lt;00:01, 8.06MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  70%|███████   | 29.5M/42.0M [00:13&lt;00:01, 7.99MB/s]
+sub-006_task-unnamed_eeg.set:  38%|███▊      | 15.6M/41.2M [00:11&lt;00:06, 3.86MB/s]
+
+sub-003_task-unnamed_eeg.set:  74%|███████▍  | 29.6M/39.7M [00:14&lt;00:01, 7.96MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  72%|███████▏  | 30.3M/42.0M [00:14&lt;00:01, 7.92MB/s]
+sub-006_task-unnamed_eeg.set:  39%|███▉      | 16.1M/41.2M [00:11&lt;00:06, 4.24MB/s]
+
+sub-003_task-unnamed_eeg.set:  77%|███████▋  | 30.4M/39.7M [00:14&lt;00:01, 8.03MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  74%|███████▍  | 31.2M/42.0M [00:14&lt;00:01, 8.40MB/s]
+sub-006_task-unnamed_eeg.set:  40%|████      | 16.6M/41.2M [00:11&lt;00:05, 4.68MB/s]
+
+sub-003_task-unnamed_eeg.set:  79%|███████▉  | 31.3M/39.7M [00:14&lt;00:01, 8.39MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  77%|███████▋  | 32.2M/42.0M [00:14&lt;00:01, 9.04MB/s]
+
+sub-003_task-unnamed_eeg.set:  81%|████████  | 32.1M/39.7M [00:14&lt;00:00, 8.47MB/s]
+sub-006_task-unnamed_eeg.set:  41%|████▏     | 17.1M/41.2M [00:12&lt;00:05, 4.24MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  79%|███████▉  | 33.1M/42.0M [00:14&lt;00:01, 9.17MB/s]
+
+sub-003_task-unnamed_eeg.set:  83%|████████▎ | 33.0M/39.7M [00:14&lt;00:00, 8.47MB/s]
+sub-006_task-unnamed_eeg.set:  43%|████▎     | 17.6M/41.2M [00:12&lt;00:05, 4.59MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  81%|████████  | 34.0M/42.0M [00:14&lt;00:00, 9.31MB/s]
+
+sub-003_task-unnamed_eeg.set:  85%|████████▌ | 33.9M/39.7M [00:14&lt;00:00, 8.60MB/s]
+sub-006_task-unnamed_eeg.set:  44%|████▍     | 18.2M/41.2M [00:12&lt;00:04, 4.95MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  83%|████████▎ | 34.9M/42.0M [00:14&lt;00:00, 9.17MB/s]
+
+sub-003_task-unnamed_eeg.set:  88%|████████▊ | 34.7M/39.7M [00:14&lt;00:00, 8.66MB/s]
+sub-006_task-unnamed_eeg.set:  45%|████▌     | 18.7M/41.2M [00:12&lt;00:04, 5.01MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  86%|████████▌ | 35.9M/42.0M [00:14&lt;00:00, 9.25MB/s]
+
+sub-003_task-unnamed_eeg.set:  90%|████████▉ | 35.7M/39.7M [00:14&lt;00:00, 9.03MB/s]
+sub-006_task-unnamed_eeg.set:  47%|████▋     | 19.3M/41.2M [00:12&lt;00:05, 4.49MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  88%|████████▊ | 36.9M/42.0M [00:14&lt;00:00, 8.86MB/s]
+
+sub-003_task-unnamed_eeg.set:  92%|█████████▏| 36.7M/39.7M [00:14&lt;00:00, 9.34MB/s]
+sub-006_task-unnamed_eeg.set:  49%|████▊     | 20.0M/41.2M [00:12&lt;00:04, 5.01MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  90%|█████████ | 37.9M/42.0M [00:14&lt;00:00, 8.94MB/s]
+
+sub-003_task-unnamed_eeg.set:  95%|█████████▍| 37.7M/39.7M [00:15&lt;00:00, 9.57MB/s]
+sub-006_task-unnamed_eeg.set:  50%|█████     | 20.7M/41.2M [00:12&lt;00:03, 5.55MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  93%|█████████▎| 39.0M/42.0M [00:14&lt;00:00, 9.53MB/s]
+
+sub-003_task-unnamed_eeg.set:  98%|█████████▊| 38.8M/39.7M [00:15&lt;00:00, 10.1MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  96%|█████████▌| 40.1M/42.0M [00:15&lt;00:00, 10.1MB/s]
+
+
+sub-006_task-unnamed_eeg.set:  52%|█████▏    | 21.3M/41.2M [00:12&lt;00:03, 5.29MB/s]
+
+
+sub-004_task-unnamed_eeg.set:  99%|█████████▉| 41.5M/42.0M [00:15&lt;00:00, 11.0MB/s]
+sub-006_task-unnamed_eeg.set:  53%|█████▎    | 22.0M/41.2M [00:13&lt;00:03, 5.62MB/s]
+
+
+
+sub-006_task-unnamed_eeg.set:  55%|█████▌    | 22.9M/41.2M [00:13&lt;00:03, 6.22MB/s]
+sub-006_task-unnamed_eeg.set:  57%|█████▋    | 23.5M/41.2M [00:13&lt;00:03, 6.10MB/s]
+sub-006_task-unnamed_eeg.set:  59%|█████▉    | 24.3M/41.2M [00:13&lt;00:02, 6.43MB/s]
+sub-006_task-unnamed_eeg.set:  61%|██████    | 25.2M/41.2M [00:13&lt;00:02, 7.08MB/s]
+sub-006_task-unnamed_eeg.set:  63%|██████▎   | 25.9M/41.2M [00:13&lt;00:02, 6.84MB/s]
+sub-006_task-unnamed_eeg.set:  65%|██████▍   | 26.8M/41.2M [00:13&lt;00:02, 7.17MB/s]
+sub-006_task-unnamed_eeg.set:  67%|██████▋   | 27.8M/41.2M [00:13&lt;00:01, 7.86MB/s]
+sub-006_task-unnamed_eeg.set:  69%|██████▉   | 28.5M/41.2M [00:13&lt;00:01, 7.63MB/s]
+sub-006_task-unnamed_eeg.set:  72%|███████▏  | 29.5M/41.2M [00:14&lt;00:01, 7.87MB/s]
+sub-006_task-unnamed_eeg.set:  74%|███████▍  | 30.5M/41.2M [00:14&lt;00:01, 8.71MB/s]
+sub-006_task-unnamed_eeg.set:  76%|███████▌  | 31.4M/41.2M [00:14&lt;00:01, 8.26MB/s]
+sub-006_task-unnamed_eeg.set:  79%|███████▊  | 32.5M/41.2M [00:14&lt;00:01, 8.61MB/s]
+sub-006_task-unnamed_eeg.set:  82%|████████▏ | 33.6M/41.2M [00:14&lt;00:00, 9.38MB/s]
+sub-006_task-unnamed_eeg.set:  84%|████████▍ | 34.5M/41.2M [00:14&lt;00:00, 9.16MB/s]
+sub-006_task-unnamed_eeg.set:  87%|████████▋ | 35.7M/41.2M [00:14&lt;00:00, 9.49MB/s]
+sub-006_task-unnamed_eeg.set:  90%|████████▉ | 36.9M/41.2M [00:14&lt;00:00, 10.4MB/s]
+sub-006_task-unnamed_eeg.set:  92%|█████████▏| 37.9M/41.2M [00:14&lt;00:00, 9.89MB/s]
+sub-006_task-unnamed_eeg.set:  94%|█████████▍| 38.9M/41.2M [00:15&lt;00:00, 9.84MB/s]
+sub-006_task-unnamed_eeg.set:  97%|█████████▋| 40.0M/41.2M [00:15&lt;00:00, 10.3MB/s]
+sub-006_task-unnamed_eeg.set: 100%|█████████▉| 41.1M/41.2M [00:15&lt;00:00, 10.6MB/s]
+
+✅ Finished downloading ds004745.
+
+🧠 Please enjoy your brains.
+</pre></div>
+</div>
+<p>Now, loading the dataset is simply a one-line command:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../source/braindecode.datasets.html#braindecode.datasets.BIDSDataset" title="braindecode.datasets.BIDSDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_ds</span></a> <span class="o">=</span> <a href="../../source/braindecode.datasets.html#braindecode.datasets.BIDSDataset" title="braindecode.datasets.BIDSDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BIDSDataset</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: Data will be preloaded. preload=False or a string preload is not supported when the data is stored in the .set file
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;1&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;2&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;3&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;4&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;5&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;6&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;7&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;8&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: Data will be preloaded. preload=False or a string preload is not supported when the data is stored in the .set file
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;1&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;2&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;3&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;4&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;5&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;6&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;7&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;8&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: Data will be preloaded. preload=False or a string preload is not supported when the data is stored in the .set file
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;1&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;2&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;3&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;4&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;5&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;6&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;7&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;8&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: Data will be preloaded. preload=False or a string preload is not supported when the data is stored in the .set file
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;1&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;2&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;3&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;4&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;5&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;6&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;7&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;8&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: Data will be preloaded. preload=False or a string preload is not supported when the data is stored in the .set file
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;1&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;2&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;3&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;4&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;5&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;6&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;7&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+/Users/baristim/Projects/braindecode-1/braindecode/datasets/bids.py:191: RuntimeWarning: No BIDS -&gt; MNE mapping found for channel type &quot;n/a&quot;. Type of channel &quot;8&quot; will be set to &quot;misc&quot;.
+  raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+</pre></div>
+</div>
+<p>And we can see that the events of this dataset are set in the <code class="docutils literal notranslate"><span class="pre">.annotations</span></code> attribute of the raw data:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_ds</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 58 segments: 1 (6), 10 (10), 2 (6), 3 (6), 4 (6), 5 (6), 6 ...&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.469 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  771 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-bids-dataset-example-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5030717acb00990b394b83314b0797d9/plot_bids_dataset_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bids_dataset_example.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/30a91bd000b8ca7de09186a80855e015/plot_bids_dataset_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bids_dataset_example.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/785b84cf493399f25344bd9959efcad5/plot_bids_dataset_example.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_bids_dataset_example.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+  
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_benchmark_preprocessing.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Benchmarking preprocessing with parallelization and serialization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_custom_dataset_example.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Custom Dataset Example</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+    <script src="https://braindecode.org/versionwarning.js"></script>
+    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2025, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
