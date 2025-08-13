@@ -731,14 +731,14 @@ to facilitate the usage, you can also simply pass the name of any braindecode mo
 The wrapper automatically finds and instantiates the model for you.
 If you want to pass parameters to your model, you can give them to the wrapper
 with the prefix <code class="docutils literal notranslate"><span class="pre">module__</span></code>.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.dataset</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidSplit</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 
-<span class="n">net</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
+<span class="n">net</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
     <span class="s2">&quot;ShallowFBCSPNet&quot;</span><span class="p">,</span>
     <span class="n">module__final_conv_length</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-    <span class="n">train_split</span><span class="o">=</span><a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="n">ValidSplit</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
     <span class="c1"># To train a neural network you need validation split, here, we use 20%.</span>
 <span class="p">)</span>
 </pre></div>
@@ -751,21 +751,21 @@ wrapper will automatically infer them, along with some other signal-related para
 from the input data at training time.</p>
 <p>Now that we have our model wrapped in a scikit-learn-compatible classifier,
 we can train it by simply calling the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier.fit" title="skorch.classifier.NeuralNetClassifier.fit" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-method"><span class="n">net</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    valid_acc    valid_loss     dur
 -------  -----------  ------------  ------
-      1       0.2500       17.1435  0.0145
-      2       0.2500       17.1435  0.0076
-      3       0.2500       17.1435  0.0070
-      4       0.2500       17.1435  0.0069
-      5       0.2500       17.1435  0.0070
-      6       0.2500       17.1435  0.0069
-      7       0.2500       17.1435  0.0069
-      8       0.2500       17.1435  0.0069
-      9       0.2500       17.1435  0.0069
-     10       0.2500       17.1435  0.0069
+      1       0.3000       26.4081  0.0182
+      2       0.3000       26.4081  0.0079
+      3       0.3000       26.4081  0.0074
+      4       0.3000       26.4081  0.0073
+      5       0.3000       26.4081  0.0072
+      6       0.3000       26.4081  0.0073
+      7       0.3000       26.4081  0.0073
+      8       0.3000       26.4081  0.0073
+      9       0.3000       26.4081  0.0071
+     10       0.3000       26.4081  0.0071
 
 &lt;class &#39;braindecode.classifier.EEGClassifier&#39;&gt;[initialized](
   module_==================================================================================================================================================
@@ -867,7 +867,7 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.987 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.384 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  886 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
