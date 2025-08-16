@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset &#8212; Braindecode 1.0.0 documentation</title>
+    <title>Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset &#8212; Braindecode 1.1.1 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a12e3537"></script>
+    <script src="../../_static/documentation_options.js?v=d727d969"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -59,7 +59,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -71,7 +71,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0" />
+  <meta name="docsearch:version" content="1.1" />
 
   </head>
   
@@ -425,6 +425,7 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 </ul>
 </details></li>
@@ -757,8 +758,8 @@ have found to work well for EEG motor decoding, however we strongly
 encourage you to perform your own hyperparameter optimization using
 cross validation on your training data.</p>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LRScheduler</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">skorch.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">predefined_split</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.callbacks</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LRScheduler</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skorch.helper</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/helper.html#skorch.helper.predefined_split" title="skorch.helper.predefined_split" class="sphx-glr-backref-module-skorch-helper sphx-glr-backref-type-py-function"><span class="n">predefined_split</span></a>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGRegressor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.training</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.training.CroppedTimeSeriesEpochScoring.html#braindecode.training.CroppedTimeSeriesEpochScoring" title="braindecode.training.CroppedTimeSeriesEpochScoring" class="sphx-glr-backref-module-braindecode-training sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">CroppedTimeSeriesEpochScoring</span></a><span class="p">,</span> <a href="../../generated/braindecode.training.TimeSeriesLoss.html#braindecode.training.TimeSeriesLoss" title="braindecode.training.TimeSeriesLoss" class="sphx-glr-backref-module-braindecode-training sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TimeSeriesLoss</span></a>
@@ -776,13 +777,13 @@ cross validation on your training data.</p>
     <span class="n">criterion</span><span class="o">=</span><a href="../../generated/braindecode.training.TimeSeriesLoss.html#braindecode.training.TimeSeriesLoss" title="braindecode.training.TimeSeriesLoss" class="sphx-glr-backref-module-braindecode-training sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TimeSeriesLoss</span></a><span class="p">,</span>
     <span class="n">criterion__loss_function</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.mse_loss.html#torch.nn.functional.mse_loss" title="torch.nn.functional.mse_loss" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">mse_loss</span></a><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html#torch.optim.AdamW" title="torch.optim.AdamW" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span></a><span class="p">,</span>
-    <span class="n">train_split</span><span class="o">=</span><span class="n">predefined_split</span><span class="p">(</span><span class="n">valid_set</span><span class="p">),</span>
+    <span class="n">train_split</span><span class="o">=</span><a href="https://skorch.readthedocs.io/en/stable/helper.html#skorch.helper.predefined_split" title="skorch.helper.predefined_split" class="sphx-glr-backref-module-skorch-helper sphx-glr-backref-type-py-function"><span class="n">predefined_split</span></a><span class="p">(</span><span class="n">valid_set</span><span class="p">),</span>
     <span class="n">optimizer__lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
     <span class="n">optimizer__weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
     <span class="n">iterator_train__shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
     <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;lr_scheduler&quot;</span><span class="p">,</span> <span class="n">LRScheduler</span><span class="p">(</span><span class="s2">&quot;CosineAnnealingLR&quot;</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">n_epochs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;lr_scheduler&quot;</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LRScheduler</span></a><span class="p">(</span><span class="s2">&quot;CosineAnnealingLR&quot;</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">n_epochs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span>
         <span class="p">(</span>
             <span class="s2">&quot;r2_train&quot;</span><span class="p">,</span>
             <a href="../../generated/braindecode.training.CroppedTimeSeriesEpochScoring.html#braindecode.training.CroppedTimeSeriesEpochScoring" title="braindecode.training.CroppedTimeSeriesEpochScoring" class="sphx-glr-backref-module-braindecode-training sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">CroppedTimeSeriesEpochScoring</span></a><span class="p">(</span>

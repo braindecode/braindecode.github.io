@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>braindecode.regressor.EEGRegressor &#8212; Braindecode 1.0.0 documentation</title>
+    <title>braindecode.regressor.EEGRegressor &#8212; Braindecode 1.1.1 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a12e3537"></script>
+    <script src="../_static/documentation_options.js?v=d727d969"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -59,7 +59,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -71,7 +71,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0" />
+  <meta name="docsearch:version" content="1.1" />
 
   </head>
   
@@ -785,6 +785,41 @@ instance).
 Additional arguments for <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> can be passed using the dunder
 notation, e.g. when initializing the net with <code class="docutils literal notranslate"><span class="pre">compile__dynamic=True</span></code>,
 <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> will be called with <code class="docutils literal notranslate"><span class="pre">dynamic=True</span></code>.</p></li>
+<li><p><strong>use_caching</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em> or </em><em>'auto'</em><em> (</em><em>default='auto'</em><em>)</em>) – Optionally override the caching behavior of scoring callbacks. Callbacks
+such as <code class="xref py py-class docutils literal notranslate"><span class="pre">EpochScoring</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">BatchScoring</span></code> allow to cache
+the inference call to save time when calculating scores during training at
+the expense of memory. In certain situations, e.g. when memory is tight,
+you may want to disable caching. As it is cumbersome to change the setting
+on each callback individually, this parameter allows to override their
+behavior globally.
+By default (<code class="docutils literal notranslate"><span class="pre">'auto'</span></code>), the callbacks will determine if caching is used
+or not. If this argument is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, caching will be disabled on
+all callbacks. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, caching will be enabled on all
+callbacks.
+Implementation note: It is the job of the callbacks to honor this setting.</p></li>
+<li><p><strong>torch_load_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em> or </em><em>None</em><em> (</em><em>default=None</em><em>)</em>) – <p>Additional arguments that will be passed to torch.load when load pickled
+parameters.</p>
+<p>In particular, this is important to because PyTorch will switch (probably
+in version 2.6.0) to only allow weights to be loaded for security reasons
+(i.e weights_only switches from False to True). As a consequence, loading
+pickled parameters may raise an error after upgrading torch because some
+types are used that are considered insecure. In skorch, we will also make
+that switch at the same time. To resolve the error, follow the
+instructions in the torch error message to designate the offending types
+as secure. Only do this if you trust the source of the file.</p>
+<p>If you want to keep loading non-weight types the same way as before,
+please pass:</p>
+<blockquote>
+<div><p>torch_load_kwargs={‘weights_only’: False}</p>
+</div></blockquote>
+<p>You should be aware that this is considered insecure and should only be
+used if you trust the source of the file. However, this does not introduce
+new insecurities, it rather corresponds to the status quo from before
+torch made the switch.</p>
+<p>Another way to avoid this issue is to pass use_safetensors=True when
+calling save_params and load_params. This avoid using pickle in favor of
+the safetensors format, which is secure by design.</p>
+</p></li>
 <li><p><strong>module</strong> – Either the name of one of the braindecode models (see
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">braindecode.models.util.models_dict</span></code>) or directly a PyTorch module.
 When passing directly a torch module, uninstantiated class should be preferred,
@@ -793,7 +828,7 @@ although instantiated modules will also work.</p></li>
 Currently used for callbacks definition.</p></li>
 <li><p><strong>callbacks</strong> (<em>None</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>strings</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>Callback instances</em><em> (</em><em>default=None</em><em>)</em>) – More callbacks, in addition to those returned by
 <code class="docutils literal notranslate"><span class="pre">get_default_callbacks</span></code>. Each callback should inherit from
-<code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.callbacks.Callback</span></code>. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, callbacks can be a
+<a class="reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.Callback" title="(in skorch v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.callbacks.Callback</span></code></a>. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, callbacks can be a
 list of strings specifying <cite>sklearn</cite> scoring functions (for scoring
 functions names see: <a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter">https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter</a>)
 or a list of callbacks where the callback names are inferred from the
@@ -1075,6 +1110,86 @@ value, multiple values, or a sequence.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="braindecode.regressor.EEGRegressor.set_partial_fit_request">
+<span class="sig-name descname"><span class="pre">set_partial_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#braindecode.regressor.EEGRegressor" title="braindecode.regressor.EEGRegressor"><span class="pre">EEGRegressor</span></a></span></span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/../../../../../../opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/sklearn/utils/_metadata_requests.py#L1250-L1294"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.regressor.EEGRegressor.set_partial_fit_request" title="Link to this definition">#</a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">partial_fit</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
+Please see <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">partial_fit</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">partial_fit</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>classes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">classes</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">partial_fit</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="braindecode.regressor.EEGRegressor.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#braindecode.regressor.EEGRegressor" title="braindecode.regressor.EEGRegressor"><span class="pre">EEGRegressor</span></a></span></span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/../../../../../../opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/sklearn/utils/_metadata_requests.py#L1250-L1294"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.regressor.EEGRegressor.set_score_request" title="Link to this definition">#</a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
+Please see <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <div style='clear:both'></div></section>
@@ -1141,6 +1256,8 @@ value, multiple values, or a sequence.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.regressor.EEGRegressor.get_iterator"><code class="docutils literal notranslate"><span class="pre">EEGRegressor.get_iterator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.regressor.EEGRegressor.predict_proba"><code class="docutils literal notranslate"><span class="pre">EEGRegressor.predict_proba()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.regressor.EEGRegressor.predict_trials"><code class="docutils literal notranslate"><span class="pre">EEGRegressor.predict_trials()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.regressor.EEGRegressor.set_partial_fit_request"><code class="docutils literal notranslate"><span class="pre">EEGRegressor.set_partial_fit_request()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.regressor.EEGRegressor.set_score_request"><code class="docutils literal notranslate"><span class="pre">EEGRegressor.set_score_request()</span></code></a></li>
 </ul>
 </li>
 </ul>
