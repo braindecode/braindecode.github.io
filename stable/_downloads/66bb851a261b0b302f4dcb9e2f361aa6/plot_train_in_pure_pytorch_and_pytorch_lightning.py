@@ -1,17 +1,18 @@
-"""
+""".. _train-model-in-pytorch:
+
 Training a Braindecode model in PyTorch
 =======================================
 
 This tutorial shows you how to train a Braindecode model with PyTorch. The data
 preparation and model instantiation steps are identical to that of the tutorial
-`How to train, test and tune your model <./plot_how_train_test_and_tune.html>`__
+:ref:`train-test-tune-model`.
 
 We will use the BCIC IV 2a dataset as a showcase example.
 
 The methods shown can be applied to any standard supervised trial-based decoding setting.
 This tutorial will include additional parts of code like loading and preprocessing,
 defining a model, and other details which are not exclusive to this page (compare
-`Cropped Decoding Tutorial <./plot_bcic_iv_2a_moabb_trial.html>`__). Therefore we
+:ref:`bcic-iv-2a-moabb-trial`). Therefore we
 will not further elaborate on these parts and you can feel free to skip them.
 
 The goal of this tutorial is to present braindecode in the PyTorch perceptive.
@@ -67,7 +68,7 @@ The goal of this tutorial is to present braindecode in the PyTorch perceptive.
 
 ######################################################################
 # Loading the Dataset Structure
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Here, we have a data structure with equal behavior to the Pytorch Dataset.
 
 from braindecode.datasets import MOABBDataset
@@ -83,9 +84,9 @@ dataset = MOABBDataset(dataset_name="BNCI2014_001", subject_ids=[subject_id])
 import numpy as np
 
 from braindecode.preprocessing import (
+    Preprocessor,
     exponential_moving_standardize,
     preprocess,
-    Preprocessor,
 )
 
 low_cut_hz = 4.0  # low cut frequency for filtering
@@ -140,6 +141,7 @@ windows_dataset = create_windows_from_events(
 #
 
 import torch
+
 from braindecode.models import ShallowFBCSPNet
 from braindecode.util import set_random_seeds
 
@@ -153,15 +155,15 @@ set_random_seeds(seed=seed, cuda=cuda)
 n_classes = 4
 classes = list(range(n_classes))
 # Extract number of chans and time steps from dataset
-n_channels = windows_dataset[0][0].shape[0]
-input_window_samples = windows_dataset[0][0].shape[1]
+n_chans = windows_dataset[0][0].shape[0]
+n_times = windows_dataset[0][0].shape[1]
 
 # The ShallowFBCSPNet is a `nn.Sequential` model
 
 model = ShallowFBCSPNet(
-    n_channels,
-    n_classes,
-    input_window_samples=input_window_samples,
+    n_chans=n_chans,
+    n_outputs=n_classes,
+    n_times=n_times,
     final_conv_length="auto",
 )
 
@@ -185,7 +187,7 @@ if cuda:
 ######################################################################
 # We can easily split the dataset using additional info stored in the
 # description attribute, in this case the ``session`` column. We
-# select ``Train`` for training and ``test`` for testing.
+# select ``0train`` for training and ``1test`` for testing.
 # For other datasets, you might have to choose another column.
 #
 # .. note::
@@ -196,8 +198,8 @@ if cuda:
 #
 
 splitted = windows_dataset.split("session")
-train_set = splitted['0train']  # Session train
-test_set = splitted['1test']  # Session evaluation
+train_set = splitted["0train"]  # Session train
+test_set = splitted["1test"]  # Session evaluation
 
 ######################################################################
 # Option 1: Pure PyTorch training loop
@@ -208,8 +210,8 @@ test_set = splitted['1test']  # Session evaluation
 
 
 ######################################################################
-# `model` is an instance of `torch.nn.Module`, and can as such be trained
-# using PyTorch optimization capabilities.
+# ``model`` is an instance of :class:`torch.nn.Module`,
+# and can as such be trained using PyTorch optimization capabilities.
 # The following training scheme is simple as the dataset is only
 # split into two distinct sets (``train_set`` and ``test_set``).
 # This scheme uses no separate validation split and should only be
@@ -236,24 +238,31 @@ weight_decay = 0
 batch_size = 64
 n_epochs = 2
 
-
 ######################################################################
 # The following method runs one training epoch over the dataloader for the
 # given model. It needs a loss function, optimization algorithm, and
 # learning rate updating callback.
 from tqdm import tqdm
+
 # Define a method for training one epoch
 
 
 def train_one_epoch(
-        dataloader: DataLoader, model: Module, loss_fn, optimizer,
-        scheduler: LRScheduler, epoch: int, device, print_batch_stats=True
+    dataloader: DataLoader,
+    model: Module,
+    loss_fn,
+    optimizer,
+    scheduler: LRScheduler,
+    epoch: int,
+    device,
+    print_batch_stats=True,
 ):
     model.train()  # Set the model to training mode
-    train_loss, correct = 0, 0
+    train_loss, correct = 0.0, 0.0
 
-    progress_bar = tqdm(enumerate(dataloader), total=len(dataloader),
-                        disable=not print_batch_stats)
+    progress_bar = tqdm(
+        enumerate(dataloader), total=len(dataloader), disable=not print_batch_stats
+    )
 
     for batch_idx, (X, y, _) in progress_bar:
         X, y = X.to(device), y.to(device)
@@ -280,19 +289,18 @@ def train_one_epoch(
     correct /= len(dataloader.dataset)
     return train_loss / len(dataloader), correct
 
+
 ######################################################################
 # Very similarly, the evaluation function loops over the entire dataloader
 # and accumulate the metrics, but doesn't update the model weights.
 
 
 @torch.no_grad()
-def test_model(
-    dataloader: DataLoader, model: Module, loss_fn, print_batch_stats=True
-):
+def test_model(dataloader: DataLoader, model: Module, loss_fn, print_batch_stats=True):
     size = len(dataloader.dataset)
     n_batches = len(dataloader)
     model.eval()  # Switch to evaluation mode
-    test_loss, correct = 0, 0
+    test_loss, correct = 0.0, 0.0
 
     if print_batch_stats:
         progress_bar = tqdm(enumerate(dataloader), total=len(dataloader))
@@ -309,28 +317,23 @@ def test_model(
 
         if print_batch_stats:
             progress_bar.set_description(
-                f"Batch {batch_idx + 1}/{len(dataloader)}, "
-                f"Loss: {batch_loss:.6f}"
+                f"Batch {batch_idx + 1}/{len(dataloader)}, Loss: {batch_loss:.6f}"
             )
 
     test_loss /= n_batches
     correct /= size
 
-    print(
-        f"Test Accuracy: {100 * correct:.1f}%, Test Loss: {test_loss:.6f}\n"
-    )
+    print(f"Test Accuracy: {100 * correct:.1f}%, Test Loss: {test_loss:.6f}\n")
     return test_loss, correct
 
 
 # Define the optimization
-optimizer = torch.optim.AdamW(model.parameters(),
-                              lr=lr, weight_decay=weight_decay)
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,
-                                                       T_max=n_epochs - 1)
+optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epochs - 1)
 # Define the loss function
 # We used the NNLoss function, which expects log probabilities as input
 # (which is the case for our model output)
-loss_fn = torch.nn.NLLLoss()
+loss_fn = torch.nn.CrossEntropyLoss()
 
 # train_set and test_set are instances of torch Datasets, and can seamlessly be
 # wrapped in data loaders.
@@ -341,7 +344,13 @@ for epoch in range(1, n_epochs + 1):
     print(f"Epoch {epoch}/{n_epochs}: ", end="")
 
     train_loss, train_accuracy = train_one_epoch(
-        train_loader, model, loss_fn, optimizer, scheduler, epoch, device,
+        train_loader,
+        model,
+        loss_fn,
+        optimizer,
+        scheduler,
+        epoch,
+        device,
     )
 
     test_loss, test_accuracy = test_model(test_loader, model, loss_fn)
@@ -353,7 +362,6 @@ for epoch in range(1, n_epochs + 1):
         f"Average Test Loss: {test_loss:.6f}\n"
     )
 
-
 ######################################################################
 # Option 2: Train it with PyTorch Lightning
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -361,7 +369,7 @@ for epoch in range(1, n_epochs + 1):
 #    :alt: Pytorch Lightning logo
 
 ######################################################################
-# Alternatively, lightning provides a nice interface around torch modules
+# Alternatively, `<lightning_>`_ provides a nice interface around torch modules
 # which integrates the previous logic.
 
 
@@ -373,7 +381,7 @@ class LitModule(L.LightningModule):
     def __init__(self, module):
         super().__init__()
         self.module = module
-        self.loss = torch.nn.NLLLoss()
+        self.loss = torch.nn.CrossEntropyLoss()
 
     def training_step(self, batch, batch_idx):
         x, y, _ = batch
@@ -392,10 +400,12 @@ class LitModule(L.LightningModule):
         return metrics
 
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(model.parameters(), lr=lr,
-                                      weight_decay=weight_decay)
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,
-                                                               T_max=n_epochs - 1)
+        optimizer = torch.optim.AdamW(
+            model.parameters(), lr=lr, weight_decay=weight_decay
+        )
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=n_epochs - 1
+        )
         return [optimizer], [scheduler]
 
 
@@ -407,3 +417,7 @@ trainer.fit(lit_model, train_loader)
 
 # After training, you can test the model using the test DataLoader
 trainer.test(dataloaders=test_loader)
+
+######################################################################
+#
+# .. include:: /links.inc
