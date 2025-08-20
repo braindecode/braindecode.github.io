@@ -797,12 +797,9 @@ configuration.</p>
 <ul class="simple">
 <li><p><strong>Type.</strong> Standard multi-head self-attention (MHA) with <code class="docutils literal notranslate"><span class="pre">att_heads</span></code> heads over the token sequence.</p></li>
 <li><p><strong>Shapes.</strong> Input/Output: <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">S_tokens,</span> <span class="pre">D)</span></code>; attention operates along the <code class="docutils literal notranslate"><span class="pre">S_tokens</span></code> axis.</p></li>
-<li><dl class="simple">
-<dt><strong>Role.</strong> Re-weights and integrates evidence across pooled windows, capturing dependencies</dt><dd><p>longer than any single token while leaving channel relationships to the convolutional stem.
-The design is intentionally <em>small</em>—attention refines rather than replaces convolutional feature extraction.</p>
-</dd>
-</dl>
-</li>
+<li><p><strong>Role.</strong> Re-weights and integrates evidence across pooled windows, capturing dependencies
+longer than any single token while leaving channel relationships to the convolutional stem.
+The design is intentionally <em>small</em>—attention refines rather than replaces convolutional feature extraction.</p></li>
 </ul>
 <p class="rubric">Additional Mechanisms</p>
 <ul class="simple">
@@ -814,23 +811,30 @@ refine temporal context before classification.</p>
 </dd>
 </dl>
 </li>
-<li><p><strong>Tokenization knob.</strong> <code class="docutils literal notranslate"><span class="pre">pool_time_length</span></code> and especially <code class="docutils literal notranslate"><span class="pre">pool_time_stride</span></code> set</p></li>
-</ul>
-<p>the number of tokens <code class="docutils literal notranslate"><span class="pre">S_tokens</span></code>. Smaller strides → more tokens and higher attention
+<li><dl class="simple">
+<dt><strong>Tokenization knob.</strong> <code class="docutils literal notranslate"><span class="pre">pool_time_length</span></code> and especially <code class="docutils literal notranslate"><span class="pre">pool_time_stride</span></code> set</dt><dd><p>the number of tokens <code class="docutils literal notranslate"><span class="pre">S_tokens</span></code>. Smaller strides → more tokens and higher attention
 capacity (but higher compute); larger strides → fewer tokens and stronger inductive bias.</p>
-<ul class="simple">
-<li><p><strong>Embedding dimension = filters.</strong> <code class="docutils literal notranslate"><span class="pre">n_filters_time</span></code> serves double duty as both the</p></li>
-</ul>
-<p>number of temporal filters in the stem and the transformer’s embedding size <code class="docutils literal notranslate"><span class="pre">D</span></code>,
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Embedding dimension = filters.</strong> <code class="docutils literal notranslate"><span class="pre">n_filters_time</span></code> serves double duty as both the</dt><dd><p>number of temporal filters in the stem and the transformer’s embedding size <code class="docutils literal notranslate"><span class="pre">D</span></code>,
 simplifying dimensional alignment.</p>
+</dd>
+</dl>
+</li>
+</ul>
 <p class="rubric">Usage and Configuration</p>
 <ul class="simple">
-<li><p><strong>Instantiation.</strong> Choose <code class="docutils literal notranslate"><span class="pre">n_filters_time</span></code> (embedding size <code class="docutils literal notranslate"><span class="pre">D</span></code>) and</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">filter_time_length</span></code> to match the rhythms of interest. Tune
+<li><dl class="simple">
+<dt><strong>Instantiation.</strong> Choose <code class="docutils literal notranslate"><span class="pre">n_filters_time</span></code> (embedding size <code class="docutils literal notranslate"><span class="pre">D</span></code>) and</dt><dd><p><code class="docutils literal notranslate"><span class="pre">filter_time_length</span></code> to match the rhythms of interest. Tune
 <code class="docutils literal notranslate"><span class="pre">pool_time_length/stride</span></code> to trade temporal resolution for sequence length.
 Keep <code class="docutils literal notranslate"><span class="pre">att_depth</span></code> modest (e.g., 4–6) and set <code class="docutils literal notranslate"><span class="pre">att_heads</span></code> to divide <code class="docutils literal notranslate"><span class="pre">D</span></code>.
 <code class="docutils literal notranslate"><span class="pre">final_fc_length=&quot;auto&quot;</span></code> infers the flattened size from PatchEmbedding.</p>
+</dd>
+</dl>
+</li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

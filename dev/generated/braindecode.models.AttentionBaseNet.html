@@ -687,26 +687,155 @@
 <h1>braindecode.models.AttentionBaseNet<a class="headerlink" href="#braindecode-models-attentionbasenet" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.AttentionBaseNet">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">AttentionBaseNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_times=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chans=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_temporal_filters:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_filter_length_inp:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_expansion:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_length_inp:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride_inp:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob_inp:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_filter_length:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_length:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob_attn:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attention_mode:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction_rate:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_mlp:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_idx:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_codewords:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/attentionbasenet.py#L26-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.AttentionBaseNet" title="Link to this definition">#</a></dt>
-<dd><p>AttentionBaseNet from Wimpff M et al. (2023) <a class="reference internal" href="#r523d6c831d64-martin2023" id="id1">[Martin2023]</a>.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">AttentionBaseNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_times=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chans=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_temporal_filters:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_filter_length_inp:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_expansion:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_length_inp:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride_inp:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob_inp:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_filter_length:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_length:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob_attn:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attention_mode:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction_rate:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_mlp:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_idx:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_codewords:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/attentionbasenet.py#L26-L403"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.AttentionBaseNet" title="Link to this definition">#</a></dt>
+<dd><p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Small Attention</span></p>
 <figure class="align-center">
-<img alt="Attention Base Net" src="https://content.cld.iop.org/journals/1741-2552/21/3/036020/revision2/jnead48b9f2_hr.jpg" />
+<a class="reference internal image-reference" href="https://content.cld.iop.org/journals/1741-2552/21/3/036020/revision2/jnead48b9f2_hr.jpg"><img alt="AttentionBaseNet Architecture" src="https://content.cld.iop.org/journals/1741-2552/21/3/036020/revision2/jnead48b9f2_hr.jpg" style="width: 640px;" />
+</a>
 </figure>
-<p>Neural Network from the paper: EEG motor imagery decoding:
-A framework for comparative analysis with channel attention
-mechanisms</p>
-<p>The paper and original code with more details about the methodological
-choices are available at the <a class="reference internal" href="#r523d6c831d64-martin2023" id="id2">[Martin2023]</a> and <a class="reference internal" href="#r523d6c831d64-martincode" id="id3">[MartinCode]</a>.</p>
-<p>The AttentionBaseNet architecture is composed of four modules:
-- Input Block that performs a temporal convolution and a spatial
-convolution.
-- Channel Expansion that modifies the number of channels.
-- An attention block that performs channel attention with several
-options
-- ClassificationHead</p>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.9.</span></p>
-</div>
+<p class="rubric">Architectural Overview</p>
+<p>AttentionBaseNet is a <em>convolution-first</em> network with a <em>channel-attention</em> stage.
+The end-to-end flow is:</p>
+<ul class="simple">
+<li><p>(i) <code class="xref py py-class docutils literal notranslate"><span class="pre">_FeatureExtractor</span></code> learns a temporal filter bank and per-filter spatial
+projections (depthwise across electrodes), then condenses time by pooling;</p></li>
+<li><ol class="lowerroman simple" start="2">
+<li><p><strong>Channel Expansion</strong> uses a <code class="docutils literal notranslate"><span class="pre">1x1</span></code> convolution to set the feature width;</p></li>
+</ol>
+</li>
+<li><p>(iii) <code class="xref py py-class docutils literal notranslate"><span class="pre">_ChannelAttentionBlock</span></code> refines features via depthwise–pointwise temporal
+convs and an optional channel-attention module (SE/CBAM/ECA/…);</p></li>
+<li><ol class="lowerroman simple" start="4">
+<li><p><strong>Classifier</strong> flattens the sequence and applies a linear readout.</p></li>
+</ol>
+</li>
+</ul>
+<p>This design mirrors shallow CNN pipelines (EEGNet-style stem) but inserts a pluggable
+attention unit that <em>re-weights channels</em> (and optionally temporal positions) before
+classification.</p>
+<p class="rubric">Macro Components</p>
+<ul>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_FeatureExtractor</span></code> <strong>(Shallow conv stem → condensed feature map)</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p><strong>Temporal conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>) with kernel <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L_t)</span></code> creates a learned</p></li>
+</ul>
+<p>FIR-like filter bank with <code class="docutils literal notranslate"><span class="pre">n_temporal_filters</span></code> maps.
+- <strong>Depthwise spatial conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>, <code class="docutils literal notranslate"><span class="pre">groups=n_temporal_filters</span></code>)
+with kernel <code class="docutils literal notranslate"><span class="pre">(n_chans,</span> <span class="pre">1)</span></code> learns per-filter spatial projections over the full montage.
+- <strong>BatchNorm → ELU → AvgPool → Dropout</strong> stabilize and downsample time.
+- Output shape: <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">F2,</span> <span class="pre">1,</span> <span class="pre">T₁)</span></code> with <code class="docutils literal notranslate"><span class="pre">F2</span> <span class="pre">=</span> <span class="pre">n_temporal_filters</span> <span class="pre">x</span> <span class="pre">spatial_expansion</span></code>.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Interpretability/robustness.</em> Temporal kernels behave as analyzable FIR filters; the
+depthwise spatial step yields rhythm-specific topographies. Pooling acts as a local
+integrator that reduces variance on short EEG windows.</p>
+<ul>
+<li><p><strong>Channel Expansion</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">1x1</span></code> conv → BN → activation maps <code class="docutils literal notranslate"><span class="pre">F2</span> <span class="pre">→</span> <span class="pre">ch_dim</span></code> without changing</p></li>
+</ul>
+<p>the temporal length <code class="docutils literal notranslate"><span class="pre">T₁</span></code> (shape: <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">ch_dim,</span> <span class="pre">1,</span> <span class="pre">T₁)</span></code>).
+This sets the embedding width for the attention block.</p>
+</div></blockquote>
+</li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ChannelAttentionBlock</span></code> <strong>(temporal refinement + channel attention)</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p><strong>Depthwise temporal conv</strong> <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L_a)</span></code> (groups=``ch_dim``) + <strong>pointwise ``1x1``</strong>,
+BN and activation → preserves shape <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">ch_dim,</span> <span class="pre">1,</span> <span class="pre">T₁)</span></code> while refining timing.</p></li>
+<li><p><strong>Optional attention module</strong> (see <em>Additional Mechanisms</em>) applies channel reweighting
+(some variants also apply temporal gating).</p></li>
+<li><p><strong>AvgPool (1, P₂)</strong> with stride <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">S₂)</span></code> and <strong>Dropout</strong> → outputs
+<code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">ch_dim,</span> <span class="pre">1,</span> <span class="pre">T₂)</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><em>Role.</em> Emphasizes informative channels (and, in certain modes, salient time steps)
+before the classifier; complements the convolutional priors with adaptive re-weighting.</p>
+<ul class="simple">
+<li><p><strong>Classifier (aggregation + readout)</strong></p></li>
+</ul>
+<p><em>Operations.</em> <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Flatten.html#torch.nn.Flatten" title="(in PyTorch v2.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Flatten</span></code></a> → <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a> from
+<code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">ch_dim·T₂)</span></code> to classes.</p>
+<p class="rubric">Convolutional Details</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>Temporal (where time-domain patterns are learned).</strong></dt><dd><p>Wide kernels in the stem (<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L_t)</span></code>) act as a learned filter bank for oscillatory
+bands/transients; the attention block’s depthwise temporal conv (<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L_a)</span></code>) sharpens
+short-term dynamics after downsampling. Pool sizes/strides (<code class="docutils literal notranslate"><span class="pre">P₁,S₁</span></code> then <code class="docutils literal notranslate"><span class="pre">P₂,S₂</span></code>)
+set the token rate and effective temporal resolution.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Spatial (how electrodes are processed).</strong></dt><dd><p>A depthwise spatial conv with kernel <code class="docutils literal notranslate"><span class="pre">(n_chans,</span> <span class="pre">1)</span></code> spans the full montage to
+learn <em>per-temporal-filter</em> spatial projections (no cross-filter mixing at this step),
+mirroring the interpretable spatial stage in shallow CNNs.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Spectral (how frequency content is captured).</strong></dt><dd><p>No explicit Fourier/wavelet transform is used in the stem—spectral selectivity
+emerges from learned temporal kernels. When <code class="docutils literal notranslate"><span class="pre">attention_mode=&quot;fca&quot;</span></code>, a frequency
+channel attention (DCT-based) summarizes frequencies to drive channel weights.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p class="rubric">Attention / Sequential Modules</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>Type.</strong> Channel attention chosen by <code class="docutils literal notranslate"><span class="pre">attention_mode</span></code> (SE, ECA, CBAM, CAT, GSoP,</dt><dd><p>EncNet, GE, GCT, SRM, CATLite). Most operate purely on channels; CBAM/CAT additionally
+include temporal attention.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Shapes.</strong> Input/Output around attention: <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">ch_dim,</span> <span class="pre">1,</span> <span class="pre">T₁)</span></code>. Re-arrangements</dt><dd><p>(if any) are internal to the module; the block returns the same shape before pooling.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Role.</strong> Re-weights channels (and optionally time) to highlight informative sources</dt><dd><p>and suppress distractors, improving SNR ahead of the linear head.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>If the input duration is too short for the configured kernels/pools, the implementation
+<strong>automatically rescales</strong> temporal lengths/strides downward (with a warning) to keep
+shapes valid and preserve the pipeline semantics.</p>
+<p class="rubric">Usage and Configuration</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">n_temporal_filters</span></code>, <code class="docutils literal notranslate"><span class="pre">temporal_filter_length</span></code> and <code class="docutils literal notranslate"><span class="pre">spatial_expansion</span></code>:</dt><dd><p>control the capacity and the number of spatial projections in the stem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">pool_length_inp</span></code>, <code class="docutils literal notranslate"><span class="pre">pool_stride_inp</span></code> then <code class="docutils literal notranslate"><span class="pre">pool_length</span></code>, <code class="docutils literal notranslate"><span class="pre">pool_stride</span></code>:</dt><dd><p>trade temporal resolution for compute; they determine the final sequence length <code class="docutils literal notranslate"><span class="pre">T₂</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ch_dim</span></code>: width after the <code class="docutils literal notranslate"><span class="pre">1x1</span></code> expansion and the effective embedding size for attention.</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">attention_mode</span></code> + its specific hyperparameters (<code class="docutils literal notranslate"><span class="pre">reduction_rate</span></code>,</dt><dd><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>, <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>, <code class="docutils literal notranslate"><span class="pre">freq_idx</span></code>, <code class="docutils literal notranslate"><span class="pre">n_codewords</span></code>, <code class="docutils literal notranslate"><span class="pre">use_mlp</span></code>):
+select and tune the reweighting mechanism.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">drop_prob_inp</span></code> and <code class="docutils literal notranslate"><span class="pre">drop_prob_attn</span></code>: regularize stem and attention stages.</p></li>
+<li><p><strong>Training tips.</strong></p></li>
+</ul>
+<p>Start with moderate pooling (e.g., <code class="docutils literal notranslate"><span class="pre">P₁=75,S₁=15</span></code>) and ELU activations; enable attention
+only after the stem learns stable filters. For small datasets, prefer simpler modes
+(<code class="docutils literal notranslate"><span class="pre">&quot;se&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;eca&quot;</span></code>) before heavier ones (<code class="docutils literal notranslate"><span class="pre">&quot;gsop&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;encnet&quot;</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -771,19 +900,25 @@ the attention mechanism.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If some input signal-related parameters are not specified,
-there will be an attempt to infer them from the other parameters.</p>
+<ul class="simple">
+<li><p>Sequence length after each stage is computed internally; the final classifier expects</p></li>
+</ul>
+<p>a flattened <code class="docutils literal notranslate"><span class="pre">ch_dim</span> <span class="pre">x</span> <span class="pre">T₂</span></code> vector.
+- Attention operates on <em>channel</em> dimension by design; temporal gating exists only in
+specific variants (CBAM/CAT).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.9.</span></p>
+</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r523d6c831d64-martin2023" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>Martin2023<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
 <p>Wimpff, M., Gizzi, L., Zerfowski, J. and Yang, B., 2023.
 EEG motor imagery decoding: A framework for comparative analysis with
 channel attention mechanisms. arXiv preprint arXiv:2310.11198.</p>
 </div>
 <div class="citation" id="r523d6c831d64-martincode" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">MartinCode</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>MartinCode<span class="fn-bracket">]</span></span>
 <p>Wimpff, M., Gizzi, L., Zerfowski, J. and Yang, B.
 GitHub <a class="github reference external" href="https://github.com/martinwimpff/channel-attention">martinwimpff/channel-attention</a> (accessed 2024-03-28)</p>
 </div>
@@ -791,7 +926,7 @@ GitHub <a class="github reference external" href="https://github.com/martinwimpf
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.AttentionBaseNet.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/attentionbasenet.py#L240-L245"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.AttentionBaseNet.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/attentionbasenet.py#L362-L367"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.AttentionBaseNet.forward" title="Link to this definition">#</a></dt>
 <dd><p>Define the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
