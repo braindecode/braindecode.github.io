@@ -1,10 +1,11 @@
-"""
+""".. _sleep-staging-usleep:
+
 Sleep staging on the Sleep Physionet dataset using U-Sleep network
 ==================================================================
 
 .. note::
     Please take a look at the simpler sleep staging example
-    :ref:`here <sphx_glr_auto_examples_plot_sleep_staging.py>`
+    :ref:`sleep-staging-physionet-chambon2018`
     before going through this example. The current example uses a more complex
     architecture and a sequence-to-sequence (seq2seq) approach.
 
@@ -34,10 +35,8 @@ windows using the openly accessible Sleep Physionet dataset [2]_ [3]_.
 # First, we load the data using the
 # :class:`braindecode.datasets.sleep_physionet.SleepPhysionet` class. We load
 # two recordings from two different individuals: we will use the first one to
-# train our network and the second one to evaluate performance (as in the `MNE`_
-# sleep staging example).
-#
-# .. _MNE: https://mne.tools/stable/auto_tutorials/sample-datasets/plot_sleep.html
+# train our network and the second one to evaluate performance (as in the `MNE
+# sleep staging example <mne-clinical-60-sleep_>`_).
 #
 
 from braindecode.datasets import SleepPhysionet
@@ -45,8 +44,8 @@ from braindecode.datasets import SleepPhysionet
 subject_ids = [0, 1]
 crop = (0, 30 * 400)  # we only keep 400 windows of 30s to speed example
 dataset = SleepPhysionet(
-    subject_ids=subject_ids, recording_ids=[2], crop_wake_mins=30,
-    crop=crop)
+    subject_ids=subject_ids, recording_ids=[2], crop_wake_mins=30, crop=crop
+)
 
 ######################################################################
 # Preprocessing
@@ -57,8 +56,9 @@ dataset = SleepPhysionet(
 # done in [1]_ so that we keep the example as light as possible. No filtering
 # is described in [1]_.
 
-from braindecode.preprocessing import preprocess, Preprocessor
 from sklearn.preprocessing import robust_scale
+
+from braindecode.preprocessing import Preprocessor, preprocess
 
 preprocessors = [Preprocessor(robust_scale, channel_wise=True)]
 
@@ -74,12 +74,12 @@ preprocess(dataset, preprocessors)
 from braindecode.preprocessing import create_windows_from_events
 
 mapping = {  # We merge stages 3 and 4 following AASM standards.
-    'Sleep stage W': 0,
-    'Sleep stage 1': 1,
-    'Sleep stage 2': 2,
-    'Sleep stage 3': 3,
-    'Sleep stage 4': 3,
-    'Sleep stage R': 4,
+    "Sleep stage W": 0,
+    "Sleep stage 1": 1,
+    "Sleep stage 2": 2,
+    "Sleep stage 3": 3,
+    "Sleep stage 4": 3,
+    "Sleep stage R": 4,
 }
 
 window_size_s = 30
@@ -142,7 +142,7 @@ import numpy as np
 from sklearn.utils import compute_class_weight
 
 y_train = [train_set[idx][1][1] for idx in train_sampler]
-class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
+class_weights = compute_class_weight("balanced", classes=np.unique(y_train), y=y_train)
 
 ######################################################################
 # Create model
@@ -153,11 +153,12 @@ class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y
 # neural network.
 
 import torch
-from braindecode.util import set_random_seeds
+
 from braindecode.models import USleep
+from braindecode.util import set_random_seeds
 
 cuda = torch.cuda.is_available()  # check if GPU is available
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = "cuda" if torch.cuda.is_available() else "cpu"
 if cuda:
     torch.backends.cudnn.benchmark = True
 # Set random seed to be able to roughly reproduce results
@@ -178,7 +179,7 @@ model = USleep(
     depth=12,
     with_skip_connection=True,
     n_outputs=n_classes,
-    n_times=input_size_samples
+    n_times=input_size_samples,
 )
 
 # Send model to GPU
@@ -188,11 +189,11 @@ if cuda:
 # Training
 # --------
 #
-# We can now train our network. :class:`braindecode.EEGClassifier` is a
+# We can now train our network. :class:`braindecode.classifier.EEGClassifier` is a
 # braindecode object that is responsible for managing the training of neural
-# networks. It inherits from :class:`skorch.NeuralNetClassifier`, so the
+# networks. It inherits from :class:`skorch.classifier.NeuralNetClassifier`, so the
 # training logic is the same as in
-# `Skorch <https://skorch.readthedocs.io/en/stable/>`__.
+# `<skorch_>`_.
 #
 # .. note::
 #    We use different hyperparameters from [1]_, as these hyperparameters were
@@ -201,8 +202,9 @@ if cuda:
 #    optimization if reusing this code on a different dataset or with more
 #    recordings.
 
-from skorch.helper import predefined_split
 from skorch.callbacks import EpochScoring
+from skorch.helper import predefined_split
+
 from braindecode import EEGClassifier
 
 lr = 1e-3
@@ -220,19 +222,16 @@ def balanced_accuracy_multi(model, X, y):
 train_bal_acc = EpochScoring(
     scoring=balanced_accuracy_multi,
     on_train=True,
-    name='train_bal_acc',
+    name="train_bal_acc",
     lower_is_better=False,
 )
 valid_bal_acc = EpochScoring(
     scoring=balanced_accuracy_multi,
     on_train=False,
-    name='valid_bal_acc',
+    name="valid_bal_acc",
     lower_is_better=False,
 )
-callbacks = [
-    ('train_bal_acc', train_bal_acc),
-    ('valid_bal_acc', valid_bal_acc)
-]
+callbacks = [("train_bal_acc", train_bal_acc), ("valid_bal_acc", valid_bal_acc)]
 
 clf = EEGClassifier(
     model,
@@ -271,27 +270,29 @@ import pandas as pd
 df = pd.DataFrame(clf.history.to_list())
 df.index.name = "Epoch"
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True)
-df[['train_loss', 'valid_loss']].plot(color=['r', 'b'], ax=ax1)
-df[['train_bal_acc', 'valid_bal_acc']].plot(color=['r', 'b'], ax=ax2)
-ax1.set_ylabel('Loss')
-ax2.set_ylabel('Balanced accuracy')
-ax1.legend(['Train', 'Valid'])
-ax2.legend(['Train', 'Valid'])
+df[["train_loss", "valid_loss"]].plot(color=["r", "b"], ax=ax1)
+df[["train_bal_acc", "valid_bal_acc"]].plot(color=["r", "b"], ax=ax2)
+ax1.set_ylabel("Loss")
+ax2.set_ylabel("Balanced accuracy")
+ax1.legend(["Train", "Valid"])
+ax2.legend(["Train", "Valid"])
 fig.tight_layout()
 plt.show()
 
 ######################################################################
 # Finally, we also display the confusion matrix and classification report:
+from sklearn.metrics import classification_report, confusion_matrix
+
 from braindecode.visualization import plot_confusion_matrix
-from sklearn.metrics import confusion_matrix, classification_report
 
 y_true = np.array([valid_set[i][1] for i in valid_sampler])
 y_pred = clf.predict(valid_set)
 
 confusion_mat = confusion_matrix(y_true.flatten(), y_pred.flatten())
 
-plot_confusion_matrix(confusion_mat=confusion_mat,
-                      class_names=['Wake', 'N1', 'N2', 'N3', 'REM'])
+plot_confusion_matrix(
+    confusion_mat=confusion_mat, class_names=["Wake", "N1", "N2", "N3", "REM"]
+)
 
 print(classification_report(y_true.flatten(), y_pred.flatten()))
 
@@ -304,10 +305,10 @@ print(classification_report(y_true.flatten(), y_pred.flatten()))
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(15, 5))
-ax.plot(y_true.flatten(), color='b', label='Expert annotations')
-ax.plot(y_pred.flatten(), color='r', label='Predict annotations', alpha=0.5)
-ax.set_xlabel('Time (epochs)')
-ax.set_ylabel('Sleep stage')
+ax.plot(y_true.flatten(), color="b", label="Expert annotations")
+ax.plot(y_pred.flatten(), color="r", label="Predict annotations", alpha=0.5)
+ax.set_xlabel("Time (epochs)")
+ax.set_ylabel("Sleep stage")
 
 ######################################################################
 # Our model was able to learn, as shown by the decreasing training and
@@ -333,3 +334,5 @@ ax.set_ylabel('Sleep stage')
 #        PhysioBank, PhysioToolkit, and PhysioNet: Components of a New
 #        Research Resource for Complex Physiologic Signals.
 #        Circulation 101(23):e215-e220
+#
+# .. include:: /links.inc

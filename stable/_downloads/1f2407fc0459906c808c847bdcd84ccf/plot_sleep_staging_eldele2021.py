@@ -1,4 +1,5 @@
-"""
+""".. _sleep-staging-physionet-eldele2021:
+
 Sleep staging on the Sleep Physionet dataset using Eldele2021
 =============================================================
 
@@ -22,20 +23,19 @@ to learn on sequences of EEG windows using the openly accessible Sleep Physionet
 # First, we load the data using the
 # :class:`braindecode.datasets.sleep_physionet.SleepPhysionet` class. We load
 # two recordings from two different individuals: we will use the first one to
-# train our network and the second one to evaluate performance (as in the `MNE`_
-# sleep staging example).
-#
-# .. _MNE: https://mne.tools/stable/auto_tutorials/sample-datasets/plot_sleep.html
+# train our network and the second one to evaluate performance (as in the `MNE
+# sleep staging example <mne-clinical-60-sleep_>`_).
 #
 
 from numbers import Integral
+
 from braindecode.datasets import SleepPhysionet
 
 subject_ids = [0, 1]
 crop = (0, 30 * 400)  # we only keep 400 windows of 30s to speed example
 dataset = SleepPhysionet(
-    subject_ids=subject_ids, recording_ids=[2], crop_wake_mins=30,
-    crop=crop)
+    subject_ids=subject_ids, recording_ids=[2], crop_wake_mins=30, crop=crop
+)
 
 ######################################################################
 # Preprocessing
@@ -44,16 +44,19 @@ dataset = SleepPhysionet(
 # Next, we preprocess the raw data. We convert the data to microvolts and apply
 # a lowpass filter.
 
-from braindecode.preprocessing import preprocess, Preprocessor
 from numpy import multiply
+
+from braindecode.preprocessing import Preprocessor, preprocess
 
 high_cut_hz = 30
 # Factor to convert from V to uV
 factor = 1e6
 
 preprocessors = [
-    Preprocessor(lambda data: multiply(data, factor), apply_on_array=True),  # Convert from V to uV
-    Preprocessor('filter', l_freq=None, h_freq=high_cut_hz)
+    Preprocessor(
+        lambda data: multiply(data, factor), apply_on_array=True
+    ),  # Convert from V to uV
+    Preprocessor("filter", l_freq=None, h_freq=high_cut_hz),
 ]
 
 # Transform the data
@@ -64,18 +67,19 @@ preprocess(dataset, preprocessors)
 # ~~~~~~~~~~~~~~~
 #
 # We extract 30-s windows to be used in the classification task.
-# The Eldele2021 model takes a single channel as input. Here, the Fpz-Cz channel is used as it
+# The :class:`braindecode.models.SleepStagerEldele2021` model takes a
+# single channel as input. Here, the Fpz-Cz channel is used as it
 # was found to give better performance than using the Pz-Oz channel
 
 from braindecode.preprocessing import create_windows_from_events
 
 mapping = {  # We merge stages 3 and 4 following AASM standards.
-    'Sleep stage W': 0,
-    'Sleep stage 1': 1,
-    'Sleep stage 2': 2,
-    'Sleep stage 3': 3,
-    'Sleep stage 4': 3,
-    'Sleep stage R': 4
+    "Sleep stage W": 0,
+    "Sleep stage 1": 1,
+    "Sleep stage 2": 2,
+    "Sleep stage 3": 3,
+    "Sleep stage 4": 3,
+    "Sleep stage R": 4,
 }
 
 window_size_s = 30
@@ -90,7 +94,7 @@ windows_dataset = create_windows_from_events(
     window_stride_samples=window_size_samples,
     picks="Fpz-Cz",  # the other option is Pz-Oz,
     preload=True,
-    mapping=mapping
+    mapping=mapping,
 )
 
 ######################################################################
@@ -141,8 +145,8 @@ train_sampler = SequenceSampler(
 valid_sampler = SequenceSampler(valid_set.get_metadata(), n_windows, n_windows_stride)
 
 # Print number of examples per class
-print('Training examples: ', len(train_sampler))
-print('Validation examples: ', len(valid_sampler))
+print("Training examples: ", len(train_sampler))
+print("Validation examples: ", len(valid_sampler))
 
 ######################################################################
 # We also implement a transform to extract the label of the center window of a
@@ -170,7 +174,7 @@ valid_set.target_transform = get_center_label
 from sklearn.utils import compute_class_weight
 
 y_train = [train_set[idx][1] for idx in train_sampler]
-class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
+class_weights = compute_class_weight("balanced", classes=np.unique(y_train), y=y_train)
 
 ######################################################################
 # Create model
@@ -185,11 +189,13 @@ class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y
 
 import torch
 from torch import nn
+
+from braindecode.models import SleepStagerEldele2021
+from braindecode.modules import TimeDistributed
 from braindecode.util import set_random_seeds
-from braindecode.models import SleepStagerEldele2021, TimeDistributed
 
 cuda = torch.cuda.is_available()  # check if GPU is available
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = "cuda" if torch.cuda.is_available() else "cpu"
 if cuda:
     torch.backends.cudnn.benchmark = True
 # Set random seed to be able to reproduce results
@@ -211,8 +217,8 @@ model = nn.Sequential(
     nn.Sequential(  # apply linear layer on concatenated feature vectors
         nn.Flatten(start_dim=1),
         nn.Dropout(0.5),
-        nn.Linear(feat_extractor.len_last_layer * n_windows, n_classes)
-    )
+        nn.Linear(feat_extractor.len_last_layer * n_windows, n_classes),
+    ),
 )
 
 # Send model to GPU
@@ -230,8 +236,9 @@ if cuda:
 # `Skorch <https://skorch.readthedocs.io/en/stable/>`__.
 #
 
-from skorch.helper import predefined_split
 from skorch.callbacks import EpochScoring
+from skorch.helper import predefined_split
+
 from braindecode import EEGClassifier
 
 lr = 1e-3
@@ -239,15 +246,18 @@ batch_size = 32
 n_epochs = 3  # we use few epochs for speed and but more than one for plotting
 
 train_bal_acc = EpochScoring(
-    scoring='balanced_accuracy', on_train=True, name='train_bal_acc',
-    lower_is_better=False)
+    scoring="balanced_accuracy",
+    on_train=True,
+    name="train_bal_acc",
+    lower_is_better=False,
+)
 valid_bal_acc = EpochScoring(
-    scoring='balanced_accuracy', on_train=False, name='valid_bal_acc',
-    lower_is_better=False)
-callbacks = [
-    ('train_bal_acc', train_bal_acc),
-    ('valid_bal_acc', valid_bal_acc)
-]
+    scoring="balanced_accuracy",
+    on_train=False,
+    name="valid_bal_acc",
+    lower_is_better=False,
+)
+callbacks = [("train_bal_acc", train_bal_acc), ("valid_bal_acc", valid_bal_acc)]
 
 clf = EEGClassifier(
     model,
@@ -262,9 +272,9 @@ clf = EEGClassifier(
     batch_size=batch_size,
     callbacks=callbacks,
     device=device,
-    classes=np.unique(y_train)
+    classes=np.unique(y_train),
 )
-# Model training for a specified number of epochs. `y` is None as it is already
+# Model training for a specified number of epochs. ``y`` is ``None`` as it is already
 # supplied in the dataset.
 clf.fit(train_set, y=None, epochs=n_epochs)
 
@@ -283,12 +293,12 @@ import pandas as pd
 df = pd.DataFrame(clf.history.to_list())
 df.index.name = "Epoch"
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True)
-df[['train_loss', 'valid_loss']].plot(color=['r', 'b'], ax=ax1)
-df[['train_bal_acc', 'valid_bal_acc']].plot(color=['r', 'b'], ax=ax2)
-ax1.set_ylabel('Loss')
-ax2.set_ylabel('Balanced accuracy')
-ax1.legend(['Train', 'Valid'])
-ax2.legend(['Train', 'Valid'])
+df[["train_loss", "valid_loss"]].plot(color=["r", "b"], ax=ax1)
+df[["train_bal_acc", "valid_bal_acc"]].plot(color=["r", "b"], ax=ax2)
+ax1.set_ylabel("Loss")
+ax2.set_ylabel("Balanced accuracy")
+ax1.legend(["Train", "Valid"])
+ax2.legend(["Train", "Valid"])
 fig.tight_layout()
 plt.show()
 
@@ -296,7 +306,8 @@ plt.show()
 # Finally, we also display the confusion matrix and classification report:
 #
 
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import classification_report, confusion_matrix
+
 from braindecode.visualization import plot_confusion_matrix
 
 y_true = [valid_set[[i]][1][0] for i in range(len(valid_sampler))]
@@ -318,10 +329,10 @@ print(classification_report(y_true, y_pred))
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(15, 5))
-ax.plot(y_true, color='b', label='Expert annotations')
-ax.plot(y_pred.flatten(), color='r', label='Predict annotations', alpha=0.5)
-ax.set_xlabel('Time (epochs)')
-ax.set_ylabel('Sleep stage')
+ax.plot(y_true, color="b", label="Expert annotations")
+ax.plot(y_pred.flatten(), color="r", label="Predict annotations", alpha=0.5)
+ax.set_xlabel("Time (epochs)")
+ax.set_ylabel("Sleep stage")
 
 ######################################################################
 # The model was able to learn despite the low amount of data that was available
@@ -360,3 +371,5 @@ ax.set_ylabel('Sleep stage')
 #        PhysioBank, PhysioToolkit, and PhysioNet: Components of a New
 #        Research Resource for Complex Physiologic Signals.
 #        Circulation 101(23):e215-e220
+#
+# .. include:: /links.inc

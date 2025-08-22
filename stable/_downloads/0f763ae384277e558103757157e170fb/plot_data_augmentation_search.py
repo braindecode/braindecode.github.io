@@ -1,4 +1,5 @@
-"""
+""".. _bcic-iv-2a-best-data-aug:
+
 Searching the best data augmentation on BCIC IV 2a Dataset
 ====================================================================================
 
@@ -61,12 +62,16 @@ dataset = MOABBDataset(dataset_name="BNCI2014001", subject_ids=[subject_id])
 # We apply a bandpass filter, from 4 to 38 Hz to focus motor imagery-related
 # brain activity
 
-from braindecode.preprocessing import (
-    exponential_moving_standardize, preprocess, Preprocessor)
 from numpy import multiply
 
-low_cut_hz = 4.  # low cut frequency for filtering
-high_cut_hz = 38.  # high cut frequency for filtering
+from braindecode.preprocessing import (
+    Preprocessor,
+    exponential_moving_standardize,
+    preprocess,
+)
+
+low_cut_hz = 4.0  # low cut frequency for filtering
+high_cut_hz = 38.0  # high cut frequency for filtering
 # Parameters for exponential moving standardization
 factor_new = 1e-3
 init_block_size = 1000
@@ -77,14 +82,17 @@ factor = 1e6
 # In time series targets setup, targets variables are stored in mne.Raw object as channels
 # of type `misc`. Thus those channels have to be selected for further processing. However,
 # many mne functions ignore `misc` channels and perform operations only on data channels
-# (see https://mne.tools/stable/glossary.html#term-data-channels).
+# (see `MNE's glossary on data channels <MNE-glossary-data-channels_>`_).
 
 preprocessors = [
-    Preprocessor('pick_types', eeg=True, meg=False, stim=False),  # Keep EEG sensors
+    Preprocessor("pick_types", eeg=True, meg=False, stim=False),  # Keep EEG sensors
     Preprocessor(lambda data: multiply(data, factor)),  # Convert from V to uV
-    Preprocessor('filter', l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
-    Preprocessor(exponential_moving_standardize,  # Exponential moving standardization
-                 factor_new=factor_new, init_block_size=init_block_size)
+    Preprocessor("filter", l_freq=low_cut_hz, h_freq=high_cut_hz),  # Bandpass filter
+    Preprocessor(
+        exponential_moving_standardize,  # Exponential moving standardization
+        factor_new=factor_new,
+        init_block_size=init_block_size,
+    ),
 ]
 
 preprocess(dataset, preprocessors, n_jobs=-1)
@@ -98,14 +106,15 @@ preprocess(dataset, preprocessors, n_jobs=-1)
 # to define how trials should be used.
 
 
-from braindecode.preprocessing import create_windows_from_events
-from skorch.helper import SliceDataset
 from numpy import array
+from skorch.helper import SliceDataset
+
+from braindecode.preprocessing import create_windows_from_events
 
 trial_start_offset_seconds = -0.5
 # Extract sampling frequency, check that they are same in all datasets
-sfreq = dataset.datasets[0].raw.info['sfreq']
-assert all([ds.raw.info['sfreq'] == sfreq for ds in dataset.datasets])
+sfreq = dataset.datasets[0].raw.info["sfreq"]
+assert all([ds.raw.info["sfreq"] == sfreq for ds in dataset.datasets])
 # Calculate the trial start offset in samples.
 trial_start_offset_samples = int(trial_start_offset_seconds * sfreq)
 
@@ -122,9 +131,9 @@ windows_dataset = create_windows_from_events(
 # Following the split defined in the BCI competition
 
 
-splitted = windows_dataset.split('session')
-train_set = splitted['0train']  # Session train
-eval_set = splitted['1test']  # Session evaluation
+splitted = windows_dataset.split("session")
+train_set = splitted["0train"]  # Session train
+eval_set = splitted["1test"]  # Session evaluation
 
 ######################################################################
 # Defining a list of transforms
@@ -150,18 +159,27 @@ eval_set = splitted['1test']  # Session evaluation
 # For the method ChannelsDropout, we analyse the parameter p_drop ∈ [0, 1].
 
 from numpy import linspace
-from braindecode.augmentation import FTSurrogate, SmoothTimeMask, ChannelsDropout
+
+from braindecode.augmentation import ChannelsDropout, FTSurrogate, SmoothTimeMask
 
 seed = 20200220
 
-transforms_freq = [FTSurrogate(probability=0.5, phase_noise_magnitude=phase_freq,
-                               random_state=seed) for phase_freq in linspace(0, 1, 2)]
+transforms_freq = [
+    FTSurrogate(probability=0.5, phase_noise_magnitude=phase_freq, random_state=seed)
+    for phase_freq in linspace(0, 1, 2)
+]
 
-transforms_time = [SmoothTimeMask(probability=0.5, mask_len_samples=int(sfreq * second),
-                                  random_state=seed) for second in linspace(0.1, 2, 2)]
+transforms_time = [
+    SmoothTimeMask(
+        probability=0.5, mask_len_samples=int(sfreq * second), random_state=seed
+    )
+    for second in linspace(0.1, 2, 2)
+]
 
-transforms_spatial = [ChannelsDropout(probability=0.5, p_drop=prob,
-                                      random_state=seed) for prob in linspace(0, 1, 2)]
+transforms_spatial = [
+    ChannelsDropout(probability=0.5, p_drop=prob, random_state=seed)
+    for prob in linspace(0, 1, 2)
+]
 
 ######################################################################
 # Training a model with data augmentation
@@ -177,11 +195,11 @@ transforms_spatial = [ChannelsDropout(probability=0.5, p_drop=prob,
 # The model to be trained is defined as usual.
 import torch
 
-from braindecode.util import set_random_seeds
 from braindecode.models import ShallowFBCSPNet
+from braindecode.util import set_random_seeds
 
 cuda = torch.cuda.is_available()  # check if GPU is available, if True chooses to use it
-device = 'cuda' if cuda else 'cpu'
+device = "cuda" if cuda else "cpu"
 if cuda:
     torch.backends.cudnn.benchmark = True
 
@@ -201,13 +219,13 @@ n_classes = 4
 classes = list(range(n_classes))
 # Extract number of chans and time steps from dataset
 n_channels = train_set[0][0].shape[0]
-input_window_samples = train_set[0][0].shape[1]
+n_times = train_set[0][0].shape[1]
 
 model = ShallowFBCSPNet(
-    n_channels,
-    n_classes,
-    input_window_samples=input_window_samples,
-    final_conv_length='auto',
+    n_chans=n_channels,
+    n_outputs=n_classes,
+    n_times=n_times,
+    final_conv_length="auto",
 )
 
 ######################################################################
@@ -239,18 +257,18 @@ clf = EEGClassifier(
     model,
     iterator_train=AugmentedDataLoader,  # This tells EEGClassifier to use a custom DataLoader
     iterator_train__transforms=[],  # This sets is handled by GridSearchCV
-    criterion=torch.nn.NLLLoss,
+    criterion=torch.nn.CrossEntropyLoss,
     optimizer=torch.optim.AdamW,
     train_split=None,  # GridSearchCV will control the split and train/validation over the dataset
     optimizer__lr=lr,
     optimizer__weight_decay=weight_decay,
     batch_size=batch_size,
     callbacks=[
-        'accuracy',
-        ('lr_scheduler', LRScheduler('CosineAnnealingLR', T_max=n_epochs - 1)),
+        "accuracy",
+        ("lr_scheduler", LRScheduler("CosineAnnealingLR", T_max=n_epochs - 1)),
     ],
     device=device,
-    classes=classes
+    classes=classes,
 )
 
 #####################################################################
@@ -265,15 +283,15 @@ train_y = array(list(SliceDataset(train_set, idx=1)))
 #   Given the trialwise approach, here we use the KFold approach and
 #   GridSearchCV.
 
-from sklearn.model_selection import KFold, GridSearchCV
+from sklearn.model_selection import GridSearchCV, KFold
 
 cv = KFold(n_splits=2, shuffle=True, random_state=seed)
-fit_params = {'epochs': n_epochs}
+fit_params = {"epochs": n_epochs}
 
 transforms = transforms_freq + transforms_time + transforms_spatial
 
 param_grid = {
-    'iterator_train__transforms': transforms,
+    "iterator_train__transforms": transforms,
 }
 
 clf.verbose = 0
@@ -283,10 +301,11 @@ search = GridSearchCV(
     param_grid=param_grid,
     cv=cv,
     return_train_score=True,
-    scoring='accuracy',
+    scoring="accuracy",
     refit=True,
     verbose=1,
-    error_score='raise')
+    error_score="raise",
+)
 
 search.fit(train_X, train_y, **fit_params)
 
@@ -297,25 +316,27 @@ search.fit(train_X, train_y, **fit_params)
 # Next, just perform an analysis of the best fit, and the parameters,
 # remembering the order that was adjusted.
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 search_results = pd.DataFrame(search.cv_results_)
 
-best_run = search_results[search_results['rank_test_score'] == 1].squeeze()
-best_aug = best_run['params']
-validation_score = np.around(best_run['mean_test_score'] * 100, 2).mean()
-training_score = np.around(best_run['mean_train_score'] * 100, 2).mean()
+best_run = search_results[search_results["rank_test_score"] == 1].squeeze()
+best_aug = best_run["params"]
+validation_score = np.around(best_run["mean_test_score"] * 100, 2).mean()
+training_score = np.around(best_run["mean_train_score"] * 100, 2).mean()
 
-report_message = 'Best augmentation is saved in best_aug which gave a mean validation accuracy' + \
-                 'of {}% (train accuracy of {}%).'.format(validation_score, training_score)
+report_message = (
+    "Best augmentation is saved in best_aug which gave a mean validation accuracy"
+    + "of {}% (train accuracy of {}%).".format(validation_score, training_score)
+)
 
 print(report_message)
 
 eval_X = SliceDataset(eval_set, idx=0)
 eval_y = SliceDataset(eval_set, idx=1)
 score = search.score(eval_X, eval_y)
-print(f'Eval accuracy is {score * 100:.2f}%.')
+print(f"Eval accuracy is {score * 100:.2f}%.")
 
 ######################################################################
 # Plot results
@@ -325,8 +346,14 @@ import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots()
 search_results.plot.bar(
-    x="param_iterator_train__transforms", y="mean_train_score", yerr="std_train_score",
-    rot=45, color=["C0", "C0", "C1", "C1", "C2", "C2"], legend=None, ax=ax)
+    x="param_iterator_train__transforms",
+    y="mean_train_score",
+    yerr="std_train_score",
+    rot=45,
+    color=["C0", "C0", "C1", "C1", "C2", "C2"],
+    legend=None,
+    ax=ax,
+)
 ax.set_xlabel("Data augmentation strategy")
 ax.set_ylim(0.2, 0.32)
 plt.tight_layout()
@@ -342,3 +369,5 @@ plt.tight_layout()
 # .. [2] Banville, H., Chehab, O., Hyvärinen, A., Engemann, D. A., & Gramfort, A. (2021).
 #        Uncovering the structure of clinical EEG signals with self-supervised learning.
 #        Journal of Neural Engineering, 18(4), 046020.
+#
+# .. include:: /links.inc
