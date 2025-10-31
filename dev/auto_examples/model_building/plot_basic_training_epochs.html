@@ -670,6 +670,56 @@ References
    visualization.
    Human Brain Mapping , Aug. 2017.
    Online: http://dx.doi.org/10.1002/hbm.23730
+
+Hugging Face Hub Integration
+----------------------------
+When the optional ``huggingface_hub`` package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with::
+
+    pip install braindecode[hug]
+
+**Pushing a model to the Hub:**
+
+.. code-block:: python
+
+    from braindecode.models import EEGNetv4
+
+    # Train your model
+    model = EEGNetv4(n_chans=22, n_outputs=4, n_times=1000)
+    # ... training code ...
+
+    # Push to the Hub
+    model.push_to_hub(
+        repo_id=&quot;username/my-eegnet-model&quot;, commit_message=&quot;Initial model upload&quot;
+    )
+
+**Loading a model from the Hub:**
+
+.. code-block:: python
+
+    from braindecode.models import EEGNetv4
+
+    # Load pretrained model
+    model = EEGNetv4.from_pretrained(&quot;username/my-eegnet-model&quot;)
+
+The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.
+
+.. important::
+    Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
+    input_window_seconds, sfreq, chs_info) are saved to the Hub. Model-specific
+    parameters (e.g., dropout rates, activation functions, number of filters)
+    are not preserved and will use their default values when loading from the Hub.
+
+    To use non-default model parameters, specify them explicitly when calling
+    :func:`from_pretrained()`::
+
+        model = EEGNet.from_pretrained(&quot;user/model&quot;, dropout=0.3, activation=&#39;relu&#39;)
+
+    Full parameter serialization will be addressed in a future update.
 </pre></div>
 </div>
 <p>Additionally, you might be interested in visualizing the model’s architecture.
@@ -791,16 +841,16 @@ we can train it by simply calling the <code class="docutils literal notranslate"
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    valid_acc    valid_loss     dur
 -------  -----------  ------------  ------
-      1       0.3000       15.6130  0.0144
-      2       0.3000       15.6130  0.0080
-      3       0.3000       15.6130  0.0074
-      4       0.3000       15.6130  0.0075
-      5       0.3000       15.6130  0.0074
-      6       0.3000       15.6130  0.0073
-      7       0.3000       15.6130  0.0071
-      8       0.3000       15.6130  0.0082
-      9       0.3000       15.6130  0.0071
-     10       0.3000       15.6130  0.0071
+      1       0.3000       15.6130  0.0155
+      2       0.3000       15.6130  0.0085
+      3       0.3000       15.6130  0.0080
+      4       0.3000       15.6130  0.0079
+      5       0.3000       15.6130  0.0078
+      6       0.3000       15.6130  0.0076
+      7       0.3000       15.6130  0.0077
+      8       0.3000       15.6130  0.0079
+      9       0.3000       15.6130  0.0076
+     10       0.3000       15.6130  0.0076
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1336,7 +1386,7 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.204 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.579 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  896 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
