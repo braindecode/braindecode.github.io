@@ -222,7 +222,7 @@
                     
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
-    What’s new
+    What's new
   </a>
 </li>
 
@@ -366,7 +366,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
-    What’s new
+    What's new
   </a>
 </li>
 
@@ -798,6 +798,50 @@ apply a flattened linear layer with constraint on the weights norm as the final 
 <p class="rubric">Notes</p>
 <p>If some input signal-related parameters are not specified,
 there will be an attempt to infer them from the other parameters.</p>
+<p class="rubric">Hugging Face Hub integration</p>
+<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hug</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Pushing a model to the Hub:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGNetv4</span>
+
+<span class="c1"># Train your model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGNetv4</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># ... training code ...</span>
+
+<span class="c1"># Push to the Hub</span>
+<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-eegnet-model&quot;</span><span class="p">,</span> <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Loading a model from the Hub:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGNetv4</span>
+
+<span class="c1"># Load pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGNetv4</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-eegnet-model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
+input_window_seconds, sfreq, chs_info) are saved to the Hub. Model-specific
+parameters (e.g., dropout rates, activation functions, number of filters)
+are not preserved and will use their default values when loading from the Hub.</p>
+<p>To use non-default model parameters, specify them explicitly when calling
+<code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">EEGNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;user/model&quot;</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Full parameter serialization will be addressed in a future update.</p>
+</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rffa56cc934a8-lawhern2018" role="doc-biblioentry">
