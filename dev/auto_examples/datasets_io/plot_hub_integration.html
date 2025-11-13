@@ -1,0 +1,2257 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Uploading and downloading datasets to Hugging Face Hub &#8212; Braindecode 1.3.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=c4836816" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=96647119"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-7Q43R82K6D');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/datasets_io/plot_hub_integration';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://braindecode.org/auto_examples/datasets_io/plot_hub_integration.html" />
+    <link rel="icon" href="../../_static/braindecode_symbol.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Load and save dataset example" href="plot_load_save_datasets.html" />
+    <link rel="prev" title="Custom Dataset Example" href="plot_custom_dataset_example.html" />
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NWDKLVNR');</script>
+  <!-- End Google Tag Manager -->
+
+  <link rel="canonical" href="braindecode.org/index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.3" />
+
+  <!-- Google Analytics (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CHY0V439ZQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CHY0V439ZQ');
+  </script>
+
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_long.png" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_long.png" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model_building/index.html">Basic model building and training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_eegprep_cleaning.html">Cleaning EEG Data with EEGPrep for Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Loading and organizing data</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Uploading and downloading datasets to Hugging Face Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_training/index.html">Advanced neural network training strategies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/tutorial_create_fixed_window_length.html">Fixed-Length Windows Extraction</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Loading and organizing data</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Uploading and downloading datasets to Hugging Face Hub</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NWDKLVNR"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-datasets-io-plot-hub-integration-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="uploading-and-downloading-datasets-to-hugging-face-hub">
+<span id="hub-integration"></span><span id="sphx-glr-auto-examples-datasets-io-plot-hub-integration-py"></span><h1>Uploading and downloading datasets to Hugging Face Hub<a class="headerlink" href="#uploading-and-downloading-datasets-to-hugging-face-hub" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how to upload and download EEG datasets to/from
+the Hugging Face Hub using braindecode.</p>
+<p>The Hub integration supports three dataset types:</p>
+<ol class="arabic simple">
+<li><p><strong>WindowsDataset</strong> - Epoched data (mne.Epochs-based)</p></li>
+<li><p><strong>EEGWindowsDataset</strong> - Continuous raw data with windowing metadata</p></li>
+<li><p><strong>RawDataset</strong> - Continuous raw data without windowing</p></li>
+</ol>
+<p>The Hub integration allows you to:</p>
+<ul class="simple">
+<li><p><strong>Share datasets</strong> with the research community</p></li>
+<li><p><strong>Version control</strong> your datasets with git-like versioning</p></li>
+<li><p><strong>Collaborate</strong> on dataset curation and preprocessing</p></li>
+<li><p><strong>Access datasets</strong> from anywhere with automatic caching</p></li>
+</ul>
+<p>We’ll use the <a class="reference internal" href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BNCI2014_001</span></code></a> dataset as an example.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Kuntal Kokate</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">login</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">,</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Login to Hugging Face Hub using token from environment variable</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HUGGING_FACE_TOKEN&quot;</span><span class="p">)</span>
+<span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">:</span>
+    <span class="n">login</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: HUGGING_FACE_TOKEN not set. Hub uploads will fail.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="load-and-prepare-datasets">
+<h2>Load and prepare datasets<a class="headerlink" href="#load-and-prepare-datasets" title="Link to this heading">#</a></h2>
+<p>We’ll demonstrate all three supported dataset types.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading BNCI2014_001 dataset...&quot;</span><span class="p">)</span>
+<span class="c1"># Load only subject 1 for this example</span>
+<a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">(</span><span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Channels: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Sampling frequency: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading BNCI2014_001 dataset...
+  Number of recordings: 12
+  Channels: 26
+  Sampling frequency: 250.0 Hz
+</pre></div>
+</div>
+</section>
+<section id="example-1-windowsdataset-epoched-data">
+<h2>Example 1: WindowsDataset (Epoched data)<a class="headerlink" href="#example-1-windowsdataset-epoched-data" title="Link to this heading">#</a></h2>
+<p>Create epoched data using mne.Epochs (use_mne_epochs=True)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">1. Creating WindowsDataset (epoched data)...&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
+    <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">use_mne_epochs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Creates WindowsDataset with mne.Epochs</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Total windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Dataset type: WindowsDataset (epoched)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1. Creating WindowsDataset (epoched data)...
+Using data from preloaded Raw for 48 events and 1000 original time points ...
+0 bad epochs dropped
+   Total windows: 48
+   Dataset type: WindowsDataset (epoched)
+</pre></div>
+</div>
+</section>
+<section id="example-2-eegwindowsdataset-continuous-with-windowing">
+<h2>Example 2: EEGWindowsDataset (Continuous with windowing)<a class="headerlink" href="#example-2-eegwindowsdataset-continuous-with-windowing" title="Link to this heading">#</a></h2>
+<p>Create continuous raw data with windowing metadata (use_mne_epochs=False)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">2. Creating EEGWindowsDataset (continuous with windowing)...&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eegwindows_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
+    <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">use_mne_epochs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Creates EEGWindowsDataset with continuous raw</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Total windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eegwindows_dataset</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Dataset type: EEGWindowsDataset (continuous)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2. Creating EEGWindowsDataset (continuous with windowing)...
+   Total windows: 48
+   Dataset type: EEGWindowsDataset (continuous)
+</pre></div>
+</div>
+</section>
+<section id="example-3-rawdataset-continuous-without-windowing">
+<h2>Example 3: RawDataset (Continuous without windowing)<a class="headerlink" href="#example-3-rawdataset-continuous-without-windowing" title="Link to this heading">#</a></h2>
+<p>Use the original raw data without any windowing</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">3. Using RawDataset (continuous without windowing)...&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Dataset type: RawDataset (continuous, no windows)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>3. Using RawDataset (continuous without windowing)...
+   Number of recordings: 1
+   Dataset type: RawDataset (continuous, no windows)
+</pre></div>
+</div>
+</section>
+<section id="upload-datasets-to-hugging-face-hub">
+<h2>Upload datasets to Hugging Face Hub<a class="headerlink" href="#upload-datasets-to-hugging-face-hub" title="Link to this heading">#</a></h2>
+<p>To upload a dataset, you need to:</p>
+<ol class="arabic simple">
+<li><p>Create a Hugging Face account at <a class="reference external" href="https://huggingface.co">https://huggingface.co</a></p></li>
+<li><p>Login using: <code class="docutils literal notranslate"><span class="pre">huggingface-cli</span> <span class="pre">login</span></code></p></li>
+<li><p>Choose a repository name (e.g., “username/dataset-name”)</p></li>
+</ol>
+<p><strong>Note:</strong> This example shows the code but doesn’t actually upload.
+Uncomment the code below to perform an actual upload.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UPLOADING TO HUGGING FACE HUB&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+
+<span class="c1"># Skip Hub operations if no token is available (e.g., during docs build)</span>
+<span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️  Skipping Hub upload examples (no HUGGING_FACE_TOKEN set)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To run this example with actual uploads, set HUGGING_FACE_TOKEN&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Example 1: Upload WindowsDataset</span>
+    <span class="c1"># ---------------------------------</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_windows</span></a> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-windows&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Uploading WindowsDataset to </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_windows</span></a><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+        <span class="n">repo_id</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_windows</span></a><span class="p">,</span>
+        <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Upload BNCI2014_001 WindowsDataset (epoched)&quot;</span><span class="p">,</span>
+        <span class="n">private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Example 2: Upload EEGWindowsDataset</span>
+    <span class="c1"># ------------------------------------</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_eegwindows</span></a> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-eegwindows&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Uploading EEGWindowsDataset to </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_eegwindows</span></a><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eegwindows_dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+        <span class="n">repo_id</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_eegwindows</span></a><span class="p">,</span>
+        <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Upload BNCI2014_001 EEGWindowsDataset (continuous)&quot;</span><span class="p">,</span>
+        <span class="n">private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Example 3: Upload RawDataset</span>
+    <span class="c1"># -----------------------------</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_raw</span></a> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-raw&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Uploading RawDataset to </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_raw</span></a><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+        <span class="n">repo_id</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo_id_raw</span></a><span class="p">,</span>
+        <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Upload BNCI2014_001 RawDataset&quot;</span><span class="p">,</span>
+        <span class="n">private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">The example above demonstrates uploading to the Hugging Face Hub.</span>
+<span class="s2">All datasets are converted to Zarr format (optimized for fast loading)</span>
+<span class="s2">and uploaded with auto-generated dataset cards.</span>
+
+<span class="s2">For your own datasets, replace the repo_id with your Hugging Face username.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
+UPLOADING TO HUGGING FACE HUB
+======================================================================
+
+Uploading WindowsDataset to braindecode/example_dataset-windows...
+Using data from preloaded Raw for 48 events and 1000 original time points ...
+✅ Uploaded to https://huggingface.co/datasets/braindecode/example_dataset-windows/commit/1a2c5c9b9754ce7fa615a8fab4ecb9f8dbe2d37b!
+
+Uploading EEGWindowsDataset to braindecode/example_dataset-eegwindows...
+
+Processing Files (0 / 0)      : |          |  0.00B /  0.00B
+
+New Data Upload               : |          |  0.00B /  0.00B
+
+
+  ...zarr/recording_0/data/0.5:  44%|████▍     |  340kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1:  49%|████▊     |  375kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8:  45%|████▍     |  348kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4:  60%|█████▉    |  465kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9:  91%|█████████ |  481kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6:  96%|█████████▋|  746kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0:  84%|████████▍ |  649kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+  ...zarr/recording_0/data/0.5:  44%|████▍     |  340kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1:  49%|████▊     |  375kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8:  45%|████▍     |  348kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4:  60%|█████▉    |  465kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9:  91%|█████████ |  481kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6:  96%|█████████▋|  746kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0:  84%|████████▍ |  649kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+Processing Files (3 / 10)     :  76%|███████▋  | 5.73MB / 7.50MB, 28.7MB/s
+
+New Data Upload               :  23%|██▎       |  526kB / 2.30MB, 2.63MB/s
+
+
+  ...zarr/recording_0/data/0.5:  94%|█████████▍|  728kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1:  94%|█████████▍|  728kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8:  94%|█████████▍|  728kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4:  96%|█████████▌|  744kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9:  99%|█████████▉|  522kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|█████████▉|  772kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0:  98%|█████████▊|  759kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+Processing Files (3 / 10)     :  97%|█████████▋| 7.30MB / 7.50MB, 18.3MB/s
+
+New Data Upload               :  91%|█████████▏| 2.10MB / 2.30MB, 5.26MB/s
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+Processing Files (10 / 10)    : 100%|██████████| 7.50MB / 7.50MB, 12.5MB/s
+
+New Data Upload               : 100%|██████████| 2.30MB / 2.30MB, 3.83MB/s
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+Processing Files (10 / 10)    : 100%|██████████| 7.50MB / 7.50MB, 7.50MB/s
+
+New Data Upload               : 100%|██████████| 2.30MB / 2.30MB, 2.30MB/s
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+✅ Uploaded to https://huggingface.co/datasets/braindecode/example_dataset-eegwindows/commit/e32cd754f8893074f6338a7284d4d860a44ff5f5!
+
+Uploading RawDataset to braindecode/example_dataset-raw...
+
+Processing Files (0 / 0)      : |          |  0.00B /  0.00B
+
+New Data Upload               : |          |  0.00B /  0.00B
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0:  79%|███████▉  |  611kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.5:  96%|█████████▌|  743kB /  776kB
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0:  79%|███████▉  |  611kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.5:  96%|█████████▌|  743kB /  776kB
+Processing Files (8 / 10)     :  97%|█████████▋| 7.31MB / 7.50MB,   ???B/s
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+Processing Files (10 / 10)    : 100%|██████████| 7.50MB / 7.50MB,  975kB/s
+
+New Data Upload               : 100%|██████████|  195kB /  195kB,  975kB/s
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+
+
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+
+
+
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+
+
+
+
+
+
+
+
+
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+Processing Files (10 / 10)    : 100%|██████████| 7.50MB / 7.50MB,  325kB/s
+
+New Data Upload               : 100%|██████████|  195kB /  195kB,  325kB/s
+
+  ...zarr/recording_0/data/0.9: 100%|██████████|  527kB /  527kB
+
+  ...zarr/recording_0/data/0.4: 100%|██████████|  779kB /  779kB
+
+  ...zarr/recording_0/data/0.7: 100%|██████████|  776kB /  776kB
+
+  ...zarr/recording_0/data/0.3: 100%|██████████|  774kB /  774kB
+
+  ...zarr/recording_0/data/0.6: 100%|██████████|  775kB /  775kB
+
+  ...zarr/recording_0/data/0.8: 100%|██████████|  775kB /  775kB
+
+  ...zarr/recording_0/data/0.2: 100%|██████████|  772kB /  772kB
+
+  ...zarr/recording_0/data/0.0: 100%|██████████|  773kB /  773kB
+
+  ...zarr/recording_0/data/0.1: 100%|██████████|  772kB /  772kB
+
+  ...zarr/recording_0/data/0.5: 100%|██████████|  776kB /  776kB
+✅ Uploaded to https://huggingface.co/datasets/braindecode/example_dataset-raw/commit/e17ae891419f35aeb802b6547e5aad44cf88d3b3!
+
+The example above demonstrates uploading to the Hugging Face Hub.
+All datasets are converted to Zarr format (optimized for fast loading)
+and uploaded with auto-generated dataset cards.
+
+For your own datasets, replace the repo_id with your Hugging Face username.
+</pre></div>
+</div>
+</section>
+<section id="zarr-format">
+<h2>Zarr Format<a class="headerlink" href="#zarr-format" title="Link to this heading">#</a></h2>
+<p>Datasets are uploaded in Zarr format, which provides:</p>
+<ul class="simple">
+<li><p>Fastest random access (0.010 ms - critical for PyTorch training)</p></li>
+<li><p>Excellent compression with blosc</p></li>
+<li><p>Cloud-native, chunked storage</p></li>
+<li><p>Ideal for datasets of all sizes</p></li>
+<li><p>Based on comprehensive benchmarking with 1000 subjects</p></li>
+</ul>
+<p>The format parameters (compression, compression_level) are optimized by default
+but can be customized if needed.</p>
+</section>
+<section id="download-datasets-from-hugging-face-hub">
+<h2>Download datasets from Hugging Face Hub<a class="headerlink" href="#download-datasets-from-hugging-face-hub" title="Link to this heading">#</a></h2>
+<p>Loading datasets from the Hub is simple and automatic!</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DOWNLOADING FROM HUGGING FACE HUB&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+
+<span class="c1"># Skip Hub downloads if no token (docs build)</span>
+<span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️  Skipping Hub download examples (no HUGGING_FACE_TOKEN set)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To run this example with actual downloads, set HUGGING_FACE_TOKEN&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Example 1: Download WindowsDataset</span>
+    <span class="c1"># -----------------------------------</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_windows</span></a> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-windows&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Downloading WindowsDataset from </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_windows</span></a><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loaded_windows</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="o">.</span><span class="n">pull_from_hub</span><span class="p">(</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_windows</span></a><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Load into memory (False for lazy loading)</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Loaded WindowsDataset!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loaded_windows</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Example 2: Download EEGWindowsDataset</span>
+    <span class="c1"># --------------------------------------</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_eeg</span></a> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-eegwindows&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Downloading EEGWindowsDataset from </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_eeg</span></a><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loaded_eeg</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="o">.</span><span class="n">pull_from_hub</span><span class="p">(</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_eeg</span></a><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Loaded EEGWindowsDataset!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loaded_eeg</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Example 3: Download RawDataset</span>
+    <span class="c1"># -------------------------------</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_raw</span></a> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-raw&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Downloading RawDataset from </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_raw</span></a><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loaded_raw</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="o">.</span><span class="n">pull_from_hub</span><span class="p">(</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">public_repo_raw</span></a><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Loaded RawDataset!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loaded_raw</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">The example above demonstrates downloading datasets from the Hub.</span>
+<span class="s2">Datasets are automatically downloaded and cached locally.</span>
+<span class="s2">Subsequent loads use the cache for faster access.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
+DOWNLOADING FROM HUGGING FACE HUB
+======================================================================
+
+Downloading WindowsDataset from braindecode/example_dataset-windows...
+
+Fetching 107 files:   0%|          | 0/107 [00:00&lt;?, ?it/s]
+Fetching 107 files:   1%|          | 1/107 [00:00&lt;00:26,  3.98it/s]
+Fetching 107 files:   8%|▊         | 9/107 [00:00&lt;00:04, 23.66it/s]
+Fetching 107 files:  11%|█         | 12/107 [00:00&lt;00:03, 25.25it/s]
+Fetching 107 files:  16%|█▌        | 17/107 [00:00&lt;00:02, 30.92it/s]
+Fetching 107 files:  20%|█▉        | 21/107 [00:00&lt;00:03, 23.73it/s]
+Fetching 107 files:  24%|██▍       | 26/107 [00:01&lt;00:02, 27.05it/s]
+Fetching 107 files:  29%|██▉       | 31/107 [00:01&lt;00:02, 27.17it/s]
+Fetching 107 files:  33%|███▎      | 35/107 [00:01&lt;00:02, 28.94it/s]
+Fetching 107 files:  37%|███▋      | 40/107 [00:01&lt;00:02, 30.24it/s]
+Fetching 107 files:  41%|████      | 44/107 [00:01&lt;00:02, 26.20it/s]
+Fetching 107 files:  48%|████▊     | 51/107 [00:01&lt;00:01, 30.79it/s]
+Fetching 107 files:  51%|█████▏    | 55/107 [00:01&lt;00:01, 31.25it/s]
+Fetching 107 files:  60%|█████▉    | 64/107 [00:02&lt;00:01, 42.30it/s]
+Fetching 107 files:  67%|██████▋   | 72/107 [00:02&lt;00:00, 45.50it/s]
+Fetching 107 files:  72%|███████▏  | 77/107 [00:02&lt;00:00, 45.79it/s]
+Fetching 107 files:  80%|████████  | 86/107 [00:02&lt;00:00, 55.03it/s]
+Fetching 107 files:  86%|████████▌ | 92/107 [00:02&lt;00:00, 54.67it/s]
+Fetching 107 files:  92%|█████████▏| 98/107 [00:02&lt;00:00, 47.10it/s]
+Fetching 107 files:  97%|█████████▋| 104/107 [00:02&lt;00:00, 45.89it/s]
+Fetching 107 files: 100%|██████████| 107/107 [00:02&lt;00:00, 35.67it/s]
+Adding metadata with 4 columns
+48 matching events found
+No baseline correction applied
+0 projection items activated
+✅ Loaded WindowsDataset!
+   Number of windows: 48
+
+Downloading EEGWindowsDataset from braindecode/example_dataset-eegwindows...
+
+Fetching 31 files:   0%|          | 0/31 [00:00&lt;?, ?it/s]
+Fetching 31 files:   3%|▎         | 1/31 [00:00&lt;00:06,  4.85it/s]
+Fetching 31 files:  26%|██▌       | 8/31 [00:00&lt;00:01, 15.91it/s]
+Fetching 31 files:  45%|████▌     | 14/31 [00:00&lt;00:00, 24.84it/s]
+Fetching 31 files:  58%|█████▊    | 18/31 [00:00&lt;00:00, 23.22it/s]
+Fetching 31 files:  68%|██████▊   | 21/31 [00:00&lt;00:00, 23.08it/s]
+Fetching 31 files:  77%|███████▋  | 24/31 [00:01&lt;00:00, 22.68it/s]
+Fetching 31 files: 100%|██████████| 31/31 [00:01&lt;00:00, 25.53it/s]
+Creating RawArray with float64 data, n_channels=26, n_times=96735
+    Range : 0 ... 96734 =      0.000 ...   386.936 secs
+Ready.
+✅ Loaded EEGWindowsDataset!
+   Number of windows: 48
+
+Downloading RawDataset from braindecode/example_dataset-raw...
+
+Fetching 31 files:   0%|          | 0/31 [00:00&lt;?, ?it/s]
+Fetching 31 files:   3%|▎         | 1/31 [00:00&lt;00:07,  3.83it/s]
+Fetching 31 files:  29%|██▉       | 9/31 [00:00&lt;00:01, 17.20it/s]
+Fetching 31 files:  58%|█████▊    | 18/31 [00:00&lt;00:00, 30.25it/s]
+Fetching 31 files:  77%|███████▋  | 24/31 [00:00&lt;00:00, 31.41it/s]
+Fetching 31 files:  90%|█████████ | 28/31 [00:01&lt;00:00, 28.06it/s]
+Fetching 31 files: 100%|██████████| 31/31 [00:01&lt;00:00, 26.78it/s]
+Creating RawArray with float64 data, n_channels=26, n_times=96735
+    Range : 0 ... 96734 =      0.000 ...   386.936 secs
+Ready.
+✅ Loaded RawDataset!
+   Number of recordings: 1
+
+The example above demonstrates downloading datasets from the Hub.
+Datasets are automatically downloaded and cached locally.
+Subsequent loads use the cache for faster access.
+</pre></div>
+</div>
+</section>
+<section id="using-datasets-with-pytorch-dataloader">
+<h2>Using datasets with PyTorch DataLoader<a class="headerlink" href="#using-datasets-with-pytorch-dataloader" title="Link to this heading">#</a></h2>
+<p>Datasets loaded from the Hub work seamlessly with PyTorch.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;USING WITH PYTORCH DATALOADER&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a>
+
+<span class="c1"># Create DataLoader</span>
+<a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># Set to &gt; 0 for parallel loading</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DataLoader created:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Batch size: 32&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Total batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_loader</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Iterate over a few batches</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Sample batches:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_data</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_loader</span></a><span class="p">):</span>
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Show only 3 batches</span>
+        <span class="k">break</span>
+    <span class="c1"># Handle both 2-tuple (X, y) and 3-tuple (X, y, inds) returns</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_data</span></a><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_batch</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_batch</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_data</span></a>
+    <span class="k">else</span><span class="p">:</span>
+        <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_batch</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_batch</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_data</span></a>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;    Batch </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: X shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_batch</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;y shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">This works the same way for datasets loaded from the Hub!</span>
+<span class="s2">The Hub integration is fully compatible with PyTorch&#39;s training pipeline.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
+USING WITH PYTORCH DATALOADER
+======================================================================
+
+DataLoader created:
+  Batch size: 32
+  Total batches: 2
+
+  Sample batches:
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+    Batch 1: X shape=(32, 26, 1000), y shape=(32,)
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+Using data from preloaded Raw for 1 events and 1000 original time points ...
+    Batch 2: X shape=(16, 26, 1000), y shape=(16,)
+
+This works the same way for datasets loaded from the Hub!
+The Hub integration is fully compatible with PyTorch&#39;s training pipeline.
+</pre></div>
+</div>
+</section>
+<section id="advanced-version-control-and-collaboration">
+<h2>Advanced: Version control and collaboration<a class="headerlink" href="#advanced-version-control-and-collaboration" title="Link to this heading">#</a></h2>
+<p>The Hub provides powerful features for dataset management:</p>
+<p><strong>Versioning</strong></p>
+<p>Every upload creates a new commit, allowing you to track changes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Upload updated version</span>
+<a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/dataset-name&quot;</span><span class="p">,</span>
+    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Fixed label for subject 5&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Private datasets</strong></p>
+<p>For sensitive data or work-in-progress:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/private-dataset&quot;</span><span class="p">,</span>
+    <span class="n">private</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Pull requests</strong></p>
+<p>Propose changes without directly modifying the dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/dataset-name&quot;</span><span class="p">,</span>
+    <span class="n">create_pr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Propose additional preprocessing&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
+<p>When sharing datasets on the Hub:</p>
+<ol class="arabic">
+<li><p><strong>Include good documentation</strong> - The dataset card (README.md) is auto-
+generated but you can edit it on the Hub to add details about:</p>
+<ul class="simple">
+<li><p>Data collection methodology</p></li>
+<li><p>Preprocessing steps applied</p></li>
+<li><p>Known issues or limitations</p></li>
+<li><p>Citation information</p></li>
+</ul>
+</li>
+<li><p><strong>Optimize compression if needed</strong> - The default blosc compression (level 5)
+provides an optimal balance. For very large datasets, experiment with
+compression_level parameter (0-9) to find the best trade-off between
+size and speed for your use case.</p></li>
+<li><p><strong>Test before sharing</strong> - Always test that your uploaded dataset can be
+downloaded and used correctly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Upload</span>
+<a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span><span class="s2">&quot;braindecode/example_dataset&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test download</span>
+<span class="n">test_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="o">.</span><span class="n">pull_from_hub</span><span class="p">(</span><span class="s2">&quot;braindecode/example_dataset&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Consider privacy</strong> - Ensure you have permission to share the data and
+that personal information has been properly anonymized.</p></li>
+</ol>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SUMMARY&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Hugging Face Hub integration supports three dataset types:</span>
+
+<span class="s2">✓ WindowsDataset - Epoched data (mne.Epochs)</span>
+<span class="s2">✓ EEGWindowsDataset - Continuous with windowing metadata</span>
+<span class="s2">✓ RawDataset - Continuous without windowing</span>
+
+<span class="s2">Benefits:</span>
+<span class="s2">✓ Share datasets with the research community</span>
+<span class="s2">✓ Version control with git-like versioning</span>
+<span class="s2">✓ Collaborate on dataset curation</span>
+<span class="s2">✓ Access datasets from anywhere</span>
+<span class="s2">✓ Automatic caching for faster repeated loads</span>
+<span class="s2">✓ Optimized Zarr format for fast training</span>
+
+<span class="s2">For more information:</span>
+<span class="s2">- Hugging Face Hub: https://huggingface.co</span>
+<span class="s2">- Braindecode docs: https://braindecode.org</span>
+<span class="s2">- Hub docs: https://huggingface.co/docs/hub</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
+SUMMARY
+======================================================================
+
+Hugging Face Hub integration supports three dataset types:
+
+✓ WindowsDataset - Epoched data (mne.Epochs)
+✓ EEGWindowsDataset - Continuous with windowing metadata
+✓ RawDataset - Continuous without windowing
+
+Benefits:
+✓ Share datasets with the research community
+✓ Version control with git-like versioning
+✓ Collaborate on dataset curation
+✓ Access datasets from anywhere
+✓ Automatic caching for faster repeated loads
+✓ Optimized Zarr format for fast training
+
+For more information:
+- Hugging Face Hub: https://huggingface.co
+- Braindecode docs: https://braindecode.org
+- Hub docs: https://huggingface.co/docs/hub
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.629 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1276 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-hub-integration-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/f158ead3e4720f6f4685ff1d3f48dc15/plot_hub_integration.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hub_integration.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/81ecce7745843bca9853e32f08ec06a0/plot_hub_integration.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_hub_integration.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/0e7901d0b4f66d64949baca45cedfd0e/plot_hub_integration.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_hub_integration.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+  
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_custom_dataset_example.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Custom Dataset Example</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_load_save_datasets.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Load and save dataset example</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-prepare-datasets">Load and prepare datasets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-windowsdataset-epoched-data">Example 1: WindowsDataset (Epoched data)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-eegwindowsdataset-continuous-with-windowing">Example 2: EEGWindowsDataset (Continuous with windowing)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-rawdataset-continuous-without-windowing">Example 3: RawDataset (Continuous without windowing)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#upload-datasets-to-hugging-face-hub">Upload datasets to Hugging Face Hub</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zarr-format">Zarr Format</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-datasets-from-hugging-face-hub">Download datasets from Hugging Face Hub</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-datasets-with-pytorch-dataloader">Using datasets with PyTorch DataLoader</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-version-control-and-collaboration">Advanced: Version control and collaboration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices">Best practices</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+    <script src="https://braindecode.org/versionwarning.js"></script>
+    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2025, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
