@@ -838,6 +838,18 @@ that will be forwarded to the model (without the prefix <code class="docutils li
 even if <a class="reference internal" href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.ShallowFBCSPNet</span></code></a> needs them to be initialized. This is because the
 wrapper will automatically infer them, along with some other signal-related parameters,
 from the input data at training time.</p>
+<p>Under the hood, the wrapper uses the <a class="reference internal" href="../../generated/braindecode.datautil.infer_signal_properties.html#braindecode.datautil.infer_signal_properties" title="braindecode.datautil.infer_signal_properties"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datautil.infer_signal_properties()</span></code></a> function
+to extract these parameters:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datautil</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datautil.infer_signal_properties.html#braindecode.datautil.infer_signal_properties" title="braindecode.datautil.infer_signal_properties" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">infer_signal_properties</span></a>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sig_props</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datautil.infer_signal_properties.html#braindecode.datautil.infer_signal_properties" title="braindecode.datautil.infer_signal_properties" class="sphx-glr-backref-module-braindecode-datautil sphx-glr-backref-type-py-function"><span class="n">infer_signal_properties</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inferred signal properties:</span><span class="se">\n</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sig_props</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Inferred signal properties:
+{&#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1024, &#39;sfreq&#39;: 256.0, &#39;chs_info&#39;: [{&#39;loc&#39;: array([nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]), &#39;unit_mul&#39;: 0 (FIFF_UNITM_NONE), &#39;range&#39;: 1.0, &#39;cal&#39;: 1.0, &#39;kind&#39;: 2 (FIFFV_EEG_CH), &#39;coil_type&#39;: 1 (FIFFV_COIL_EEG), &#39;unit&#39;: 107 (FIFF_UNIT_V), &#39;coord_frame&#39;: 4 (FIFFV_COORD_HEAD), &#39;ch_name&#39;: &#39;C3&#39;, &#39;scanno&#39;: 1, &#39;logno&#39;: 1}, {&#39;loc&#39;: array([nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]), &#39;unit_mul&#39;: 0 (FIFF_UNITM_NONE), &#39;range&#39;: 1.0, &#39;cal&#39;: 1.0, &#39;kind&#39;: 2 (FIFFV_EEG_CH), &#39;coil_type&#39;: 1 (FIFFV_COIL_EEG), &#39;unit&#39;: 107 (FIFF_UNIT_V), &#39;coord_frame&#39;: 4 (FIFFV_COORD_HEAD), &#39;ch_name&#39;: &#39;C4&#39;, &#39;scanno&#39;: 2, &#39;logno&#39;: 2}, {&#39;loc&#39;: array([nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]), &#39;unit_mul&#39;: 0 (FIFF_UNITM_NONE), &#39;range&#39;: 1.0, &#39;cal&#39;: 1.0, &#39;kind&#39;: 2 (FIFFV_EEG_CH), &#39;coil_type&#39;: 1 (FIFFV_COIL_EEG), &#39;unit&#39;: 107 (FIFF_UNIT_V), &#39;coord_frame&#39;: 4 (FIFFV_COORD_HEAD), &#39;ch_name&#39;: &#39;Cz&#39;, &#39;scanno&#39;: 3, &#39;logno&#39;: 3}]}
+</pre></div>
+</div>
 <p>Now that we have our model wrapped in a scikit-learn-compatible classifier,
 we can train it by simply calling the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier.fit" title="skorch.classifier.NeuralNetClassifier.fit" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-method"><span class="n">net</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
@@ -845,16 +857,16 @@ we can train it by simply calling the <code class="docutils literal notranslate"
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    valid_acc    valid_loss     dur
 -------  -----------  ------------  ------
-      1       0.3000       15.6130  0.0159
-      2       0.3000       15.6130  0.0085
+      1       0.3000       15.6130  0.0156
+      2       0.3000       15.6130  0.0084
       3       0.3000       15.6130  0.0075
-      4       0.3000       15.6130  0.0076
+      4       0.3000       15.6130  0.0075
       5       0.3000       15.6130  0.0074
       6       0.3000       15.6130  0.0072
       7       0.3000       15.6130  0.0071
       8       0.3000       15.6130  0.0071
-      9       0.3000       15.6130  0.0070
-     10       0.3000       15.6130  0.0071
+      9       0.3000       15.6130  0.0072
+     10       0.3000       15.6130  0.0072
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1516,7 +1528,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">train_split&nbsp;</td>
-            <td class="value">&lt;skorch.datas...x7f3cc1f0cec0&gt;</td>
+            <td class="value">&lt;skorch.datas...x7f483101d0d0&gt;</td>
         </tr>
 
 
@@ -1666,7 +1678,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__epoch_timer&nbsp;</td>
-            <td class="value">&lt;skorch.callb...x7f3cc1f0d220&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f4820332ff0&gt;</td>
         </tr>
 
 
@@ -1676,7 +1688,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss&nbsp;</td>
-            <td class="value">&lt;skorch.callb...x7f3cb1ffc5c0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f4820331970&gt;</td>
         </tr>
 
 
@@ -1686,7 +1698,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss__scoring&nbsp;</td>
-            <td class="value">&lt;function tra...x7f3cc2f5b7e0&gt;</td>
+            <td class="value">&lt;function tra...x7f483225b7e0&gt;</td>
         </tr>
 
 
@@ -1726,7 +1738,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss__target_extractor&nbsp;</td>
-            <td class="value">&lt;function noo...x7f3cc2f5b600&gt;</td>
+            <td class="value">&lt;function noo...x7f483225b600&gt;</td>
         </tr>
 
 
@@ -1746,7 +1758,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss&nbsp;</td>
-            <td class="value">&lt;skorch.callb...x7f3cb1d8bbc0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f4820331eb0&gt;</td>
         </tr>
 
 
@@ -1756,7 +1768,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss__scoring&nbsp;</td>
-            <td class="value">&lt;function val...x7f3cc2f5b880&gt;</td>
+            <td class="value">&lt;function val...x7f483225b880&gt;</td>
         </tr>
 
 
@@ -1796,7 +1808,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss__target_extractor&nbsp;</td>
-            <td class="value">&lt;function noo...x7f3cc2f5b600&gt;</td>
+            <td class="value">&lt;function noo...x7f483225b600&gt;</td>
         </tr>
 
 
@@ -1816,7 +1828,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_acc&nbsp;</td>
-            <td class="value">&lt;skorch.callb...x7f3cb1d88620&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f48203309e0&gt;</td>
         </tr>
 
 
@@ -1866,7 +1878,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_acc__target_extractor&nbsp;</td>
-            <td class="value">&lt;function to_...x7f3cc2f5ab60&gt;</td>
+            <td class="value">&lt;function to_...x7f483225ab60&gt;</td>
         </tr>
 
 
@@ -1886,7 +1898,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__print_log&nbsp;</td>
-            <td class="value">&lt;skorch.callb...x7f3cb1d8ba40&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f48203336b0&gt;</td>
         </tr>
 
 
@@ -2021,7 +2033,7 @@ Estimated Total Size (MB): 0.37
 =================================================================================================================================================
 </pre></div>
 </div>
-<p>And we can see that all the following parameters were automatically inferred
+<p>And we can see that all the following parameters were indeed automatically inferred
 from the training data:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net</span><span class="o">.</span><span class="n">module_</span></a><span class="o">.</span><span class="n">n_chans</span><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net</span><span class="o">.</span><span class="n">module_</span></a><span class="o">.</span><span class="n">n_times</span><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net</span><span class="o">.</span><span class="n">module_</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">=}</span><span class="s2">&quot;</span>
@@ -2057,7 +2069,7 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.048 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.370 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  908 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
