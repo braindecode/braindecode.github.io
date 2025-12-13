@@ -794,7 +794,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dt class="sig sig-object py" id="braindecode.models.AttentionBaseNet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">AttentionBaseNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_times=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chans=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_temporal_filters=40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_filter_length_inp=25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_expansion=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_length_inp=75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride_inp=15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob_inp=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dim=16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_filter_length=15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_length=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob_attn=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attention_mode=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction_rate=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_mlp=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_idx=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_codewords=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size=9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation=&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params=False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/attentionbasenet.py#L26-L412"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.AttentionBaseNet" title="Link to this definition">#</a></dt>
 <dd><p>AttentionBaseNet from Wimpff M et al. (2023) <a class="reference internal" href="#r523d6c831d64-martin2023" id="id1">[Martin2023]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Small Attention</span></p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Attention/Transformer</span></p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="https://content.cld.iop.org/journals/1741-2552/21/3/036020/revision2/jnead48b9f2_hr.jpg"><img alt="AttentionBaseNet Architecture" src="https://content.cld.iop.org/journals/1741-2552/21/3/036020/revision2/jnead48b9f2_hr.jpg" style="width: 640px;" />
 </a>
@@ -962,21 +962,25 @@ only after the stem learns stable filters. For small datasets, prefer simpler mo
 </div></blockquote>
 </li>
 </ul>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Sequence length after each stage is computed internally; the final classifier expects
+a flattened <code class="docutils literal notranslate"><span class="pre">ch_dim</span> <span class="pre">x</span> <span class="pre">T₂</span></code> vector.</p></li>
+<li><p>Attention operates on <em>channel</em> dimension by design; temporal gating exists only in
+specific variants (CBAM/CAT).</p></li>
+<li><p>The paper and original code with more details about the methodological
+choices are available at the <a class="reference internal" href="#r523d6c831d64-martin2023" id="id2">[Martin2023]</a> and <a class="reference internal" href="#r523d6c831d64-martincode" id="id3">[MartinCode]</a>.</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.9.</span></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
-<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
-<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
-in the case of classification.</p></li>
-<li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
-<code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
-<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
 <li><p><strong>n_temporal_filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of temporal convolutional filters in the first layer. This defines
 the number of output channels after the temporal convolution.
 Default is 40.</p></li>
-<li><p><strong>temp_filter_length_inp</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>temp_filter_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=15</em>) – The length of the temporal filters in the convolutional layers.</p></li>
 <li><p><strong>spatial_expansion</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Multiplicative factor to expand the spatial dimensions. Used to increase
 the capacity of the model by expanding spatial features. Default is 1.</p></li>
 <li><p><strong>pool_length_inp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Length of the pooling window in the input layer. Determines how much
@@ -988,10 +992,6 @@ zeroing out elements during training to prevent overfitting.
 Default is 0.5.</p></li>
 <li><p><strong>ch_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of channels in the subsequent convolutional layers. This controls
 the depth of the network after the initial layer. Default is 16.</p></li>
-<li><p><strong>temp_filter_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=15</em>) – The length of the temporal filters in the convolutional layers.</p></li>
-<li><p><strong>pool_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – The length of the window for the average pooling operation.</p></li>
-<li><p><strong>pool_stride</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – The stride of the average pooling operation.</p></li>
-<li><p><strong>drop_prob_attn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.5</em>) – The dropout rate for regularization for the attention layer. Values should be between 0 and 1.</p></li>
 <li><p><strong>attention_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – <p>The type of attention mechanism to apply. If <cite>None</cite>, no attention is applied.</p>
 <ul>
 <li><p>”se” for Squeeze-and-excitation network</p></li>
@@ -1009,6 +1009,9 @@ from multi-information fusion</p></li>
 from multi-information fusion (lite version, cat w/o temporal attention)</p></li>
 </ul>
 </p></li>
+<li><p><strong>pool_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – The length of the window for the average pooling operation.</p></li>
+<li><p><strong>pool_stride</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – The stride of the average pooling operation.</p></li>
+<li><p><strong>drop_prob_attn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.5</em>) – The dropout rate for regularization for the attention layer. Values should be between 0 and 1.</p></li>
 <li><p><strong>reduction_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=4</em>) – The reduction rate used in the attention mechanism to reduce dimensionality
 and computational complexity.</p></li>
 <li><p><strong>use_mlp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – Flag to indicate whether an MLP (Multi-Layer Perceptron) should be used within
@@ -1024,22 +1027,7 @@ module class like <code class="docutils literal notranslate"><span class="pre">n
 the attention mechanism.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If some input signal-related parameters are not specified: and can not be inferred.</p>
-</dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Sequence length after each stage is computed internally; the final classifier expects
-a flattened <code class="docutils literal notranslate"><span class="pre">ch_dim</span> <span class="pre">x</span> <span class="pre">T₂</span></code> vector.</p></li>
-<li><p>Attention operates on <em>channel</em> dimension by design; temporal gating exists only in
-specific variants (CBAM/CAT).</p></li>
-<li><p>The paper and original code with more details about the methodological
-choices are available at the <a class="reference internal" href="#r523d6c831d64-martin2023" id="id2">[Martin2023]</a> and <a class="reference internal" href="#r523d6c831d64-martincode" id="id3">[MartinCode]</a>.</p></li>
-</ul>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.9.</span></p>
-</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r523d6c831d64-martin2023" role="doc-biblioentry">
@@ -1068,11 +1056,6 @@ this function, one should call the <code class="xref py py-class docutils litera
 instead of this since the former takes care of running the
 registered hooks while the latter silently ignores them.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – The description is missing.</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>

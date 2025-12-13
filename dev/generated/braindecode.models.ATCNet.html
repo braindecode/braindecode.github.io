@@ -794,7 +794,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dt class="sig sig-object py" id="braindecode.models.ATCNet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">ATCNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq=250.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_n_filters=16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_kernel_length_1=64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_kernel_length_2=16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_pool_size_1=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_pool_size_2=7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_depth_mult=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_block_dropout=0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_windows=5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_dim=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">att_drop_prob=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tcn_depth=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tcn_kernel_size=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tcn_drop_prob=0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tcn_activation=&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concat=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_norm_const=0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times=None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/atcnet.py#L15-L459"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.ATCNet" title="Link to this definition">#</a></dt>
 <dd><p>ATCNet from Altaheri et al. (2022) <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id1">[1]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Recurrent</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Small Attention</span></p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Recurrent</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Attention/Transformer</span></p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/25565236/185449791-e8539453-d4fa-41e1-865a-2cf7e91f60ef.png"><img alt="ATCNet Architecture" src="https://user-images.githubusercontent.com/25565236/185449791-e8539453-d4fa-41e1-865a-2cf7e91f60ef.png" style="width: 650px;" />
 </a>
@@ -950,12 +950,22 @@ kernels/pools/windows if inputs are too short.</p></li>
 <li><p><strong>Aggregation choice.</strong> <code class="docutils literal notranslate"><span class="pre">concat=False</span></code> (default, average of per-window logits) matches
 the official code; <code class="docutils literal notranslate"><span class="pre">concat=True</span></code> mirrors the paper’s concatenation variant.</p></li>
 </ul>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Inputs substantially shorter than the implied minimum length trigger <strong>automatic
+downscaling</strong> of kernels, pools, windows, and TCN kernel size to maintain validity.</p></li>
+<li><p>The attention–TCN sequence operates <strong>per window</strong>; the last causal step is used as the
+window feature, aligning the temporal semantics across windows.</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1: </span></p>
+<ul class="simple">
+<li><p>More detailed documentation of the model.</p></li>
+</ul>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
-<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
-in the case of classification.</p></li>
 <li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Time length of inputs, in seconds. Defaults to 4.5 s, as in BCI-IV 2a
 dataset.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Sampling frequency of the inputs, in Hz. Default to 250 Hz, as in
@@ -981,54 +991,37 @@ table 1 of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="i
 table 1 of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id16">[1]</a>. Defaults to 8 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id17">[1]</a>.</p></li>
 <li><p><strong>num_heads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of attention heads, denoted H in table 1 of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id18">[1]</a>.
 Defaults to 2 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id19">[1]</a>.</p></li>
-<li><p><strong>att_drop_prob</strong> – The description is missing.</p></li>
+<li><p><strong>att_dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Dropout probability used in the attention block, denoted pa in table 1
+of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id20">[1]</a>. Defaults to 0.5 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id21">[1]</a>.</p></li>
 <li><p><strong>tcn_depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Depth of Temporal Convolutional Network block (i.e. number of TCN
-Residual blocks), denoted L in table 1 of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id20">[1]</a>. Defaults to 2
-as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id21">[1]</a>.</p></li>
+Residual blocks), denoted L in table 1 of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id22">[1]</a>. Defaults to 2
+as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id23">[1]</a>.</p></li>
 <li><p><strong>tcn_kernel_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Temporal kernel size used in TCN block, denoted Kt in table 1 of the
-paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id22">[1]</a>. Defaults to 4 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id23">[1]</a>.</p></li>
-<li><p><strong>tcn_drop_prob</strong> – The description is missing.</p></li>
+paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id24">[1]</a>. Defaults to 4 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id25">[1]</a>.</p></li>
+<li><p><strong>tcn_dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Dropout probability used in the TCN block, denoted pt in table 1
+of the paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id26">[1]</a>. Defaults to 0.3 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id27">[1]</a>.</p></li>
 <li><p><strong>tcn_activation</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.9)"><em>torch.nn.Module</em></a>) – Nonlinear activation to use. Defaults to nn.ELU().</p></li>
 <li><p><strong>concat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, concatenates each slidding window embedding before
-feeding it to a fully-connected layer, as done in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id24">[1]</a>. When <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+feeding it to a fully-connected layer, as done in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id28">[1]</a>. When <code class="docutils literal notranslate"><span class="pre">False</span></code>,
 maps each slidding window to <cite>n_outputs</cite> logits and average them.
-Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> contrary to what is reported in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id25">[1]</a>, but
-matching what the official code does <a class="reference internal" href="#r2ecdb73d6ab9-2" id="id26">[2]</a>.</p></li>
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> contrary to what is reported in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id29">[1]</a>, but
+matching what the official code does <a class="reference internal" href="#r2ecdb73d6ab9-2" id="id30">[2]</a>.</p></li>
 <li><p><strong>max_norm_const</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Maximum L2-norm constraint imposed on weights of the last
 fully-connected layer. Defaults to 0.25.</p></li>
-<li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
-<code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
-<li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If some input signal-related parameters are not specified: and can not be inferred.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Inputs substantially shorter than the implied minimum length trigger <strong>automatic
-downscaling</strong> of kernels, pools, windows, and TCN kernel size to maintain validity.</p></li>
-<li><p>The attention–TCN sequence operates <strong>per window</strong>; the last causal step is used as the
-window feature, aligning the temporal semantics across windows.</p></li>
-</ul>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.1: </span></p>
-<ul class="simple">
-<li><p>More detailed documentation of the model.</p></li>
-</ul>
-</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r2ecdb73d6ab9-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id5">5</a>,<a role="doc-backlink" href="#id6">6</a>,<a role="doc-backlink" href="#id7">7</a>,<a role="doc-backlink" href="#id8">8</a>,<a role="doc-backlink" href="#id9">9</a>,<a role="doc-backlink" href="#id10">10</a>,<a role="doc-backlink" href="#id11">11</a>,<a role="doc-backlink" href="#id12">12</a>,<a role="doc-backlink" href="#id13">13</a>,<a role="doc-backlink" href="#id14">14</a>,<a role="doc-backlink" href="#id15">15</a>,<a role="doc-backlink" href="#id16">16</a>,<a role="doc-backlink" href="#id17">17</a>,<a role="doc-backlink" href="#id18">18</a>,<a role="doc-backlink" href="#id19">19</a>,<a role="doc-backlink" href="#id20">20</a>,<a role="doc-backlink" href="#id21">21</a>,<a role="doc-backlink" href="#id22">22</a>,<a role="doc-backlink" href="#id23">23</a>,<a role="doc-backlink" href="#id24">24</a>,<a role="doc-backlink" href="#id25">25</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id5">5</a>,<a role="doc-backlink" href="#id6">6</a>,<a role="doc-backlink" href="#id7">7</a>,<a role="doc-backlink" href="#id8">8</a>,<a role="doc-backlink" href="#id9">9</a>,<a role="doc-backlink" href="#id10">10</a>,<a role="doc-backlink" href="#id11">11</a>,<a role="doc-backlink" href="#id12">12</a>,<a role="doc-backlink" href="#id13">13</a>,<a role="doc-backlink" href="#id14">14</a>,<a role="doc-backlink" href="#id15">15</a>,<a role="doc-backlink" href="#id16">16</a>,<a role="doc-backlink" href="#id17">17</a>,<a role="doc-backlink" href="#id18">18</a>,<a role="doc-backlink" href="#id19">19</a>,<a role="doc-backlink" href="#id20">20</a>,<a role="doc-backlink" href="#id21">21</a>,<a role="doc-backlink" href="#id22">22</a>,<a role="doc-backlink" href="#id23">23</a>,<a role="doc-backlink" href="#id24">24</a>,<a role="doc-backlink" href="#id25">25</a>,<a role="doc-backlink" href="#id26">26</a>,<a role="doc-backlink" href="#id27">27</a>,<a role="doc-backlink" href="#id28">28</a>,<a role="doc-backlink" href="#id29">29</a>)</span>
 <p>H. Altaheri, G. Muhammad, M. Alsulaiman (2022).
 <em>Physics-informed attention temporal convolutional network for EEG-based motor imagery classification.</em>
 IEEE Transactions on Industrial Informatics. doi:10.1109/TII.2022.3197419.</p>
 </div>
 <div class="citation" id="r2ecdb73d6ab9-2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id26">2</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id30">2</a><span class="fn-bracket">]</span></span>
 <p>Official EEG-ATCNet implementation (TensorFlow):
 <a class="github reference external" href="https://github.com/Altaheri/EEG-ATCNet/blob/main/models.py">Altaheri/EEG-ATCNet</a></p>
 </div>
@@ -1047,11 +1040,8 @@ instead of this since the former takes care of running the
 registered hooks while the latter silently ignores them.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – The description is missing.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>

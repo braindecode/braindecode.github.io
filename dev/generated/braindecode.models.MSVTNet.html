@@ -794,7 +794,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dt class="sig sig-object py" id="braindecode.models.MSVTNet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">MSVTNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_filters_list=(9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv1_kernels_size=(15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">31</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">63</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">125)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv2_kernel_size=15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_multiplier=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool1_size=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool2_size=7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob=0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads=8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffn_expansion_factor=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">att_drop_prob=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation=&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_features=False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/msvtnet.py#L13-L192"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.MSVTNet" title="Link to this definition">#</a></dt>
 <dd><p>MSVTNet model from Liu K et al (2024) from <a class="reference internal" href="#r0733e66fed6d-msvt2024" id="id1">[msvt2024]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Recurrent</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Small Attention</span></p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Recurrent</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Attention/Transformer</span></p>
 <p>This model implements a multi-scale convolutional transformer network
 for EEG signal classification, as described in <a class="reference internal" href="#r0733e66fed6d-msvt2024" id="id2">[msvt2024]</a>.</p>
 <figure class="align-center">
@@ -803,14 +803,6 @@ for EEG signal classification, as described in <a class="reference internal" hre
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
-<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
-in the case of classification.</p></li>
-<li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
-<li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
-<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
-<code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>n_filters_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – List of filter numbers for each TSConv block, by default (9, 9, 9, 9).</p></li>
 <li><p><strong>conv1_kernels_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – List of kernel sizes for the first convolution in each TSConv block,
 by default (15, 31, 63, 125).</p></li>
@@ -826,9 +818,6 @@ by default (15, 31, 63, 125).</p></li>
 <li><p><strong>activation</strong> (<em>Type</em><em>[</em><em>nn.Module</em><em>]</em><em>, </em><em>optional</em>) – Activation function class to use, by default nn.ELU.</p></li>
 <li><p><strong>return_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to return predictions from branch classifiers, by default False.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If some input signal-related parameters are not specified: and can not be inferred.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -864,11 +853,8 @@ instead of this since the former takes care of running the
 registered hooks while the latter silently ignores them.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – The description is missing.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>

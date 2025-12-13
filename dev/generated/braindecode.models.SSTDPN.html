@@ -795,7 +795,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dt class="sig sig-object py" id="braindecode.models.SSTDPN">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">SSTDPN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spectral_filters_temporal=9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_fused_filters=48</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporal_conv_kernel_size=75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mvp_kernel_sizes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_features=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto_sep_maxnorm=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto_cpt_std=0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spt_attn_global_context_kernel=250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spt_attn_epsilon=1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spt_attn_mode='var'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation=&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/sstdpn.py#L17-L381"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.SSTDPN" title="Link to this definition">#</a></dt>
 <dd><p>SSTDPN from Can Han et al (2025) <a class="reference internal" href="#r15c5a176a51e-han2025" id="id1">[Han2025]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Small Attention</span> <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">Attention/Transformer</span> <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="https://raw.githubusercontent.com/hancan16/SST-DPN/refs/heads/main/figs/framework.png"><img alt="SSTDPN Architecture" src="https://raw.githubusercontent.com/hancan16/SST-DPN/refs/heads/main/figs/framework.png" style="width: 1000px;" />
 </a>
@@ -944,17 +944,31 @@ learning data, according to <a class="reference internal" href="#r15c5a176a51e-h
 </dl>
 </li>
 </ul>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The implementation of the DPL loss functions (<span class="math notranslate nohighlight">\(\mathcal{L}_S\)</span>, <span class="math notranslate nohighlight">\(\mathcal{L}_C\)</span>, <span class="math notranslate nohighlight">\(\mathcal{L}_{EF}\)</span>)
+and the optimization of ICPs are typically handled outside the primary <code class="docutils literal notranslate"><span class="pre">forward</span></code> method, within the training strategy
+(see Ref. 52 in <a class="reference internal" href="#r15c5a176a51e-han2025" id="id13">[Han2025]</a>).</p></li>
+<li><p>The default parameters are configured based on the BCI Competition IV 2a dataset.</p></li>
+<li><p>The use of Prototype Learning (PL) methods is novel in the field of EEG-MI decoding.</p></li>
+<li><p><strong>Lowest FLOPs:</strong> Achieves the lowest Floating Point Operations (FLOPs) (9.65 M) among competitive
+SOTA methods, including braindecode models like <a class="reference internal" href="braindecode.models.ATCNet.html#braindecode.models.ATCNet" title="braindecode.models.ATCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ATCNet</span></code></a> (29.81 M) and
+<a class="reference internal" href="braindecode.models.EEGConformer.html#braindecode.models.EEGConformer" title="braindecode.models.EEGConformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGConformer</span></code></a> (63.86 M), demonstrating computational efficiency <a class="reference internal" href="#r15c5a176a51e-han2025" id="id14">[Han2025]</a>.</p></li>
+<li><p><strong>Transformer Alternative:</strong> Multi-scale Variance Pooling (MVP) provides a accuracy
+improvement over temporal attention transformer modules in ablation studies, offering a more
+efficient alternative to transformer-based approaches like <a class="reference internal" href="braindecode.models.EEGConformer.html#braindecode.models.EEGConformer" title="braindecode.models.EEGConformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGConformer</span></code></a> <a class="reference internal" href="#r15c5a176a51e-han2025" id="id15">[Han2025]</a>.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Important:</strong> To utilize the full potential of SSTDPN with Dual Prototype Learning (DPL),
+users must implement the DPL optimization strategy outside the model’s forward method.
+For implementation details and training strategies, please consult the official code at
+<a class="reference internal" href="#r15c5a176a51e-han2025code" id="id16">[Han2025Code]</a>:
+<a class="github reference external" href="https://github.com/hancan16/SST-DPN/blob/main/train.py">hancan16/SST-DPN</a></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
-<li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
-<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
-in the case of classification.</p></li>
-<li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
-<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
-<code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>n_spectral_filters_temporal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of spectral filters extracted per channel via temporal convolution.
 These represent the temporal spectral bands (equivalent to <span class="math notranslate nohighlight">\(F_1\)</span> in the paper).
 Default is 9.</p></li>
@@ -979,32 +993,7 @@ Default is ‘var’ (variance-based mean-var operation).</p></li>
 Should be a PyTorch activation module class. Default is nn.ELU.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If some input signal-related parameters are not specified: and can not be inferred.</p>
-</dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The implementation of the DPL loss functions (<span class="math notranslate nohighlight">\(\mathcal{L}_S\)</span>, <span class="math notranslate nohighlight">\(\mathcal{L}_C\)</span>, <span class="math notranslate nohighlight">\(\mathcal{L}_{EF}\)</span>)
-and the optimization of ICPs are typically handled outside the primary <code class="docutils literal notranslate"><span class="pre">forward</span></code> method, within the training strategy
-(see Ref. 52 in <a class="reference internal" href="#r15c5a176a51e-han2025" id="id13">[Han2025]</a>).</p></li>
-<li><p>The default parameters are configured based on the BCI Competition IV 2a dataset.</p></li>
-<li><p>The use of Prototype Learning (PL) methods is novel in the field of EEG-MI decoding.</p></li>
-<li><p><strong>Lowest FLOPs:</strong> Achieves the lowest Floating Point Operations (FLOPs) (9.65 M) among competitive
-SOTA methods, including braindecode models like <a class="reference internal" href="braindecode.models.ATCNet.html#braindecode.models.ATCNet" title="braindecode.models.ATCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ATCNet</span></code></a> (29.81 M) and
-<a class="reference internal" href="braindecode.models.EEGConformer.html#braindecode.models.EEGConformer" title="braindecode.models.EEGConformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGConformer</span></code></a> (63.86 M), demonstrating computational efficiency <a class="reference internal" href="#r15c5a176a51e-han2025" id="id14">[Han2025]</a>.</p></li>
-<li><p><strong>Transformer Alternative:</strong> Multi-scale Variance Pooling (MVP) provides a accuracy
-improvement over temporal attention transformer modules in ablation studies, offering a more
-efficient alternative to transformer-based approaches like <a class="reference internal" href="braindecode.models.EEGConformer.html#braindecode.models.EEGConformer" title="braindecode.models.EEGConformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGConformer</span></code></a> <a class="reference internal" href="#r15c5a176a51e-han2025" id="id15">[Han2025]</a>.</p></li>
-</ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>Important:</strong> To utilize the full potential of SSTDPN with Dual Prototype Learning (DPL),
-users must implement the DPL optimization strategy outside the model’s forward method.
-For implementation details and training strategies, please consult the official code at
-<a class="reference internal" href="#r15c5a176a51e-han2025code" id="id16">[Han2025Code]</a>:
-<a class="github reference external" href="https://github.com/hancan16/SST-DPN/blob/main/train.py">hancan16/SST-DPN</a></p>
-</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r15c5a176a51e-han2025" role="doc-biblioentry">
