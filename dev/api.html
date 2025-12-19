@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Braindece API Reference &#8212; Braindecode 1.3.0 documentation</title>
+    <title>Braindecode API Reference &#8212; Braindecode 1.3.0 documentation</title>
   
   
   
@@ -451,7 +451,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Braindece API Reference</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Braindecode API Reference</span></li>
   </ul>
 </nav>
 </div>
@@ -470,7 +470,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div>
   
   <section id="module-braindecode">
-<span id="braindece-api-reference"></span><span id="api-reference"></span><h1>Braindece API Reference<a class="headerlink" href="#module-braindecode" title="Link to this heading">#</a></h1>
+<span id="braindecode-api-reference"></span><span id="api-reference"></span><h1>Braindecode API Reference<a class="headerlink" href="#module-braindecode" title="Link to this heading">#</a></h1>
 <section id="models">
 <h2>Models<a class="headerlink" href="#models" title="Link to this heading">#</a></h2>
 <p>Model zoo availables in braindecode. The models are implemented as
@@ -491,8 +491,56 @@ named the same way, following the braindecode’s standards:</p>
 <p>All the models are implemented as subclasses of <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGModuleMixin</span></code>, which is a
 base class for all EEG models in Braindecode. The <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGModuleMixin</span></code> class
 provides a common interface for all EEG models and derivate variables names if necessary.</p>
-<p>Also, all models inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">PyTorchModelHubMixin</span></code>, which provides functionality to
-save and load models from the Hugging Face Hub, if the <code class="docutils literal notranslate"><span class="pre">braindecode[hug]</span></code> package is installed.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Hugging Face Hub Integration</strong></p>
+<p>All models in braindecode naturally possess the capability to push and pull from the
+Hugging Face Hub through inheritance from <code class="xref py py-class docutils literal notranslate"><span class="pre">PyTorchModelHubMixin</span></code>. This allows you to:</p>
+<ul class="simple">
+<li><p><strong>Load pre-trained models</strong> from the Hub using <code class="docutils literal notranslate"><span class="pre">Model.from_pretrained(&quot;repo_id&quot;)</span></code></p></li>
+<li><p><strong>Share your trained models</strong> with the community using <code class="docutils literal notranslate"><span class="pre">model.push_to_hub(&quot;repo_id&quot;)</span></code></p></li>
+<li><p><strong>Version control your models</strong> with git-like versioning on the Hub</p></li>
+</ul>
+<p>To enable this functionality, install braindecode with Hub support:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hug</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Available pre-trained models:</strong></p>
+<p>Some models have pre-trained weights available on the Hugging Face BrainDecode organization:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BIOT</span></code> - Foundation model with pre-trained weights</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Labram</span></code> - Large Brain Model with pre-trained weights</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">REVE</span></code> - EEG foundation model with pre-trained weights</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">LUNA</span></code> - Universal EEG embedding model with pre-trained weights</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BENDR</span></code> - Foundation model with pre-trained weights</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalJEPA</span></code> - Self-supervised learning model with pre-trained weights</p></li>
+</ul>
+<p><strong>Example - Loading a pre-trained model:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIOT</span>
+
+<span class="c1"># Load pre-trained BIOT model from Hugging Face Hub</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">BIOT</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;braindecode/biot-pretrained-prest-16chs&quot;</span><span class="p">)</span>
+
+<span class="c1"># Use for your EEG classification task</span>
+<span class="c1"># ... your code here ...</span>
+</pre></div>
+</div>
+<p><strong>Example - Pushing your trained model:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGNeX</span>
+
+<span class="c1"># Train your model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGNeX</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># ... training code ...</span>
+
+<span class="c1"># Push to the Hub (requires huggingface-cli login)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-eegnex-model&quot;</span><span class="p">,</span> <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For more details, see the <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGModuleMixin</span></code> documentation and the
+<a class="reference internal" href="auto_examples/datasets_io/plot_hub_integration.html#hub-integration"><span class="std std-ref">Uploading and downloading datasets to Hugging Face Hub</span></a> tutorial.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">note<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Auto-generated Pydantic configs are available when the optional
