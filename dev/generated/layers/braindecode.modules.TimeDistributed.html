@@ -518,6 +518,8 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../stats/braindecode.modules.StatLayer.html">braindecode.modules.StatLayer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../stats/braindecode.modules.LogPowerLayer.html">braindecode.modules.LogPowerLayer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../stats/braindecode.modules.LogVarLayer.html">braindecode.modules.LogVarLayer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../stats/braindecode.modules.MaxLayer.html">braindecode.modules.MaxLayer</a></li>
@@ -547,8 +549,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.datasets.RecordDataset.html">braindecode.datasets.RecordDataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.datasets.RawDataset.html">braindecode.datasets.RawDataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.datasets.WindowsDataset.html">braindecode.datasets.WindowsDataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../braindecode.datasets.BIDSDataset.html">braindecode.datasets.BIDSDataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../braindecode.datasets.BIDSEpochsDataset.html">braindecode.datasets.BIDSEpochsDataset</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.datasets.BCICompetitionIVDataset4.html">braindecode.datasets.BCICompetitionIVDataset4</a></li>
@@ -804,7 +804,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <h1>braindecode.modules.TimeDistributed<a class="headerlink" href="#braindecode-modules-timedistributed" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.modules.TimeDistributed">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.modules.</span></span><span class="sig-name descname"><span class="pre">TimeDistributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/layers.py#L32-L67"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.TimeDistributed" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">braindecode.modules.</span></span><span class="sig-name descname"><span class="pre">TimeDistributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/layers.py#L60-L106"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.TimeDistributed" title="Link to this definition">#</a></dt>
 <dd><p>Apply module on multiple windows.</p>
 <p>Apply the provided module on a sequence of windows and return their
 concatenation.
@@ -817,10 +817,21 @@ sequence).</p>
 shape (batch_size, n_channels, n_times).</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.modules</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeDistributed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">module</span> <span class="o">=</span> <span class="n">TimeDistributed</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([2, 5, 4])</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.modules.TimeDistributed.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/layers.py#L52-L67"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.TimeDistributed.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/layers.py#L91-L106"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.TimeDistributed.forward" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a>) – Sequence of windows, of shape (batch_size, seq_len, n_channels,
@@ -837,7 +848,16 @@ n_times).</p>
 
 </dd></dl>
 
-<div style='clear:both'></div></section>
+<section id="examples-using-braindecode-modules-timedistributed">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.modules.TimeDistributed</span></code><a class="headerlink" href="#examples-using-braindecode-modules-timedistributed" title="Link to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows how to train and test a sleep staging neural network with Braindecode. We adapt the time distributed approach of [1]_ to learn on sequences of EEG windows using the openly accessible Sleep Physionet dataset [2]_ [3]_."><img alt="" src="../../_images/sphx_glr_plot_sleep_staging_chambon2018_thumb.png" />
+<p><a class="reference internal" href="../../auto_examples/applied_examples/plot_sleep_staging_chambon2018.html"><span class="doc">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial shows how to train and test a sleep staging neural network with Braindecode. We use the attention-based model from [1]_ with the time distributed approach of [2]_ to learn on sequences of EEG windows using the openly accessible Sleep Physionet dataset [3]_ [4]_."><img alt="" src="../../_images/sphx_glr_plot_sleep_staging_eldele2021_thumb.png" />
+<p><a class="reference internal" href="../../auto_examples/applied_examples/plot_sleep_staging_eldele2021.html"><span class="doc">Sleep staging on the Sleep Physionet dataset using Eldele2021</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Sleep staging on the Sleep Physionet dataset using Eldele2021</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
   
@@ -891,6 +911,7 @@ n_times).</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#braindecode.modules.TimeDistributed.forward"><code class="docutils literal notranslate"><span class="pre">TimeDistributed.forward()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-braindecode-modules-timedistributed">Examples using <code class="docutils literal notranslate"><span class="pre">braindecode.modules.TimeDistributed</span></code></a></li>
 </ul>
   </nav></div>
 
