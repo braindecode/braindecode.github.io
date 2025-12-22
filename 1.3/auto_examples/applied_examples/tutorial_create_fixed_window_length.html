@@ -1,0 +1,985 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fixed-Length Windows Extraction &#8212; Braindecode 1.3.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=f3e3feaa" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=96647119"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-7Q43R82K6D');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/applied_examples/tutorial_create_fixed_window_length';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://braindecode.org/auto_examples/applied_examples/tutorial_create_fixed_window_length.html" />
+    <link rel="icon" href="../../_static/braindecode_symbol.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Braindecode API Reference" href="../../api.html" />
+    <link rel="prev" title="Process a big data EEG resource (TUH EEG Corpus)" href="plot_tuh_eeg_corpus.html" />
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NWDKLVNR');</script>
+  <!-- End Google Tag Manager -->
+
+  <link rel="canonical" href="braindecode.org/index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.3" />
+
+  <!-- Google Analytics (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CHY0V439ZQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CHY0V439ZQ');
+  </script>
+
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><strong>Using Braindecode in academic work?</strong> <a class='braindecode-announcement-cta' href='cite.html'>Cite Braindecode</a> <span class='braindecode-announcement-secondary'>DOI: <a href='https://doi.org/10.5281/zenodo.16279624'>10.5281/zenodo.16279624</a></span></div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model_building/index.html">Basic model building and training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_eegprep_cleaning.html">Cleaning EEG Data with EEGPrep for Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_training/index.html">Advanced neural network training strategies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_exca_config.html">Experiment configuration with Pydantic and Exca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Applied examples on real-world datasets</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Fixed-Length Windows Extraction</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Applied examples on real-world datasets</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fixed-Length Windows Extraction</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NWDKLVNR"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-applied-examples-tutorial-create-fixed-window-length-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="fixed-length-windows-extraction">
+<span id="fixed-length-windows"></span><span id="sphx-glr-auto-examples-applied-examples-tutorial-create-fixed-window-length-py"></span><h1>Fixed-Length Windows Extraction<a class="headerlink" href="#fixed-length-windows-extraction" title="Link to this heading">#</a></h1>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction-to-fixed-length-windows-function" id="id1">Introduction to Fixed-Length Windows Function</a></p></li>
+<li><p><a class="reference internal" href="#overview-of-create-fixed-length-windows" id="id2">Overview of create_fixed_length_windows</a></p></li>
+<li><p><a class="reference internal" href="#parameters" id="id3">Parameters</a></p></li>
+<li><p><a class="reference internal" href="#example-1-basic-2-second-50-overlapping-windows" id="id4">Example 1: Basic 2-Second, 50% Overlapping Windows</a></p></li>
+<li><p><a class="reference internal" href="#working-with-targets" id="id5">Working with Targets</a></p></li>
+<li><p><a class="reference internal" href="#example-rejecting-windows-based-on-amplitude" id="id6">Example: Rejecting Windows Based on Amplitude</a></p></li>
+<li><p><a class="reference internal" href="#example-using-lazy-metadata-generation" id="id7">Example: Using lazy metadata generation</a></p></li>
+<li><p><a class="reference internal" href="#example-shifted-windows" id="id8">Example: Shifted Windows</a></p></li>
+</ul>
+</nav>
+<section id="introduction-to-fixed-length-windows-function">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Introduction to Fixed-Length Windows Function</a><a class="headerlink" href="#introduction-to-fixed-length-windows-function" title="Link to this heading">#</a></h2>
+<p>In many EEG decoding tasks, such as self-supervised pre-training,
+it is useful to split long continuous recordings
+into <strong>fixed-length, overlapping or non-overlapping windows</strong></p>
+<p>The function <a class="reference internal" href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.create_fixed_length_windows()</span></code></a>
+provides an easy way to slice a continuous EEG recording into such windows.</p>
+<p>This tutorial explains how to use it, what its parameters mean, and how
+it can be applied to EEG datasets.</p>
+</section>
+<section id="overview-of-create-fixed-length-windows">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Overview of create_fixed_length_windows</a><a class="headerlink" href="#overview-of-create-fixed-length-windows" title="Link to this heading">#</a></h2>
+<p>The function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="p">,</span>
+    <span class="n">start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">stop_offset_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">reject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">flat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">targets_from</span><span class="o">=</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span>
+    <span class="n">last_target_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">lazy_metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="parameters">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Parameters</a><a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
+<dl>
+<dt><strong>concat_ds</strong><span class="classifier"><cite>ConcatDataset</cite></span></dt><dd><ul class="simple">
+<li><p>A concat of base datasets each holding raw and description.</p></li>
+</ul>
+</dd>
+<dt><strong>start_offset_samples</strong><span class="classifier">int (default=0)</span></dt><dd><ul class="simple">
+<li><p>Start offset from beginning of recording in samples.</p></li>
+</ul>
+</dd>
+<dt><strong>stop_offset_samples</strong><span class="classifier">int or None (default=None)</span></dt><dd><ul class="simple">
+<li><p>Stop offset from beginning of recording in samples. If None, set to be the end of the recording.</p></li>
+</ul>
+</dd>
+<dt><strong>window_size_samples</strong><span class="classifier">int or None</span></dt><dd><ul class="simple">
+<li><p>Window size in samples. If None, set to be the maximum possible window size, ie length of the recording, once offsets are accounted for.</p></li>
+</ul>
+</dd>
+<dt><strong>window_stride_samples</strong><span class="classifier">int or None</span></dt><dd><ul class="simple">
+<li><p>Stride between windows in samples. If None, set to be equal to winddow_size_samples, so windows will not overlap.</p></li>
+</ul>
+</dd>
+<dt><strong>drop_last_window</strong><span class="classifier">bool or None</span></dt><dd><ul class="simple">
+<li><p>Whether or not have a last overlapping window, when windows do not equally divide the continuous signal. Must be set to a bool if window size and stride are not None.</p></li>
+</ul>
+</dd>
+<dt><strong>mapping</strong><span class="classifier">dict(str: int) or None</span></dt><dd><ul class="simple">
+<li><p>Mapping from event description to target value.</p></li>
+</ul>
+</dd>
+<dt><strong>preload</strong><span class="classifier">bool (default=False)</span></dt><dd><ul class="simple">
+<li><p>If True, preload the data of the Epochs objects.</p></li>
+</ul>
+</dd>
+<dt><strong>picks</strong><span class="classifier">str | list | slice | None</span></dt><dd><ul class="simple">
+<li><p>Channels to include. If None, all available channels are used. See mne.Epochs.</p></li>
+</ul>
+</dd>
+<dt><strong>reject</strong><span class="classifier">dict or None</span></dt><dd><ul class="simple">
+<li><p>Epoch rejection parameters based on peak-to-peak amplitude. If None, no rejection is done based on peak-to-peak amplitude. See mne.Epochs.</p></li>
+</ul>
+</dd>
+<dt><strong>flat</strong><span class="classifier">dict or None</span></dt><dd><ul class="simple">
+<li><p>Epoch rejection parameters based on flatness of signals. If None, no rejection based on flatness is done. See mne.Epochs.</p></li>
+</ul>
+</dd>
+<dt><strong>targets_from</strong><span class="classifier">str (default=’metadata’)</span></dt><dd><ul class="simple">
+<li><p>Choose where to get targets from: either ‘metadata’ or ‘events’</p></li>
+</ul>
+</dd>
+<dt><strong>last_target_only</strong><span class="classifier">bool (default=True)</span></dt><dd><ul class="simple">
+<li><p>If <cite>True</cite>, only use the last target in the window.</p></li>
+</ul>
+</dd>
+<dt><strong>lazy_metadata</strong><span class="classifier">bool (default=False)</span></dt><dd><ul class="simple">
+<li><p>If True, metadata is not computed immediately, but only when accessed by using the _LazyDataFrame (experimental).</p></li>
+</ul>
+</dd>
+<dt><strong>on_missing</strong><span class="classifier">str (default=’error’)</span></dt><dd><ul class="simple">
+<li><p>What to do if one or several event ids are not found in the recording. Valid keys are ‘error’ | ‘warning’ | ‘ignore’. See mne.Epochs.</p></li>
+</ul>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int (default=1)</span></dt><dd><ul class="simple">
+<li><p>Number of jobs to use to parallelize the windowing.</p></li>
+</ul>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool | str | int | None</span></dt><dd><ul class="simple">
+<li><p>Control verbosity of the logging output when calling mne.Epochs.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="example-1-basic-2-second-50-overlapping-windows">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Example 1: Basic 2-Second, 50% Overlapping Windows</a><a class="headerlink" href="#example-1-basic-2-second-50-overlapping-windows" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.multiply.html#numpy.multiply" title="numpy.multiply" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><span class="n">multiply</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MOABBDataset</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Filter</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pick</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Preprocessor</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the EEG dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;BNCI2014_001&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Preprocessing</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">preprocessors</span> <span class="o">=</span> <span class="p">[</span>
+    <a href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pick</span></a><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.multiply.html#numpy.multiply" title="numpy.multiply" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><span class="n">multiply</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)),</span>
+    <a href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Filter</span></a><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mf">38.0</span><span class="p">),</span>
+<span class="p">]</span>
+<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">preprocessors</span><span class="p">)</span>
+
+<span class="c1"># Sampling frequency</span>
+<span class="n">sfreq</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Create windows</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">window_size_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sfreq</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 2-second windows</span>
+<span class="n">window_stride_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size_samples</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># 50% overlap</span>
+
+<span class="n">windows_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+    <span class="n">start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">stop_offset_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="n">window_size_samples</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="n">window_stride_samples</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>  <span class="c1"># Only EEG channels</span>
+    <span class="n">reject</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mf">150e-6</span><span class="p">),</span>  <span class="c1"># Reject windows where EEG p2p &gt; 150 µV</span>
+    <span class="n">flat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">targets_from</span><span class="o">=</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+    <span class="n">last_target_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Let&#39;s inspect the output to better understand what we created.</span>
+
+<span class="c1"># Check how many windows were created</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">windows_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Each window contains EEG data of fixed size</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">windows_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window data shape: </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window label: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-targets">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Working with Targets</a><a class="headerlink" href="#working-with-targets" title="Link to this heading">#</a></h2>
+<p>In <cite>create_fixed_length_windows</cite>, targets can be derived in two ways:</p>
+<ol class="arabic simple">
+<li><p>From the recording metadata (e.g., “session”, “condition”). This is the default when <cite>targets_from=’metadata’</cite>.</p></li>
+<li><p>From signal channels themselves when <cite>targets_from=’channels’</cite>, useful for cases like sleep staging where
+annotations are stored in auxiliary channels.</p></li>
+</ol>
+<p>Additionally:</p>
+<ul class="simple">
+<li><p><strong>mapping</strong>: Optionally map target values (e.g. from “0train” / “1test” to 0 / 1).</p></li>
+<li><p><strong>last_target_only=True</strong> (default): If multiple targets are present within a window (as in time-varying labels),
+use only the final target value in that window.</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: mapping session names (&quot;0train&quot; and &quot;1test&quot;) to integers</span>
+
+<span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;0train&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;1test&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="n">windows_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <span class="n">dataset</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="n">window_size_samples</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="n">window_stride_samples</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># View first few targets</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Targets for first 10 windows:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">windows_dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">&quot;target&quot;</span><span class="p">][:</span><span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="example-rejecting-windows-based-on-amplitude">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Example: Rejecting Windows Based on Amplitude</a><a class="headerlink" href="#example-rejecting-windows-based-on-amplitude" title="Link to this heading">#</a></h2>
+<p>You can set rejection criteria to exclude windows with extreme values:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reject_criteria</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mf">150e-6</span><span class="p">)</span>  <span class="c1"># 150 µV max peak-to-peak allowed</span>
+
+<span class="n">windows_with_rejection</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">reject</span><span class="o">=</span><span class="n">reject_criteria</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">windows_with_rejection</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-using-lazy-metadata-generation">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Example: Using lazy metadata generation</a><a class="headerlink" href="#example-using-lazy-metadata-generation" title="Link to this heading">#</a></h2>
+<p>For large datasets, it can be faster to generate metadata on-demand:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lazy_windows</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <span class="n">concat_ds</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">lazy_metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">lazy_windows</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-shifted-windows">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Example: Shifted Windows</a><a class="headerlink" href="#example-shifted-windows" title="Link to this heading">#</a></h2>
+<p>You can also create shifted windows by using <code class="docutils literal notranslate"><span class="pre">start_offset_samples</span></code> or <code class="docutils literal notranslate"><span class="pre">stop_offset_samples</span></code>.
+For example, start windowing 500 ms later into the recording.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">start_offset_seconds</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">start_offset_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_offset_seconds</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span>
+
+<span class="n">shifted_windows_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <span class="n">dataset</span><span class="p">,</span>
+    <span class="n">start_offset_samples</span><span class="o">=</span><span class="n">start_offset_samples</span><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="n">window_size_samples</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="n">window_stride_samples</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of shifted windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shifted_windows_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Estimated memory usage:</strong>  0 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-applied-examples-tutorial-create-fixed-window-length-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/137d0b161de96c88644fd65258fc20b5/tutorial_create_fixed_window_length.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_create_fixed_window_length.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/2018ac0d8a768701074712a06d509ed6/tutorial_create_fixed_window_length.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_create_fixed_window_length.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/de6f192b7fbb623d50b529edc1cfa779/tutorial_create_fixed_window_length.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">tutorial_create_fixed_window_length.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+  
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_tuh_eeg_corpus.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Process a big data EEG resource (TUH EEG Corpus)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Braindecode API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-fixed-length-windows-function">Introduction to Fixed-Length Windows Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-create-fixed-length-windows">Overview of create_fixed_length_windows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-basic-2-second-50-overlapping-windows">Example 1: Basic 2-Second, 50% Overlapping Windows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-targets">Working with Targets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-rejecting-windows-based-on-amplitude">Example: Rejecting Windows Based on Amplitude</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-using-lazy-metadata-generation">Example: Using lazy metadata generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-shifted-windows">Example: Shifted Windows</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  <div class="sphx-glr-sidebar-component">
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="tutorial_create_fixed_window_length.py">
+          <a download href="../../_downloads/2018ac0d8a768701074712a06d509ed6/tutorial_create_fixed_window_length.py">
+            <i class="fa-solid fa-download"></i>
+            Download source code
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="tutorial_create_fixed_window_length.ipynb">
+          <a download href="../../_downloads/137d0b161de96c88644fd65258fc20b5/tutorial_create_fixed_window_length.ipynb">
+            <i class="fa-solid fa-download"></i>
+            Download Jupyter notebook
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="tutorial_create_fixed_window_length.zip">
+          <a download href="../../_downloads/de6f192b7fbb623d50b529edc1cfa779/tutorial_create_fixed_window_length.zip">
+            <i class="fa-solid fa-download"></i>
+            Download zipped
+          </a>
+        </div>
+      
+    
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+
+
+
+
+
+
+<div class="sd-card sd-shadow-sm sd-mb-3">
+  <div class="sd-card-body" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-2" style="margin-bottom:0.75rem;">Run this example</p>
+
+  
+    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/1.3/auto_examples/_notebooks/applied_examples/tutorial_create_fixed_window_length.ipynb" target="_blank" rel="noopener">
+      <img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle; height: 20px;">
+    </a>
+
+  </div>
+</div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+    <script src="https://braindecode.org/versionwarning.js"></script>
+    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2025, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
