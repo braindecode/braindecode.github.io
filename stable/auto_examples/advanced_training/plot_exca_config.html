@@ -1,0 +1,1331 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Experiment configuration with Pydantic and Exca &#8212; Braindecode 1.3.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=f3e3feaa" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=f2aba15d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-7Q43R82K6D');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/advanced_training/plot_exca_config';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://braindecode.org/auto_examples/advanced_training/plot_exca_config.html" />
+    <link rel="icon" href="../../_static/braindecode_symbol.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Fine-tuning a Foundation Model (Signal-JEPA)" href="plot_finetune_foundation_model.html" />
+    <link rel="prev" title="Searching the best data augmentation on BCIC IV 2a Dataset" href="plot_data_augmentation_search.html" />
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NWDKLVNR');</script>
+  <!-- End Google Tag Manager -->
+
+  <link rel="canonical" href="braindecode.org/index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.3" />
+
+  <!-- Google Analytics (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CHY0V439ZQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CHY0V439ZQ');
+  </script>
+
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><strong>Using Braindecode in academic work?</strong> <a class='braindecode-announcement-cta' href='cite.html'>Cite Braindecode</a> <span class='braindecode-announcement-secondary'>DOI: <a href='https://doi.org/10.5281/zenodo.16279624'>10.5281/zenodo.16279624</a></span></div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model_building/index.html">Basic model building and training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_eegprep_cleaning.html">Cleaning EEG Data with EEGPrep for Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Advanced neural network training strategies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Experiment configuration with Pydantic and Exca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/tutorial_create_fixed_window_length.html">Fixed-Length Windows Extraction</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Advanced neural network training strategies</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Experiment configuration with Pydantic and Exca</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NWDKLVNR"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-advanced-training-plot-exca-config-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="experiment-configuration-with-pydantic-and-exca">
+<span id="sphx-glr-auto-examples-advanced-training-plot-exca-config-py"></span><h1>Experiment configuration with Pydantic and Exca<a class="headerlink" href="#experiment-configuration-with-pydantic-and-exca" title="Link to this heading">#</a></h1>
+<p>This example shows how to use the <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> and <code class="docutils literal notranslate"><span class="pre">exca</span></code> libraries
+to configure and run EEG experiments with Braindecode.</p>
+<p><strong>Pydantic</strong> is a library for data validation and settings management
+using Python type annotations. It allows defining structured configurations that can be
+validated and serialized easily.</p>
+<p><strong>Exca</strong> builds on top of Pydantic, and allows you to seamlessly EXecute experiments
+and CAche their results.</p>
+<p>Braindecode implements a Pydantic configuration for each of its models in
+<code class="docutils literal notranslate"><span class="pre">braindecode.models.config</span></code>.
+In this example, we will use these configurations to define an experiment that
+trains and evaluates different models on a motor-imagery dataset using Exca.</p>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#creating-the-experiment-configurations" id="id1">Creating the experiment configurations</a></p>
+<ul>
+<li><p><a class="reference internal" href="#dataset-configs" id="id2">Dataset configs</a></p></li>
+<li><p><a class="reference internal" href="#training-config" id="id3">Training config</a></p></li>
+<li><p><a class="reference internal" href="#evaluation-config" id="id4">Evaluation config</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#instantiating-the-configurations" id="id5">Instantiating the configurations</a></p>
+<ul>
+<li><p><a class="reference internal" href="#instantiation-option-1-from-class-constructors" id="id6">Instantiation option 1: from class constructors</a></p></li>
+<li><p><a class="reference internal" href="#instantiation-option-2-from-nested-dictionaries-or-json-files" id="id7">Instantiation option 2: from nested dictionaries or JSON files</a></p></li>
+<li><p><a class="reference internal" href="#serializing-the-experiment-configuration" id="id8">Serializing the experiment configuration</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#running-the-experiment" id="id9">Running the experiment</a></p>
+<ul>
+<li><p><a class="reference internal" href="#intermediate-results-are-cached-thanks-to-exca" id="id10">Intermediate results are cached thanks to Exca</a></p></li>
+<li><p><a class="reference internal" href="#scaling-up-comparing-multiple-model-configurations" id="id11">Scaling up: comparing multiple model configurations</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#gathering-and-displaying-the-results" id="id12">Gathering and displaying the results</a></p>
+<ul>
+<li><p><a class="reference internal" href="#loading-results-from-cache" id="id13">Loading results from cache</a></p></li>
+<li><p><a class="reference internal" href="#displaying-the-results" id="id14">Displaying the results</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<section id="creating-the-experiment-configurations">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Creating the experiment configurations</a><a class="headerlink" href="#creating-the-experiment-configurations" title="Link to this heading">#</a></h2>
+<p>We will start by defining the configurations needed for our experiment using Pydantic and Exca.</p>
+<section id="dataset-configs">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Dataset configs</a><a class="headerlink" href="#dataset-configs" title="Link to this heading">#</a></h3>
+<p>Our first configuration class is related to the data. It will allow us to load and prepare the dataset.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="typing.Annotated" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Annotated</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">exca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_list</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
+
+<a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+<span class="c1"># The list of available MOABB datasets:</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DATASET_NAMES</span></a> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_list</span></a><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WindowedMOABBDatasetConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">dataset_type</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><span class="s2">&quot;moabb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;moabb&quot;</span>
+    <span class="n">infra</span><span class="p">:</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span> <span class="o">=</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span><span class="p">(</span>
+        <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># no disk caching</span>
+        <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># local execution</span>
+        <span class="n">keep_in_ram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dataset_name</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DATASET_NAMES</span></a><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BNCI2014_001&quot;</span>
+    <span class="n">subject_id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">window_size_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span>
+    <span class="n">overlap_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="nd">@infra</span><span class="o">.</span><span class="n">apply</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">:</span>
+        <span class="c1"># We don&#39;t apply any preprocessing here for simplicity, but in a real experiment,</span>
+        <span class="c1"># you would typically want to filter the data, resample it, etc.</span>
+        <span class="c1"># Instead, our config  directly extracts windows from the raw data.</span>
+        <span class="n">dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span>
+            <span class="n">dataset_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_id</span>
+        <span class="p">)</span>
+        <span class="n">windows_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">windows_dataset</span>
+</pre></div>
+</div>
+<p>We can see that the config has an <code class="docutils literal notranslate"><span class="pre">infra:</span> <span class="pre">exca.TaskInfra</span></code> attribute,
+and a method decorated with <code class="docutils literal notranslate"><span class="pre">&#64;infra.apply</span></code>.
+This means that, when called, exca will cache the result of this method.
+Here, the cache is kept in RAM for simplicity (<code class="docutils literal notranslate"><span class="pre">folder=None</span></code>), but in a real experiment,
+you would typically want to cache the results on disk, as shown in the training config.
+If the method is called again with the same configuration, the cached results will be returned instead of re-running the method.
+This allows for easy and efficient experimentation.</p>
+<p>Additionally, we define a small wrapper config to split the dataset into training and testing sets.
+Here, no caching is applied since the split operation is fast.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DatasetSplitConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">dataset_type</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;split&quot;</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="n">WindowedMOABBDatasetConfig</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;session&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
+        <span class="n">splitted</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">by</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">splitted</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Finally, we define a union type for dataset configurations,
+which can be either a <code class="docutils literal notranslate"><span class="pre">WindowedMOABBDatasetConfig</span></code> or a <code class="docutils literal notranslate"><span class="pre">DatasetSplitConfig</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">DatasetConfig</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="typing.Annotated" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Annotated</span></a><span class="p">[</span>
+    <span class="n">WindowedMOABBDatasetConfig</span> <span class="o">|</span> <span class="n">DatasetSplitConfig</span><span class="p">,</span>
+    <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s2">&quot;dataset_type&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="training-config">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Training config</a><a class="headerlink" href="#training-config" title="Link to this heading">#</a></h3>
+<p>Now that out data configs are ready, we can define our training config. It will require both the dataset and model configurations.
+It will simply load the data, instantiate the model, and train the model on the data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.callbacks</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skorch.dataset</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">Adam</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">BraindecodeModelConfig</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainingConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">infra</span><span class="p">:</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span> <span class="o">=</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span><span class="p">(</span>
+        <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;.cache/&quot;</span><span class="p">,</span>
+        <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># local execution</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">BraindecodeModelConfig</span>
+    <span class="n">train_dataset</span><span class="p">:</span> <span class="n">DatasetConfig</span>
+    <span class="n">max_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
+    <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span>
+
+    <span class="nd">@infra</span><span class="o">.</span><span class="n">apply</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">:</span>
+        <span class="c1"># Load training data</span>
+        <span class="n">train_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
+        <span class="n">train_y</span> <span class="o">=</span> <span class="n">train_set</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="c1"># Instantiate the model</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
+        <span class="n">clf</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
+            <span class="n">model</span><span class="p">,</span>
+            <span class="n">max_epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_epochs</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">train_split</span><span class="o">=</span><a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">)],</span>
+            <span class="n">optimizer</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">Adam</span></a><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Train the model</span>
+        <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clf</span><span class="o">.</span><span class="n">module_</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We note that the model has type <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.config.BraindecodeModelConfig</span></code>. This type can match all the braindecode model configurations defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">braindecode.models.config</span></code>.</p>
+<p>We also see that there is now a cache folder specified (<code class="docutils literal notranslate"><span class="pre">.cache/</span></code> here). This means that the results of the <code class="docutils literal notranslate"><span class="pre">train()</span></code> method will be cached on disk in this folder, instead of only in RAM.</p>
+</section>
+<section id="evaluation-config">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Evaluation config</a><a class="headerlink" href="#evaluation-config" title="Link to this heading">#</a></h3>
+<p>Finally, we define an evaluation config that will load the validation data,
+load the trained model from the training config, and evaluate it on the validation data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluationConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">infra</span><span class="p">:</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span> <span class="o">=</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span><span class="p">(</span>
+        <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;.cache/&quot;</span><span class="p">,</span>
+        <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># local execution</span>
+    <span class="p">)</span>
+    <span class="n">test_dataset</span><span class="p">:</span> <span class="n">DatasetConfig</span>
+    <span class="n">trainer</span><span class="p">:</span> <span class="n">TrainingConfig</span>
+
+    <span class="nd">@infra</span><span class="o">.</span><span class="n">apply</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># Load validation data</span>
+        <span class="n">valid_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
+        <span class="n">test_y</span> <span class="o">=</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="c1"># Load trained model</span>
+        <span class="n">state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+        <span class="n">clf</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">clf</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+        <span class="c1"># Evaluate the model</span>
+        <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a><span class="p">(</span><span class="n">valid_set</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+        <span class="k">return</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>SLURM execution.</strong>
+Exca also offers the possibility to run experiments remotely on a SLURM-managed cluster.
+In this example, we run everything locally by setting <code class="docutils literal notranslate"><span class="pre">cluster=None</span></code>
+but you can find more information about how to set up cluster execution
+in the Exca documentation: <a class="reference external" href="https://facebookresearch.github.io/exca/infra/introduction.html">https://facebookresearch.github.io/exca/infra/introduction.html</a>.</p>
+</div>
+</section>
+</section>
+<section id="instantiating-the-configurations">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Instantiating the configurations</a><a class="headerlink" href="#instantiating-the-configurations" title="Link to this heading">#</a></h2>
+<section id="instantiation-option-1-from-class-constructors">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Instantiation option 1: from class constructors</a><a class="headerlink" href="#instantiation-option-1-from-class-constructors" title="Link to this heading">#</a></h3>
+<p>Now that our configuration classes are defined, we can instantiate them.</p>
+<p>We will start with the model configuration.
+Here, we use the <a class="reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGNet</span></code></a> model.
+Like any other braindecode model, it has a corresponding configuration class in <code class="xref py py-mod docutils literal notranslate"><span class="pre">braindecode.models.config</span></code>, called <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.config.EEGNetConfig</span></code>.
+We instantiate it using the signal properties we extracted earlier.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGConformerConfig</span><span class="p">,</span> <span class="n">EEGNetConfig</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_times&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;n_chans&quot;</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span> <span class="s2">&quot;n_outputs&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="n">model_cfg</span> <span class="o">=</span> <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>The config object can easily be serialized to a JSON format:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model_name_&#39;: &#39;EEGNet&#39;, &#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1000, &#39;final_conv_length&#39;: &#39;auto&#39;, &#39;pool_mode&#39;: &#39;mean&#39;, &#39;F1&#39;: 8, &#39;D&#39;: 2, &#39;F2&#39;: None, &#39;kernel_length&#39;: 64, &#39;depthwise_kernel_length&#39;: 16, &#39;pool1_kernel_size&#39;: 4, &#39;pool2_kernel_size&#39;: 8, &#39;conv_spatial_max_norm&#39;: 1, &#39;activation&#39;: &#39;torch.nn.modules.activation.ELU&#39;, &#39;batch_norm_momentum&#39;: 0.01, &#39;batch_norm_affine&#39;: True, &#39;batch_norm_eps&#39;: 0.001, &#39;drop_prob&#39;: 0.25, &#39;final_layer_with_constraint&#39;: False, &#39;norm_rate&#39;: 0.25, &#39;chs_info&#39;: None, &#39;input_window_seconds&#39;: None, &#39;sfreq&#39;: None}
+</pre></div>
+</div>
+<p>Alternatively, if you only want the non-default keys:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1000}
+</pre></div>
+</div>
+<p>The config class is checking the arguments types and values, and
+raises an error if something is wrong. For example, if we try to instantiate it using an incorrect type for <code class="docutils literal notranslate"><span class="pre">n_times</span></code>, we get an error:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># kept for restoration later:</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">true_n_times</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span>
+
+<span class="c1"># float instead of int:</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">22.5</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">)</span>
+<span class="k">except</span> <a href="https://docs.python.org/3/library/exceptions.html#ValueError" title="builtins.ValueError" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-exception"><span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span></a> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation error raised as expected:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Validation error raised as expected:
+1 validation error for EEGNetConfig
+n_times
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=22.5, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.12/v/int_from_float
+</pre></div>
+</div>
+<p>Similarly, if a mandatory argument is missing, we get an error:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">)</span>
+<span class="k">except</span> <a href="https://docs.python.org/3/library/exceptions.html#ValueError" title="builtins.ValueError" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-exception"><span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span></a> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation error raised as expected:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># We restore the correct value for ``n_times`` for the rest of the example:</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">true_n_times</span></a>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Validation error raised as expected:
+1 validation error for EEGNetConfig
+  Value error, n_times is required and could not be inferred.Either specify n_times or input_window_seconds and sfreq. [type=value_error, input_value={&#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/value_error
+</pre></div>
+</div>
+<p>We now have instantiated the model configuration.
+Creating the dataset, training and evaluation configurations is very similar and
+straightforward using the classes we defined earlier.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_cfg</span> <span class="o">=</span> <span class="n">WindowedMOABBDatasetConfig</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">train_dataset_cfg</span> <span class="o">=</span> <span class="n">DatasetSplitConfig</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_cfg</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;0train&quot;</span><span class="p">)</span>
+<span class="n">test_dataset_cfg</span> <span class="o">=</span> <span class="n">DatasetSplitConfig</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_cfg</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;1test&quot;</span><span class="p">)</span>
+
+<span class="n">train_cfg</span> <span class="o">=</span> <span class="n">TrainingConfig</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_cfg</span><span class="p">,</span> <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset_cfg</span><span class="p">)</span>
+
+<span class="n">eval_cfg</span> <span class="o">=</span> <span class="n">EvaluationConfig</span><span class="p">(</span><span class="n">trainer</span><span class="o">=</span><span class="n">train_cfg</span><span class="p">,</span> <span class="n">test_dataset</span><span class="o">=</span><span class="n">test_dataset_cfg</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="instantiation-option-2-from-nested-dictionaries-or-json-files">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Instantiation option 2: from nested dictionaries or JSON files</a><a class="headerlink" href="#instantiation-option-2-from-nested-dictionaries-or-json-files" title="Link to this heading">#</a></h3>
+<p>Alternatively, we can also instantiate the configurations from nested dictionaries or JSON files.
+This can be useful when loading configurations from external sources.
+Suppose we have the following JSON configuration for our evaluation.
+We can load it as a nested dictionary using the <code class="docutils literal notranslate"><span class="pre">json</span></code> module:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">JSON_CFG</span></a> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{</span>
+<span class="s2">    &quot;trainer&quot;: {</span>
+<span class="s2">        &quot;model&quot;: {</span>
+<span class="s2">            &quot;model_name_&quot;: &quot;EEGNet&quot;,</span>
+<span class="s2">            &quot;n_times&quot;: 1000,</span>
+<span class="s2">            &quot;n_chans&quot;: 26,</span>
+<span class="s2">            &quot;n_outputs&quot;: 4</span>
+<span class="s2">        },</span>
+<span class="s2">        &quot;train_dataset&quot;: {</span>
+<span class="s2">            &quot;dataset_type&quot;: &quot;split&quot;,</span>
+<span class="s2">            &quot;dataset&quot;: {&quot;subject_id&quot;: 1},</span>
+<span class="s2">            &quot;key&quot;: &quot;0train&quot;</span>
+<span class="s2">        }</span>
+<span class="s2">    },</span>
+<span class="s2">    &quot;test_dataset&quot;: {</span>
+<span class="s2">        &quot;dataset_type&quot;: &quot;split&quot;,</span>
+<span class="s2">        &quot;dataset&quot;: {&quot;subject_id&quot;: 1},</span>
+<span class="s2">        &quot;key&quot;: &quot;1test&quot;</span>
+<span class="s2">    }</span>
+<span class="s2">}&quot;&quot;&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">NESTED_DICT_CFG</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/json.html#json.loads" title="json.loads" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">loads</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">JSON_CFG</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">NESTED_DICT_CFG</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;trainer&#39;: {&#39;model&#39;: {&#39;model_name_&#39;: &#39;EEGNet&#39;, &#39;n_times&#39;: 1000, &#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4}, &#39;train_dataset&#39;: {&#39;dataset_type&#39;: &#39;split&#39;, &#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;0train&#39;}}, &#39;test_dataset&#39;: {&#39;dataset_type&#39;: &#39;split&#39;, &#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;1test&#39;}}
+</pre></div>
+</div>
+<p>We can instantiate the evaluation configuration from the nested dictionary
+using the <code class="docutils literal notranslate"><span class="pre">model_validate()</span></code> method of Pydantic,
+and check that it is identical to the one we created using the class constructors:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">eval_cfg_from_dict</span> <span class="o">=</span> <span class="n">EvaluationConfig</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">NESTED_DICT_CFG</span></a><span class="p">)</span>
+<span class="k">assert</span> <span class="n">eval_cfg_from_dict</span> <span class="o">==</span> <span class="n">eval_cfg</span>
+</pre></div>
+</div>
+</section>
+<section id="serializing-the-experiment-configuration">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Serializing the experiment configuration</a><a class="headerlink" href="#serializing-the-experiment-configuration" title="Link to this heading">#</a></h3>
+<p>To serialize the experiment’s configuration, we can take advantage of Exca’s <code class="docutils literal notranslate"><span class="pre">config()</span></code> method, which is similar to Pydantic’s <code class="docutils literal notranslate"><span class="pre">model_dump()</span></code> method but will ensure that an experiment has a unique identifier (UID).
+In particular, it will also include the <code class="docutils literal notranslate"><span class="pre">&quot;model_name_&quot;</span></code> field, which will allow us to distinguish between different model configurations later on.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eval_cfg</span><span class="o">.</span><span class="n">infra</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;test_dataset&#39;: {&#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;1test&#39;, &#39;dataset_type&#39;: &#39;split&#39;}, &#39;trainer&#39;: {&#39;model&#39;: {&#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1000, &#39;model_name_&#39;: &#39;EEGNet&#39;}, &#39;train_dataset&#39;: {&#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;0train&#39;, &#39;dataset_type&#39;: &#39;split&#39;}}}
+</pre></div>
+</div>
+</section>
+</section>
+<section id="running-the-experiment">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Running the experiment</a><a class="headerlink" href="#running-the-experiment" title="Link to this heading">#</a></h2>
+<section id="intermediate-results-are-cached-thanks-to-exca">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Intermediate results are cached thanks to Exca</a><a class="headerlink" href="#intermediate-results-are-cached-thanks-to-exca" title="Link to this heading">#</a></h3>
+<p>We can now run the training using the configurations we defined.
+For this, we simply have to call the <code class="docutils literal notranslate"><span class="pre">train()</span></code> method of the configuration.
+we will time the execution to see the benefits of caching.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="n">train_cfg</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2522        1.3885       0.2414            0.2414        1.3864  0.6989
+      2            0.2522        1.3822       0.2414            0.2414        1.3864  0.6638
+      3            0.2522        1.3804       0.2414            0.2414        1.3864  0.6659
+Stopping since valid_loss has not improved in the last 3 epochs.
+Training took 4.84 seconds
+</pre></div>
+</div>
+<p>If we call the <code class="docutils literal notranslate"><span class="pre">train()</span></code> method again, using the same configuration parameters, even if it is a new instance, the results will be loaded from the cache:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">train_cfg</span> <span class="o">=</span> <span class="n">TrainingConfig</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">),</span> <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset_cfg</span>
+<span class="p">)</span>
+
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="n">train_cfg</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rerunning training using cached results took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.4f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Rerunning training using cached results took 0.1750 seconds
+</pre></div>
+</div>
+<p>We can run the evaluation in the same way, by calling the <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> method of the evaluation configuration.
+Internally, this method calls the <code class="docutils literal notranslate"><span class="pre">train()</span></code> method of the training configuration, which will also use the cache if available.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluation score: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluation took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Evaluation score: 0.25
+Evaluation took 0.36 seconds
+</pre></div>
+</div>
+</section>
+<section id="scaling-up-comparing-multiple-model-configurations">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Scaling up: comparing multiple model configurations</a><a class="headerlink" href="#scaling-up-comparing-multiple-model-configurations" title="Link to this heading">#</a></h3>
+<p>Now that we have seen how to define and run an experiment using Pydantic and Exca,
+we can easily scale up to compare multiple model configurations.</p>
+<p>First, let’s define a small utility function to flatten nested dictionaries.
+This will help us later when we want to log results from different configurations.
+See in the example below, the keys of different levels are concatenated with a dot “.” separator.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">flatten_nested_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">leaf_types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">parent_key</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">aux</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">parent_key</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="n">sep</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">leaf_types</span><span class="p">):</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">parent_key</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="n">flatten_nested_dict</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}},</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]})</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;a&#39;: 1, &#39;b.x&#39;: 1, &#39;b.y.z&#39;: 2}
+</pre></div>
+</div>
+<p>In a real experiment, we would launch all runs in parallel on a different nodes of a compute cluster.
+Please refer to the Exca documentation for more details on how to set up cluster execution.
+Here, for simplicity, we will just run them locally and sequentially.</p>
+<p>In this mini-example, we will compare the EEGNet and EEGConformer models on the same dataset, with multiple random seeds.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_cfg_list</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">),</span>
+    <span class="n">EEGConformerConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">),</span>
+<span class="p">]</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">model_cfg</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_cfg_list</span></a><span class="p">:</span>
+    <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+        <span class="n">train_cfg</span> <span class="o">=</span> <span class="n">TrainingConfig</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model_cfg</span><span class="p">,</span>
+            <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset_cfg</span><span class="p">,</span>
+            <span class="n">max_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">eval_cfg</span> <span class="o">=</span> <span class="n">EvaluationConfig</span><span class="p">(</span><span class="n">trainer</span><span class="o">=</span><span class="n">train_cfg</span><span class="p">,</span> <span class="n">test_dataset</span><span class="o">=</span><span class="n">test_dataset_cfg</span><span class="p">)</span>
+
+        <span class="c1"># log configuration</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a> <span class="o">=</span> <span class="n">flatten_nested_dict</span><span class="p">(</span>
+            <span class="n">eval_cfg</span><span class="o">.</span><span class="n">infra</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># evaluate and log accuracy:</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2478        3.1830       0.2586            0.2586        2.7699  0.8131
+      2            0.2522        3.1265       0.2414            0.2414        5.9990  0.6760
+      3            0.2522        2.5580       0.2414            0.2414        3.3327  0.6864
+Stopping since valid_loss has not improved in the last 3 epochs.
+  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2478        3.4241       0.2586            0.2586       10.4719  0.6742
+      2            0.2522        3.2196       0.2414            0.2414       43.7188  0.6986
+      3            0.2478        2.2397       0.2586            0.2586       26.4258  0.6732
+Stopping since valid_loss has not improved in the last 3 epochs.
+  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2478        3.4435       0.2586            0.2586        4.2782  0.6765
+      2            0.2522        2.5342       0.2414            0.2414        1.9056  0.6762
+      3            0.2478        1.9421       0.2586            0.2586        1.6714  0.6933
+      4            0.2478        1.6871       0.2586            0.2586        2.0010  0.6919
+      5            0.2478        1.3774       0.2586            0.2586        2.9307  0.6774
+Stopping since valid_loss has not improved in the last 3 epochs.
+  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2522     7837.7184       0.2414            0.2414    33044.5386  3.1258
+      2            0.2522     4397.0301       0.2414            0.2414   156564.7209  3.0176
+      3            0.2478      163.2298       0.2586            0.2586        2.7673  2.9761
+      4            0.2478      143.6231       0.2586            0.2586        2.1943  2.9729
+      5            0.2478        2.5060       0.2586            0.2586        1.7240  2.9621
+      6            0.2522        2.1955       0.2414            0.2414        1.4974  2.9847
+      7            0.2478      458.7910       0.2586            0.2586        1.4635  2.9756
+      8            0.2478     2742.4738       0.2586            0.2586        1.4702  2.9967
+      9            0.2478     7917.7216       0.2586            0.2586        1.5098  2.9880
+Stopping since valid_loss has not improved in the last 3 epochs.
+  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2478    12232.1578       0.2586            0.2586    13802.9802  3.0015
+      2            0.2522     2139.0917       0.2414            0.2414        4.9605  2.9628
+      3            0.2522        4.9978       0.2414            0.2414        4.8974  2.9958
+      4            0.2522        4.9193       0.2414            0.2414        4.5607  2.9727
+      5            0.2522        4.4134       0.2414            0.2414        4.1670  3.0136
+      6            0.2522        4.5307       0.2414            0.2414        3.8268  2.9729
+      7            0.2522        4.3506       0.2414            0.2414        3.5503  3.0034
+      8            0.2522        3.8486       0.2414            0.2414        3.2875  2.9950
+      9            0.2522        3.8191       0.2414            0.2414        3.0386  2.9745
+     10            0.2522      135.1870       0.2414            0.2414        2.7984  2.9948
+  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+-------  ----------------  ------------  -----------  ----------------  ------------  ------
+      1            0.2522     6004.3131       0.2414            0.2414    16271.5028  2.9708
+      2            0.2478     7747.1095       0.2586            0.2586        3.6436  2.9992
+      3            0.2478        3.7025       0.2586            0.2586        3.1256  2.9693
+      4            0.2522        3.7168       0.2414            0.2414        2.9819  3.1012
+      5            0.2522        3.7040       0.2414            0.2414        2.8630  2.9867
+      6            0.2478        3.4228       0.2586            0.2586        2.7126  3.0119
+      7            0.2478        3.3238       0.2586            0.2586        2.4859  2.9827
+      8            0.2478        3.0128       0.2586            0.2586        2.2308  3.0147
+      9            0.2478        3.0694       0.2586            0.2586        1.9870  2.9940
+     10            0.2478        2.7422       0.2586            0.2586        1.7605  3.0159
+</pre></div>
+</div>
+</section>
+</section>
+<section id="gathering-and-displaying-the-results">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Gathering and displaying the results</a><a class="headerlink" href="#gathering-and-displaying-the-results" title="Link to this heading">#</a></h2>
+<section id="loading-results-from-cache">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Loading results from cache</a><a class="headerlink" href="#loading-results-from-cache" title="Link to this heading">#</a></h3>
+<p>If experiments were done on a cluster, a likely scenario would be
+to first run all experiments, and then later load and analyze the results.</p>
+<p>Loading the results from cache is straightforward using Exca.
+We simply need to re-instantiate the configurations with the same parameters,
+and call the <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> method again.
+The cached results will be loaded in a few seconds instead of re-running the experiments:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a>  <span class="c1"># oups, we forgot the results...</span>
+
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">model_cfg</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_cfg_list</span></a><span class="p">:</span>
+    <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+        <span class="n">train_cfg</span> <span class="o">=</span> <span class="n">TrainingConfig</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model_cfg</span><span class="p">,</span>
+            <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset_cfg</span><span class="p">,</span>
+            <span class="n">max_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">eval_cfg</span> <span class="o">=</span> <span class="n">EvaluationConfig</span><span class="p">(</span><span class="n">trainer</span><span class="o">=</span><span class="n">train_cfg</span><span class="p">,</span> <span class="n">test_dataset</span><span class="o">=</span><span class="n">test_dataset_cfg</span><span class="p">)</span>
+
+        <span class="c1"># log configuration</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a> <span class="o">=</span> <span class="n">flatten_nested_dict</span><span class="p">(</span>
+            <span class="n">eval_cfg</span><span class="o">.</span><span class="n">infra</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># evaluate and log accuracy:</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading all results from cache took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading all results from cache took 1.49 seconds
+</pre></div>
+</div>
+</section>
+<section id="displaying-the-results">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Displaying the results</a><a class="headerlink" href="#displaying-the-results" title="Link to this heading">#</a></h3>
+<p>Finally, we can concatenate and display the results using pandas:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   test_dataset.dataset.subject_id test_dataset.key  ... trainer.seed  accuracy
+0                                1            1test  ...            1      0.25
+1                                1            1test  ...            2      0.25
+2                                1            1test  ...            3      0.25
+3                                1            1test  ...            1      0.25
+4                                1            1test  ...            2      0.25
+5                                1            1test  ...            3      0.25
+
+[6 rows x 14 columns]
+</pre></div>
+</div>
+<p>Or first aggregated over seeds:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">agg_results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;trainer.model.model_name_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">agg_results_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                          accuracy
+                              mean  std
+trainer.model.model_name_
+EEGConformer                  0.25  0.0
+EEGNet                        0.25  0.0
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 23.151 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2423 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-exca-config-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/9ecad1eb1db853df0ba20dbb97303c02/plot_exca_config.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_exca_config.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/50d3e26249bb20ad940128615b06c63b/plot_exca_config.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_exca_config.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/fb14aede6fe3ff48966f079f45d35b9b/plot_exca_config.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_exca_config.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+</section>
+
+
+  
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_data_augmentation_search.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Searching the best data augmentation on BCIC IV 2a Dataset</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_finetune_foundation_model.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Fine-tuning a Foundation Model (Signal-JEPA)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-experiment-configurations">Creating the experiment configurations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset-configs">Dataset configs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-config">Training config</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-config">Evaluation config</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instantiating-the-configurations">Instantiating the configurations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instantiation-option-1-from-class-constructors">Instantiation option 1: from class constructors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instantiation-option-2-from-nested-dictionaries-or-json-files">Instantiation option 2: from nested dictionaries or JSON files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serializing-the-experiment-configuration">Serializing the experiment configuration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-experiment">Running the experiment</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-results-are-cached-thanks-to-exca">Intermediate results are cached thanks to Exca</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-up-comparing-multiple-model-configurations">Scaling up: comparing multiple model configurations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gathering-and-displaying-the-results">Gathering and displaying the results</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-results-from-cache">Loading results from cache</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#displaying-the-results">Displaying the results</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  <div class="sphx-glr-sidebar-component">
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="plot_exca_config.py">
+          <a download href="../../_downloads/50d3e26249bb20ad940128615b06c63b/plot_exca_config.py">
+            <i class="fa-solid fa-download"></i>
+            Download source code
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="plot_exca_config.ipynb">
+          <a download href="../../_downloads/9ecad1eb1db853df0ba20dbb97303c02/plot_exca_config.ipynb">
+            <i class="fa-solid fa-download"></i>
+            Download Jupyter notebook
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="plot_exca_config.zip">
+          <a download href="../../_downloads/fb14aede6fe3ff48966f079f45d35b9b/plot_exca_config.zip">
+            <i class="fa-solid fa-download"></i>
+            Download zipped
+          </a>
+        </div>
+      
+    
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+
+
+
+
+
+
+<div class="sd-card sd-shadow-sm sd-mb-3">
+  <div class="sd-card-body" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-2" style="margin-bottom:0.75rem;">Run this example</p>
+
+  
+    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/1.3/auto_examples/_notebooks/advanced_training/plot_exca_config.ipynb" target="_blank" rel="noopener">
+      <img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle; height: 20px;">
+    </a>
+
+  </div>
+</div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+    <script src="https://braindecode.org/versionwarning.js"></script>
+    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2025, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

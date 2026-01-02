@@ -195,7 +195,7 @@ if cuda:
 model.to_dense_prediction_model()
 
 ######################################################################
-# To know the models’ output shape without the last layer, we calculate the
+# To know the models' output shape without the last layer, we calculate the
 # shape of model output for a dummy input.
 #
 
@@ -397,4 +397,4 @@ plot_confusion_matrix(confusion_mat, class_names=labels)
 # .. [2] Schirrmeister, R.T., Springenberg, J.T., Fiederer, L.D.J., Glasstetter, M.,
 #        Eggensperger, K., Tangermann, M., Hutter, F., Burgard, W. and Ball, T. (2017),
 #        Deep learning with convolutional neural networks for EEG decoding and visualization.
-#        Hum. Brain Mapping, 38: 5391-5420. https://doi.org/10.1002/hbm.23730.
+#        Hum. Brain Mapping, 38: 5391-5420. https://onlinelibrary.wiley.com/doi/10.1002/hbm.23730.
