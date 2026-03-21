@@ -435,6 +435,7 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.CBraMod.html">braindecode.models.CBraMod</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.ContraWR.html">braindecode.models.ContraWR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.CTNet.html">braindecode.models.CTNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.models.DGCNN.html">braindecode.models.DGCNN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.Deep4Net.html">braindecode.models.Deep4Net</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.DeepSleepNet.html">braindecode.models.DeepSleepNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGConformer.html">braindecode.models.EEGConformer</a></li>
@@ -808,14 +809,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <h1>braindecode.preprocessing.exponential_moving_standardize<a class="headerlink" href="#braindecode-preprocessing-exponential-moving-standardize" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="braindecode.preprocessing.exponential_moving_standardize">
-<span class="sig-prename descclassname"><span class="pre">braindecode.preprocessing.</span></span><span class="sig-name descname"><span class="pre">exponential_moving_standardize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor_new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/preprocessing/preprocess.py#L419-L467"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.preprocessing.exponential_moving_standardize" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">braindecode.preprocessing.</span></span><span class="sig-name descname"><span class="pre">exponential_moving_standardize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor_new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/preprocessing/preprocess.py#L420-L487"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.preprocessing.exponential_moving_standardize" title="Link to this definition">#</a></dt>
 <dd><p>Perform exponential moving standardization.</p>
-<p>Compute the exponental moving mean <span class="math notranslate nohighlight">\(m_t\)</span> at time <cite>t</cite> as
-<span class="math notranslate nohighlight">\(m_t=\mathrm{factornew} \cdot mean(x_t) + (1 - \mathrm{factornew}) \cdot m_{t-1}\)</span>.</p>
+<p>Compute the exponential moving mean <span class="math notranslate nohighlight">\(m_t\)</span> at time <cite>t</cite> as
+a weighted average:
+<span class="math notranslate nohighlight">\(m_t = \frac{\sum_{i=0}^t (1-\alpha)^i x_{t-i}}{\sum_{i=0}^t (1-\alpha)^i}\)</span>
+where <span class="math notranslate nohighlight">\(\alpha\)</span> is <code class="docutils literal notranslate"><span class="pre">factor_new</span></code>.</p>
 <p>Then, compute exponential moving variance <span class="math notranslate nohighlight">\(v_t\)</span> at time <cite>t</cite> as
-<span class="math notranslate nohighlight">\(v_t=\mathrm{factornew} \cdot (m_t - x_t)^2 + (1 - \mathrm{factornew}) \cdot v_{t-1}\)</span>.</p>
+a weighted average of the squared demeaned signal:
+<span class="math notranslate nohighlight">\(v_t = \frac{\sum_{i=0}^t (1-\alpha)^i (x_{t-i} - m_{t-i})^2}{\sum_{i=0}^t (1-\alpha)^i}\)</span>.</p>
 <p>Finally, standardize the data point <span class="math notranslate nohighlight">\(x_t\)</span> at time <cite>t</cite> as:
-<span class="math notranslate nohighlight">\(x'_t=(x_t - m_t) / max(\sqrt{-&gt;v_t}, eps)\)</span>.</p>
+<span class="math notranslate nohighlight">\(x'_t=(x_t - m_t) / max(\sqrt{v_t}, eps)\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
