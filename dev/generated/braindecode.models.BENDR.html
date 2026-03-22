@@ -910,27 +910,92 @@ You can load them using:</p>
 </div>
 <p>Requires installing <code class="docutils literal notranslate"><span class="pre">braindecode[hug]</span></code> for Hub integration.</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
+<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
+in the case of classification.</p></li>
+<li><p><strong>n_times</strong></p></li>
+<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>)</p></li>
+<li><p><strong>alongside</strong> (<em>etc.</em><em>) </em><em>by saving them in a config file</em>)</p></li>
+<li><p><strong>chs_info</strong> – Information about each individual EEG channel. This should be filled with
+<code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
+<li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
+<li><p><strong>sfreq</strong> – Sampling frequency of the EEG recordings.</p></li>
+<li><p><strong>encoder_h</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=512</em>) – Hidden size (number of output channels) of the convolutional encoder. This determines
+the dimensionality of the BENDR feature vectors produced by the encoder.</p></li>
+<li><p><strong>contextualizer_hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=3076</em>) – Hidden size of the feedforward layer within each transformer block. The paper uses
+approximately 2x the transformer dimension (3076 ~ 2 x 1536).</p></li>
+<li><p><strong>projection_head</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, adds a projection layer at the end of the encoder to project back to the
+input feature size. This is used during self-supervised pre-training but typically
+disabled during fine-tuning.</p></li>
+<li><p><strong>drop_prob</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.1</em>) – Dropout probability applied throughout the model. The paper recommends 0.15 for
+pre-training and 0.0 for fine-tuning. Default is 0.1 as a compromise.</p></li>
+<li><p><strong>layer_drop</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.0</em>) – Probability of dropping entire transformer layers during training (LayerDrop
+regularization <a class="reference internal" href="#r26ccbd70a49a-layerdrop" id="id23">[layerdrop]</a>). The paper uses 0.01 for pre-training and 0.0 for
+fine-tuning.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function used in the encoder convolutional blocks. The paper uses GELU
+activation throughout.</p></li>
+<li><p><strong>transformer_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – Number of transformer encoder layers in the contextualizer. The paper uses 8 layers.</p></li>
+<li><p><strong>transformer_heads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – Number of attention heads in each transformer layer. The paper uses 8 heads with
+head dimension of 192 (1536 / 8).</p></li>
+<li><p><strong>position_encoder_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=25</em>) – Kernel size for the convolutional positional encoding layer. The paper uses a
+receptive field of 25 with 16 groups.</p></li>
+<li><p><strong>enc_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=</em><em>(</em><em>3</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>)</em>) – Kernel sizes for each of the 6 convolutional blocks in the encoder. Each value
+corresponds to one block.</p></li>
+<li><p><strong>enc_downsample</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=</em><em>(</em><em>3</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>)</em>) – Stride values for each of the 6 convolutional blocks in the encoder. The total
+downsampling factor is the product of all strides (3 x 2 x 2 x 2 x 2 x 2 = 96).</p></li>
+<li><p><strong>start_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=-5</em>) – Value used to fill the start token embedding that is prepended to the BENDR sequence
+before input to the transformer. This token’s output is used as the aggregate
+representation for classification.</p></li>
+<li><p><strong>final_layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, includes a final linear classification layer that maps from encoder_h to
+n_outputs. If False, the model outputs the contextualized features directly.</p></li>
+<li><p><strong>encoder_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, bypass the contextualizer and use 4-chunk temporal pooling on the encoder
+output instead. This corresponds to the encoder-only configuration described in
+Section 2.4 and Table 2 of Kostas et al. (2021) <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id24">[bendr]</a>, which outperformed the
+full model on 4 out of 5 downstream tasks. The encoder output is split into 4 equal
+temporal chunks, each chunk is mean-pooled, and the results are concatenated to
+produce a feature vector of size <code class="docutils literal notranslate"><span class="pre">encoder_h</span> <span class="pre">*</span> <span class="pre">4</span></code> (2048-dim with default settings).
+The contextualizer is still created (to allow loading pretrained weights) but is not
+used in the forward pass. Requires input length of at least
+<code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">*</span> <span class="pre">product(enc_downsample)</span></code> samples (384 with default downsampling of 96x).</p></li>
+<li><p><strong>n_chans_pretrained</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Number of input channels the pretrained weights expect (20 for the official BENDR
+checkpoint). When set and <code class="docutils literal notranslate"><span class="pre">n_chans</span> <span class="pre">!=</span> <span class="pre">n_chans_pretrained</span></code>, a 1x1 Conv1d with
+max-norm constraint projects from <code class="docutils literal notranslate"><span class="pre">n_chans</span></code> to <code class="docutils literal notranslate"><span class="pre">n_chans_pretrained</span></code> before the
+encoder. This allows fine-tuning pretrained BENDR on datasets with arbitrary channel
+counts. When using <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>, pass <code class="docutils literal notranslate"><span class="pre">strict=False</span></code> since the checkpoint
+will not contain <code class="docutils literal notranslate"><span class="pre">channel_projection</span></code> weights.</p></li>
+<li><p><strong>chan_proj_max_norm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=1.0</em>) – Max-norm constraint value for the channel projection weights.</p></li>
+<li><p><strong>rubric:</strong> (<em>..</em>) – Hugging Face Hub integration:</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If some input signal-related parameters are not specified: and can not be inferred.</p>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>The full BENDR architecture contains a large number of parameters; configuration (1)
-involved training over <strong>one billion parameters</strong> <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id23">[bendr]</a>.</p></li>
+involved training over <strong>one billion parameters</strong> <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id25">[bendr]</a>.</p></li>
 <li><p>Randomly initialized full BENDR architecture was generally ineffective at solving
-downstream tasks without prior self-supervised training <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id24">[bendr]</a>.</p></li>
+downstream tasks without prior self-supervised training <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id26">[bendr]</a>.</p></li>
 <li><p>The pre-training task (contrastive predictive coding via masking) is generalizable,
 exhibiting strong uniformity of performance across novel subjects, hardware, and
-tasks <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id25">[bendr]</a>.</p></li>
+tasks <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id27">[bendr]</a>.</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><strong>Important:</strong> To utilize the full potential of BENDR, the model requires
 <strong>self-supervised pre-training</strong> on large, unlabeled EEG datasets (like TUEG) followed
-by subsequent fine-tuning on the specific downstream classification task <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id26">[bendr]</a>.</p>
+by subsequent fine-tuning on the specific downstream classification task <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id28">[bendr]</a>.</p>
 </div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r26ccbd70a49a-bendr" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>bendr<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id6">5</a>,<a role="doc-backlink" href="#id7">6</a>,<a role="doc-backlink" href="#id8">7</a>,<a role="doc-backlink" href="#id9">8</a>,<a role="doc-backlink" href="#id11">9</a>,<a role="doc-backlink" href="#id12">10</a>,<a role="doc-backlink" href="#id13">11</a>,<a role="doc-backlink" href="#id14">12</a>,<a role="doc-backlink" href="#id15">13</a>,<a role="doc-backlink" href="#id18">14</a>,<a role="doc-backlink" href="#id20">15</a>,<a role="doc-backlink" href="#id22">16</a>,<a role="doc-backlink" href="#id23">17</a>,<a role="doc-backlink" href="#id24">18</a>,<a role="doc-backlink" href="#id25">19</a>,<a role="doc-backlink" href="#id26">20</a>,<a role="doc-backlink" href="#id28">21</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id6">5</a>,<a role="doc-backlink" href="#id7">6</a>,<a role="doc-backlink" href="#id8">7</a>,<a role="doc-backlink" href="#id9">8</a>,<a role="doc-backlink" href="#id11">9</a>,<a role="doc-backlink" href="#id12">10</a>,<a role="doc-backlink" href="#id13">11</a>,<a role="doc-backlink" href="#id14">12</a>,<a role="doc-backlink" href="#id15">13</a>,<a role="doc-backlink" href="#id18">14</a>,<a role="doc-backlink" href="#id20">15</a>,<a role="doc-backlink" href="#id22">16</a>,<a role="doc-backlink" href="#id24">17</a>,<a role="doc-backlink" href="#id25">18</a>,<a role="doc-backlink" href="#id26">19</a>,<a role="doc-backlink" href="#id27">20</a>,<a role="doc-backlink" href="#id28">21</a>)</span>
 <p>Kostas, D., Aroca-Ouellette, S., &amp; Rudzicz, F. (2021).
 BENDR: Using transformers and a contrastive self-supervised learning task to learn from
 massive amounts of EEG data.
@@ -956,63 +1021,13 @@ In International Conference on Machine Learning (pp. 4475-4483). PMLR.
 </div>
 <div class="citation" id="r26ccbd70a49a-layerdrop" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>layerdrop<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id19">1</a>,<a role="doc-backlink" href="#id27">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id19">1</a>,<a role="doc-backlink" href="#id23">2</a>)</span>
 <p>Fan, A., Grave, E., &amp; Joulin, A. (2020).
 Reducing Transformer Depth on Demand with Structured Dropout.
 International Conference on Learning Representations.
 Retrieved from <a class="reference external" href="https://openreview.net/forum?id=SylO2yStDr">https://openreview.net/forum?id=SylO2yStDr</a></p>
 </div>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>encoder_h</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=512</em>) – Hidden size (number of output channels) of the convolutional encoder. This determines
-the dimensionality of the BENDR feature vectors produced by the encoder.</p></li>
-<li><p><strong>contextualizer_hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=3076</em>) – Hidden size of the feedforward layer within each transformer block. The paper uses
-approximately 2x the transformer dimension (3076 ~ 2 x 1536).</p></li>
-<li><p><strong>projection_head</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, adds a projection layer at the end of the encoder to project back to the
-input feature size. This is used during self-supervised pre-training but typically
-disabled during fine-tuning.</p></li>
-<li><p><strong>drop_prob</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.1</em>) – Dropout probability applied throughout the model. The paper recommends 0.15 for
-pre-training and 0.0 for fine-tuning. Default is 0.1 as a compromise.</p></li>
-<li><p><strong>layer_drop</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.0</em>) – Probability of dropping entire transformer layers during training (LayerDrop
-regularization <a class="reference internal" href="#r26ccbd70a49a-layerdrop" id="id27">[layerdrop]</a>). The paper uses 0.01 for pre-training and 0.0 for
-fine-tuning.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function used in the encoder convolutional blocks. The paper uses GELU
-activation throughout.</p></li>
-<li><p><strong>transformer_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – Number of transformer encoder layers in the contextualizer. The paper uses 8 layers.</p></li>
-<li><p><strong>transformer_heads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=8</em>) – Number of attention heads in each transformer layer. The paper uses 8 heads with
-head dimension of 192 (1536 / 8).</p></li>
-<li><p><strong>position_encoder_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=25</em>) – Kernel size for the convolutional positional encoding layer. The paper uses a
-receptive field of 25 with 16 groups.</p></li>
-<li><p><strong>enc_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=</em><em>(</em><em>3</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>)</em>) – Kernel sizes for each of the 6 convolutional blocks in the encoder. Each value
-corresponds to one block.</p></li>
-<li><p><strong>enc_downsample</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=</em><em>(</em><em>3</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>)</em>) – Stride values for each of the 6 convolutional blocks in the encoder. The total
-downsampling factor is the product of all strides (3 x 2 x 2 x 2 x 2 x 2 = 96).</p></li>
-<li><p><strong>start_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=-5</em>) – Value used to fill the start token embedding that is prepended to the BENDR sequence
-before input to the transformer. This token’s output is used as the aggregate
-representation for classification.</p></li>
-<li><p><strong>final_layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, includes a final linear classification layer that maps from encoder_h to
-n_outputs. If False, the model outputs the contextualized features directly.</p></li>
-<li><p><strong>encoder_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, bypass the contextualizer and use 4-chunk temporal pooling on the encoder
-output instead. This corresponds to the encoder-only configuration described in
-Section 2.4 and Table 2 of Kostas et al. (2021) <a class="reference internal" href="#r26ccbd70a49a-bendr" id="id28">[bendr]</a>, which outperformed the
-full model on 4 out of 5 downstream tasks. The encoder output is split into 4 equal
-temporal chunks, each chunk is mean-pooled, and the results are concatenated to
-produce a feature vector of size <code class="docutils literal notranslate"><span class="pre">encoder_h</span> <span class="pre">*</span> <span class="pre">4</span></code> (2048-dim with default settings).
-The contextualizer is still created (to allow loading pretrained weights) but is not
-used in the forward pass. Requires input length of at least
-<code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">*</span> <span class="pre">product(enc_downsample)</span></code> samples (384 with default downsampling of 96x).</p></li>
-<li><p><strong>n_chans_pretrained</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Number of input channels the pretrained weights expect (20 for the official BENDR
-checkpoint). When set and <code class="docutils literal notranslate"><span class="pre">n_chans</span> <span class="pre">!=</span> <span class="pre">n_chans_pretrained</span></code>, a 1x1 Conv1d with
-max-norm constraint projects from <code class="docutils literal notranslate"><span class="pre">n_chans</span></code> to <code class="docutils literal notranslate"><span class="pre">n_chans_pretrained</span></code> before the
-encoder. This allows fine-tuning pretrained BENDR on datasets with arbitrary channel
-counts. When using <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>, pass <code class="docutils literal notranslate"><span class="pre">strict=False</span></code> since the checkpoint
-will not contain <code class="docutils literal notranslate"><span class="pre">channel_projection</span></code> weights.</p></li>
-<li><p><strong>chan_proj_max_norm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=1.0</em>) – Max-norm constraint value for the channel projection weights.</p></li>
-</ul>
-</dd>
-</dl>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.BENDR.forward">
@@ -1026,6 +1041,11 @@ this function, one should call the <code class="xref py py-class docutils litera
 instead of this since the former takes care of running the
 registered hooks while the latter silently ignores them.</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – The description is missing.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

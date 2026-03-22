@@ -607,54 +607,124 @@ You can find this information either in the online documentation here:
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Shallow ConvNet model from Schirrmeister et al (2017) [Schirrmeister2017]_.
 
-    :bdg-success:`Convolution`
+:bdg-success:`Convolution`
 
-    .. figure:: https://onlinelibrary.wiley.com/cms/asset/221ea375-6701-40d3-ab3f-e411aad62d9e/hbm23730-fig-0002-m.jpg
-        :align: center
-        :alt: ShallowNet Architecture
+.. figure:: https://onlinelibrary.wiley.com/cms/asset/221ea375-6701-40d3-ab3f-e411aad62d9e/hbm23730-fig-0002-m.jpg
+    :align: center
+    :alt: ShallowNet Architecture
 
-    Model described in [Schirrmeister2017]_.
+Model described in [Schirrmeister2017]_.
 
-    Parameters
-    ----------
-    n_filters_time: int
-        Number of temporal filters.
-    filter_time_length: int
-        Length of the temporal filter.
-    n_filters_spat: int
-        Number of spatial filters.
-    pool_time_length: int
-        Length of temporal pooling filter.
-    pool_time_stride: int
-        Length of stride between temporal pooling filters.
-    final_conv_length: int | str
-        Length of the final convolution layer.
-        If set to &quot;auto&quot;, length of the input signal must be specified.
-    conv_nonlin: callable
-        Non-linear function to be used after convolution layers.
-    pool_mode: str
-        Method to use on pooling layers. &quot;max&quot; or &quot;mean&quot;.
-    activation_pool_nonlin: callable
-        Non-linear function to be used after pooling layers.
-    split_first_layer: bool
-        Split first layer into temporal and spatial layers (True) or just use temporal (False).
-        There would be no non-linearity between the split layers.
-    batch_norm: bool
-        Whether to use batch normalisation.
-    batch_norm_alpha: float
-        Momentum for BatchNorm2d.
-    drop_prob: float
-        Dropout probability.
+Parameters
+----------
+n_chans : int
+    Number of EEG channels.
+n_outputs : int
+    Number of outputs of the model. This is the number of classes
+    in the case of classification.
+n_times : int
+    Number of time samples of the input window.
+n_filters_time: int
+    Number of temporal filters.
+filter_time_length: int
+    Length of the temporal filter.
+n_filters_spat: int
+    Number of spatial filters.
+pool_time_length: int
+    Length of temporal pooling filter.
+pool_time_stride: int
+    Length of stride between temporal pooling filters.
+final_conv_length: int | str
+    Length of the final convolution layer.
+    If set to &quot;auto&quot;, length of the input signal must be specified.
+conv_nonlin: callable
+    Non-linear function to be used after convolution layers.
+pool_mode: str
+    Method to use on pooling layers. &quot;max&quot; or &quot;mean&quot;.
+activation_pool_nonlin: callable
+    Non-linear function to be used after pooling layers.
+split_first_layer: bool
+    Split first layer into temporal and spatial layers (True) or just use temporal (False).
+    There would be no non-linearity between the split layers.
+batch_norm: bool
+    Whether to use batch normalisation.
+batch_norm_alpha: float
+    Momentum for BatchNorm2d.
+drop_prob: float
+    Dropout probability.
+chs_info : list of dict
+    Information about each individual EEG channel. This should be filled with
+    ``info[&quot;chs&quot;]``. Refer to :class:`mne.Info` for more details.
+input_window_seconds : float
+    Length of the input window in seconds.
+sfreq : float
+    Sampling frequency of the EEG recordings.
 
-    References
-    ----------
-    .. [Schirrmeister2017] Schirrmeister, R. T., Springenberg, J. T., Fiederer,
-       L. D. J., Glasstetter, M., Eggensperger, K., Tangermann, M., Hutter, F.
-       &amp; Ball, T. (2017).
-       Deep learning with convolutional neural networks for EEG decoding and
-       visualization.
-       Human Brain Mapping , Aug. 2017.
-       Online: http://dx.doi.org/10.1002/hbm.23730
+Raises
+------
+ValueError: If some input signal-related parameters are not specified
+            and can not be inferred.
+
+Notes
+-----
+If some input signal-related parameters are not specified,
+there will be an attempt to infer them from the other parameters.
+
+References
+----------
+.. [Schirrmeister2017] Schirrmeister, R. T., Springenberg, J. T., Fiederer,
+   L. D. J., Glasstetter, M., Eggensperger, K., Tangermann, M., Hutter, F.
+   &amp; Ball, T. (2017).
+   Deep learning with convolutional neural networks for EEG decoding and
+   visualization.
+   Human Brain Mapping , Aug. 2017.
+   Online: http://dx.doi.org/10.1002/hbm.23730
+
+.. rubric:: Hugging Face Hub integration
+
+When the optional ``huggingface_hub`` package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with::
+
+    pip install braindecode[hub]
+
+**Pushing a model to the Hub:**
+
+.. code-block::
+
+    from braindecode.models import ShallowFBCSPNet
+
+    # Train your model
+    model = ShallowFBCSPNet(n_chans=22, n_outputs=4, n_times=1000)
+    # ... training code ...
+
+    # Push to the Hub
+    model.push_to_hub(
+        repo_id=&quot;username/my-shallowfbcspnet-model&quot;,
+        commit_message=&quot;Initial model upload&quot;,
+    )
+
+**Loading a model from the Hub:**
+
+.. code-block::
+
+    from braindecode.models import ShallowFBCSPNet
+
+    # Load pretrained model
+    model = ShallowFBCSPNet.from_pretrained(&quot;username/my-shallowfbcspnet-model&quot;)
+
+The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.
+
+.. important::
+    Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
+    input_window_seconds, sfreq, chs_info) are saved to the Hub.
+    Model-specific parameters (e.g., dropout rates, activation functions,
+    number of filters) are not preserved and will use their default values
+    when loading from the Hub.
+    Full parameter serialization will be addressed in a future update.
 </pre></div>
 </div>
 <p>Additionally, you might be interested in visualizing the model’s architecture.
@@ -788,16 +858,16 @@ we can train it by simply calling the <code class="docutils literal notranslate"
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    valid_acc    valid_loss     dur
 -------  -----------  ------------  ------
-      1       0.3000       15.6130  0.0115
-      2       0.3000       15.6130  0.0072
-      3       0.3000       15.6130  0.0071
-      4       0.3000       15.6130  0.0070
-      5       0.3000       15.6130  0.0069
-      6       0.3000       15.6130  0.0068
-      7       0.3000       15.6130  0.0068
-      8       0.3000       15.6130  0.0068
-      9       0.3000       15.6130  0.0068
-     10       0.3000       15.6130  0.0069
+      1       0.3000       15.6130  0.0117
+      2       0.3000       15.6130  0.0077
+      3       0.3000       15.6130  0.0075
+      4       0.3000       15.6130  0.0074
+      5       0.3000       15.6130  0.0074
+      6       0.3000       15.6130  0.0072
+      7       0.3000       15.6130  0.0074
+      8       0.3000       15.6130  0.0072
+      9       0.3000       15.6130  0.0071
+     10       0.3000       15.6130  0.0071
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1532,7 +1602,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">train_split</td>
-            <td class="value">&lt;skorch.datas...x7fd195b07560&gt;</td>
+            <td class="value">&lt;skorch.datas...x7ffa69aefda0&gt;</td>
         </tr>
 
 
@@ -1682,7 +1752,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__epoch_timer</td>
-            <td class="value">&lt;skorch.callb...x7fd2daed3a70&gt;</td>
+            <td class="value">&lt;skorch.callb...x7ffbaee79d30&gt;</td>
         </tr>
 
 
@@ -1692,7 +1762,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss</td>
-            <td class="value">&lt;skorch.callb...x7fd19b298ce0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7ffbaee71ee0&gt;</td>
         </tr>
 
 
@@ -1702,7 +1772,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss__scoring</td>
-            <td class="value">&lt;function tra...x7fd1a5b5e7a0&gt;</td>
+            <td class="value">&lt;function tra...x7ffa7a1627a0&gt;</td>
         </tr>
 
 
@@ -1742,7 +1812,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss__target_extractor</td>
-            <td class="value">&lt;function noo...x7fd1a5b5e5c0&gt;</td>
+            <td class="value">&lt;function noo...x7ffa7a1625c0&gt;</td>
         </tr>
 
 
@@ -1762,7 +1832,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss</td>
-            <td class="value">&lt;skorch.callb...x7fd2da4c7aa0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7ffa6a457e00&gt;</td>
         </tr>
 
 
@@ -1772,7 +1842,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss__scoring</td>
-            <td class="value">&lt;function val...x7fd1a5b5e840&gt;</td>
+            <td class="value">&lt;function val...x7ffa7a162840&gt;</td>
         </tr>
 
 
@@ -1812,7 +1882,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss__target_extractor</td>
-            <td class="value">&lt;function noo...x7fd1a5b5e5c0&gt;</td>
+            <td class="value">&lt;function noo...x7ffa7a1625c0&gt;</td>
         </tr>
 
 
@@ -1832,7 +1902,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_acc</td>
-            <td class="value">&lt;skorch.callb...x7fd195a5fd70&gt;</td>
+            <td class="value">&lt;skorch.callb...x7ffbaea6fb30&gt;</td>
         </tr>
 
 
@@ -1882,7 +1952,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_acc__target_extractor</td>
-            <td class="value">&lt;function to_...x7fd1a5b5db20&gt;</td>
+            <td class="value">&lt;function to_...x7ffa7a161b20&gt;</td>
         </tr>
 
 
@@ -1902,7 +1972,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__print_log</td>
-            <td class="value">&lt;skorch.callb...x7fd2da931430&gt;</td>
+            <td class="value">&lt;skorch.callb...x7ffa68dc4ce0&gt;</td>
         </tr>
 
 
@@ -2146,8 +2216,8 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.407 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  994 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.858 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1002 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fff46913db5173d3ae22c1113acffb45/plot_basic_training_epochs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_basic_training_epochs.ipynb</span></code></a></p>
