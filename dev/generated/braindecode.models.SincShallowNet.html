@@ -809,69 +809,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.SincShallowNet">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">SincShallowNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_time_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_filter_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'same'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">55</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/sinc_shallow.py#L11-L209"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.SincShallowNet" title="Link to this definition">#</a></dt>
-<dd><p>Sinc-ShallowNet from Borra, D et al (2020) <a class="reference internal" href="#r4fd1ba6a7153-borra2020" id="id1">[borra2020]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Interpretability</span></p>
-<figure class="align-center">
-<img alt="SincShallowNet Architecture" src="https://ars.els-cdn.com/content/image/1-s2.0-S0893608020302021-gr2_lrg.jpg" />
-</figure>
-<p>The Sinc-ShallowNet architecture has these fundamental blocks:</p>
-<ol class="arabic">
-<li><p><strong>Block 1: Spectral and Spatial Feature Extraction</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Temporal Sinc-Convolutional Layer</em>: Uses parametrized sinc functions to learn band-pass filters,
-significantly reducing the number of trainable parameters by only
-learning the lower and upper cutoff frequencies for each filter.</p></li>
-<li><p><em>Spatial Depthwise Convolutional Layer</em>: Applies depthwise convolutions to learn spatial filters for
-each temporal feature map independently, further reducing
-parameters and enhancing interpretability.</p></li>
-<li><p><em>Batch Normalization</em></p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><strong>Block 2: Temporal Aggregation</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Activation Function</em>: ELU</p></li>
-<li><p><em>Average Pooling Layer</em>: Aggregation by averaging spatial dim</p></li>
-<li><p><em>Dropout Layer</em></p></li>
-<li><p><em>Flatten Layer</em></p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><strong>Block 3: Classification</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Fully Connected Layer</em>: Maps the feature vector to n_outputs.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ol>
-<p><strong>Implementation Notes:</strong></p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>The sinc-convolutional layer initializes cutoff frequencies uniformly</dt><dd><p>within the desired frequency range and updates them during training while
-ensuring the lower cutoff is less than the upper cutoff.</p>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Mixin class for all EEG models in braindecode.</p>
+<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
+is installed, enabling models to be pushed to and loaded from the Hub using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_time_filters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of temporal filters in the SincFilter layer.</p></li>
-<li><p><strong>time_filter_len</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of the temporal filters.</p></li>
-<li><p><strong>depth_multiplier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Depth multiplier for spatial filtering.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Activation function to use. Default is nn.ELU().</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout probability. Default is 0.5.</p></li>
-<li><p><strong>first_freq</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The starting frequency for the first Sinc filter. Default is 5.0.</p></li>
-<li><p><strong>min_freq</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Minimum frequency allowed for the low frequencies of the filters. Default is 1.0.</p></li>
-<li><p><strong>freq_stride</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Frequency stride for the Sinc filters. Controls the spacing between the filter frequencies.
-Default is 1.0.</p></li>
-<li><p><strong>padding</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Padding mode for convolution, either ‘same’ or ‘valid’. Default is ‘same’.</p></li>
-<li><p><strong>bandwidth</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Initial bandwidth for each Sinc filter. Default is 4.0.</p></li>
-<li><p><strong>pool_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of the pooling window for the average pooling layer. Default is 55.</p></li>
-<li><p><strong>pool_stride</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Stride of the pooling operation. Default is 12.</p></li>
+<li><p><strong>num_time_filters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>time_filter_len</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>depth_multiplier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>first_freq</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>min_freq</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>freq_stride</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>padding</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>bandwidth</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>pool_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>pool_stride</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
 <li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
 <li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
 in the case of classification.</p></li>
@@ -887,62 +843,8 @@ in the case of classification.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This implementation is based on the implementation from <a class="reference internal" href="#r4fd1ba6a7153-sincshallowcode" id="id2">[sincshallowcode]</a>.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r4fd1ba6a7153-borra2020" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">borra2020</a><span class="fn-bracket">]</span></span>
-<p>Borra, D., Fantozzi, S., &amp; Magosso, E. (2020). Interpretable
-and lightweight convolutional neural network for EEG decoding: Application
-to movement execution and imagination. Neural Networks, 129, 55-74.</p>
-</div>
-<div class="citation" id="r4fd1ba6a7153-sincshallowcode" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">sincshallowcode</a><span class="fn-bracket">]</span></span>
-<p>Sinc-ShallowNet re-implementation source code:
-<a class="github reference external" href="https://github.com/marcellosicbaldi/SincNet-Tensorflow">marcellosicbaldi/SincNet-Tensorflow</a></p>
-</div>
-</div>
-<p class="rubric">Hugging Face Hub integration</p>
-<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
-automatically gain the ability to be pushed to and loaded from the
-Hugging Face Hub. Install with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
-</pre></div>
-</div>
-<p><strong>Pushing a model to the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SincShallowNet</span>
-
-<span class="c1"># Train your model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">SincShallowNet</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># ... training code ...</span>
-
-<span class="c1"># Push to the Hub</span>
-<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
-    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-sincshallownet-model&quot;</span><span class="p">,</span>
-    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Loading a model from the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SincShallowNet</span>
-
-<span class="c1"># Load pretrained model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">SincShallowNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-sincshallownet-model&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
-input_window_seconds, sfreq, chs_info) are saved to the Hub.
-Model-specific parameters (e.g., dropout rates, activation functions,
-number of filters) are not preserved and will use their default values
-when loading from the Hub.
-Full parameter serialization will be addressed in a future update.</p>
-</div>
+<p>If some input signal-related parameters are not specified,
+there will be an attempt to infer them from the other parameters.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.SincShallowNet.forward">

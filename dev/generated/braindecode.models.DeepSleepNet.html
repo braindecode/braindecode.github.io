@@ -809,170 +809,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.DeepSleepNet">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">DeepSleepNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_feats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_large</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_small</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ReLU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/deepsleepnet.py#L10-L239"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.DeepSleepNet" title="Link to this definition">#</a></dt>
-<dd><p>DeepSleepNet from Supratak et al (2017) <a class="reference internal" href="#r28b528aca953-supratak2017" id="id1">[Supratak2017]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Recurrent</span></p>
-<figure class="align-center">
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/akaraspt/deepsleepnet/master/img/deepsleepnet.png"><img alt="DeepSleepNet Architecture" src="https://raw.githubusercontent.com/akaraspt/deepsleepnet/master/img/deepsleepnet.png" style="width: 700px;" />
-</a>
-</figure>
-<p class="rubric">Architectural Overview</p>
-<p>DeepSleepNet couples <strong>dual-path convolution neural network representation learning</strong> with
-<strong>sequence residual learning</strong> via bidirectional LSTMs.</p>
-<p>The network have:</p>
-<ul class="simple">
-<li><p>(i) learns complementary, time-frequency features from each
-30-s epoch using <strong>two parallel CNNs</strong> (small vs. large first-layer filters), then</p></li>
-<li><p>(ii) models <strong>temporal dependencies across epochs</strong> using <strong>two-layer BiLSTMs</strong>
-with a <strong>residual shortcut</strong> from the CNN features, and finally</p></li>
-<li><p>(iii) outputs per-epoch sleep stages. This design encodes both
-epoch-local patterns and longer-range transition rules used by human scorers.</p></li>
-</ul>
-<p>In term of implementation:</p>
-<ul class="simple">
-<li><p>(i) <code class="xref py py-class docutils literal notranslate"><span class="pre">_RepresentationLearning</span></code> two CNNs extract epoch-wise features
-(small-filter path for temporal precision; large-filter path for frequency precision);</p></li>
-<li><p>(ii) <code class="xref py py-class docutils literal notranslate"><span class="pre">_SequenceResidualLearning</span></code> stacked BiLSTMs with peepholes + residual shortcut
-inject temporal context while preserving CNN evidence;</p></li>
-<li><ol class="lowerroman simple" start="3">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_Classifier</span></code> linear readout (softmax) for the five sleep stages.</p></li>
-</ol>
-</li>
-</ul>
-<p class="rubric">Macro Components</p>
-<ul>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_RepresentationLearning</span></code> <strong>(dual-path CNN → epoch feature)</strong></p>
-<blockquote>
-<div><ul>
-<li><p><em>Operations.</em></p></li>
-<li><p><strong>Small-filter CNN</strong> 4 times:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv1d</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html#torch.nn.BatchNorm1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm1d</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.MaxPool1d.html#torch.nn.MaxPool1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaxPool1d</span></code></a> after.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p>First conv uses <strong>filter length ≈ Fs/2</strong> and <strong>stride ≈ Fs/16</strong> to emphasize <em>timing</em> of graphoelements.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><strong>Large-filter CNN</strong>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Same stack but first conv uses <strong>filter length ≈ 4·Fs</strong> and</p></li>
-<li><p><strong>stride ≈ Fs/2</strong> to emphasize <em>frequency</em> content.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p>Outputs from both paths are <strong>concatenated</strong> into the epoch embedding <code class="docutils literal notranslate"><span class="pre">a_t</span></code>.</p></li>
-<li><p><em>Rationale.</em>
-Two first-layer scales provide a <strong>learned, dual-scale filter bank</strong> that trades
-temporal vs. frequency precision without hand-crafted features.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_SequenceResidualLearning</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BiLSTM</span></code> <strong>context + residual fusion)</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Operations.</em></p></li>
-<li><p><strong>Two-layer BiLSTM</strong> with <strong>peephole connections</strong> processes the sequence of epoch embeddings
-<code class="docutils literal notranslate"><span class="pre">{a_t}</span></code> forward and backward; hidden states from both directions are <strong>concatenated</strong>.</p></li>
-<li><p>A <strong>shortcut MLP</strong> (fully connected + <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html#torch.nn.BatchNorm1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm1d</span></code></a> + <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code></a>) projects <code class="docutils literal notranslate"><span class="pre">a_t</span></code> to the BiLSTM output
-dimension and is <strong>added</strong> (residual) to the <code class="xref py py-class docutils literal notranslate"><span class="pre">BiLSTM</span></code> output at each time step.</p></li>
-<li><p><em>Role.</em> Encodes <strong>stage-transition rules</strong> and smooths predictions over time while preserving
-salient CNN features via the residual path.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_Classifier</span></code> <strong>(epoch-wise prediction)</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Operations.</em></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a> to produce per-epoch class probabilities.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p>Original training uses two-step optimization: CNN pretraining on class-balanced data,
-then end-to-end fine-tuning with sequential batches.</p>
-<p class="rubric">Convolutional Details</p>
-<ul>
-<li><p><strong>Temporal (where time-domain patterns are learned).</strong></p>
-<p>Both CNN paths use <strong>1-D temporal convolutions</strong>. The <em>small-filter</em> path (first kernel ≈ Fs/2,
-stride ≈ Fs/16) captures <em>when</em> characteristic transients occur; the <em>large-filter</em> path
-(first kernel ≈ 4·Fs, stride ≈ Fs/2) captures <em>which</em> frequency components dominate over the
-epoch. Deeper layers use <strong>small kernels</strong> to refine features with fewer parameters, interleaved
-with <strong>max pooling</strong> for downsampling.</p>
-</li>
-<li><p><strong>Spatial (how channels are processed).</strong></p>
-<p>The original model operates on <strong>single-channel</strong> raw EEG; convolutions therefore mix only
-along time (no spatial convolution across electrodes).</p>
-</li>
-<li><p><strong>Spectral (how frequency information emerges).</strong></p>
-<p>No explicit Fourier/wavelet transform is used. The <strong>large-filter path</strong> serves as a
-<em>frequency-sensitive</em> analyzer, while the <strong>small-filter path</strong> remains <em>time-sensitive</em>,
-together functioning as a <strong>two-band learned filter bank</strong> at the first layer.</p>
-</li>
-</ul>
-<p class="rubric">Attention / Sequential Modules</p>
-<ul class="simple">
-<li><p><strong>Type.</strong> <strong>Bidirectional LSTM</strong> (two layers) with <strong>peephole connections</strong>; forward and
-backward streams are independent and concatenated.</p></li>
-<li><p><strong>Shapes.</strong> For a sequence of <code class="docutils literal notranslate"><span class="pre">N</span></code> epochs, the CNN produces <code class="docutils literal notranslate"><span class="pre">{a_t}</span> <span class="pre">∈</span> <span class="pre">R^{D}</span></code>;
-BiLSTM outputs <code class="docutils literal notranslate"><span class="pre">h_t</span> <span class="pre">∈</span> <span class="pre">R^{2H}</span></code>; the shortcut MLP maps <code class="docutils literal notranslate"><span class="pre">a_t</span> <span class="pre">→</span> <span class="pre">R^{2H}</span></code> to enable
-<strong>element-wise residual addition</strong>.</p></li>
-<li><p><strong>Role.</strong> Models <strong>long-range temporal dependencies</strong> (e.g., persisting N2 without visible
-K-complex/spindles), stabilizing per-epoch predictions.</p></li>
-</ul>
-<p class="rubric">Additional Mechanisms</p>
-<ul>
-<li><p><strong>Residual shortcut over sequence encoder.</strong> Adds projected CNN features to BiLSTM outputs,
-improving gradient flow and retaining discriminative content from representation learning.</p></li>
-<li><p><strong>Two-step training.</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><ol class="lowerroman simple">
-<li><p><strong>Pretrain</strong> the CNN paths with class-balanced sampling;</p></li>
-</ol>
-</li>
-<li><p>(ii) <strong>fine-tune</strong> the full network with sequential batches, using <strong>lower LR</strong> for CNNs and <strong>higher LR</strong> for the
-sequence encoder.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><strong>State handling.</strong> BiLSTM states are <strong>reinitialized per subject</strong> so that temporal context
-does not leak across recordings.</p></li>
-</ul>
-<p class="rubric">Usage and Configuration</p>
-<ul class="simple">
-<li><p><strong>Epoch pipeline.</strong> Use <strong>two parallel CNNs</strong> with the first conv sized to <strong>Fs/2</strong> (small path)
-and <strong>4·Fs</strong> (large path), with strides <strong>Fs/16</strong> and <strong>Fs/2</strong>, respectively; stack three more
-conv blocks with small kernels, plus <strong>max pooling</strong> in each path. Concatenate path outputs
-to form epoch embeddings.</p></li>
-<li><p><strong>Sequence encoder.</strong> Apply <strong>two-layer BiLSTM (peepholes)</strong> over the sequence of embeddings;
-add a <strong>projection MLP</strong> on the CNN features and <strong>sum</strong> with BiLSTM outputs (residual).
-Finish with <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a> per epoch.</p></li>
-<li><p><strong>Reference implementation.</strong> See the official repository for a faithful implementation and
-training scripts.</p></li>
-</ul>
+<dd><p>Mixin class for all EEG models in braindecode.</p>
+<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
+is installed, enabling models to be pushed to and loaded from the Hub using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
 in the case of classification.</p></li>
-<li><p><strong>return_feats</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, return the features, i.e. the output of the feature extractor
-(before the final linear layer). If False, pass the features through
-the final linear layer.</p></li>
+<li><p><strong>return_feats</strong> – The description is missing.</p></li>
 <li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
 <li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
 <li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>activation_large</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to apply. Should be a PyTorch activation
-module class like <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>.</p></li>
-<li><p><strong>activation_small</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to apply. Should be a PyTorch activation
-module class like <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code>.</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The dropout rate for regularization. Values should be between 0 and 1.</p></li>
+<li><p><strong>activation_large</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
+<li><p><strong>activation_small</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -982,57 +837,6 @@ module class like <code class="docutils literal notranslate"><span class="pre">n
 <p class="rubric">Notes</p>
 <p>If some input signal-related parameters are not specified,
 there will be an attempt to infer them from the other parameters.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r28b528aca953-supratak2017" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">Supratak2017</a><span class="fn-bracket">]</span></span>
-<p>Supratak, A., Dong, H., Wu, C., &amp; Guo, Y. (2017).
-DeepSleepNet: A model for automatic sleep stage scoring based
-on raw single-channel EEG. IEEE Transactions on Neural Systems
-and Rehabilitation Engineering, 25(11), 1998-2008.</p>
-</div>
-</div>
-<p class="rubric">Hugging Face Hub integration</p>
-<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
-automatically gain the ability to be pushed to and loaded from the
-Hugging Face Hub. Install with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
-</pre></div>
-</div>
-<p><strong>Pushing a model to the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeepSleepNet</span>
-
-<span class="c1"># Train your model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">DeepSleepNet</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># ... training code ...</span>
-
-<span class="c1"># Push to the Hub</span>
-<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
-    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-deepsleepnet-model&quot;</span><span class="p">,</span>
-    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Loading a model from the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeepSleepNet</span>
-
-<span class="c1"># Load pretrained model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">DeepSleepNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-deepsleepnet-model&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
-input_window_seconds, sfreq, chs_info) are saved to the Hub.
-Model-specific parameters (e.g., dropout rates, activation functions,
-number of filters) are not preserved and will use their default values
-when loading from the Hub.
-Full parameter serialization will be addressed in a future update.</p>
-</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.DeepSleepNet.forward">

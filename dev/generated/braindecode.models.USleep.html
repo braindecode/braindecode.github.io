@@ -809,155 +809,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.USleep">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">USleep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_time_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complexity_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.67</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_skip_connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_conv_size_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0703125</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_odd_conv_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/usleep.py#L14-L330"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.USleep" title="Link to this definition">#</a></dt>
-<dd><p>Sleep staging architecture from Perslev et al (2021) <a class="reference internal" href="#r58a5e8182f0a-1" id="id1">[1]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
-<figure class="align-center" id="id8">
-<img alt="USleep Architecture" src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-021-00440-5/MediaObjects/41746_2021_440_Fig2_HTML.png" />
-<figcaption>
-<p><span class="caption-text">Figure: U-Sleep consists of an encoder (left) which encodes the input signals into dense feature representations, a decoder (middle) which projects
-the learned features into the input space to generate a dense sleep stage representation, and finally a specially designed segment
-classifier (right) which generates sleep stages at a chosen temporal resolution.</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<p class="rubric">Architectural Overview</p>
-<p>U-Sleep is a <strong>fully convolutional</strong>, feed-forward encoder-decoder with a <em>segment classifier</em> head for
-time-series <strong>segmentation</strong> (sleep staging). It maps multi-channel PSG (EEG+EOG) to a <em>dense, high-frequency</em>
-per-sample representation, then aggregates it into fixed-length stage labels (e.g., 30 s). The network
-processes arbitrarily long inputs in <strong>one forward pass</strong> (resampling to 128 Hz), allowing whole-night
-hypnograms in seconds.</p>
-<ul class="simple">
-<li><p>(i). <code class="xref py py-class docutils literal notranslate"><span class="pre">_EncoderBlock</span></code> extracts progressively deeper temporal features at lower resolution;</p></li>
-<li><p>(ii). <code class="xref py py-class docutils literal notranslate"><span class="pre">_Decoder</span></code> upsamples and fuses encoder features via U-Net-style skips to recover a per-sample stage map;</p></li>
-<li><p>(iii). Segment Classifier mean-pools over the target epoch length and applies two pointwise convs to yield
-per-epoch probabilities. Integrates into the USleep class.</p></li>
-</ul>
-<p class="rubric">Macro Components</p>
-<ul>
-<li><p>Encoder <code class="xref py py-class docutils literal notranslate"><span class="pre">_EncoderBlock</span></code> <strong>(multi-scale temporal feature extractor; downsampling x2 per block)</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Operations.</em></p></li>
-<li><p><strong>Conv1d</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv1d</span></code></a>) with kernel <code class="docutils literal notranslate"><span class="pre">9</span></code> (stride <code class="docutils literal notranslate"><span class="pre">1</span></code>, no dilation)</p></li>
-<li><p><strong>ELU</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ELU</span></code></a>)</p></li>
-<li><p><strong>Batch Norm</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html#torch.nn.BatchNorm1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BatchNorm1d</span></code></a>)</p></li>
-<li><p><strong>Max Pool 1d</strong>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.MaxPool1d.html#torch.nn.MaxPool1d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.MaxPool1d</span></code></a> (<code class="docutils literal notranslate"><span class="pre">kernel=2,</span> <span class="pre">stride=2</span></code>).</p></li>
-</ul>
-<p>Filters grow with depth by a factor of <code class="docutils literal notranslate"><span class="pre">sqrt(2)</span></code> (start <code class="docutils literal notranslate"><span class="pre">c_1=5</span></code>); each block exposes a <strong>skip</strong>
-(pre-pooling activation) to the matching decoder block.
-<em>Role.</em> Slow, uniform downsampling preserves early information while expanding the effective temporal
-context over minutes—foundational for robust cross-cohort staging.</p>
-</div></blockquote>
-</li>
-</ul>
-<p>The number of filters grows with depth (capacity scaling); each block also exposes a <strong>skip</strong> (pre-pool)
-to the matching decoder block.</p>
-<dl class="simple">
-<dt><strong>Rationale.</strong></dt><dd><ul class="simple">
-<li><p>Slow, uniform downsampling (x2 each level) preserves information in early layers while expanding the temporal receptive field over the minutes.</p></li>
-</ul>
-</dd>
-</dl>
-<ul>
-<li><p>Decoder <code class="xref py py-class docutils literal notranslate"><span class="pre">_DecoderBlock</span></code>  <strong>(progressive upsampling + skip fusion to high-frequency map, 12 blocks; upsampling x2 per block)</strong></p>
-<blockquote>
-<div><ul>
-<li><p><em>Operations.</em></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>Nearest-neighbor upsample</strong>, <code class="xref py py-class docutils literal notranslate"><span class="pre">nn.Upsample</span></code> (x2)</p></li>
-<li><p><strong>Convolution2d</strong> (k=2), <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a></p></li>
-<li><p>ELU, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ELU</span></code></a></p></li>
-<li><p>Batch Norm, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BatchNorm2d</span></code></a></p></li>
-<li><p><strong>Concatenate</strong> with the encoder skip at the same temporal scale, <code class="docutils literal notranslate"><span class="pre">torch.cat</span></code></p></li>
-<li><p><strong>Convolution</strong>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a></p></li>
-<li><p>ELU, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ELU</span></code></a></p></li>
-<li><p>Batch Norm, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BatchNorm2d</span></code></a>.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p><strong>Output</strong>: A multi-class, <strong>high-frequency</strong> per-sample representation aligned to the input rate (128 Hz).</p>
-<ul>
-<li><p><strong>Segment Classifier incorporate into :class:`braindecode.models.USleep` (aggregation to fixed epochs)</strong></p>
-<blockquote>
-<div><ul>
-<li><p><em>Operations.</em></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>Mean-pool</strong>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.AvgPool2d</span></code></a> per class with kernel = epoch length <em>i</em> and stride <em>i</em></p></li>
-<li><p><strong>1x1 conv</strong>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a></p></li>
-<li><p>ELU, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ELU</span></code></a></p></li>
-<li><p><strong>1x1 conv</strong>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a> with <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code> (epochs x stages).</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p><strong>Role</strong>: Learns a <strong>non-linear</strong> weighted combination over each 30-s window (unlike U-Time’s linear combiner).</p>
-<p class="rubric">Convolutional Details</p>
-<ul>
-<li><p><strong>Temporal (where time-domain patterns are learned).</strong></p>
-<p>All convolutions are <strong>1-D along time</strong>; depth (12 levels) plus pooling yields an extensive receptive field
-(reported sensitivity to ±6.75 min around each epoch; theoretical field ≈ 9.6 min at the deepest layer).
-The decoder restores sample-level resolution before epoch aggregation.</p>
-</li>
-<li><p><strong>Spatial (how channels are processed).</strong></p>
-<p>Convolutions mix across the <em>channel</em> dimension jointly with time (no separate spatial operator). The system
-is <strong>montage-agnostic</strong> (any reasonable EEG/EOG pair) and was trained across diverse cohorts/protocols,
-supporting robustness to channel placement and hardware differences.</p>
-</li>
-<li><p><strong>Spectral (how frequency content is captured).</strong></p>
-<p>No explicit Fourier/wavelet transform is used; the <strong>stack of temporal convolutions</strong> acts as a learned
-filter bank whose effective bandwidth grows with depth. The high-frequency decoder output (128 Hz)
-retains fine temporal detail for the segment classifier.</p>
-</li>
-</ul>
-<p class="rubric">Attention / Sequential Modules</p>
-<p>U-Sleep contains <strong>no attention or recurrent units</strong>; it is a <em>pure</em> feed-forward, fully convolutional
-segmentation network inspired by U-Net/U-Time, favoring training stability and cross-dataset portability.</p>
-<p class="rubric">Additional Mechanisms</p>
-<ul class="simple">
-<li><p><strong>U-Net lineage with task-specific head.</strong> U-Sleep extends U-Time by being <strong>deeper</strong> (12 vs. 4 levels),
-switching ReLU→**ELU**, using uniform pooling (2) at all depths, and replacing the linear combiner with a
-<strong>two-layer</strong> pointwise head—improving capacity and resilience across datasets.</p></li>
-<li><p><strong>Arbitrary-length inference.</strong> Thanks to full convolutionality and tiling-free design, entire nights can be
-staged in a single pass on commodity hardware. Inputs shorter than ≈ 17.5 min may reduce performance by
-limiting long-range context.</p></li>
-<li><p><strong>Complexity scaling (alpha).</strong> Filter counts can be adjusted by a global <strong>complexity factor</strong> to trade accuracy
-and memory (as described in the paper’s topology table).</p></li>
-</ul>
-<p class="rubric">Usage and Configuration</p>
-<ul class="simple">
-<li><p><strong>Practice.</strong> Resample PSG to <strong>128 Hz</strong> and provide at least two channels (one EEG, one EOG). Choose epoch
-length <em>i</em> (often 30 s); ensure windows long enough to exploit the model’s receptive field (e.g., training on
-≥ 17.5 min chunks).</p></li>
-</ul>
+<dd><p>Mixin class for all EEG models in braindecode.</p>
+<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
+is installed, enabling models to be pushed to and loaded from the Hub using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG or EOG channels. Set to 2 in <a class="reference internal" href="#r58a5e8182f0a-1" id="id2">[1]</a> (1 EEG, 1 EOG).</p></li>
-<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – EEG sampling frequency. Set to 128 in <a class="reference internal" href="#r58a5e8182f0a-1" id="id3">[1]</a>.</p></li>
-<li><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of conv blocks in encoding layer (number of 2x2 max pools).
-Note: each block halves the spatial dimensions of the features.</p></li>
-<li><p><strong>n_time_filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Initial number of convolutional filters. Set to 5 in <a class="reference internal" href="#r58a5e8182f0a-1" id="id4">[1]</a>.</p></li>
-<li><p><strong>complexity_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Multiplicative factor for the number of channels at each layer of the U-Net.
-Set to 2 in <a class="reference internal" href="#r58a5e8182f0a-1" id="id5">[1]</a>.</p></li>
-<li><p><strong>with_skip_connection</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, use skip connections in decoder blocks.</p></li>
-<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs/classes. Set to 5.</p></li>
-<li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Size of the input, in seconds. Set to 30 in <a class="reference internal" href="#r58a5e8182f0a-1" id="id6">[1]</a>.</p></li>
-<li><p><strong>time_conv_size_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Size of the temporal convolution kernel, in seconds. Set to 9 / 128 in
-<a class="reference internal" href="#r58a5e8182f0a-1" id="id7">[1]</a>.</p></li>
-<li><p><strong>ensure_odd_conv_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True and the size of the convolutional kernel is an even number, one
-will be added to it to ensure it is odd, so that the decoder blocks can
-work. This can be useful when using different sampling rates from 128
-or 100 Hz.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to apply. Should be a PyTorch activation
-module class like <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>.</p></li>
+<li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
+<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
+<li><p><strong>depth</strong> – The description is missing.</p></li>
+<li><p><strong>n_time_filters</strong> – The description is missing.</p></li>
+<li><p><strong>complexity_factor</strong> – The description is missing.</p></li>
+<li><p><strong>with_skip_connection</strong> – The description is missing.</p></li>
+<li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
+in the case of classification.</p></li>
+<li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
+<li><p><strong>time_conv_size_s</strong> – The description is missing.</p></li>
+<li><p><strong>ensure_odd_conv_size</strong> – The description is missing.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
 <li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
@@ -970,57 +840,6 @@ module class like <code class="docutils literal notranslate"><span class="pre">n
 <p class="rubric">Notes</p>
 <p>If some input signal-related parameters are not specified,
 there will be an attempt to infer them from the other parameters.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r58a5e8182f0a-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id5">5</a>,<a role="doc-backlink" href="#id6">6</a>,<a role="doc-backlink" href="#id7">7</a>)</span>
-<p>Perslev M, Darkner S, Kempfner L, Nikolic M, Jennum PJ, Igel C.
-U-Sleep: resilient high-frequency sleep staging. <em>npj Digit. Med.</em> 4, 72 (2021).
-<a class="github reference external" href="https://github.com/perslev/U-Time/blob/master/utime/models/usleep.py">perslev/U-Time</a></p>
-</div>
-</div>
-<p class="rubric">Hugging Face Hub integration</p>
-<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
-automatically gain the ability to be pushed to and loaded from the
-Hugging Face Hub. Install with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
-</pre></div>
-</div>
-<p><strong>Pushing a model to the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">USleep</span>
-
-<span class="c1"># Train your model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">USleep</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># ... training code ...</span>
-
-<span class="c1"># Push to the Hub</span>
-<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
-    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-usleep-model&quot;</span><span class="p">,</span>
-    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Loading a model from the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">USleep</span>
-
-<span class="c1"># Load pretrained model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">USleep</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-usleep-model&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
-input_window_seconds, sfreq, chs_info) are saved to the Hub.
-Model-specific parameters (e.g., dropout rates, activation functions,
-number of filters) are not preserved and will use their default values
-when loading from the Hub.
-Full parameter serialization will be addressed in a future update.</p>
-</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.USleep.forward">

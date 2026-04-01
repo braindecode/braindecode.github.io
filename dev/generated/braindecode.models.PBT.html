@@ -55,7 +55,6 @@
                 gtag('js', new Date());
                 gtag('config', 'G-7Q43R82K6D');
             </script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/braindecode.models.PBT';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
@@ -809,115 +808,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <h1>braindecode.models.PBT<a class="headerlink" href="#braindecode-models-pbt" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.PBT">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">PBT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable_cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_transformer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.GELU'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/patchedtransformer.py#L16-L304"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.PBT" title="Link to this definition">#</a></dt>
-<dd><p>Patched Brain Transformer (PBT) model from Klein et al (2025) <a class="reference internal" href="#re7f840f86627-pbt" id="id1">[pbt]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">Foundation Model</span></p>
-<p>This implementation was based in <a class="github reference external" href="https://github.com/timonkl/PatchedBrainTransformer/">timonkl/PatchedBrainTransformer</a></p>
-<figure class="align-center">
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/timonkl/PatchedBrainTransformer/refs/heads/main/PBT_sketch.png"><img alt="Patched Brain Transformer Architecture" src="https://raw.githubusercontent.com/timonkl/PatchedBrainTransformer/refs/heads/main/PBT_sketch.png" style="width: 680px;" />
-</a>
-</figure>
-<p>PBT tokenizes EEG trials into per-channel patches, linearly projects each
-patch to a model embedding dimension, prepends a classification token and
-adds channel-aware positional embeddings. The token sequence is processed
-by a Transformer encoder stack and classification is performed from the
-classification token.</p>
-<p class="rubric">Macro Components</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">PBT.tokenization</span></code> <strong>(patch extraction)</strong></p>
-<p><em>Operations.</em> The pre-processed EEG signal <span class="math notranslate nohighlight">\(X \in \mathbb{R}^{C \times T}\)</span>
-(with <span class="math notranslate nohighlight">\(C = \text{n_chans}\)</span> and <span class="math notranslate nohighlight">\(T = \text{n_times}\)</span>) is divided into
-non-overlapping patches of size <span class="math notranslate nohighlight">\(d_{\text{input}}\)</span> along the time axis.
-This process yields <span class="math notranslate nohighlight">\(N\)</span> total patches, calculated as
-<span class="math notranslate nohighlight">\(N = C \left\lfloor \frac{T}{D} \right\rfloor\)</span> (where <span class="math notranslate nohighlight">\(D = d_{\text{input}}\)</span>).
-When time shifts are applied, <span class="math notranslate nohighlight">\(N\)</span> decreases to
-<span class="math notranslate nohighlight">\(N = C \left\lfloor \frac{T - T_{\text{aug}}}{D} \right\rfloor\)</span>.</p>
-<p><em>Role.</em> Tokenizes EEG trials into fixed-size, per-channel patches so the model
-remains adaptive to different numbers of channels and recording lengths.
-Process is inspired by Vision Transformers <a class="reference internal" href="#re7f840f86627-visualtransformer" id="id2">[visualtransformer]</a> and
-adapted for GPT context from <a class="reference internal" href="#re7f840f86627-efficient-batchpacking" id="id3">[efficient-batchpacking]</a>.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PBT.patch_projection</span></code> <strong>(patch embedding)</strong></p>
-<p><em>Operations.</em> The linear layer <code class="docutils literal notranslate"><span class="pre">PBT.patch_projection</span></code> maps the tokens from dimension
-<span class="math notranslate nohighlight">\(d_{\text{input}}\)</span> to the Transformer embedding dimension <span class="math notranslate nohighlight">\(d_{\text{model}}\)</span>.
-Patches <span class="math notranslate nohighlight">\(X_P\)</span> are projected as <span class="math notranslate nohighlight">\(X_E = X_P W_E^\top\)</span>, where
-<span class="math notranslate nohighlight">\(W_E \in \mathbb{R}^{d_{\text{model}} \times D}\)</span>. In this configuration
-<span class="math notranslate nohighlight">\(d_{\text{model}} = 2D\)</span> with <span class="math notranslate nohighlight">\(D = d_{\text{input}}\)</span>.</p>
-<p><em>Interpretability.</em> Learns periodic structures similar to frequency filters in
-the first convolutional layers of CNNs (for example <a class="reference internal" href="braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGNet</span></code></a>).
-The learned filters frequently focus on the high-frequency range (20-40 Hz),
-which correlates with beta and gamma waves linked to higher concentration levels.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PBT.cls_token</span></code> <strong>(classification token)</strong></p>
-<p><em>Operations.</em> A classification token <span class="math notranslate nohighlight">\([c_{\text{ls}}] \in \mathbb{R}^{1 \times d_{\text{model}}}\)</span>
-is prepended to the projected patch sequence <span class="math notranslate nohighlight">\(X_E\)</span>. The CLS token can optionally
-be learnable (see <code class="docutils literal notranslate"><span class="pre">learnable_cls</span></code>).</p>
-<p><em>Role.</em> Acts as a dedicated readout token that aggregates information through the
-Transformer encoder stack.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PBT.pos_embedding</span></code> <strong>(positional embedding)</strong></p>
-<p><em>Operations.</em> Positional indices are generated by <code class="docutils literal notranslate"><span class="pre">PBT.linear_projection</span></code>, an instance
-of <code class="xref py py-class docutils literal notranslate"><span class="pre">_ChannelEncoding</span></code>, and mapped to vectors
-through <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Embedding.html#torch.nn.Embedding" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Embedding</span></code></a>. The embedding table
-<span class="math notranslate nohighlight">\(W_{\text{pos}} \in \mathbb{R}^{(N+1) \times d_{\text{model}}}\)</span> is added to the token
-sequence, yielding <span class="math notranslate nohighlight">\(X_{\text{pos}} = [c_{\text{ls}}, X_E] + W_{\text{pos}}\)</span>.</p>
-<p><em>Role/Interpretability.</em> Introduces spatial and temporal dependence to counter the
-position invariance of the Transformer encoder. The learned positional embedding
-exposes spatial relationships, often revealing a symmetric pattern in central regions
-(C1-C6) associated with the motor cortex.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PBT.transformer_encoder</span></code> <strong>(sequence processing and attention)</strong></p>
-<p><em>Operations.</em> The token sequence passes through <span class="math notranslate nohighlight">\(n_{\text{blocks}}\)</span> Transformer
-encoder layers. Each block combines a Multi-Head Self-Attention (MHSA) module with
-<code class="docutils literal notranslate"><span class="pre">num_heads</span></code> attention heads and a Feed-Forward Network (FFN). Both MHSA
-and FFN use parallel residual connections with Layer Normalization inside the blocks
-and apply dropout (<code class="docutils literal notranslate"><span class="pre">drop_prob</span></code>) within the Transformer components.</p>
-<p><em>Role/Robustness.</em> Self-attention enables every token to consider all others, capturing
-global temporal and spatial dependencies immediately and adaptively. This architecture
-accommodates arbitrary numbers of patches and channels, supporting pre-training across
-diverse datasets.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PBT.final_layer</span></code> <strong>(readout)</strong></p>
-<p><em>Operations.</em> A linear layer operates on the processed CLS token only, and the model
-predicts class probabilities as <span class="math notranslate nohighlight">\(y = \operatorname{softmax}([c_{\text{ls}}] W_{\text{class}}^\top + b_{\text{class}})\)</span>.</p>
-<p><em>Role.</em> Performs the final classification from the information aggregated into the CLS
-token after the Transformer encoder stack.</p>
-</li>
-</ul>
-<p class="rubric">Convolutional Details</p>
-<p>PBT omits convolutional layers; equivalent feature extraction is carried out by the patch
-pipeline and attention stack.</p>
-<ul class="simple">
-<li><p><strong>Temporal.</strong> Tokenization slices the EEG into fixed windows of size <span class="math notranslate nohighlight">\(D = d_{\text{input}}\)</span>
-(for the default configuration, <span class="math notranslate nohighlight">\(D=64\)</span> samples <span class="math notranslate nohighlight">\(\approx 0.256\,\text{s}\)</span> at
-<span class="math notranslate nohighlight">\(250\,\text{Hz}\)</span>), while <code class="docutils literal notranslate"><span class="pre">PBT.patch_projection</span></code> learns periodic patterns within each
-patch. The Transformer encoder then models long- and short-range temporal dependencies through
-self-attention.</p></li>
-<li><p><strong>Spatial.</strong> Patches are channel-specific, keeping the architecture adaptive to any electrode
-montage. Channel-aware positional encodings <span class="math notranslate nohighlight">\(W_{\text{pos}}\)</span> capture relationships between
-nearby sensors; learned embeddings often form symmetric motifs across motor cortex electrodes
-(C1–C6), and self-attention propagates information across all channels jointly.</p></li>
-<li><p><strong>Spectral.</strong> <code class="docutils literal notranslate"><span class="pre">PBT.patch_projection</span></code> acts similarly to the first convolutional layer in
-<a class="reference internal" href="braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGNet</span></code></a>, learning frequency-selective filters without an explicit
-Fourier transform. The highest-energy filters typically reside between <span class="math notranslate nohighlight">\(20\)</span> and
-<span class="math notranslate nohighlight">\(40\,\text{Hz}\)</span>, aligning with beta/gamma rhythms tied to focused motor imagery.</p></li>
-</ul>
-<p class="rubric">Attention / Sequential Modules</p>
-<ul class="simple">
-<li><p><strong>Attention Details.</strong> <code class="docutils literal notranslate"><span class="pre">PBT.transformer_encoder</span></code> stacks <span class="math notranslate nohighlight">\(n_{\text{blocks}}\)</span> Transformer
-encoder layers with Multi-Head Self-Attention. Every token attends to all others, enabling
-immediate global integration across time and channels and supporting heterogeneous datasets.
-Attention rollout visualisations highlight strong activations over motor cortex electrodes
-(C3, C4, Cz) during motor imagery decoding.</p></li>
-</ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>Important:</strong> As the other Foundation Models in Braindecode, <a class="reference internal" href="#braindecode.models.PBT" title="braindecode.models.PBT"><code class="xref py py-class docutils literal notranslate"><span class="pre">PBT</span></code></a> is
-designed for large-scale pre-training and fine-tuning. Training from
-scratch on small datasets may lead to suboptimal results. Cross-Dataset
-pre-training and subsequent fine-tuning is recommended to leverage the
-full potential of this architecture.</p>
-</div>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">PBT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable_cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_transformer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.GELU'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/patchedtransformer.py#L17-L305"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.PBT" title="Link to this definition">#</a></dt>
+<dd><p>Mixin class for all EEG models in braindecode.</p>
+<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
+is installed, enabling models to be pushed to and loaded from the Hub using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -929,14 +824,14 @@ in the case of classification.</p></li>
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>d_input</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size (in samples) of each patch (token) extracted along the time axis.</p></li>
-<li><p><strong>embed_dim</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Transformer embedding dimensionality.</p></li>
-<li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of Transformer encoder layers.</p></li>
-<li><p><strong>num_heads</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of attention heads.</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout probability used in Transformer components.</p></li>
-<li><p><strong>learnable_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the classification token is learnable.</p></li>
-<li><p><strong>bias_transformer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use bias in Transformer linear layers.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to use in Transformer feed-forward layers.</p></li>
+<li><p><strong>d_input</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>embed_dim</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>num_layers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>num_heads</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>learnable_cls</strong> – The description is missing.</p></li>
+<li><p><strong>bias_transformer</strong> – The description is missing.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -946,77 +841,10 @@ in the case of classification.</p></li>
 <p class="rubric">Notes</p>
 <p>If some input signal-related parameters are not specified,
 there will be an attempt to infer them from the other parameters.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="re7f840f86627-pbt" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">pbt</a><span class="fn-bracket">]</span></span>
-<p>Klein, T., Minakowski, P., &amp; Sager, S. (2025).
-Flexible Patched Brain Transformer model for EEG decoding.
-Scientific Reports, 15(1), 1-12.
-<a class="reference external" href="https://www.nature.com/articles/s41598-025-86294-3">https://www.nature.com/articles/s41598-025-86294-3</a></p>
-</div>
-<div class="citation" id="re7f840f86627-visualtransformer" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">visualtransformer</a><span class="fn-bracket">]</span></span>
-<p>Dosovitskiy, A., Beyer, L., Kolesnikov, A.,
-Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M.,
-Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J. &amp; Houlsby,
-N. (2021). An Image is Worth 16x16 Words: Transformers for Image
-Recognition at Scale. International Conference on Learning
-Representations (ICLR).</p>
-</div>
-<div class="citation" id="re7f840f86627-efficient-batchpacking" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">efficient-batchpacking</a><span class="fn-bracket">]</span></span>
-<p>Krell, M. M., Kosec, M., Perez, S. P., &amp;
-Fitzgibbon, A. (2021). Efficient sequence packing without
-cross-contamination: Accelerating large language models without
-impacting performance. arXiv preprint arXiv:2107.02027.</p>
-</div>
-</div>
-<p class="rubric">Hugging Face Hub integration</p>
-<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
-automatically gain the ability to be pushed to and loaded from the
-Hugging Face Hub. Install with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
-</pre></div>
-</div>
-<p><strong>Pushing a model to the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PBT</span>
-
-<span class="c1"># Train your model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">PBT</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># ... training code ...</span>
-
-<span class="c1"># Push to the Hub</span>
-<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
-    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-pbt-model&quot;</span><span class="p">,</span>
-    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Loading a model from the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PBT</span>
-
-<span class="c1"># Load pretrained model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">PBT</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-pbt-model&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
-input_window_seconds, sfreq, chs_info) are saved to the Hub.
-Model-specific parameters (e.g., dropout rates, activation functions,
-number of filters) are not preserved and will use their default values
-when loading from the Hub.
-Full parameter serialization will be addressed in a future update.</p>
-</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.PBT.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/patchedtransformer.py#L275-L304"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.PBT.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/patchedtransformer.py#L276-L305"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.PBT.forward" title="Link to this definition">#</a></dt>
 <dd><p>The implementation follows the original code logic</p>
 <ul class="simple">
 <li><p>split input into windows of size <cite>(num_embeddings - 1) * d_input</cite></p></li>

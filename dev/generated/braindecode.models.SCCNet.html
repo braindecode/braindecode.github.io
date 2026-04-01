@@ -809,125 +809,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.SCCNet">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">SCCNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spatial_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">22</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_spatial_filters_smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'braindecode.modules.activation.LogActivation'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm_momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/sccnet.py#L17-L280"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.SCCNet" title="Link to this definition">#</a></dt>
-<dd><p>SCCNet from Wei, C S (2019) <a class="reference internal" href="#rbd95e5cdbbde-sccnet" id="id1">[sccnet]</a>.</p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
-<p>Spatial component-wise convolutional network (SCCNet) for motor-imagery EEG
-classification.</p>
-<figure class="align-center">
-<a class="reference internal image-reference" href="https://dt5vp8kor0orz.cloudfront.net/6e3ec5d729cd51fe8acc5a978db27d02a5df9e05/2-Figure1-1.png"><img alt="Spatial component-wise convolutional network" src="https://dt5vp8kor0orz.cloudfront.net/6e3ec5d729cd51fe8acc5a978db27d02a5df9e05/2-Figure1-1.png" style="width: 680px;" />
-</a>
-</figure>
-<p class="rubric">Architectural Overview</p>
-<p>SCCNet is a spatial-first convolutional layer that fixes temporal kernels in seconds
-to make its filters correspond to neurophysiologically aligned windows. The model
-comprises four stages:</p>
-<ol class="arabic simple">
-<li><dl class="simple">
-<dt><strong>Spatial Component Analysis</strong>: Performs convolution spatial filtering</dt><dd><p>across all EEG channels to extract spatial components, effectively
-reducing the channel dimension.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Spatio-Temporal Filtering</strong>: Applies convolution across the spatial</dt><dd><p>components and temporal domain to capture spatio-temporal patterns.</p>
-</dd>
-</dl>
-</li>
-<li><p><strong>Temporal Smoothing (Pooling)</strong>: Uses average pooling over time to smooth the
-features and reduce the temporal dimension, focusing on longer-term patterns.</p></li>
-<li><p><strong>Classification</strong>: Flattens the features and applies a fully connected
-layer.</p></li>
-</ol>
-<p class="rubric">Macro Components</p>
-<ul>
-<li><p><cite>SCCNet.spatial_conv</cite> <strong>(spatial component analysis)</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Operations.</em></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv2d</span></code></a> with kernel <cite>(n_chans, N_t)</cite> and stride <cite>(1, 1)</cite> on an input reshaped to <cite>(B, 1, n_chans, T)</cite>; typical choice <cite>N_t=1</cite> yields a pure across-channel projection (montage-wide linear spatial filter).</p></li>
-<li><p>Zero padding to preserve time, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm2d</span></code></a>; output has <cite>N_u</cite> component signals shaped <cite>(B, 1, N_u, T)</cite> after a permute step.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p><em>Interpretability/robustness.</em> Mimics CSP-like spatial filtering: each learned filter is a channel-weighted component, easing inspection and reducing channel noise.</p>
-<ul>
-<li><p><cite>SCCNet.spatial_filt_conv</cite> <strong>(spatio-temporal filtering)</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Operations.</em></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv2d</span></code></a> with kernel <cite>(N_u, 12)</cite> over components and time (12 samples ~ 0.1 s at 125 Hz),</p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm2d</span></code></a>;</p></li>
-<li><p>Nonlinearity is <strong>power-like</strong>: the original paper uses <strong>square</strong> like <a class="reference internal" href="braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShallowFBCSPNet</span></code></a> with the class <a class="reference internal" href="activation/braindecode.modules.LogActivation.html#braindecode.modules.LogActivation" title="braindecode.modules.LogActivation"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogActivation</span></code></a> as default.</p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout.html#torch.nn.Dropout" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dropout</span></code></a> with rate <cite>p=0.5</cite>.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><em>Role.</em> Learns frequency-selective energy features and inter-component interactions within a 0.1 s context (beta/alpha cycle scale).</p></li>
-<li><p><cite>SCCNet.temporal_smoothing</cite> <strong>(aggregation + readout)</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>Operations.</em></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AvgPool2d</span></code></a> with size <cite>(1, 62)</cite> (~ 0.5 s) for temporal smoothing and downsampling</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Flatten</span></code></p></li>
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a> to <cite>n_outputs</cite>.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<p class="rubric">Convolutional Details</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>Temporal (where time-domain patterns are learned).</strong></dt><dd><p>The second block’s kernel length is fixed to 12 samples (≈ 100 ms) and slides with
-stride 1; average pooling <cite>(1, 62)</cite> (≈ 500 ms) integrates power over longer spans.
-These choices bake in short-cycle detection followed by half-second trend smoothing.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Spatial (how electrodes are processed).</strong></dt><dd><p>The first block’s kernel spans <strong>all electrodes</strong> <cite>(n_chans, N_t)</cite>. With <cite>N_t=1</cite>,
-it reduces to a montage-wide linear projection, mapping channels → <cite>N_u</cite> components.
-The second block mixes <strong>across components</strong> via kernel height <cite>N_u</cite>.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>Spectral (how frequency information is captured).</strong></dt><dd><p>No explicit transform is used; learned <strong>temporal kernels</strong> serve as bandpass-like
-filters, and the <strong>square/log power</strong> nonlinearity plus 0.5 s averaging approximate
-band-power estimation (ERD/ERS-style features).</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p class="rubric">Attention / Sequential Modules</p>
-<p>This model contains <strong>no attention</strong> and <strong>no recurrent units</strong>.</p>
-<p class="rubric">Additional Mechanisms</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm2d</span></code></a> and zero-padding are applied to both convolutions;
-L2 weight decay was used in the original paper; dropout <cite>p=0.5</cite> combats overfitting.</p></li>
-<li><p>Contrasting with other compact neural network, in EEGNet performs a temporal depthwise conv
-followed by a <strong>depthwise spatial</strong> conv (separable), learning temporal filters first.
-SCCNet inverts this order: it performs a <strong>full spatial projection first</strong> (CSP-like),
-then a short <strong>spatio-temporal</strong> conv with an explicit 0.1 s kernel, followed by
-<strong>power-like</strong> nonlinearity and longer temporal averaging. EEGNet’s ELU and
-separable design favor parameter efficiency; SCCNet’s second-scale kernels and
-square/log emphasize interpretable <strong>band-power</strong> features.</p></li>
-<li><p>Reference implementation: see <a class="reference internal" href="#rbd95e5cdbbde-sccnetcode" id="id2">[sccnetcode]</a>.</p></li>
-</ul>
-<p class="rubric">Usage and Configuration</p>
-<ul class="simple">
-<li><p><strong>Training from the original authors.</strong></p></li>
-<li><dl class="simple">
-<dt>Match window length so that <cite>T</cite> is comfortably larger than pooling length</dt><dd><p>(e.g., &gt; 1.5-2 s for MI).</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Start with standard MI augmentations (channel dropout/shuffle, time reverse)</dt><dd><p>and tune <cite>n_spatial_filters</cite> before deeper changes.</p>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Mixin class for all EEG models in braindecode.</p>
+<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
+is installed, enabling models to be pushed to and loaded from the Hub using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -939,13 +824,10 @@ in the case of classification.</p></li>
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>n_spatial_filters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of spatial filters in the first convolutional layer, variable <cite>N_u</cite> from the
-original paper. Default is 22.</p></li>
-<li><p><strong>n_spatial_filters_smooth</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of spatial filters used as filter in the second convolutional
-layer. Default is 20.</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout probability. Default is 0.5.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function after the second convolutional layer. Default is
-logarithm activation.</p></li>
+<li><p><strong>n_spatial_filters</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>n_spatial_filters_smooth</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
 <li><p><strong>batch_norm_momentum</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
 </ul>
 </dd>
@@ -956,64 +838,6 @@ logarithm activation.</p></li>
 <p class="rubric">Notes</p>
 <p>If some input signal-related parameters are not specified,
 there will be an attempt to infer them from the other parameters.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="rbd95e5cdbbde-sccnet" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">sccnet</a><span class="fn-bracket">]</span></span>
-<p>Wei, C. S., Koike-Akino, T., &amp; Wang, Y. (2019, March). Spatial
-component-wise convolutional network (SCCNet) for motor-imagery EEG
-classification. In 2019 9th International IEEE/EMBS Conference on
-Neural Engineering (NER) (pp. 328-331). IEEE.</p>
-</div>
-<div class="citation" id="rbd95e5cdbbde-sccnetcode" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">sccnetcode</a><span class="fn-bracket">]</span></span>
-<p>Hsieh, C. Y., Chou, J. L., Chang, Y. H., &amp; Wei, C. S.
-XBrainLab: An Open-Source Software for Explainable Artificial
-Intelligence-Based EEG Analysis. In NeurIPS 2023 AI for
-Science Workshop.</p>
-</div>
-</div>
-<p class="rubric">Hugging Face Hub integration</p>
-<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
-automatically gain the ability to be pushed to and loaded from the
-Hugging Face Hub. Install with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
-</pre></div>
-</div>
-<p><strong>Pushing a model to the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCCNet</span>
-
-<span class="c1"># Train your model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">SCCNet</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># ... training code ...</span>
-
-<span class="c1"># Push to the Hub</span>
-<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
-    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-sccnet-model&quot;</span><span class="p">,</span>
-    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Loading a model from the Hub:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCCNet</span>
-
-<span class="c1"># Load pretrained model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">SCCNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-sccnet-model&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Currently, only EEG-specific parameters (n_outputs, n_chans, n_times,
-input_window_seconds, sfreq, chs_info) are saved to the Hub.
-Model-specific parameters (e.g., dropout rates, activation functions,
-number of filters) are not preserved and will use their default values
-when loading from the Hub.
-Full parameter serialization will be addressed in a future update.</p>
-</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.SCCNet.forward">
