@@ -824,10 +824,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.ContraWR">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">ContraWR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_chans=None,</span> <span class="pre">n_outputs=None,</span> <span class="pre">sfreq=None,</span> <span class="pre">emb_size=256,</span> <span class="pre">res_channels=[32,</span> <span class="pre">64,</span> <span class="pre">128],</span> <span class="pre">steps=20,</span> <span class="pre">activation=&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;,</span> <span class="pre">drop_prob=0.5,</span> <span class="pre">stride_res=2,</span> <span class="pre">kernel_size_res=3,</span> <span class="pre">padding_res=1,</span> <span class="pre">chs_info=None,</span> <span class="pre">n_times=None,</span> <span class="pre">input_window_seconds=None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/contrawr.py#L10-L147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.ContraWR" title="Link to this definition">#</a></dt>
-<dd><p>Mixin class for all EEG models in braindecode.</p>
-<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
-is installed, enabling models to be pushed to and loaded from the Hub using
-<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
+<dd><p>Contrast with the World Representation ContraWR from Yang et al (2021) <a class="reference internal" href="#ra71465cb6797-yang2021" id="id1">[Yang2021]</a>.</p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
+<p>This model is a convolutional neural network that uses a spectral
+representation with a series of convolutional layers and residual blocks.
+The model is designed to learn a representation of the EEG signal that can
+be used for sleep staging.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -835,11 +837,14 @@ is installed, enabling models to be pushed to and loaded from the Hub using
 <li><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of outputs of the model. This is the number of classes
 in the case of classification.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>emb_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>res_channels</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – The description is missing.</p></li>
-<li><p><strong>steps</strong> – The description is missing.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>emb_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Embedding size for the final layer, by default 256.</p></li>
+<li><p><strong>res_channels</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – Number of channels for each residual block, by default [32, 64, 128].</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of steps to take the frequency decomposition <cite>hop_length</cite>
+parameters by default 20.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to apply. Should be a PyTorch activation
+module class like <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The dropout rate for regularization. Values should be between 0 and 1.</p></li>
+<li><p><strong>versionadded:</strong> (<em>..</em>) – 0.9:</p></li>
 <li><p><strong>stride_res</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
 <li><p><strong>kernel_size_res</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
 <li><p><strong>padding_res</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
@@ -854,8 +859,59 @@ in the case of classification.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If some input signal-related parameters are not specified,
-there will be an attempt to infer them from the other parameters.</p>
+<p>This implementation is not guaranteed to be correct, has not been checked
+by original authors. The modifications are minimal and the model is expected
+to work as intended. the original code from <a class="reference internal" href="#ra71465cb6797-code2023" id="id2">[Code2023]</a>.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="ra71465cb6797-yang2021" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">Yang2021</a><span class="fn-bracket">]</span></span>
+<p>Yang, C., Xiao, C., Westover, M. B., &amp; Sun, J. (2023).
+Self-supervised electroencephalogram representation learning for automatic
+sleep staging: model development and evaluation study. JMIR AI, 2(1), e46769.</p>
+</div>
+<div class="citation" id="ra71465cb6797-code2023" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Code2023</a><span class="fn-bracket">]</span></span>
+<p>Yang, C., Westover, M.B. and Sun, J., 2023. BIOT
+Biosignal Transformer for Cross-data Learning in the Wild.
+GitHub <a class="github reference external" href="https://github.com/ycq091044/BIOT">ycq091044/BIOT</a> (accessed 2024-02-13)</p>
+</div>
+</div>
+<p class="rubric">Hugging Face Hub integration</p>
+<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Pushing a model to the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContraWR</span>
+
+<span class="c1"># Train your model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ContraWR</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># ... training code ...</span>
+
+<span class="c1"># Push to the Hub</span>
+<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-contrawr-model&quot;</span><span class="p">,</span>
+    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Loading a model from the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContraWR</span>
+
+<span class="c1"># Load pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ContraWR</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-contrawr-model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.</p>
+<p>All model parameters (both EEG-specific and model-specific such as
+dropout rates, activation functions, number of filters) are automatically
+saved to the Hub and restored when loading.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.ContraWR.forward">

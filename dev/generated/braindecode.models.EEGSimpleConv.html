@@ -824,10 +824,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.EEGSimpleConv">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">EEGSimpleConv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_maps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_convs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ReLU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegsimpleconv.py#L21-L201"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.EEGSimpleConv" title="Link to this definition">#</a></dt>
-<dd><p>Mixin class for all EEG models in braindecode.</p>
-<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
-is installed, enabling models to be pushed to and loaded from the Hub using
-<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
+<dd><p>EEGSimpleConv from Ouahidi, YE et al (2023) <a class="reference internal" href="#r5661533ddc63-yassine2023" id="id1">[Yassine2023]</a>.</p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
+<figure class="align-center">
+<img alt="EEGSimpleConv Architecture" src="https://raw.githubusercontent.com/elouayas/EEGSimpleConv/refs/heads/main/architecture.png" />
+</figure>
+<p>EEGSimpleConv is a 1D Convolutional Neural Network originally designed
+for decoding motor imagery from EEG signals. The model aims to have a
+very simple and straightforward architecture that allows a low latency,
+while still achieving very competitive performance.</p>
+<p>EEG-SimpleConv starts with a 1D convolutional layer, where each EEG channel
+enters a separate 1D convolutional channel. This is followed by a series of
+blocks of two 1D convolutional layers. Between the two convolutional layers
+of each block is a max pooling layer, which downsamples the data by a factor
+of 2. Each convolution is followed by a batch normalisation layer and a ReLU
+activation function. Finally, a global average pooling (in the time domain)
+is performed to obtain a single value per feature map, which is then fed
+into a linear layer to obtain the final classification prediction output.</p>
+<p>The paper and original code with more details about the methodological
+choices are available at the <a class="reference internal" href="#r5661533ddc63-yassine2023" id="id2">[Yassine2023]</a> and <a class="reference internal" href="#r5661533ddc63-yassine2023code" id="id3">[Yassine2023Code]</a>.</p>
+<p>The input shape should be three-dimensional matrix representing the EEG
+signals.</p>
+<p><code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">n_channels,</span> <span class="pre">n_timesteps)</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -835,12 +853,13 @@ is installed, enabling models to be pushed to and loaded from the Hub using
 in the case of classification.</p></li>
 <li><p><strong>n_chans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of EEG channels.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>feature_maps</strong> – The description is missing.</p></li>
-<li><p><strong>n_convs</strong> – The description is missing.</p></li>
+<li><p><strong>feature_maps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of Feature Maps at the first Convolution, width of the model.</p></li>
+<li><p><strong>n_convs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of blocks of convolutions (2 convolutions per block), depth of the model.</p></li>
 <li><p><strong>resampling_freq</strong> – The description is missing.</p></li>
-<li><p><strong>kernel_size</strong> – The description is missing.</p></li>
+<li><p><strong>kernel_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Size of the convolutions kernels.</p></li>
 <li><p><strong>return_feature</strong> – The description is missing.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to apply. Should be a PyTorch activation
+module class like <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>.</p></li>
 <li><p><strong>chs_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Information about each individual EEG channel. This should be filled with
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>n_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of time samples of the input window.</p></li>
@@ -852,8 +871,76 @@ in the case of classification.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If some input signal-related parameters are not specified,
-there will be an attempt to infer them from the other parameters.</p>
+<p>The authors recommend using the default parameters for MI decoding.
+Please refer to the original paper and code for more details.</p>
+<p>Recommended range for the choice of the hyperparameters, regarding the
+evaluation paradigm.</p>
+<div class="line-block">
+<div class="line-block">
+<div class="line">Parameter    | Within-Subject | Cross-Subject |</div>
+</div>
+<div class="line">feature_maps    | [64-144]       |   [64-144]    |</div>
+<div class="line">n_convs         |    1           |   [2-4]       |</div>
+<div class="line">resampling_freq | [70-100]       |   [50-80]     |</div>
+<div class="line">kernel_size     | [12-17]        |   [5-8]       |</div>
+</div>
+<p>An intensive ablation study is included in the paper to understand the
+of each parameter on the model performance.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.9.</span></p>
+</div>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r5661533ddc63-yassine2023" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Yassine2023<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Yassine El Ouahidi, V. Gripon, B. Pasdeloup, G. Bouallegue
+N. Farrugia, G. Lioi, 2023. A Strong and Simple Deep Learning Baseline for
+BCI Motor Imagery Decoding. Arxiv preprint. arxiv.org/abs/2309.07159</p>
+</div>
+<div class="citation" id="r5661533ddc63-yassine2023code" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Yassine2023Code</a><span class="fn-bracket">]</span></span>
+<p>Yassine El Ouahidi, V. Gripon, B. Pasdeloup, G. Bouallegue
+N. Farrugia, G. Lioi, 2023. A Strong and Simple Deep Learning Baseline for
+BCI Motor Imagery Decoding. GitHub repository.
+<a class="github reference external" href="https://github.com/elouayas/EEGSimpleConv">elouayas/EEGSimpleConv</a>.</p>
+</div>
+</div>
+<p class="rubric">Hugging Face Hub integration</p>
+<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Pushing a model to the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGSimpleConv</span>
+
+<span class="c1"># Train your model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGSimpleConv</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># ... training code ...</span>
+
+<span class="c1"># Push to the Hub</span>
+<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-eegsimpleconv-model&quot;</span><span class="p">,</span>
+    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Loading a model from the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGSimpleConv</span>
+
+<span class="c1"># Load pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGSimpleConv</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-eegsimpleconv-model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.</p>
+<p>All model parameters (both EEG-specific and model-specific such as
+dropout rates, activation functions, number of filters) are automatically
+saved to the Hub and restored when loading.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.EEGSimpleConv.forward">

@@ -824,10 +824,137 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.EEGSym">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">EEGSym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters_per_branch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">125)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_resnet_repetitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_right_chs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middle_chs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegsym.py#L16-L429"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.EEGSym" title="Link to this definition">#</a></dt>
-<dd><p>Mixin class for all EEG models in braindecode.</p>
-<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
-is installed, enabling models to be pushed to and loaded from the Hub using
-<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
+<dd><p>EEGSym from Pérez-Velasco et al (2022) <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id1">[eegsym2022]</a>.</p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span> <span class="sd-sphinx-override sd-badge sd-outline-dark sd-text-dark">Channel</span></p>
+<figure class="align-center">
+<img alt="EEGSym Architecture" src="../_images/eegsym.png" />
+</figure>
+<p>The <strong>EEGSym</strong> is a novel Convolutional Neural Network (CNN) architecture designed for
+Motor Imagery (MI) based Brain-Computer Interfaces (BCIs), primarily aimed at
+<strong>overcoming inter-subject variability</strong> and significantly <strong>reducing BCI inefficiency</strong>
+<a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id2">[eegsym2022]</a>.</p>
+<p>The architecture integrates advances from Deep Learning (DL), complemented by
+Transfer Learning (TL) techniques and Data Augmentation (DA), to achieve strong
+performance in inter-subject MI classification <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id3">[eegsym2022]</a>.</p>
+<p class="rubric">Architectural Overview</p>
+<p>EEGSym systematically incorporates three core features:</p>
+<ol class="arabic simple">
+<li><p><strong>Inception Modules</strong> for multi-scale temporal analysis <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id4">[eegsym2022]</a>.</p></li>
+<li><p><strong>Residual Connections</strong> maintain spatio-temporal signal structure and
+enable deeper feature extraction <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id5">[eegsym2022]</a>.</p></li>
+<li><p>A <strong>Siamese-network design</strong> exploits the inherent symmetry of the brain
+across the mid-sagittal plane <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id6">[eegsym2022]</a>.</p></li>
+</ol>
+<p class="rubric">Macro Components</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>EEGSym.symmetric_division</cite> <strong>(Input Processing)</strong></dt><dd><ul>
+<li><dl class="simple">
+<dt><em>Operations.</em> The input is virtually split into left, right, and middle channels.</dt><dd><p>Middle (central) channels are duplicated and concatenated to both left
+and right lateralized electrodes to form the two hemisphere inputs <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id7">[eegsym2022]</a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><em>Role.</em> Prepares the data for the siamese-network approach,</dt><dd><p>reducing the number of parameters in the spatial filters
+for the tempospatial analysis stage <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id8">[eegsym2022]</a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>EEGSym.inception_block</cite> <strong>(Tempospatial Analysis - Temporal Feature Extraction)</strong></dt><dd><ul>
+<li><p><em>Operations.</em> Uses <code class="xref py py-class docutils literal notranslate"><span class="pre">_InceptionBlock</span></code> modules, which apply parallel
+temporal convolutions with different kernel sizes (scales) <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id9">[eegsym2022]</a>.
+This is followed by concatenation, residual connections, and average
+pooling for temporal dimensionality reduction <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id10">[eegsym2022]</a>.</p></li>
+<li><p><em>Role.</em> Captures detailed temporal relationships in the architecture,
+similarly to <a class="reference internal" href="braindecode.models.EEGInceptionMI.html#braindecode.models.EEGInceptionMI" title="braindecode.models.eeginception_mi.EEGInceptionMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGInceptionMI</span></code></a>
+<a class="reference internal" href="#r871bea9be1d1-eeginception2020" id="id11">[eeginception2020]</a>. The first block uses large temporal kernels
+(e.g., 500 ms, 250 ms, 125 ms) <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id12">[eegsym2022]</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>EEGSym.residual_blocks</cite> <strong>(Tempospatial Analysis - Spatial Feature Extraction)</strong></dt><dd><ul>
+<li><p><em>Operations.</em> Composed of multiple <code class="xref py py-class docutils literal notranslate"><span class="pre">_ResidualBlock</span></code> modules (typically three instances)
+<a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id13">[eegsym2022]</a>. Each block applies temporal convolution, pooling, and a spatial analysis layer
+(convolution or grouped convolution) <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id14">[eegsym2022]</a>.</p></li>
+<li><dl class="simple">
+<dt><em>Role.</em> Enhances spatial feature extraction by incorporating residual</dt><dd><p>connections across all CNN stages, which helps maintain the spatio-temporal
+structure of the signal through deeper layers <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id15">[eegsym2022]</a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>EEGSym.channel_merging</cite> <strong>(Hemisphere Merging)</strong></dt><dd><ul>
+<li><p><em>Operations.</em> The <code class="xref py py-class docutils literal notranslate"><span class="pre">_ChannelMergingBlock</span></code> reduces the spatial dimensionality
+(Z and C) to 1, performing two residual convolutions followed by a final grouped
+convolution that merges the feature information from the two hemispheres <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id16">[eegsym2022]</a>.</p></li>
+<li><p><em>Role.</em> Extracts complex relationships between channels of both hemispheres as part of the
+symmetry exploitation <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id17">[eegsym2022]</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>EEGSym.temporal_merging</cite> <strong>(Temporal Collapse)</strong></dt><dd><ul>
+<li><p><em>Operations.</em> The <code class="xref py py-class docutils literal notranslate"><span class="pre">_TemporalMergingBlock</span></code> uses residual convolution
+followed by grouped convolution to reduce the temporal dimension (S) to 1 <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id18">[eegsym2022]</a>.</p></li>
+<li><p><em>Role.</em> Final step of temporal aggregation before the output module <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id19">[eegsym2022]</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>EEGSym.output_blocks</cite> <strong>(Output Processing)</strong></dt><dd><ul>
+<li><p><em>Operations.</em> The <code class="xref py py-class docutils literal notranslate"><span class="pre">_OutputBlock</span></code> applies four residual convolution iterations
+(1x1x1 convolutions) followed by flattening <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id20">[eegsym2022]</a>.</p></li>
+<li><p><em>Role.</em> Final feature refinement through residual connections before the
+fully connected classification layer <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id21">[eegsym2022]</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p class="rubric">How the information is encoded temporally, spatially, and spectrally</p>
+<ul>
+<li><dl class="simple">
+<dt><strong>Temporal.</strong></dt><dd><p>Temporal features are extracted across multiple scales in the inception modules
+using different temporal convolution kernel sizes (e.g., corresponding to
+500 ms, 250 ms, and 125 ms windows for a 128 Hz sampling rate), very similar to <a class="reference internal" href="#r871bea9be1d1-eeginception2020" id="id22">[eeginception2020]</a>.
+Subsequent pooling operations and residual blocks continue to reduce the temporal dimension
+<a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id23">[eegsym2022]</a>.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>Spatial.</strong></p>
+<blockquote>
+<div><p>Spatial features are extracted via two main mechanisms:</p>
+<ul class="simple">
+<li><p>(1) The <strong>siamese-network design</strong> implicitly introduces brain symmetry by treating the two hemispheres
+equally during feature extraction <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id24">[eegsym2022]</a>.</p></li>
+<li><p>(2) <strong>Residual connections</strong> are utilized in the Tempospatial Analysis stage to enhance the extraction of
+spatial correlations between electrodes <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id25">[eegsym2022]</a>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><dl class="simple">
+<dt><strong>Spectral.</strong></dt><dd><p>Spectral information is implicitly captured by the varying kernel sizes of the temporal convolutions
+in the inception modules <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id26">[eegsym2022]</a>. These kernels filter the signal across different temporal windows,
+corresponding to different frequency characteristics.</p>
+</dd>
+</dl>
+</li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -839,13 +966,25 @@ in the case of classification.</p></li>
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>filters_per_branch</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>scales_time</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – The description is missing.</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
-<li><p><strong>spatial_resnet_repetitions</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>left_right_chs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>middle_chs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>filters_per_branch</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of filters in each inception branch. Should be a multiple of 8.
+Default is 12 <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id27">[eegsym2022]</a>.</p></li>
+<li><p><strong>scales_time</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – Temporal scales (in milliseconds) for the temporal convolutions in the first
+inception module. Default is (500, 250, 125) <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id28">[eegsym2022]</a>.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout probability. Default is 0.25 <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id29">[eegsym2022]</a>.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to use. Default is <code class="xref py py-class docutils literal notranslate"><span class="pre">nn.ELU</span></code> <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id30">[eegsym2022]</a>.</p></li>
+<li><p><strong>spatial_resnet_repetitions</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of repetitions of the spatial analysis operations at each step.
+Default is 5 <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id31">[eegsym2022]</a>.</p></li>
+<li><p><strong>left_right_chs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – List of tuples pairing left and right hemisphere channel names,
+e.g., <code class="docutils literal notranslate"><span class="pre">[('C3',</span> <span class="pre">'C4'),</span> <span class="pre">('FC5',</span> <span class="pre">'FC6')]</span></code>. If not provided, channels
+are automatically split into left/right hemispheres using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">division_channels_idx()</span></code> and
+<code class="xref py py-func docutils literal notranslate"><span class="pre">match_hemisphere_chans()</span></code>.
+Must be provided together with <code class="docutils literal notranslate"><span class="pre">middle_chs</span></code> <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id32">[eegsym2022]</a>.</p></li>
+<li><p><strong>middle_chs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – List of midline (central) channel names that lie on the mid-sagittal plane,
+e.g., <code class="docutils literal notranslate"><span class="pre">['FZ',</span> <span class="pre">'CZ',</span> <span class="pre">'PZ']</span></code>. These channels are duplicated and concatenated
+to both hemispheres. If not provided, channels are automatically identified
+using <code class="xref py py-func docutils literal notranslate"><span class="pre">division_channels_idx()</span></code>.
+Must be provided together with <code class="docutils literal notranslate"><span class="pre">left_right_chs</span></code> <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id33">[eegsym2022]</a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -853,8 +992,71 @@ in the case of classification.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If some input signal-related parameters are not specified,
-there will be an attempt to infer them from the other parameters.</p>
+<ul class="simple">
+<li><p>EEGSym achieved competitive accuracies across five large MI datasets <a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id34">[eegsym2022]</a>.</p></li>
+<li><p>The model maintained high accuracy using a reduced set of electrodes (8 or 16 channels)
+<a class="reference internal" href="#r871bea9be1d1-eegsym2022" id="id35">[eegsym2022]</a>.</p></li>
+<li><p>This is PyTorch implementation of the EEGSym model of the TensorFlow original <a class="reference internal" href="#r871bea9be1d1-eegsym2022code" id="id36">[eegsym2022code]</a>.</p></li>
+</ul>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r871bea9be1d1-eegsym2022" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>eegsym2022<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>,<a role="doc-backlink" href="#id4">4</a>,<a role="doc-backlink" href="#id5">5</a>,<a role="doc-backlink" href="#id6">6</a>,<a role="doc-backlink" href="#id7">7</a>,<a role="doc-backlink" href="#id8">8</a>,<a role="doc-backlink" href="#id9">9</a>,<a role="doc-backlink" href="#id10">10</a>,<a role="doc-backlink" href="#id12">11</a>,<a role="doc-backlink" href="#id13">12</a>,<a role="doc-backlink" href="#id14">13</a>,<a role="doc-backlink" href="#id15">14</a>,<a role="doc-backlink" href="#id16">15</a>,<a role="doc-backlink" href="#id17">16</a>,<a role="doc-backlink" href="#id18">17</a>,<a role="doc-backlink" href="#id19">18</a>,<a role="doc-backlink" href="#id20">19</a>,<a role="doc-backlink" href="#id21">20</a>,<a role="doc-backlink" href="#id23">21</a>,<a role="doc-backlink" href="#id24">22</a>,<a role="doc-backlink" href="#id25">23</a>,<a role="doc-backlink" href="#id26">24</a>,<a role="doc-backlink" href="#id27">25</a>,<a role="doc-backlink" href="#id28">26</a>,<a role="doc-backlink" href="#id29">27</a>,<a role="doc-backlink" href="#id30">28</a>,<a role="doc-backlink" href="#id31">29</a>,<a role="doc-backlink" href="#id32">30</a>,<a role="doc-backlink" href="#id33">31</a>,<a role="doc-backlink" href="#id34">32</a>,<a role="doc-backlink" href="#id35">33</a>)</span>
+<p>Pérez-Velasco, S., Santamaría-Vázquez, E., Martínez-Cagigal, V.,
+Marcos-Martínez, D., &amp; Hornero, R. (2022). EEGSym: Overcoming inter-subject
+variability in motor imagery based BCIs with deep learning. IEEE Transactions
+on Neural Systems and Rehabilitation Engineering, 30, 1766-1775.</p>
+</div>
+<div class="citation" id="r871bea9be1d1-eegsym2022code" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id36">eegsym2022code</a><span class="fn-bracket">]</span></span>
+<p>Pérez-Velasco, S., EEGSym source code.
+<a class="github reference external" href="https://github.com/Serpeve/EEGSym">Serpeve/EEGSym</a></p>
+</div>
+<div class="citation" id="r871bea9be1d1-eeginception2020" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>eeginception2020<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id11">1</a>,<a role="doc-backlink" href="#id22">2</a>)</span>
+<p>Santamaría-Vázquez, E., Martínez-Cagigal, V.,
+Vaquerizo-Villar, F., &amp; Hornero, R. (2020). EEG-Inception: A novel deep
+convolutional neural network for assistive ERP-based brain-computer interfaces.
+IEEE Transactions on Neural Systems and Rehabilitation Engineering, 28, 2773-2782.</p>
+</div>
+</div>
+<p class="rubric">Hugging Face Hub integration</p>
+<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Pushing a model to the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGSym</span>
+
+<span class="c1"># Train your model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGSym</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># ... training code ...</span>
+
+<span class="c1"># Push to the Hub</span>
+<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-eegsym-model&quot;</span><span class="p">,</span>
+    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Loading a model from the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGSym</span>
+
+<span class="c1"># Load pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGSym</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-eegsym-model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.</p>
+<p>All model parameters (both EEG-specific and model-specific such as
+dropout rates, activation functions, number of filters) are automatically
+saved to the Hub and restored when loading.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.EEGSym.forward">

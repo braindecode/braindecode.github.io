@@ -824,10 +824,133 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.models.EEGNeX">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.models.</span></span><span class="sig-name descname"><span class="pre">EEGNeX</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_chans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chs_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_window_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'torch.nn.modules.activation.ELU'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_block_1_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_block_4</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation_block_4</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_pool_block4</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_block_5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation_block_5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_pool_block5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_norm_conv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_norm_linear</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/eegnex.py#L16-L354"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.EEGNeX" title="Link to this definition">#</a></dt>
-<dd><p>Mixin class for all EEG models in braindecode.</p>
-<p>This class integrates with Hugging Face Hub when the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package
-is installed, enabling models to be pushed to and loaded from the Hub using
-<code class="xref py py-func docutils literal notranslate"><span class="pre">push_to_hub()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">from_pretrained()</span></code> methods.</p>
+<dd><p>EEGNeX model from Chen et al (2024) <a class="reference internal" href="#r60f8df15fd80-eegnex" id="id1">[eegnex]</a>.</p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">Convolution</span></p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="https://braindecode.org/dev/_static/model/eegnex.jpg"><img alt="EEGNeX Architecture" src="https://braindecode.org/dev/_static/model/eegnex.jpg" style="width: 620px;" />
+</a>
+</figure>
+<p class="rubric">Architectural Overview</p>
+<p>EEGNeX is a <strong>purely convolutional</strong> architecture that refines the EEGNet-style stem
+and deepens the temporal stack with <strong>dilated temporal convolutions</strong>. The end-to-end
+flow is:</p>
+<ul class="simple">
+<li><p>(i) <strong>Block-1/2</strong>: two temporal convolutions <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">x</span> <span class="pre">L)</span></code> with BN refine a
+learned FIR-like <em>temporal filter bank</em> (no pooling yet);</p></li>
+<li><p>(ii) <strong>Block-3</strong>: depthwise <strong>spatial</strong> convolution across electrodes
+<code class="docutils literal notranslate"><span class="pre">(n_chans</span> <span class="pre">x</span> <span class="pre">1)</span></code> with max-norm constraint, followed by ELU → AvgPool (time) → Dropout;</p></li>
+<li><p>(iii) <strong>Block-4/5</strong>: two additional <strong>temporal</strong> convolutions with increasing <strong>dilation</strong>
+to expand the receptive field; the last block applies ELU → AvgPool → Dropout → Flatten;</p></li>
+<li><ol class="lowerroman simple" start="4">
+<li><p><strong>Classifier</strong>: a max-norm–constrained linear layer.</p></li>
+</ol>
+</li>
+</ul>
+<p>The published work positions EEGNeX as a compact, conv-only alternative that consistently
+outperforms prior baselines across MOABB-style benchmarks, with the popular
+“EEGNeX-8,32” shorthand denoting <em>8 temporal filters</em> and <em>kernel length 32</em>.</p>
+<p class="rubric">Macro Components</p>
+<ul>
+<li><p><strong>Block-1 / Block-2 — Temporal filter (learned).</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a> with kernels <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L)</span></code></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BatchNorm2d</span></code></a> (no nonlinearity until Block-3, mirroring a linear FIR analysis stage).
+These layers set up frequency-selective detectors before spatial mixing.</p></li>
+<li><p><em>Interpretability.</em> Kernels can be inspected as FIR filters; two stacked temporal
+convs allow longer effective kernels without parameter blow-up.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Block-3 — Spatial projection + condensation.</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p><a class="reference internal" href="convolution/braindecode.modules.Conv2dWithConstraint.html#braindecode.modules.Conv2dWithConstraint" title="braindecode.modules.Conv2dWithConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.Conv2dWithConstraint</span></code></a> with kernel``(n_chans, 1)``
+and <code class="docutils literal notranslate"><span class="pre">groups</span> <span class="pre">=</span> <span class="pre">filter_2</span></code> (depthwise across filters)</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BatchNorm2d</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ELU</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.AvgPool2d</span></code></a> (time)</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout.html#torch.nn.Dropout" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Dropout</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<dl class="simple">
+<dt><strong>Role</strong>: Learns per-filter spatial patterns over the <strong>full montage</strong> while temporal</dt><dd><p>pooling stabilizes and compresses features; max-norm encourages well-behaved spatial
+weights similar to EEGNet practice.</p>
+</dd>
+</dl>
+<ul>
+<li><p><strong>Block-4 / Block-5 — Dilated temporal integration.</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a> with kernels <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">k)</span></code> and <strong>dilations</strong>
+(e.g., 2 then 4);</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.BatchNorm2d</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ELU</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.AvgPool2d</span></code></a> (time)</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout.html#torch.nn.Dropout" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Dropout</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Flatten</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p><strong>Role</strong>: Expands the temporal receptive field efficiently to capture rhythms and
+long-range context after condensation.</p>
+<ul>
+<li><p><strong>Final Classifier — Max-norm linear.</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Operations.</em></p></li>
+<li><p><a class="reference internal" href="linear/braindecode.modules.LinearWithConstraint.html#braindecode.modules.LinearWithConstraint" title="braindecode.modules.LinearWithConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.LinearWithConstraint</span></code></a> maps the flattened
+vector to the target classes; the max-norm constraint regularizes the readout.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p class="rubric">Convolutional Details</p>
+<ul class="simple">
+<li><p><strong>Temporal (where time-domain patterns are learned).</strong>
+Blocks 1-2 learn the primary filter bank (oscillations/transients), while Blocks 4-5
+use <strong>dilation</strong> to integrate over longer horizons without extra pooling. The final
+AvgPool in Block-5 sets the output token rate and helps noise suppression.</p></li>
+<li><p><strong>Spatial (how electrodes are processed).</strong>
+A <em>single</em> depthwise spatial conv (Block-3) spans the entire electrode set
+(kernel <code class="docutils literal notranslate"><span class="pre">(n_chans,</span> <span class="pre">1)</span></code>), producing per-temporal-filter topographies; no cross-filter
+mixing occurs at this stage, aiding interpretability.</p></li>
+<li><p><strong>Spectral (how frequency content is captured).</strong>
+Frequency selectivity emerges from the learned temporal kernels; dilation broadens effective
+bandwidth coverage by composing multiple scales.</p></li>
+</ul>
+<p class="rubric">Additional Mechanisms</p>
+<ul class="simple">
+<li><p><strong>EEGNeX-8,32 naming.</strong> “8,32” indicates <em>8 temporal filters</em> and <em>kernel length 32</em>,
+reflecting the paper’s ablation path from EEGNet-8,2 toward thicker temporal kernels
+and a deeper conv stack.</p></li>
+<li><p><strong>Max-norm constraints.</strong> Spatial (Block-3) and final linear layers use max-norm
+regularization—standard in EEG CNNs—to reduce overfitting and encourage stable spatial
+patterns.</p></li>
+</ul>
+<p class="rubric">Usage and Configuration</p>
+<ul class="simple">
+<li><p><strong>Kernel schedule.</strong> Start with the canonical <strong>EEGNeX-8,32</strong> (<code class="docutils literal notranslate"><span class="pre">filter_1=8</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kernel_block_1_2=32</span></code>) and keep <strong>Block-3</strong> depth multiplier modest (e.g., 2) to match
+the paper’s “pure conv” profile.</p></li>
+<li><p><strong>Pooling vs. dilation.</strong> Use pooling in Blocks 3 and 5 to control compute and variance;
+increase dilations (Blocks 4-5) to widen temporal context when windows are short.</p></li>
+<li><p><strong>Regularization.</strong> Combine dropout (Blocks 3 &amp; 5) with max-norm on spatial and
+classifier layers; prefer ELU activations for stable training on small EEG datasets.</p></li>
+<li><p>The braindecode implementation follows the paper’s conv-only design with five blocks
+and reproduces the depthwise spatial step and dilated temporal stack. See the class
+reference for exact kernel sizes, dilations, and pooling defaults. You can check the
+original implementation at <a class="reference internal" href="#r60f8df15fd80-eegnexcode" id="id2">[EEGNexCode]</a>.</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.</span></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -839,18 +962,18 @@ in the case of classification.</p></li>
 <code class="docutils literal notranslate"><span class="pre">info[&quot;chs&quot;]</span></code>. Refer to <a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> for more details.</p></li>
 <li><p><strong>input_window_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length of the input window in seconds.</p></li>
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Sampling frequency of the EEG recordings.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – The description is missing.</p></li>
-<li><p><strong>depth_multiplier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>filter_1</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>filter_2</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function to use. Default is <cite>nn.ELU</cite>.</p></li>
+<li><p><strong>depth_multiplier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Depth multiplier for the depthwise convolution. Default is 2.</p></li>
+<li><p><strong>filter_1</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of filters in the first convolutional layer. Default is 8.</p></li>
+<li><p><strong>filter_2</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Number of filters in the second convolutional layer. Default is 32.</p></li>
+<li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout rate. Default is 0.5.</p></li>
 <li><p><strong>kernel_block_1_2</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>kernel_block_4</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>dilation_block_4</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>avg_pool_block4</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>kernel_block_5</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>dilation_block_5</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
-<li><p><strong>avg_pool_block5</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The description is missing.</p></li>
+<li><p><strong>kernel_block_4</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Kernel size for block 4. Default is (1, 16).</p></li>
+<li><p><strong>dilation_block_4</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Dilation rate for block 4. Default is (1, 2).</p></li>
+<li><p><strong>avg_pool_block4</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Pooling size for block 4. Default is (1, 4).</p></li>
+<li><p><strong>kernel_block_5</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Kernel size for block 5. Default is (1, 16).</p></li>
+<li><p><strong>dilation_block_5</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Dilation rate for block 5. Default is (1, 4).</p></li>
+<li><p><strong>avg_pool_block5</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Pooling size for block 5. Default is (1, 8).</p></li>
 <li><p><strong>max_norm_conv</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
 <li><p><strong>max_norm_linear</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The description is missing.</p></li>
 </ul>
@@ -862,6 +985,56 @@ in the case of classification.</p></li>
 <p class="rubric">Notes</p>
 <p>If some input signal-related parameters are not specified,
 there will be an attempt to infer them from the other parameters.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r60f8df15fd80-eegnex" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">eegnex</a><span class="fn-bracket">]</span></span>
+<p>Chen, X., Teng, X., Chen, H., Pan, Y., &amp; Geyer, P. (2024).
+Toward reliable signals decoding for electroencephalogram: A benchmark
+study to EEGNeX. Biomedical Signal Processing and Control, 87, 105475.</p>
+</div>
+<div class="citation" id="r60f8df15fd80-eegnexcode" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">EEGNexCode</a><span class="fn-bracket">]</span></span>
+<p>Chen, X., Teng, X., Chen, H., Pan, Y., &amp; Geyer, P. (2024).
+Toward reliable signals decoding for electroencephalogram: A benchmark
+study to EEGNeX. <a class="github reference external" href="https://github.com/chenxiachan/EEGNeX">chenxiachan/EEGNeX</a></p>
+</div>
+</div>
+<p class="rubric">Hugging Face Hub integration</p>
+<p>When the optional <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package is installed, all models
+automatically gain the ability to be pushed to and loaded from the
+Hugging Face Hub. Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">braindecode</span><span class="p">[</span><span class="n">hub</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Pushing a model to the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGNeX</span>
+
+<span class="c1"># Train your model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGNeX</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># ... training code ...</span>
+
+<span class="c1"># Push to the Hub</span>
+<span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/my-eegnex-model&quot;</span><span class="p">,</span>
+    <span class="n">commit_message</span><span class="o">=</span><span class="s2">&quot;Initial model upload&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Loading a model from the Hub:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGNeX</span>
+
+<span class="c1"># Load pretrained model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGNeX</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-eegnex-model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integration automatically handles EEG-specific parameters (n_chans,
+n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
+the model weights. This ensures that loaded models are correctly configured
+for their original data specifications.</p>
+<p>All model parameters (both EEG-specific and model-specific such as
+dropout rates, activation functions, number of filters) are automatically
+saved to the Hub and restored when loading.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.models.EEGNeX.forward">
