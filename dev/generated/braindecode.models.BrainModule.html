@@ -1036,15 +1036,37 @@ Hugging Face Hub. Install with:</p>
 
 <span class="c1"># Load pretrained model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">BrainModule</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-brainmodule-model&quot;</span><span class="p">)</span>
+
+<span class="c1"># Load with a different number of outputs (head is rebuilt automatically)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">BrainModule</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;username/my-brainmodule-model&quot;</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.</p>
+<p><strong>Extracting features and replacing the head:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">n_chans</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">n_times</span><span class="p">)</span>
+<span class="c1"># Extract encoder features (consistent dict across all models)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">return_features</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+
+<span class="c1"># Replace the classification head</span>
+<span class="n">model</span><span class="o">.</span><span class="n">reset_head</span><span class="p">(</span><span class="n">n_outputs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Saving and restoring full configuration:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>            <span class="c1"># all __init__ params</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="n">model2</span> <span class="o">=</span> <span class="n">BrainModule</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>    <span class="c1"># reconstruct (no weights)</span>
+</pre></div>
+</div>
 <p>All model parameters (both EEG-specific and model-specific such as
 dropout rates, activation functions, number of filters) are automatically
 saved to the Hub and restored when loading.</p>
+<p>See <a class="reference internal" href="../auto_examples/model_building/plot_load_pretrained_models.html#load-pretrained-models"><span class="std std-ref">Loading and Adapting Pretrained Foundation Models</span></a> for a complete tutorial.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rf869b8ed6368-brainmagick" role="doc-biblioentry">

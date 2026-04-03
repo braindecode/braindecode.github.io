@@ -443,6 +443,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_load_pretrained_models.html">Loading and Adapting Pretrained Foundation Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../model_building/plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
@@ -557,34 +558,33 @@ for a wide range of downstream tasks, leveraging their generalization capabiliti
 Fine-tuning these models is necessary to adapt them to specific tasks or datasets,
 ensuring optimal performance in specialized applications.</p>
 <p>In this tutorial, we demonstrate how to load a pre-trained foundation model
-and fine-tune it for a specific task. We use the Signal-JEPA model <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>
+and fine-tune it for a specific task. We use the Signal-JEPA model <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>
 and a MOABB motor-imagery dataset for this tutorial.</p>
 <nav class="contents local" id="this-example-covers">
 <p class="topic-title">This example covers:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#loading-and-preparing-the-data" id="id5">Loading and preparing the data</a></p>
+<li><p><a class="reference internal" href="#loading-and-preparing-the-data" id="id4">Loading and preparing the data</a></p>
 <ul>
-<li><p><a class="reference internal" href="#loading-a-dataset" id="id6">Loading a dataset</a></p></li>
+<li><p><a class="reference internal" href="#loading-a-dataset" id="id5">Loading a dataset</a></p></li>
+<li><p><a class="reference internal" href="#preprocessing-to-match-the-pretrained-model" id="id6">Preprocessing to match the pretrained model</a></p></li>
 <li><p><a class="reference internal" href="#define-dataset-parameters" id="id7">Define Dataset parameters</a></p></li>
 <li><p><a class="reference internal" href="#create-windows-from-events" id="id8">Create Windows from Events</a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#loading-a-pre-trained-foundation-model" id="id9">Loading a pre-trained foundation model</a></p>
 <ul>
-<li><p><a class="reference internal" href="#download-and-load-pre-trained-weights" id="id10">Download and Load Pre-trained Weights</a></p></li>
-<li><p><a class="reference internal" href="#instantiate-the-foundation-model" id="id11">Instantiate the Foundation Model</a></p></li>
-<li><p><a class="reference internal" href="#load-the-pre-trained-weights-into-the-model" id="id12">Load the Pre-trained Weights into the Model</a></p></li>
+<li><p><a class="reference internal" href="#load-pre-trained-weights-from-the-hub" id="id10">Load Pre-trained Weights from the Hub</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#fine-tuning-the-model" id="id13">Fine-tuning the Model</a></p>
+<li><p><a class="reference internal" href="#fine-tuning-the-model" id="id11">Fine-tuning the Model</a></p>
 <ul>
-<li><p><a class="reference internal" href="#freezing-pre-trained-layers" id="id14">Freezing Pre-trained Layers</a></p></li>
-<li><p><a class="reference internal" href="#fine-tuning-procedure" id="id15">Fine-tuning Procedure</a></p></li>
-<li><p><a class="reference internal" href="#all-in-one-implementation" id="id16">All-in-one Implementation</a></p></li>
+<li><p><a class="reference internal" href="#freezing-pre-trained-layers" id="id12">Freezing Pre-trained Layers</a></p></li>
+<li><p><a class="reference internal" href="#fine-tuning-procedure" id="id13">Fine-tuning Procedure</a></p></li>
+<li><p><a class="reference internal" href="#all-in-one-implementation" id="id14">All-in-one Implementation</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#conclusion-and-next-steps" id="id17">Conclusion and Next Steps</a></p></li>
-<li><p><a class="reference internal" href="#references" id="id18">References</a></p></li>
+<li><p><a class="reference internal" href="#conclusion-and-next-steps" id="id15">Conclusion and Next Steps</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id16">References</a></p></li>
 </ul>
 </nav>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
@@ -597,7 +597,7 @@ and a MOABB motor-imagery dataset for this tutorial.</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal" title="braindecode.models.SignalJEPA_PreLocal" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">SignalJEPA_PreLocal</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalJEPA_PreLocal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 
 <a href="https://docs.pytorch.org/docs/stable/generated/torch.use_deterministic_algorithms.html#torch.use_deterministic_algorithms" title="torch.use_deterministic_algorithms" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">use_deterministic_algorithms</span></a><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -606,9 +606,9 @@ and a MOABB motor-imagery dataset for this tutorial.</p>
 </pre></div>
 </div>
 <section id="loading-and-preparing-the-data">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Loading and preparing the data</a><a class="headerlink" href="#loading-and-preparing-the-data" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Loading and preparing the data</a><a class="headerlink" href="#loading-and-preparing-the-data" title="Link to this heading">#</a></h2>
 <section id="loading-a-dataset">
-<h3><a class="toc-backref" href="#id6" role="doc-backlink">Loading a dataset</a><a class="headerlink" href="#loading-a-dataset" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Loading a dataset</a><a class="headerlink" href="#loading-a-dataset" title="Link to this heading">#</a></h3>
 <p>We start by loading a MOABB dataset, a single subject only for speed.
 The dataset contains motor imagery EEG recordings, which we will preprocess and use for fine-tuning.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Just one subject for speed</span>
@@ -621,30 +621,29 @@ The dataset contains motor imagery EEG recordings, which we will preprocess and 
 </pre></div>
 </div>
 </section>
-<section id="define-dataset-parameters">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">Define Dataset parameters</a><a class="headerlink" href="#define-dataset-parameters" title="Link to this heading">#</a></h3>
-<p>We extract the sampling frequency and ensure that it is consistent across
-all recordings. We also extract the window size from the annotations and
-information about the EEG channels (names, positions, etc.).</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract sampling frequency</span>
-<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
-<span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">==</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="k">for</span> <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">])</span>
-
-<span class="c1"># Extract and validate window size from annotations</span>
-<a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">window_size_seconds</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-    <span class="n">d</span> <span class="o">==</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">window_size_seconds</span></a>
-    <span class="k">for</span> <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a>
-    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray.annotations" title="mne.io.RawArray.annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-property"><span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span></a>
-<span class="p">)</span>
-
-<span class="c1"># Extract channel information</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]</span>  <span class="c1"># Channel information</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">window_size_seconds</span></a><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">)</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+<section id="preprocessing-to-match-the-pretrained-model">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Preprocessing to match the pretrained model</a><a class="headerlink" href="#preprocessing-to-match-the-pretrained-model" title="Link to this heading">#</a></h3>
+<p>The pretrained SignalJEPA checkpoint expects 19 EEG channels at 128 Hz
+with 2-second windows.  We adapt the dataset accordingly: keep only
+EEG channels, pick the first 19, and resample.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">:</span>
+    <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray.pick_types" title="mne.io.RawArray.pick_types" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop EOG / stim channels</span>
+    <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray.pick" title="mne.io.RawArray.pick" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">pick</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray.ch_names" title="mne.io.RawArray.ch_names" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-property"><span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">[:</span><span class="mi">19</span><span class="p">])</span>  <span class="c1"># match pretrained channel count</span>
+    <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray.resample" title="mne.io.RawArray.resample" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">resample</span></a><span class="p">(</span><span class="mi">128</span><span class="p">)</span>  <span class="c1"># match pretrained sampling frequency</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>sfreq=250.0, window_size_seconds=np.float64(4.0), len(chs_info)=26
+</section>
+<section id="define-dataset-parameters">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Define Dataset parameters</a><a class="headerlink" href="#define-dataset-parameters" title="Link to this heading">#</a></h3>
+<p>We extract the sampling frequency and channel information after
+preprocessing so they match the pretrained model.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">)</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>sfreq=128.0, len(chs_info)=19
 </pre></div>
 </div>
 </section>
@@ -659,22 +658,24 @@ the dataset into windows based on events.</p>
     <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Preload the data into memory for faster processing</span>
     <span class="n">mapping</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classes_mapping</span></a><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>  <span class="c1"># 2 s at 128 Hz — matches pretrained model</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">metadata</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.get_metadata" title="braindecode.datasets.BaseConcatDataset.get_metadata" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows_dataset</span><span class="o">.</span><span class="n">get_metadata</span></a><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   i_window_in_trial  i_start_in_trial  i_stop_in_trial  ...  subject  session run
-0                  0               750             1750  ...        3   0train   0
-1                  0              2753             3753  ...        3   0train   0
-2                  0              4671             5671  ...        3   0train   0
-3                  0              6623             7623  ...        3   0train   0
-4                  0              8631             9631  ...        3   0train   0
-5                  0             10742            11742  ...        3   0train   0
-6                  0             12659            13659  ...        3   0train   0
-7                  0             14709            15709  ...        3   0train   0
-8                  0             16640            17640  ...        3   0train   0
-9                  0             20544            21544  ...        3   0train   0
+0                  0               384              640  ...        3   0train   0
+1                  1               640              896  ...        3   0train   0
+2                  0              1410             1666  ...        3   0train   0
+3                  1              1666             1922  ...        3   0train   0
+4                  0              2392             2648  ...        3   0train   0
+5                  1              2648             2904  ...        3   0train   0
+6                  0              3391             3647  ...        3   0train   0
+7                  1              3647             3903  ...        3   0train   0
+8                  0              4419             4675  ...        3   0train   0
+9                  1              4675             4931  ...        3   0train   0
 
 [10 rows x 7 columns]
 </pre></div>
@@ -683,33 +684,16 @@ the dataset into windows based on events.</p>
 </section>
 <section id="loading-a-pre-trained-foundation-model">
 <h2><a class="toc-backref" href="#id9" role="doc-backlink">Loading a pre-trained foundation model</a><a class="headerlink" href="#loading-a-pre-trained-foundation-model" title="Link to this heading">#</a></h2>
-<section id="download-and-load-pre-trained-weights">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Download and Load Pre-trained Weights</a><a class="headerlink" href="#download-and-load-pre-trained-weights" title="Link to this heading">#</a></h3>
-<p>We download the pre-trained weights for the SignalJEPA model from the Hugging Face Hub.
-These weights will serve as the starting point for finetuning.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_state_dict</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/hub.html#torch.hub.load_state_dict_from_url" title="torch.hub.load_state_dict_from_url" class="sphx-glr-backref-module-torch-hub sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load_state_dict_from_url</span></a><span class="p">(</span>
-    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://huggingface.co/braindecode/SignalJEPA/resolve/main/signal-jepa_16s-60_adeuwv4s.pth&quot;</span>
-<span class="p">)</span>
-<span class="c1"># print(model_state_dict.keys())</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://huggingface.co/braindecode/SignalJEPA/resolve/main/signal-jepa_16s-60_adeuwv4s.pth&quot; to /home/runner/.cache/torch/hub/checkpoints/signal-jepa_16s-60_adeuwv4s.pth
-
-  0%|          | 0.00/13.2M [00:00&lt;?, ?B/s]
- 18%|█▊        | 2.38M/13.2M [00:00&lt;00:00, 24.5MB/s]
-100%|██████████| 13.2M/13.2M [00:00&lt;00:00, 86.8MB/s]
-</pre></div>
-</div>
-</section>
-<section id="instantiate-the-foundation-model">
-<h3><a class="toc-backref" href="#id11" role="doc-backlink">Instantiate the Foundation Model</a><a class="headerlink" href="#instantiate-the-foundation-model" title="Link to this heading">#</a></h3>
-<p>We create an instance of the SignalJEPA model using the pre-local downstream
-architecture. The model is initialized with the dataset’s sampling frequency,
-window size, and channel information.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal" title="braindecode.models.SignalJEPA_PreLocal" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal" title="braindecode.models.SignalJEPA_PreLocal" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">SignalJEPA_PreLocal</span></a><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span>
-    <span class="n">input_window_seconds</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">window_size_seconds</span></a><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span>
+<section id="load-pre-trained-weights-from-the-hub">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Load Pre-trained Weights from the Hub</a><a class="headerlink" href="#load-pre-trained-weights-from-the-hub" title="Link to this heading">#</a></h3>
+<p>We load the pre-trained SignalJEPA downstream model from the Hugging Face
+Hub using <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>.  The <code class="docutils literal notranslate"><span class="pre">SignalJEPA_PreLocal</span></code> checkpoint
+already bundles the SSL backbone together with the downstream
+classification layers, so a single call is all that is needed.</p>
+<p>For other foundation models (BENDR, BIOT, Labram, etc.) the same
+one-line pattern applies — see <a class="reference internal" href="../model_building/plot_load_pretrained_models.html#load-pretrained-models"><span class="std std-ref">Loading and Adapting Pretrained Foundation Models</span></a>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal" title="braindecode.models.SignalJEPA_PreLocal" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal.from_pretrained" title="braindecode.models.SignalJEPA_PreLocal.from_pretrained" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">SignalJEPA_PreLocal</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span>
+    <span class="s2">&quot;braindecode/SignalJEPA-PreLocal-pretrained&quot;</span><span class="p">,</span>
     <span class="n">n_outputs</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classes</span></a><span class="p">),</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="../../generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal" title="braindecode.models.SignalJEPA_PreLocal" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
@@ -718,86 +702,62 @@ window size, and channel information.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================================================================================================
 Layer (type (var_name):depth-idx)                  Input Shape               Output Shape              Param #                   Kernel Shape
 ======================================================================================================================================================
-SignalJEPA_PreLocal (SignalJEPA_PreLocal)          [1, 26, 1000]             [1, 3]                    --                        --
-├─Sequential (spatial_conv): 1-1                   [1, 26, 1000]             [1, 4, 1000]              --                        --
-│    └─Rearrange (0): 2-1                          [1, 26, 1000]             [1, 1, 26, 1000]          --                        --
-│    └─Conv2d (1): 2-2                             [1, 1, 26, 1000]          [1, 4, 1, 1000]           108                       [26, 1]
-│    └─Rearrange (2): 2-3                          [1, 4, 1, 1000]           [1, 4, 1000]              --                        --
-├─_ConvFeatureEncoder (feature_encoder): 1-2       [1, 4, 1000]              [1, 28, 64]               --                        --
-│    └─Rearrange (0): 2-4                          [1, 4, 1000]              [4, 1, 1000]              --                        --
-│    └─Sequential (1): 2-5                         [4, 1, 1000]              [4, 8, 122]               --                        --
-│    │    └─Conv1d (0): 3-1                        [4, 1, 1000]              [4, 8, 122]               256                       [32]
-│    │    └─Dropout (1): 3-2                       [4, 8, 122]               [4, 8, 122]               --                        --
-│    │    └─GroupNorm (2): 3-3                     [4, 8, 122]               [4, 8, 122]               16                        --
-│    │    └─GELU (3): 3-4                          [4, 8, 122]               [4, 8, 122]               --                        --
-│    └─Sequential (2): 2-6                         [4, 8, 122]               [4, 16, 61]               --                        --
-│    │    └─Conv1d (0): 3-5                        [4, 8, 122]               [4, 16, 61]               256                       [2]
-│    │    └─Dropout (1): 3-6                       [4, 16, 61]               [4, 16, 61]               --                        --
-│    │    └─GELU (2): 3-7                          [4, 16, 61]               [4, 16, 61]               --                        --
-│    └─Sequential (3): 2-7                         [4, 16, 61]               [4, 32, 30]               --                        --
-│    │    └─Conv1d (0): 3-8                        [4, 16, 61]               [4, 32, 30]               1,024                     [2]
-│    │    └─Dropout (1): 3-9                       [4, 32, 30]               [4, 32, 30]               --                        --
-│    │    └─GELU (2): 3-10                         [4, 32, 30]               [4, 32, 30]               --                        --
-│    └─Sequential (4): 2-8                         [4, 32, 30]               [4, 64, 15]               --                        --
-│    │    └─Conv1d (0): 3-11                       [4, 32, 30]               [4, 64, 15]               4,096                     [2]
-│    │    └─Dropout (1): 3-12                      [4, 64, 15]               [4, 64, 15]               --                        --
-│    │    └─GELU (2): 3-13                         [4, 64, 15]               [4, 64, 15]               --                        --
-│    └─Sequential (5): 2-9                         [4, 64, 15]               [4, 64, 7]                --                        --
-│    │    └─Conv1d (0): 3-14                       [4, 64, 15]               [4, 64, 7]                8,192                     [2]
-│    │    └─Dropout (1): 3-15                      [4, 64, 7]                [4, 64, 7]                --                        --
-│    │    └─GELU (2): 3-16                         [4, 64, 7]                [4, 64, 7]                --                        --
-│    └─Rearrange (6): 2-10                         [4, 64, 7]                [1, 28, 64]               --                        --
-├─Sequential (final_layer): 1-3                    [1, 28, 64]               [1, 3]                    --                        --
-│    └─Flatten (0): 2-11                           [1, 28, 64]               [1, 1792]                 --                        --
-│    └─Linear (1): 2-12                            [1, 1792]                 [1, 3]                    5,379                     --
+SignalJEPA_PreLocal (SignalJEPA_PreLocal)          [1, 19, 256]              [1, 3]                    --                        --
+├─Sequential (spatial_conv): 1-1                   [1, 19, 256]              [1, 4, 256]               --                        --
+│    └─Rearrange (0): 2-1                          [1, 19, 256]              [1, 1, 19, 256]           --                        --
+│    └─Conv2d (1): 2-2                             [1, 1, 19, 256]           [1, 4, 1, 256]            80                        [19, 1]
+│    └─Rearrange (2): 2-3                          [1, 4, 1, 256]            [1, 4, 256]               --                        --
+├─_ConvFeatureEncoder (feature_encoder): 1-2       [1, 4, 256]               [1, 4, 64]                --                        --
+│    └─Rearrange (0): 2-4                          [1, 4, 256]               [4, 1, 256]               --                        --
+│    └─Sequential (1): 2-5                         [4, 1, 256]               [4, 8, 29]                --                        --
+│    │    └─Conv1d (0): 3-1                        [4, 1, 256]               [4, 8, 29]                256                       [32]
+│    │    └─Dropout (1): 3-2                       [4, 8, 29]                [4, 8, 29]                --                        --
+│    │    └─GroupNorm (2): 3-3                     [4, 8, 29]                [4, 8, 29]                16                        --
+│    │    └─GELU (3): 3-4                          [4, 8, 29]                [4, 8, 29]                --                        --
+│    └─Sequential (2): 2-6                         [4, 8, 29]                [4, 16, 14]               --                        --
+│    │    └─Conv1d (0): 3-5                        [4, 8, 29]                [4, 16, 14]               256                       [2]
+│    │    └─Dropout (1): 3-6                       [4, 16, 14]               [4, 16, 14]               --                        --
+│    │    └─GELU (2): 3-7                          [4, 16, 14]               [4, 16, 14]               --                        --
+│    └─Sequential (3): 2-7                         [4, 16, 14]               [4, 32, 7]                --                        --
+│    │    └─Conv1d (0): 3-8                        [4, 16, 14]               [4, 32, 7]                1,024                     [2]
+│    │    └─Dropout (1): 3-9                       [4, 32, 7]                [4, 32, 7]                --                        --
+│    │    └─GELU (2): 3-10                         [4, 32, 7]                [4, 32, 7]                --                        --
+│    └─Sequential (4): 2-8                         [4, 32, 7]                [4, 64, 3]                --                        --
+│    │    └─Conv1d (0): 3-11                       [4, 32, 7]                [4, 64, 3]                4,096                     [2]
+│    │    └─Dropout (1): 3-12                      [4, 64, 3]                [4, 64, 3]                --                        --
+│    │    └─GELU (2): 3-13                         [4, 64, 3]                [4, 64, 3]                --                        --
+│    └─Sequential (5): 2-9                         [4, 64, 3]                [4, 64, 1]                --                        --
+│    │    └─Conv1d (0): 3-14                       [4, 64, 3]                [4, 64, 1]                8,192                     [2]
+│    │    └─Dropout (1): 3-15                      [4, 64, 1]                [4, 64, 1]                --                        --
+│    │    └─GELU (2): 3-16                         [4, 64, 1]                [4, 64, 1]                --                        --
+│    └─Rearrange (6): 2-10                         [4, 64, 1]                [1, 4, 64]                --                        --
+├─Sequential (final_layer): 1-3                    [1, 4, 64]                [1, 3]                    --                        --
+│    └─Flatten (0): 2-11                           [1, 4, 64]                [1, 256]                  --                        --
+│    └─Linear (1): 2-12                            [1, 256]                  [1, 3]                    771                       --
 ======================================================================================================================================================
-Total params: 19,327
-Trainable params: 19,327
+Total params: 14,691
+Trainable params: 14,691
 Non-trainable params: 0
-Total mult-adds (Units.MEGABYTES): 0.90
+Total mult-adds (Units.MEGABYTES): 0.18
 ======================================================================================================================================================
-Input size (MB): 0.10
-Forward/backward pass size (MB): 0.20
-Params size (MB): 0.08
-Estimated Total Size (MB): 0.38
+Input size (MB): 0.02
+Forward/backward pass size (MB): 0.05
+Params size (MB): 0.06
+Estimated Total Size (MB): 0.12
 ======================================================================================================================================================
-</pre></div>
-</div>
-</section>
-<section id="load-the-pre-trained-weights-into-the-model">
-<h3><a class="toc-backref" href="#id12" role="doc-backlink">Load the Pre-trained Weights into the Model</a><a class="headerlink" href="#load-the-pre-trained-weights-into-the-model" title="Link to this heading">#</a></h3>
-<p>We load the pre-trained weights into the model. The transformer layers are excluded
-as this module is not used in the pre-local downstream architecture (see <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define layers to exclude from the pre-trained weights</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#set" title="builtins.set" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_layers</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;spatial_conv.1.weight&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;spatial_conv.1.bias&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;final_layer.1.weight&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;final_layer.1.bias&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="c1"># Filter out transformer weights and load the state dictionary</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_state_dict</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_state_dict</span></a><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;transformer.&quot;</span><span class="p">)</span>
-<span class="p">}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">missing_keys</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">unexpected_keys</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.load_state_dict" title="braindecode.models.EEGModuleMixin.load_state_dict" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_state_dict</span></a><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-<span class="c1"># Ensure no unexpected keys and validate missing keys</span>
-<span class="k">assert</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">unexpected_keys</span></a> <span class="o">==</span> <span class="p">[],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">unexpected_keys</span></a><span class="si">=}</span><span class="s2">&quot;</span>
-<span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">missing_keys</span></a><span class="p">)</span> <span class="o">==</span> <a href="https://docs.python.org/3/library/stdtypes.html#set" title="builtins.set" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_layers</span></a><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">missing_keys</span></a><span class="si">=}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="fine-tuning-the-model">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink">Fine-tuning the Model</a><a class="headerlink" href="#fine-tuning-the-model" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Fine-tuning the Model</a><a class="headerlink" href="#fine-tuning-the-model" title="Link to this heading">#</a></h2>
 <p>Signal-JEPA is a model trained in a self-supervised manner on a masked
 prediction task. In this task, the model is configured in a many-to-many
 fashion, which is not suited for a classification task. Therefore, we need to
 adjust the model architecture for finetuning. This is what is done by the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalJEPA_PreLocal</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalJEPA_Contextual</span></code>, and
 <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalJEPA_PostLocal</span></code> classes. In these classes, new layers are added
-specifically for classification, as described in the article <a class="footnote-reference brackets" href="#id4" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and in the following figure:</p>
+specifically for classification, as described in the article <a class="footnote-reference brackets" href="#id3" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and in the following figure:</p>
 <img alt="Signal-JEPA Pre-Local Downstream Architecture" class="align-center" src="../../_images/sjepa_pre-local.jpg" />
 <p>With this downstream architecture, two options are possible for fine-tuning:</p>
 <ol class="arabic simple">
@@ -805,11 +765,19 @@ specifically for classification, as described in the article <a class="footnote-
 <li><p>Fine-tune the entire model</p></li>
 </ol>
 <section id="freezing-pre-trained-layers">
-<h3><a class="toc-backref" href="#id14" role="doc-backlink">Freezing Pre-trained Layers</a><a class="headerlink" href="#freezing-pre-trained-layers" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Freezing Pre-trained Layers</a><a class="headerlink" href="#freezing-pre-trained-layers" title="Link to this heading">#</a></h3>
 <p>As the second option is rather straightforward to implement,
 we will focus on the first option here.
 We will freeze all layers except the newly added ones.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.parameter.Parameter.html#torch.nn.parameter.Parameter" title="torch.nn.parameter.Parameter" class="sphx-glr-backref-module-torch-nn-parameter sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">param</span></a> <span class="ow">in</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.named_parameters" title="torch.nn.Module.named_parameters" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span></a><span class="p">():</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Keep the task-specific head layers (spatial_conv and final_layer)</span>
+<span class="c1"># trainable and freeze the pretrained backbone.</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#set" title="builtins.set" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_layers</span></a> <span class="o">=</span> <span class="p">{</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a>
+    <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.named_parameters" title="torch.nn.Module.named_parameters" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span></a><span class="p">()</span>
+    <span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;spatial_conv.&quot;</span><span class="p">,</span> <span class="s2">&quot;final_layer.&quot;</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.parameter.Parameter.html#torch.nn.parameter.Parameter" title="torch.nn.parameter.Parameter" class="sphx-glr-backref-module-torch-nn-parameter sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">param</span></a> <span class="ow">in</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.named_parameters" title="torch.nn.Module.named_parameters" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span></a><span class="p">():</span>
     <span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">not</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#set" title="builtins.set" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_layers</span></a><span class="p">:</span>
         <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span></a> <span class="o">=</span> <span class="kc">False</span>
 
@@ -837,7 +805,7 @@ Other modules:
 </div>
 </section>
 <section id="fine-tuning-procedure">
-<h3><a class="toc-backref" href="#id15" role="doc-backlink">Fine-tuning Procedure</a><a class="headerlink" href="#fine-tuning-procedure" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Fine-tuning Procedure</a><a class="headerlink" href="#fine-tuning-procedure" title="Link to this heading">#</a></h3>
 <p>Finally, we set up the fine-tuning procedure using Braindecode’s
 <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGClassifier</span></code>. We define the loss function, optimizer, and training
 parameters. We then fit the model to the windows dataset.</p>
@@ -856,21 +824,21 @@ parameters. We then fit the model to the windows dataset.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.3333        1.0994       0.3333            0.3333        1.0989  0.2329
-      2            0.3333        1.0992       0.3333            0.3333        1.0987  0.1972
-      3            0.4696        1.0985       0.3448            0.3448        1.0984  0.1934
-      4            0.5217        1.0961       0.3563            0.3563        1.0979  0.1930
-      5            0.5768        1.0935       0.3793            0.3793        1.0971  0.1919
-      6            0.6319        1.0887       0.3448            0.3448        1.0963  0.1943
-      7            0.5826        1.0827       0.3563            0.3563        1.0951  0.1967
-      8            0.6348        1.0766       0.3678            0.3678        1.0939  0.1921
-      9            0.6174        1.0686       0.3793            0.3793        1.0925  0.1933
-     10            0.6290        1.0618       0.3793            0.3793        1.0913  0.1916
+      1            0.3329        1.1005       0.3353            0.3353        1.0986  0.2762
+      2            0.3329        1.0992       0.3353            0.3353        1.0987  0.2436
+      3            0.3343        1.0989       0.3410            0.3410        1.0985  0.2420
+      4            0.3502        1.0985       0.3295            0.3295        1.0985  0.2423
+      5            0.3372        1.0982       0.3295            0.3295        1.0985  0.2415
+      6            0.4501        1.0972       0.3295            0.3295        1.0982  0.2369
+      7            0.4153        1.0960       0.3584            0.3584        1.0979  0.2390
+      8            0.4370        1.0949       0.3699            0.3699        1.0976  0.2420
+      9            0.4486        1.0937       0.3468            0.3468        1.0974  0.2408
+     10            0.4153        1.0921       0.3873            0.3873        1.0971  0.2514
 </pre></div>
 </div>
 </section>
 <section id="all-in-one-implementation">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">All-in-one Implementation</a><a class="headerlink" href="#all-in-one-implementation" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">All-in-one Implementation</a><a class="headerlink" href="#all-in-one-implementation" title="Link to this heading">#</a></h3>
 <p>In the implementation above, we manually loaded the weights and froze the layers.
 This forces us to pass an initialized model to <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGClassifier</span></code>, which may
 create issues if we use it in a cross-validation setting.</p>
@@ -911,24 +879,30 @@ to pass an initialized model, and fit it as before:</p>
 <span class="n">_</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier.fit" title="skorch.classifier.NeuralNetClassifier.fit" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-method"><span class="n">clf</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://huggingface.co/braindecode/SignalJEPA/resolve/main/signal-jepa_16s-60_adeuwv4s.pth&quot; to /home/runner/.cache/torch/hub/checkpoints/signal-jepa_16s-60_adeuwv4s.pth
+
+  0%|          | 0.00/13.2M [00:00&lt;?, ?B/s]
+  6%|▌         | 768k/13.2M [00:00&lt;00:01, 7.58MB/s]
+ 47%|████▋     | 6.25M/13.2M [00:00&lt;00:00, 36.3MB/s]
+100%|██████████| 13.2M/13.2M [00:00&lt;00:00, 57.0MB/s]
+  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.3333        1.0997       0.3333            0.3333        1.0987  0.2159
-      2            0.3362        1.0987       0.3333            0.3333        1.0985  0.1914
-      3            0.3391        1.0980       0.3448            0.3448        1.0983  0.1920
-      4            0.3855        1.0963       0.3448            0.3448        1.0978  0.1921
-      5            0.4986        1.0936       0.4023            0.4023        1.0972  0.2037
-      6            0.5739        1.0898       0.3563            0.3563        1.0965  0.1965
-      7            0.5014        1.0852       0.3908            0.3908        1.0954  0.1912
-      8            0.5652        1.0784       0.4138            0.4138        1.0942  0.1917
-      9            0.5710        1.0717       0.4023            0.4023        1.0929  0.1921
-     10            0.6174        1.0629       0.4138            0.4138        1.0914  0.2123
+      1            0.3329        1.0992       0.3353            0.3353        1.0986  0.2509
+      2            0.3459        1.0994       0.3353            0.3353        1.0986  0.2374
+      3            0.3357        1.0987       0.3295            0.3295        1.0986  0.2390
+      4            0.4139        1.0982       0.3584            0.3584        1.0985  0.2369
+      5            0.4269        1.0978       0.3410            0.3410        1.0983  0.2362
+      6            0.4110        1.0967       0.3584            0.3584        1.0984  0.2388
+      7            0.4081        1.0961       0.3006            0.3006        1.0982  0.2370
+      8            0.4009        1.0942       0.3410            0.3410        1.0981  0.2364
+      9            0.4530        1.0931       0.3584            0.3584        1.0979  0.2425
+     10            0.4501        1.0913       0.3584            0.3584        1.0979  0.2403
 </pre></div>
 </div>
 </section>
 </section>
 <section id="conclusion-and-next-steps">
-<h2><a class="toc-backref" href="#id17" role="doc-backlink">Conclusion and Next Steps</a><a class="headerlink" href="#conclusion-and-next-steps" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Conclusion and Next Steps</a><a class="headerlink" href="#conclusion-and-next-steps" title="Link to this heading">#</a></h2>
 <p>In this tutorial, we demonstrated how to fine-tune a pre-trained foundation
 model, Signal-JEPA, for a motor imagery classification task. We now have a basic
 implementation that can automatically load pre-trained weights and freeze specific layers.</p>
@@ -936,18 +910,18 @@ implementation that can automatically load pre-trained weights and freeze specif
 base foundation models, and downstream tasks.</p>
 </section>
 <section id="references">
-<h2><a class="toc-backref" href="#id18" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id4" role="doc-footnote">
+<aside class="footnote brackets" id="id3" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
 <p>Guetschel, P., Moreau, T., and Tangermann, M. (2024)
 “S-JEPA: towards seamless cross-dataset transfer
 through dynamic spatial attention”.  <a class="reference external" href="https://arxiv.org/abs/2403.11772">https://arxiv.org/abs/2403.11772</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.858 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1162 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.207 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  859 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-finetune-foundation-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0ada35f18bb95235ba2842270483081f/plot_finetune_foundation_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_finetune_foundation_model.ipynb</span></code></a></p>
@@ -1013,14 +987,13 @@ through dynamic spatial attention”.  <a class="reference external" href="https
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-and-preparing-the-data">Loading and preparing the data</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-a-dataset">Loading a dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing-to-match-the-pretrained-model">Preprocessing to match the pretrained model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-dataset-parameters">Define Dataset parameters</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-windows-from-events">Create Windows from Events</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-a-pre-trained-foundation-model">Loading a pre-trained foundation model</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-and-load-pre-trained-weights">Download and Load Pre-trained Weights</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instantiate-the-foundation-model">Instantiate the Foundation Model</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-the-pre-trained-weights-into-the-model">Load the Pre-trained Weights into the Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-pre-trained-weights-from-the-hub">Load Pre-trained Weights from the Hub</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-tuning-the-model">Fine-tuning the Model</a><ul class="nav section-nav flex-column">

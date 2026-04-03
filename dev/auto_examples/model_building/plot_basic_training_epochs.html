@@ -443,6 +443,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_pretrained_models.html">Loading and Adapting Pretrained Foundation Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
@@ -730,14 +731,40 @@ Hugging Face Hub. Install with::
     # Load pretrained model
     model = ShallowFBCSPNet.from_pretrained(&quot;username/my-shallowfbcspnet-model&quot;)
 
-The integration automatically handles EEG-specific parameters (n_chans,
-n_times, sfreq, chs_info, etc.) by saving them in a config file alongside
-the model weights. This ensures that loaded models are correctly configured
-for their original data specifications.
+    # Load with a different number of outputs (head is rebuilt automatically)
+    model = ShallowFBCSPNet.from_pretrained(&quot;username/my-shallowfbcspnet-model&quot;, n_outputs=4)
+
+**Extracting features and replacing the head:**
+
+.. code-block::
+
+    import torch
+
+    x = torch.randn(1, model.n_chans, model.n_times)
+    # Extract encoder features (consistent dict across all models)
+    out = model(x, return_features=True)
+    features = out[&quot;features&quot;]
+
+    # Replace the classification head
+    model.reset_head(n_outputs=10)
+
+**Saving and restoring full configuration:**
+
+.. code-block::
+
+    import json
+
+    config = model.get_config()            # all __init__ params
+    with open(&quot;config.json&quot;, &quot;w&quot;) as f:
+        json.dump(config, f)
+
+    model2 = ShallowFBCSPNet.from_config(config)    # reconstruct (no weights)
 
 All model parameters (both EEG-specific and model-specific such as
 dropout rates, activation functions, number of filters) are automatically
 saved to the Hub and restored when loading.
+
+See :ref:`load-pretrained-models` for a complete tutorial.
 </pre></div>
 </div>
 <p>Additionally, you might be interested in visualizing the model’s architecture.
@@ -871,16 +898,16 @@ we can train it by simply calling the <code class="docutils literal notranslate"
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    valid_acc    valid_loss     dur
 -------  -----------  ------------  ------
-      1       0.3000       15.6130  0.0135
-      2       0.3000       15.6130  0.0089
-      3       0.3000       15.6130  0.0085
-      4       0.3000       15.6130  0.0083
-      5       0.3000       15.6130  0.0083
-      6       0.3000       15.6130  0.0084
-      7       0.3000       15.6130  0.0082
-      8       0.3000       15.6130  0.0082
-      9       0.3000       15.6130  0.0082
-     10       0.3000       15.6130  0.0081
+      1       0.3000       15.6130  0.0138
+      2       0.3000       15.6130  0.0091
+      3       0.3000       15.6130  0.0087
+      4       0.3000       15.6130  0.0088
+      5       0.3000       15.6130  0.0088
+      6       0.3000       15.6130  0.0091
+      7       0.3000       15.6130  0.0090
+      8       0.3000       15.6130  0.0088
+      9       0.3000       15.6130  0.0088
+     10       0.3000       15.6130  0.0087
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1615,7 +1642,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">train_split</td>
-            <td class="value">&lt;skorch.datas...x7f18a539dfa0&gt;</td>
+            <td class="value">&lt;skorch.datas...x7f95ba755af0&gt;</td>
         </tr>
 
 
@@ -1765,7 +1792,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__epoch_timer</td>
-            <td class="value">&lt;skorch.callb...x7f18a53c0aa0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f9695580800&gt;</td>
         </tr>
 
 
@@ -1775,7 +1802,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss</td>
-            <td class="value">&lt;skorch.callb...x7f1979abade0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f9695d64740&gt;</td>
         </tr>
 
 
@@ -1785,7 +1812,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss__scoring</td>
-            <td class="value">&lt;function tra...x7f18afca5440&gt;</td>
+            <td class="value">&lt;function tra...x7f95cb69d440&gt;</td>
         </tr>
 
 
@@ -1825,7 +1852,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__train_loss__target_extractor</td>
-            <td class="value">&lt;function noo...x7f18afca5260&gt;</td>
+            <td class="value">&lt;function noo...x7f95cb69d260&gt;</td>
         </tr>
 
 
@@ -1845,7 +1872,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss</td>
-            <td class="value">&lt;skorch.callb...x7f1969be21e0&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f9695fe9e20&gt;</td>
         </tr>
 
 
@@ -1855,7 +1882,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss__scoring</td>
-            <td class="value">&lt;function val...x7f18afca54e0&gt;</td>
+            <td class="value">&lt;function val...x7f95cb69d4e0&gt;</td>
         </tr>
 
 
@@ -1895,7 +1922,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_loss__target_extractor</td>
-            <td class="value">&lt;function noo...x7f18afca5260&gt;</td>
+            <td class="value">&lt;function noo...x7f95cb69d260&gt;</td>
         </tr>
 
 
@@ -1915,7 +1942,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_acc</td>
-            <td class="value">&lt;skorch.callb...x7f1894127830&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f95a0939be0&gt;</td>
         </tr>
 
 
@@ -1965,7 +1992,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__valid_acc__target_extractor</td>
-            <td class="value">&lt;function to_...x7f18afca47c0&gt;</td>
+            <td class="value">&lt;function to_...x7f95cb69c7c0&gt;</td>
         </tr>
 
 
@@ -1985,7 +2012,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">callbacks__print_log</td>
-            <td class="value">&lt;skorch.callb...x7f197a366e70&gt;</td>
+            <td class="value">&lt;skorch.callb...x7f968559e330&gt;</td>
         </tr>
 
 
@@ -2229,8 +2256,8 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.699 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  981 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.910 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  977 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fff46913db5173d3ae22c1113acffb45/plot_basic_training_epochs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_basic_training_epochs.ipynb</span></code></a></p>
