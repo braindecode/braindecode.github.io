@@ -610,6 +610,15 @@ runtime shape mismatches when the reduced channel count differs from the reducti
 batch dimension instead of patch dimension in <code class="docutils literal notranslate"><span class="pre">prepare_tokens</span></code>, and include
 pretrained weight typo mapping in <code class="docutils literal notranslate"><span class="pre">self.mapping</span></code>
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/887">#887</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Fix temporal generalization tutorial producing degraded results (peak AUC
+dropped from ~0.9 to ~0.75): MEG data in SI units (T/m) has variances ~1e-23,
+so <code class="docutils literal notranslate"><span class="pre">BatchNorm1d</span></code>’s <code class="docutils literal notranslate"><span class="pre">eps=1e-5</span></code> dominated the normalization denominator.
+Now uses <code class="docutils literal notranslate"><span class="pre">epochs.get_data(units=&quot;fT/cm&quot;)</span></code> to bring data to a reasonable
+scale, and removes the misleading “importance of normalization” section whose
+conclusions were an artifact of the data scale issue (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.augmentation.BandstopFilter.html#braindecode.augmentation.BandstopFilter" title="braindecode.augmentation.BandstopFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.augmentation.BandstopFilter</span></code></a> notch center frequency range
+using <code class="docutils literal notranslate"><span class="pre">bandwidth/2</span></code> instead of <code class="docutils literal notranslate"><span class="pre">2*bandwidth</span></code> to match docstring
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/548">#548</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
 <li><p>Fix model docstring inheritance: <code class="docutils literal notranslate"><span class="pre">track_model_init_kwargs</span></code> wrapped
 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> with <code class="docutils literal notranslate"><span class="pre">&#64;wraps</span></code> before the
 <code class="docutils literal notranslate"><span class="pre">NumpyDocstringInheritanceInitMeta</span></code> metaclass ran, causing
