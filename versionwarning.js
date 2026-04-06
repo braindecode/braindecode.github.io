@@ -27,7 +27,7 @@
                     if (version == 'dev') {
                         verText = 'the <strong>unstable development version</strong>';
                     }
-                    $('body').prepend(`${pre}This is documentation for ${verText} of MNE-Python. <a ${anchor} href="https://braindecode.org/stable/${filePath}">Switch to stable version</a>${post}`);
+                    $('body').prepend(`${pre}This is documentation for ${verText} of braindecode. <a ${anchor} href="https://braindecode.org/stable/${filePath}">Switch to stable version</a>${post}`);
                 }
             }
         });
