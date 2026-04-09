@@ -831,45 +831,74 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <h1>braindecode.preprocessing.InterpolateTo<a class="headerlink" href="#braindecode-preprocessing-interpolateto" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.preprocessing.InterpolateTo">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.preprocessing.</span></span><span class="sig-name descname"><span class="pre">InterpolateTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spline'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/preprocessing/mne_preprocess.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.preprocessing.InterpolateTo" title="Link to this definition">#</a></dt>
-<dd><p>Braindecode preprocessor wrapper for <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.interpolate_to" title="(in MNE v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_to()</span></code></a>.</p>
-<p>Interpolate EEG data onto a new montage.</p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.preprocessing.</span></span><span class="sig-name descname"><span class="pre">InterpolateTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'accurate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/preprocessing/mne_preprocess.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.preprocessing.InterpolateTo" title="Link to this definition">#</a></dt>
+<dd><p>Braindecode preprocessor wrapper for <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.interpolate_to" title="(in MNE v1.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_to()</span></code></a>.</p>
+<p>Interpolate data onto a new sensor configuration.</p>
 <blockquote>
-<div><div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Be careful, only EEG channels are interpolated. Other channel types are
-not interpolated.</p>
-</div>
+<div><p>This method can interpolate EEG data onto a new montage or transform
+MEG data to a different sensor configuration (e.g., Neuromag to CTF).</p>
 </div></blockquote>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>sensors</strong><span class="classifier">DigMontage</span></dt><dd><p>The target montage containing channel positions to interpolate onto.</p>
+<dd class="field-odd"><dl>
+<dt><strong>sensors</strong><span class="classifier">DigMontage | str</span></dt><dd><p>For EEG: A DigMontage object containing target channel positions.
+For MEG: A string specifying the target MEG system. Currently
+supported: <code class="docutils literal notranslate"><span class="pre">'neuromag'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ctf151'</span></code> or <code class="docutils literal notranslate"><span class="pre">'ctf275'</span></code>.</p>
 </dd>
 <dt><strong>origin</strong><span class="classifier">array-like, shape (3,) | str</span></dt><dd><p>Origin of the sphere in the head coordinate frame and in meters.
 Can be <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> (default), which means a head-digitization-based
-origin fit.</p>
+origin fit. Used for both EEG and MEG interpolation.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier">str</span></dt><dd><p>Method to use for EEG channels.
-Supported methods are ‘spline’ (default) and ‘MNE’.</p>
+<dt><strong>method</strong><span class="classifier">str | None</span></dt><dd><p>Interpolation method to use.
+For EEG: <code class="docutils literal notranslate"><span class="pre">'spline'</span></code> (default, same as None) or <code class="docutils literal notranslate"><span class="pre">'MNE'</span></code>.
+For MEG:  <code class="docutils literal notranslate"><span class="pre">'MNE'</span></code> (default, same as None).</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.10.0: </span>Added support for MEG interpolation.</p>
+</div>
 </dd>
-<dt><strong>reg</strong><span class="classifier">float</span></dt><dd><p>The regularization parameter for the interpolation method
-(only used when the method is ‘spline’).</p>
+<dt><strong>mode</strong><span class="classifier">str</span></dt><dd><p>Either <code class="docutils literal notranslate"><span class="pre">'accurate'</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">'fast'</span></code>, determines the
+quality of the Legendre polynomial expansion used for
+interpolation of MEG channels using the minimum-norm method.
+Only used for MEG interpolation.</p>
+</dd>
+<dt><strong>reg</strong><span class="classifier">float</span></dt><dd><p>The regularization parameter for the interpolation method.
+Only used when <code class="docutils literal notranslate"><span class="pre">method='spline'</span></code> for EEG channels.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>inst</strong><span class="classifier">instance of Raw, Epochs, or Evoked</span></dt><dd><p>The instance with updated channel locations and data.</p>
+<dt><strong>inst</strong><span class="classifier">same type as the input data</span></dt><dd><p>A new instance with interpolated data and updated channel
+information.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This method is useful for standardizing EEG layouts across datasets.
-However, some attributes may be lost after interpolation.</p>
+<p><strong>For EEG data:</strong></p>
+<p>This method interpolates EEG channels onto a new montage using
+spherical splines or minimum-norm estimation. Non-EEG channels
+are preserved without modification.</p>
+<p><strong>For MEG data:</strong></p>
+<p>This method transforms MEG data to a different sensor configuration
+using field interpolation.</p>
+<p>Common use cases for MEG transformation:</p>
+<ul class="simple">
+<li><p>Transform Neuromag data to CTF sensor layout for comparison</p></li>
+<li><p>Transform CTF data to Neuromag sensor layout</p></li>
+<li><p>Simulate what data would look like on a different MEG system</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>MEG field interpolation assumes that the head position relative
+to the sensors is similar between systems. Large differences in
+head position may affect interpolation accuracy.</p>
+</div>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.10.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.12.0: </span>Added support for MEG interpolation to canonical systems.</p>
 </div>
 </dd></dl>
 
