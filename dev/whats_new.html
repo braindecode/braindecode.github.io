@@ -490,11 +490,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">F.scaled_dot_product_attention</span></code> in <a class="reference internal" href="generated/attention/braindecode.modules.MultiHeadAttention.html#braindecode.modules.MultiHeadAttention" title="braindecode.modules.MultiHeadAttention"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.MultiHeadAttention</span></code></a>,
+enabling optimized attention kernels (flash-attention on CUDA,
+memory-efficient backends on other devices).
+By <a class="reference external" href="https://github.com/leob000">Léo Burgund</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/902">#902</a>)</p></li>
+</ul>
 </section>
 <section id="api-and-behavior-changes">
 <h2>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p><a class="reference internal" href="generated/attention/braindecode.modules.MultiHeadAttention.html#braindecode.modules.MultiHeadAttention" title="braindecode.modules.MultiHeadAttention"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.MultiHeadAttention</span></code></a> now follows PyTorch’s SDPA mask
+convention: boolean masks use <code class="docutils literal notranslate"><span class="pre">True</span></code> to <strong>ignore</strong> a position (previously
+<code class="docutils literal notranslate"><span class="pre">True</span></code> meant keep). The scaling factor is now <code class="docutils literal notranslate"><span class="pre">1/sqrt(head_dim)</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">1/sqrt(emb_size)</span></code>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/902">#902</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -506,6 +516,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Fix <a class="reference internal" href="generated/braindecode.models.SyncNet.html#braindecode.models.SyncNet" title="braindecode.models.SyncNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SyncNet</span></code></a> swapped parameter initialization where
+<code class="docutils literal notranslate"><span class="pre">phi_ini</span></code> (phase shift) was using <code class="docutils literal notranslate"><span class="pre">beta_init_values</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> (decay) was
+using <code class="docutils literal notranslate"><span class="pre">phase_init_values</span></code>, replaced incorrect <code class="docutils literal notranslate"><span class="pre">.view()</span></code> reshape with <code class="docutils literal notranslate"><span class="pre">.permute()</span></code>
+for proper conv2d filter weight layout, and fixed duplicate default values in docstring
+(by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.models.AttentionBaseNet.html#braindecode.models.AttentionBaseNet" title="braindecode.models.AttentionBaseNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.AttentionBaseNet</span></code></a> redundant
+<code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> call that ran the parent <code class="docutils literal notranslate"><span class="pre">nn.Module.__init__</span></code> twice
+(by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Fix incomplete author email in <a class="reference internal" href="generated/braindecode.models.TSception.html#braindecode.models.TSception" title="braindecode.models.TSception"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.TSception</span></code></a> header
+(by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
 <li><p>Fix a time-of-check-time-of-use race in
 <code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.base._zarr_to_memmap()</span></code> that caused
 concurrent workers to repeatedly <code class="docutils literal notranslate"><span class="pre">rename</span></code>-replace the published
