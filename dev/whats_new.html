@@ -502,6 +502,21 @@ enabling optimized attention kernels (flash-attention on CUDA,
 memory-efficient backends on other devices).
 By <a class="reference external" href="https://github.com/leob000">Léo Burgund</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/902">#902</a>)</p></li>
+<li><p>Add experimental channel interpolation feature: new
+<a class="reference internal" href="generated/filter/braindecode.modules.ChannelInterpolationLayer.html#braindecode.modules.ChannelInterpolationLayer" title="braindecode.modules.ChannelInterpolationLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelInterpolationLayer</span></code></a> plus the
+<a class="reference internal" href="generated/braindecode.models.InterpolatedModel.html#braindecode.models.InterpolatedModel" title="braindecode.models.InterpolatedModel"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedModel()</span></code></a> class factory project arbitrary
+user channel sets to a model’s canonical set via an MNE-backed (frozen by
+default) interpolation matrix. Ship pre-built variants
+<a class="reference internal" href="generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code></a>,
+<a class="reference internal" href="generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedSignalJEPA</span></code></a>, and
+<a class="reference internal" href="generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBIOT</span></code></a> for the corresponding
+pre-trained models. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/993">#993</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
+<li><p>Mark deterministic index buffers (<a class="reference internal" href="generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BIOT</span></code></a> encoder’s
+<code class="docutils literal notranslate"><span class="pre">index</span></code> and <a class="reference internal" href="generated/braindecode.models.REVE.html#braindecode.models.REVE" title="braindecode.models.REVE"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.REVE</span></code></a>’s position <code class="docutils literal notranslate"><span class="pre">embedding</span></code> bank)
+as non-persistent. They are rebuilt from <code class="docutils literal notranslate"><span class="pre">__init__</span></code> arguments on every
+instantiation, so keeping them in <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> only bloated checkpoints and
+caused spurious mismatches when <code class="docutils literal notranslate"><span class="pre">n_chans</span></code> (or the position-bank config)
+differed between save and load. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/993">#993</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -511,6 +526,12 @@ By <a class="reference external" href="https://github.com/leob000">Léo Burgund<
 convention: boolean masks use <code class="docutils literal notranslate"><span class="pre">True</span></code> to <strong>ignore</strong> a position (previously
 <code class="docutils literal notranslate"><span class="pre">True</span></code> meant keep). The scaling factor is now <code class="docutils literal notranslate"><span class="pre">1/sqrt(head_dim)</span></code> instead of
 <code class="docutils literal notranslate"><span class="pre">1/sqrt(emb_size)</span></code>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/902">#902</a>)</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.Labram</span></code></a> now requires <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> to match
+<code class="docutils literal notranslate"><span class="pre">LABRAM_CHANNEL_ORDER</span></code> exactly (128 channels, canonical order). The
+<code class="docutils literal notranslate"><span class="pre">on_unknown_chs</span></code> parameter and the forward-time <code class="docutils literal notranslate"><span class="pre">ch_names</span></code> argument are
+removed. Users with arbitrary channel sets should migrate to
+<a class="reference internal" href="generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code></a>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/993">#993</a>
+by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
