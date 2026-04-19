@@ -644,8 +644,7 @@ PyTorch-libraries like
 </pre></div>
 </div>
 <p>We select only first 30 seconds from the training dataset to limit time and memory
-to run this example. We split training dataset into train and validation (only 6 seconds).
-To obtain full results whole datasets should be used.</p>
+to run this example. We split training dataset into train and validation (only 6 seconds).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">valid_set</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span>
     <a href="https://docs.python.org/3/library/copy.html#copy.deepcopy" title="copy.deepcopy" class="sphx-glr-backref-module-copy sphx-glr-backref-type-py-function"><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span></a><span class="p">(</span><span class="n">train_set</span><span class="p">),</span> <span class="p">[</span><a href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">30</span><span class="p">)],</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span>
 <span class="p">)</span>
@@ -815,7 +814,7 @@ have found to work well for EEG motor decoding, however we strongly
 encourage you to perform your own hyperparameter optimization using
 cross validation on your training data.</p>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.callbacks</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LRScheduler</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch.callbacks</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EarlyStopping</span></a><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LRScheduler</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skorch.helper</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/helper.html#skorch.helper.predefined_split" title="skorch.helper.predefined_split" class="sphx-glr-backref-module-skorch-helper sphx-glr-backref-type-py-function"><span class="n">predefined_split</span></a>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGRegressor</span>
@@ -840,7 +839,7 @@ cross validation on your training data.</p>
     <span class="n">iterator_train__shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
     <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;lr_scheduler&quot;</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LRScheduler</span></a><span class="p">(</span><span class="s2">&quot;CosineAnnealingLR&quot;</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">n_epochs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;lr_scheduler&quot;</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.LRScheduler" title="skorch.callbacks.LRScheduler" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LRScheduler</span></a><span class="p">(</span><span class="s2">&quot;CosineAnnealingLR&quot;</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_epochs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))),</span>
         <span class="p">(</span>
             <span class="s2">&quot;r2_train&quot;</span><span class="p">,</span>
             <a href="../../generated/braindecode.training.CroppedTimeSeriesEpochScoring.html#braindecode.training.CroppedTimeSeriesEpochScoring" title="braindecode.training.CroppedTimeSeriesEpochScoring" class="sphx-glr-backref-module-braindecode-training sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">CroppedTimeSeriesEpochScoring</span></a><span class="p">(</span>
@@ -859,6 +858,7 @@ cross validation on your training data.</p>
                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;r2_valid&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;early_stopping&quot;</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EarlyStopping</span></a><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">load_best</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
     <span class="p">],</span>
     <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
 <span class="p">)</span>
@@ -868,6 +868,34 @@ cross validation on your training data.</p>
 <p>Model training for a specified number of epochs. <code class="docutils literal notranslate"><span class="pre">y</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> as it is already supplied
 in the dataset.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="training-for-longer">
+<h2>Training for longer<a class="headerlink" href="#training-for-longer" title="Link to this heading">#</a></h2>
+<p>The gallery build above uses only <code class="docutils literal notranslate"><span class="pre">n_epochs</span> <span class="pre">=</span> <span class="pre">8</span></code>. When trained
+offline on the full recording for up to 100 epochs with early stopping,
+the model reaches a test-set mean Pearson r of <strong>0.07</strong>.</p>
+<p>We can load the pretrained checkpoint from the Hugging Face Hub and
+inspect the full training curves:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="n">repo_id</span> <span class="o">=</span> <span class="s2">&quot;braindecode/bcic_iv_4_ecog_cropped&quot;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/file_download#huggingface_hub.hf_hub_download" title="huggingface_hub.hf_hub_download" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-function"><span class="n">hf_hub_download</span></a>
+
+    <span class="n">regressor</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">regressor</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span>
+        <span class="n">f_params</span><span class="o">=</span><a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/file_download#huggingface_hub.hf_hub_download" title="huggingface_hub.hf_hub_download" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-function"><span class="n">hf_hub_download</span></a><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="s2">&quot;params.safetensors&quot;</span><span class="p">),</span>
+        <span class="n">f_history</span><span class="o">=</span><a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/file_download#huggingface_hub.hf_hub_download" title="huggingface_hub.hf_hub_download" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-function"><span class="n">hf_hub_download</span></a><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="s2">&quot;history.json&quot;</span><span class="p">),</span>
+        <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/warnings.html#warnings.warn" title="warnings.warn" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span></a><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Could not load pretrained checkpoint from </span><span class="si">{</span><span class="n">repo_id</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">); &quot;</span>
+        <span class="s2">&quot;continuing with the locally trained short-run model.&quot;</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 <p>Obtaining predictions and targets for the test, train, and validation dataset</p>
@@ -899,13 +927,6 @@ in the dataset.</p>
 <section id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Link to this heading">#</a></h2>
 <p>We plot target and predicted finger flexion on training, validation, and test sets.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The model is trained and validated on limited dataset (to decrease the time needed to run
-this example) which does not contain diverse dataset in terms of fingers flexions and may
-cause overfitting. To obtain better results use whole dataset as well as improve the decoding
-pipeline which may be not optimal for ECoG.</p>
-</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="matplotlib.lines.Line2D" class="sphx-glr-backref-module-matplotlib-lines sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Line2D</span></a>
@@ -1072,6 +1093,7 @@ Hum. Brain Mapping, 38: 5391-5420. <a class="reference external" href="https://o
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-for-longer">Training for longer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-results">Plot Results</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
