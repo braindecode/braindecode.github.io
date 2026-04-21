@@ -1,0 +1,1095 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Loading Pretrained Foundation Models on Arbitrary Channel Sets &#8212; Braindecode 1.5.0dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=f3e3feaa" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../../_static/documentation_options.js?v=a67c6fc5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+                gtag('js', new Date());
+                gtag('config', 'G-7Q43R82K6D');
+            </script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/model_building/plot_channel_interpolation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://braindecode.org/auto_examples/model_building/plot_channel_interpolation.html" />
+    <link rel="icon" href="../../_static/braindecode_symbol.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to train, test and tune your model?" href="plot_how_train_test_and_tune.html" />
+    <link rel="prev" title="Basic Brain Decoding on EEG Data" href="plot_bcic_iv_2a_moabb_trial.html" />
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NWDKLVNR');</script>
+  <!-- End Google Tag Manager -->
+
+  <link rel="canonical" href="braindecode.org/index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.5" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+
+  <!-- Google Analytics (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CHY0V439ZQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CHY0V439ZQ');
+  </script>
+
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  
+<div class="pst-async-banner-revealer d-none">
+  <aside
+    id="bd-header-version-warning"
+    class="d-none d-print-none"
+    aria-label="Version warning"
+  ></aside>
+</div>
+
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <strong>Using Braindecode in academic work?</strong>
+    <a class="braindecode-announcement-cta" href="../../cite.html">
+      Cite Braindecode
+    </a>
+    <span class="braindecode-announcement-secondary">
+      DOI:
+      <a href="https://doi.org/10.5281/zenodo.17699192">10.5281/zenodo.17699192</a>
+    </span>
+  </div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Basic model building and training</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_eegprep_cleaning.html">Cleaning EEG Data with EEGPrep for Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Loading Pretrained Foundation Models on Arbitrary Channel Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_pretrained_models.html">Loading and Adapting Pretrained Foundation Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_training/index.html">Advanced neural network training strategies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_exca_config.html">Experiment configuration with Pydantic and Exca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/tutorial_create_fixed_window_length.html">Fixed-Length Windows Extraction</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Basic model building and training</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Loading Pretrained Foundation Models on Arbitrary Channel Sets</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NWDKLVNR"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-model-building-plot-channel-interpolation-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="loading-pretrained-foundation-models-on-arbitrary-channel-sets">
+<span id="channel-interpolation-tutorial"></span><span id="sphx-glr-auto-examples-model-building-plot-channel-interpolation-py"></span><h1>Loading Pretrained Foundation Models on Arbitrary Channel Sets<a class="headerlink" href="#loading-pretrained-foundation-models-on-arbitrary-channel-sets" title="Link to this heading">#</a></h1>
+<p>Most pretrained EEG foundation models were trained on a specific,
+canonical channel montage:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Labram</span></code></a> was pretrained on a fixed
+128-channel set;</p></li>
+<li><p><a class="reference internal" href="../../generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIOT</span></code></a> on an 18-channel TCP montage;</p></li>
+<li><p><a class="reference internal" href="../../generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA" title="braindecode.models.SignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalJEPA</span></code></a> on 62 channels.</p></li>
+</ul>
+<p>When you want to fine-tune one of these checkpoints on a dataset
+whose channel layout is different — fewer channels, different
+naming, different reference — you cannot just call
+<code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>: the backbone refuses to accept an input that
+does not match the pretrained shape.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Interpolated*</span></code> family of model wrappers solves this. Each
+wrapper inserts a spatial-interpolation layer in front of the
+backbone, so the pretrained weights see exactly the canonical
+input they were trained on. The interpolation matrix is built
+from the user’s channel positions using MNE’s spline-based
+interpolation.</p>
+<p>This tutorial covers:</p>
+<ul class="simple">
+<li><p>loading a pretrained foundation model on a non-canonical
+channel set with a single <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code> call,</p></li>
+<li><p>what the interpolation matrix actually does, visualised with
+scalp topomaps,</p></li>
+<li><p>the same recipe for the other shipped variants
+(<a class="reference internal" href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatedBIOT</span></code></a>,
+<a class="reference internal" href="../../generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatedSignalJEPA</span></code></a>),</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">trainable=True</span></code> flag for data-driven projections.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Interpolated*</span></code> API is experimental and may change
+without a deprecation cycle.</p>
+</div>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#setting-the-scene-a-real-eeg-dataset" id="id1">Setting the scene: a real EEG dataset</a></p></li>
+<li><p><a class="reference internal" href="#the-wall-the-pretrained-model-refuses-our-channels" id="id2">The wall: the pretrained model refuses our channels</a></p></li>
+<li><p><a class="reference internal" href="#the-fix-a-one-line-from-pretrained" id="id3">The fix: a one-line <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code></a></p></li>
+<li><p><a class="reference internal" href="#under-the-hood-mne-backed-spline-interpolation" id="id4">Under the hood: MNE-backed spline interpolation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#visualising-the-spatial-filters" id="id5">Visualising the spatial filters</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#other-shipped-variants" id="id6">Other shipped variants</a></p></li>
+<li><p><a class="reference internal" href="#making-the-interpolation-trainable" id="id7">Making the interpolation trainable</a></p></li>
+<li><p><a class="reference internal" href="#summary" id="id8">Summary</a></p></li>
+</ul>
+</nav>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedBIOT</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedLaBraM</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedSignalJEPA</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">Labram</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/stable/generated/torch.manual_seed.html#torch.manual_seed" title="torch.manual_seed" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="setting-the-scene-a-real-eeg-dataset">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Setting the scene: a real EEG dataset</a><a class="headerlink" href="#setting-the-scene-a-real-eeg-dataset" title="Link to this heading">#</a></h2>
+<p>We load a single subject of the BNCI2014_001 motor-imagery dataset
+to obtain a realistic 22-channel EEG montage (a subset of the 10-20
+system).  We will only use the channel layout, not the recordings
+themselves, so a single subject is enough.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;BNCI2014_001&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="mne.channels.make_standard_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span></a><span class="p">(</span><span class="s2">&quot;standard_1020&quot;</span><span class="p">)</span>
+<span class="k">for</span> <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">:</span>
+    <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ds</span></a><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">)</span>
+
+<a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_info</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span>  <span class="c1"># MNE Info, kept around for plotting</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_info</span></a><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">user_ch_names</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;ch_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">)</span><span class="si">}</span><span class="s2"> channels:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">user_ch_names</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Dataset has 22 channels:
+[&#39;Fz&#39;, &#39;FC3&#39;, &#39;FC1&#39;, &#39;FCz&#39;, &#39;FC2&#39;, &#39;FC4&#39;, &#39;C5&#39;, &#39;C3&#39;, &#39;C1&#39;, &#39;Cz&#39;, &#39;C2&#39;, &#39;C4&#39;, &#39;C6&#39;, &#39;CP3&#39;, &#39;CP1&#39;, &#39;CPz&#39;, &#39;CP2&#39;, &#39;CP4&#39;, &#39;P1&#39;, &#39;Pz&#39;, &#39;P2&#39;, &#39;POz&#39;]
+</pre></div>
+</div>
+</section>
+<section id="the-wall-the-pretrained-model-refuses-our-channels">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">The wall: the pretrained model refuses our channels</a><a class="headerlink" href="#the-wall-the-pretrained-model-refuses-our-channels" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Labram</span></code> checkpoint on the Hugging Face Hub
+(<code class="docutils literal notranslate"><span class="pre">braindecode/labram-pretrained</span></code>) was trained on a specific
+128-channel layout.  The vanilla <a class="reference internal" href="../../generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Labram</span></code></a>
+class enforces that layout strictly: passing any other <code class="docutils literal notranslate"><span class="pre">chs_info</span></code>
+raises an error at construction time.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <a href="../../generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">Labram</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Labram refused our chs_info:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Labram refused our chs_info:
+  Labram requires chs_info to match LABRAM_CHANNEL_ORDER exactly (128 channels, specific order). Got 22 channels. For arbitrary channel sets, use InterpolatedLaBraM (from braindecode.models import InterpolatedLaBraM).
+</pre></div>
+</div>
+<p>Without the wrapper, you would have to surgically rebuild the
+first spatial layer of the model and decide yourself how to map
+your channels onto the canonical set — error-prone and difficult
+to keep aligned with the pretrained weights.</p>
+</section>
+<section id="the-fix-a-one-line-from-pretrained">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">The fix: a one-line <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code></a><a class="headerlink" href="#the-fix-a-one-line-from-pretrained" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatedLaBraM</span></code></a> is a subclass of
+<a class="reference internal" href="../../generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Labram</span></code></a> that prepends a frozen
+spatial-interpolation layer.  From the user’s side it accepts any
+<code class="docutils literal notranslate"><span class="pre">chs_info</span></code>; from the backbone’s side the input is always the
+canonical 128-channel tensor the pretrained weights expect.</p>
+<p>This means the standard <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code> workflow just works:
+pass your own <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> (and the same <code class="docutils literal notranslate"><span class="pre">n_times</span></code> the
+checkpoint was trained on, here 3000 samples), use
+<code class="docutils literal notranslate"><span class="pre">strict=False</span></code> because the interpolation matrix is not in the
+checkpoint, and you are done.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">InterpolatedLaBraM</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span>
+    <span class="s2">&quot;braindecode/labram-pretrained&quot;</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span>
+    <span class="n">n_times</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+    <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">patch_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded checkpoint, model has </span><span class="si">{</span><a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_chans</span><span class="si">}</span><span class="s2"> channels&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;chs_info matches the user&#39;s: </span><span class="si">{</span><a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, ...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loaded checkpoint, model has 22 channels
+chs_info matches the user&#39;s: Fz, ...
+</pre></div>
+</div>
+<p>A forward pass goes through the interpolation layer first and
+the pretrained backbone second, returning logits of the user’s
+requested <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">),</span> <span class="mi">3000</span><span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.eval" title="torch.nn.Module.eval" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">eval</span></a><span class="p">()</span>
+<span class="k">with</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input  : </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output : </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Input  : (2, 22, 3000)
+Output : (2, 4)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Why <code class="docutils literal notranslate"><span class="pre">strict=False</span></code>? In the default (frozen) mode the
+interpolation matrix is a <em>non-persistent buffer</em>: it is
+derived from your <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> at construction time and is
+deliberately absent from <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>.  Loading without
+<code class="docutils literal notranslate"><span class="pre">strict=False</span></code> is also fine in practice — there are no
+extra keys to complain about — but <code class="docutils literal notranslate"><span class="pre">strict=False</span></code> is the
+safe default when mixing user-provided geometry with
+third-party checkpoints.</p>
+</div>
+</section>
+<section id="under-the-hood-mne-backed-spline-interpolation">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Under the hood: MNE-backed spline interpolation</a><a class="headerlink" href="#under-the-hood-mne-backed-spline-interpolation" title="Link to this heading">#</a></h2>
+<p>The interpolation layer is a thin
+<a class="reference internal" href="../../generated/filter/braindecode.modules.ChannelInterpolationLayer.html#braindecode.modules.ChannelInterpolationLayer" title="braindecode.modules.ChannelInterpolationLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelInterpolationLayer</span></code></a> whose
+forward pass is a single matrix multiplication:</p>
+<div class="math notranslate nohighlight">
+\[x_{\text{target}} = W \cdot x_{\text{source}},\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">W</span></code> has shape <code class="docutils literal notranslate"><span class="pre">(n_target_chans,</span> <span class="pre">n_source_chans)</span></code>.
+<code class="docutils literal notranslate"><span class="pre">W</span></code> is built once at construction time using
+<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.interpolate_to" title="(in MNE v1.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne.io.Raw.interpolate_to()</span></code></a> (spline interpolation): for
+every target sensor position, MNE fits a smooth spherical-spline
+field through the source signals and reads its value at the
+target.  This produces a fixed linear combination per target
+channel that depends only on the geometry, not on the data.</p>
+<p>We can read <code class="docutils literal notranslate"><span class="pre">W</span></code> directly from the model:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">W</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">interpolation_layer</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_chs_info</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">InterpolatedLaBraM</span><span class="o">.</span><span class="n">_TARGET_CHS_INFO</span></a>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_names</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;ch_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_chs_info</span></a><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;W shape: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">W</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2"> (target × source)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>W shape: (128, 22) (target × source)
+</pre></div>
+</div>
+<section id="visualising-the-spatial-filters">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Visualising the spatial filters</a><a class="headerlink" href="#visualising-the-spatial-filters" title="Link to this heading">#</a></h3>
+<p>Each row of <code class="docutils literal notranslate"><span class="pre">W</span></code> is a <em>spatial filter</em>: it tells how the
+22 source channels are linearly combined to estimate one target
+channel that the source montage does not have.  The natural way
+to look at a spatial filter is a scalp topomap on the source
+channel positions: red areas mean source channels with positive
+weight, blue areas mean negative weight.</p>
+<p>We pick three canonical target channels that are <strong>not</strong> in our
+source montage (so they are genuinely interpolated, not just
+passed through), spread across frontal, temporal, and occipital
+regions:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#set" title="builtins.set" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src_names_lower</span></a> <span class="o">=</span> <span class="p">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">user_ch_names</span></a><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_names_lower</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_names</span></a><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_targets</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FP1&quot;</span><span class="p">,</span> <span class="s2">&quot;T7&quot;</span><span class="p">,</span> <span class="s2">&quot;O1&quot;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_idx</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_names_lower</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_targets</span></a><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#set" title="builtins.set" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src_names_lower</span></a> <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_targets</span></a><span class="p">),</span> <span class="p">(</span>
+    <span class="s2">&quot;chosen targets must be interpolated, not name-matched&quot;</span>
+<span class="p">)</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_targets</span></a><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">110</span><span class="p">)</span>
+<span class="k">for</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">idx</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_targets</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chosen_idx</span></a><span class="p">):</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weights</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">W</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">idx</span></a><span class="p">]</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vmax</span></a> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weights</span></a><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <a href="https://mne.tools/stable/generated/mne.viz.plot_topomap.html#mne.viz.plot_topomap" title="mne.viz.plot_topomap" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">plot_topomap</span></a><span class="p">(</span>
+        <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weights</span></a><span class="p">,</span>
+        <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_info</span></a><span class="p">,</span>
+        <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span>
+        <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+        <span class="n">vlim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vmax</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vmax</span></a><span class="p">),</span>
+        <span class="n">contours</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">sensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target = </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span>
+    <span class="s2">&quot;Spatial filter (one row of W) used to estimate each target channel</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;from the 22 source channels&quot;</span><span class="p">,</span>
+    <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="mf">1.05</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_channel_interpolation_001.png" srcset="../../_images/sphx_glr_plot_channel_interpolation_001.png" alt="Spatial filter (one row of W) used to estimate each target channel from the 22 source channels, target = FP1, target = T7, target = O1" class = "sphx-glr-single-img"/><p>Notice how each filter is <strong>localised under the target sensor</strong>:
+to estimate the signal at Fp1 the layer relies mostly on the
+frontal source channels, T7 leans on the left central row, and
+O1 mixes the parieto-occipital source channels.  This is the
+spline interpolation doing exactly what one would expect from a
+scalp field smoothed across sensor positions.</p>
+<p>Because <code class="docutils literal notranslate"><span class="pre">W</span></code> depends only on positions, channels that share a
+name between source and target (here <code class="docutils literal notranslate"><span class="pre">Fz</span></code>, <code class="docutils literal notranslate"><span class="pre">Cz</span></code>, <code class="docutils literal notranslate"><span class="pre">Pz</span></code>,
+<code class="docutils literal notranslate"><span class="pre">POz</span></code>) get a one-hot row and pass through unchanged — so the
+pretrained weights see those source channels exactly where they
+expect them.</p>
+</section>
+</section>
+<section id="other-shipped-variants">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Other shipped variants</a><a class="headerlink" href="#other-shipped-variants" title="Link to this heading">#</a></h2>
+<p>The same recipe applies to the other foundation models that
+ship a fixed pretrained montage.  Construction-only examples
+(without loading the actual checkpoints):</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_biot</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedBIOT</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span>
+    <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_times</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_biot</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_biot</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">),</span> <span class="mi">2000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;InterpolatedBIOT  output: </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_biot</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<a href="../../generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_sjepa</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedSignalJEPA</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span>
+    <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_times</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_sjepa</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_sjepa</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">),</span> <span class="mi">512</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;InterpolatedSignalJEPA features: </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_sjepa</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>InterpolatedBIOT  output: (2, 4)
+InterpolatedSignalJEPA features: (2, 186, 64)
+</pre></div>
+</div>
+<p>To load the corresponding pretrained weights, swap the
+constructor for <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_biot</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedBIOT</span></a><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+    <span class="s2">&quot;braindecode/biot-pretrained-shhs-prest-18chs&quot;</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span>
+    <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="plot_load_pretrained_models.html#load-pretrained-models"><span class="std std-ref">Loading and Adapting Pretrained Foundation Models</span></a> for the available checkpoints.</p>
+</section>
+<section id="making-the-interpolation-trainable">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Making the interpolation trainable</a><a class="headerlink" href="#making-the-interpolation-trainable" title="Link to this heading">#</a></h2>
+<p>By default the interpolation matrix is a frozen, non-persistent
+buffer — recomputed from <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> at every <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and
+never updated by the optimizer.  This is the safe choice for
+linear probing: the pretrained weights see exactly the input
+they were trained for.</p>
+<p>For larger fine-tuning budgets you can let the network learn a
+better spatial projection by passing <code class="docutils literal notranslate"><span class="pre">trainable=True</span></code>.  The
+matrix is then an <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Parameter</span></code>, initialised from
+the same MNE spline interpolation, optimised jointly with the
+backbone, and saved to <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_trainable</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">InterpolatedLaBraM</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_info</span></a><span class="p">,</span>
+    <span class="n">n_times</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+    <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">patch_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">trainable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trainable interpolation parameters:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.parameter.Parameter.html#torch.nn.parameter.Parameter" title="torch.nn.parameter.Parameter" class="sphx-glr-backref-module-torch-nn-parameter sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">p</span></a> <span class="ow">in</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.named_parameters" title="torch.nn.Module.named_parameters" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model_trainable</span><span class="o">.</span><span class="n">named_parameters</span></a><span class="p">():</span>
+    <span class="k">if</span> <span class="s2">&quot;interpolation_layer&quot;</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="si">}</span><span class="s2">  shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">p</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">  requires_grad=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Trainable interpolation parameters:
+  interpolation_layer.matrix  shape=(128, 22)  requires_grad=True
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Summary</a><a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Interpolated*</span></code> wrappers let you call <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>
+on a foundation-model checkpoint with <strong>any</strong> channel layout,
+in one line.</p></li>
+<li><p>The projection is built once from MNE’s spline interpolation
+and stored as a frozen non-persistent buffer — safe for
+linear probing.</p></li>
+<li><p>For larger fine-tuning budgets, <code class="docutils literal notranslate"><span class="pre">trainable=True</span></code> turns it
+into an <code class="docutils literal notranslate"><span class="pre">nn.Parameter</span></code> initialised from the same MNE
+solution.</p></li>
+<li><p>The shipped variants are
+<a class="reference internal" href="../../generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatedLaBraM</span></code></a>,
+<a class="reference internal" href="../../generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatedBIOT</span></code></a>, and
+<a class="reference internal" href="../../generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatedSignalJEPA</span></code></a>; for
+custom backbones, use the
+<a class="reference internal" href="../../generated/braindecode.models.InterpolatedModel.html#braindecode.models.InterpolatedModel" title="braindecode.models.InterpolatedModel"><code class="xref py py-func docutils literal notranslate"><span class="pre">InterpolatedModel()</span></code></a> factory.</p></li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.578 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1464 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-channel-interpolation-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/64c99f99abefd72dcd2a3f5e7ddebfce/plot_channel_interpolation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_channel_interpolation.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/68b36b2179fc8bf1bbcb44f4ff756870/plot_channel_interpolation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_channel_interpolation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/fbf72fc397702ea129795d0e096d8016/plot_channel_interpolation.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_channel_interpolation.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+  
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_bcic_iv_2a_moabb_trial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Basic Brain Decoding on EEG Data</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_how_train_test_and_tune.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">How to train, test and tune your model?</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-the-scene-a-real-eeg-dataset">Setting the scene: a real EEG dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-wall-the-pretrained-model-refuses-our-channels">The wall: the pretrained model refuses our channels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-fix-a-one-line-from-pretrained">The fix: a one-line <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-mne-backed-spline-interpolation">Under the hood: MNE-backed spline interpolation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualising-the-spatial-filters">Visualising the spatial filters</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-shipped-variants">Other shipped variants</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#making-the-interpolation-trainable">Making the interpolation trainable</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  <div class="sphx-glr-sidebar-component">
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="plot_channel_interpolation.py">
+          <a download href="../../_downloads/68b36b2179fc8bf1bbcb44f4ff756870/plot_channel_interpolation.py">
+            <i class="fa-solid fa-download"></i>
+            Download source code
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="plot_channel_interpolation.ipynb">
+          <a download href="../../_downloads/64c99f99abefd72dcd2a3f5e7ddebfce/plot_channel_interpolation.ipynb">
+            <i class="fa-solid fa-download"></i>
+            Download Jupyter notebook
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="plot_channel_interpolation.zip">
+          <a download href="../../_downloads/fbf72fc397702ea129795d0e096d8016/plot_channel_interpolation.zip">
+            <i class="fa-solid fa-download"></i>
+            Download zipped
+          </a>
+        </div>
+      
+    
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+
+
+
+
+
+
+<div class="sd-card sd-shadow-sm sd-mb-3">
+  <div class="sd-card-body" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-2" style="margin-bottom:0.75rem;">Run this example</p>
+
+  
+    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/dev/auto_examples/_notebooks/model_building/plot_channel_interpolation.ipynb" target="_blank" rel="noopener">
+      <img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle; height: 20px;">
+    </a>
+
+  </div>
+</div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+    <script src="https://braindecode.org/versionwarning.js"></script>
+    
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2026, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
