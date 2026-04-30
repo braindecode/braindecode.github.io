@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -47,6 +47,7 @@
     <script src="../../_static/documentation_options.js?v=a67c6fc5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
     <script>
@@ -61,7 +62,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-7Q43R82K6D');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/datasets_io/plot_bids_dataset_example';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/datasets_io/bids_dataset_example';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
@@ -70,12 +71,12 @@
             false;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://braindecode.org/auto_examples/datasets_io/plot_bids_dataset_example.html" />
+    <link rel="canonical" href="https://braindecode.org/auto_examples/datasets_io/bids_dataset_example.html" />
     <link rel="icon" href="../../_static/braindecode_symbol.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Custom Dataset Example" href="plot_custom_dataset_example.html" />
-    <link rel="prev" title="Benchmarking preprocessing with parallelization and serialization" href="plot_benchmark_preprocessing.html" />
+    <link rel="next" title="Benchmarking preprocessing with parallelization and serialization" href="plot_benchmark_preprocessing.html" />
+    <link rel="prev" title="Benchmarking eager and lazy loading" href="benchmark_lazy_eager_loading.html" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -462,8 +463,8 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Loading and organizing data</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_custom_dataset_example.html">Custom Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_load_save_datasets.html">Load and save dataset example</a></li>
@@ -559,57 +560,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#sphx-glr-download-auto-examples-datasets-io-plot-bids-dataset-example-py"><span class="std std-ref">Go to the end</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-datasets-io-bids-dataset-example-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="bids-dataset-example">
-<span id="sphx-glr-auto-examples-datasets-io-plot-bids-dataset-example-py"></span><span id="id1"></span><h1>BIDS Dataset Example<a class="headerlink" href="#bids-dataset-example" title="Link to this heading">#</a></h1>
+<span id="sphx-glr-auto-examples-datasets-io-bids-dataset-example-py"></span><span id="id1"></span><h1>BIDS Dataset Example<a class="headerlink" href="#bids-dataset-example" title="Link to this heading">#</a></h1>
 <p>In this example, we show how to fetch and prepare a BIDS dataset for usage
 with Braindecode.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Path</span></a>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">openneuro</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BIDSDataset</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSDataset</span>
 </pre></div>
 </div>
 <p>First, we download a collection of (fake/empty) BIDS datasets.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import tempfile</span>
 <span class="c1"># data_dir = tempfile.mkdtemp()</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><span class="s2">&quot;~/mne_data/openneuro/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a> <span class="o">=</span> <span class="s2">&quot;ds004745&quot;</span>  <span class="c1"># 200Mb dataset</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">/</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a>
+<span class="n">data_dir</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Path</span></a><span class="p">(</span><span class="s2">&quot;~/mne_data/openneuro/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+<span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;ds004745&quot;</span>  <span class="c1"># 200Mb dataset</span>
+<span class="n">dataset_root</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="n">dataset_name</span>
 
-<span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.exists" title="pathlib.Path.exists" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">dataset_root</span><span class="o">.</span><span class="n">exists</span></a><span class="p">():</span>
-    <span class="n">openneuro</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">,</span> <span class="n">target_dir</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_root</span></a><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">dataset_root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">openneuro</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">target_dir</span><span class="o">=</span><span class="n">dataset_root</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now, loading the dataset is simply a one-line command:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bids_ds</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BIDSDataset</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_root</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bids_ds</span> <span class="o">=</span> <span class="n">BIDSDataset</span><span class="p">(</span><span class="n">dataset_root</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>And we can see that the events of this dataset are set in the <code class="docutils literal notranslate"><span class="pre">.annotations</span></code> attribute of the raw data:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_ds</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bids_ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 54 segments: 1 (6), 10 (6), 2 (6), 3 (6), 4 (6), 5 (6), 6 ...&gt;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.307 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  854 MB</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-bids-dataset-example-py">
+<p><strong>Estimated memory usage:</strong>  0 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-bids-dataset-example-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/5030717acb00990b394b83314b0797d9/plot_bids_dataset_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bids_dataset_example.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/b7179beb2f9c065d6149a3b430876706/bids_dataset_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">bids_dataset_example.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/30a91bd000b8ca7de09186a80855e015/plot_bids_dataset_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bids_dataset_example.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/d97d59da66511d98832bcb84d3cd79f2/bids_dataset_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">bids_dataset_example.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-zip docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/785b84cf493399f25344bd9959efcad5/plot_bids_dataset_example.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_bids_dataset_example.zip</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/1748d5135481b00a862aa2a9c0bc4abd/bids_dataset_example.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">bids_dataset_example.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -627,20 +624,20 @@ with Braindecode.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_benchmark_preprocessing.html"
+       href="benchmark_lazy_eager_loading.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Benchmarking preprocessing with parallelization and serialization</p>
+        <p class="prev-next-title">Benchmarking eager and lazy loading</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_custom_dataset_example.html"
+       href="plot_benchmark_preprocessing.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Custom Dataset Example</p>
+        <p class="prev-next-title">Benchmarking preprocessing with parallelization and serialization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -661,8 +658,8 @@ with Braindecode.</p>
   <div class="sphx-glr-sidebar-component">
     
       
-        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="plot_bids_dataset_example.py">
-          <a download href="../../_downloads/30a91bd000b8ca7de09186a80855e015/plot_bids_dataset_example.py">
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="bids_dataset_example.py">
+          <a download href="../../_downloads/d97d59da66511d98832bcb84d3cd79f2/bids_dataset_example.py">
             <i class="fa-solid fa-download"></i>
             Download source code
           </a>
@@ -670,8 +667,8 @@ with Braindecode.</p>
       
     
       
-        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="plot_bids_dataset_example.ipynb">
-          <a download href="../../_downloads/5030717acb00990b394b83314b0797d9/plot_bids_dataset_example.ipynb">
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="bids_dataset_example.ipynb">
+          <a download href="../../_downloads/b7179beb2f9c065d6149a3b430876706/bids_dataset_example.ipynb">
             <i class="fa-solid fa-download"></i>
             Download Jupyter notebook
           </a>
@@ -679,8 +676,8 @@ with Braindecode.</p>
       
     
       
-        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="plot_bids_dataset_example.zip">
-          <a download href="../../_downloads/785b84cf493399f25344bd9959efcad5/plot_bids_dataset_example.zip">
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="bids_dataset_example.zip">
+          <a download href="../../_downloads/1748d5135481b00a862aa2a9c0bc4abd/bids_dataset_example.zip">
             <i class="fa-solid fa-download"></i>
             Download zipped
           </a>
@@ -703,7 +700,7 @@ with Braindecode.</p>
     <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-2" style="margin-bottom:0.75rem;">Run this example</p>
 
   
-    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/dev/auto_examples/_notebooks/datasets_io/plot_bids_dataset_example.ipynb" target="_blank" rel="noopener">
+    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/dev/auto_examples/_notebooks/datasets_io/bids_dataset_example.ipynb" target="_blank" rel="noopener">
       <img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle; height: 20px;">
     </a>
 

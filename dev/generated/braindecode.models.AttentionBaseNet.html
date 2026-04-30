@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -47,6 +47,7 @@
     <script src="../_static/documentation_options.js?v=a67c6fc5"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
     <script>
@@ -474,6 +475,7 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGSimpleConv.html">braindecode.models.EEGSimpleConv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGSym.html">braindecode.models.EEGSym</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGTCNet.html">braindecode.models.EEGTCNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.models.EMG2QwertyNet.html">braindecode.models.EMG2QwertyNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.FBCNet.html">braindecode.models.FBCNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.FBLightConvNet.html">braindecode.models.FBLightConvNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.FBMSNet.html">braindecode.models.FBMSNet</a></li>
@@ -486,6 +488,7 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.Labram.html">braindecode.models.Labram</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.LUNA.html">braindecode.models.LUNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.MEDFormer.html">braindecode.models.MEDFormer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.models.MetaNeuromotorHand.html">braindecode.models.MetaNeuromotorHand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.MSVTNet.html">braindecode.models.MSVTNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.PBT.html">braindecode.models.PBT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.REVE.html">braindecode.models.REVE</a></li>
@@ -873,9 +876,9 @@ classification.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><em>Operations.</em></p></li>
-<li><p><strong>Temporal conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>) with kernel <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L_t)</span></code> creates a learned
+<li><p><strong>Temporal conv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code>) with kernel <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">L_t)</span></code> creates a learned
 FIR-like filter bank with <code class="docutils literal notranslate"><span class="pre">n_temporal_filters</span></code> maps.</p></li>
-<li><p><strong>Depthwise spatial conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>, <code class="docutils literal notranslate"><span class="pre">groups=n_temporal_filters</span></code>)
+<li><p><strong>Depthwise spatial conv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code>, <code class="docutils literal notranslate"><span class="pre">groups=n_temporal_filters</span></code>)
 with kernel <code class="docutils literal notranslate"><span class="pre">(n_chans,</span> <span class="pre">1)</span></code> learns per-filter spatial projections over the full montage.</p></li>
 <li><p><strong>BatchNorm → ELU → AvgPool → Dropout</strong> stabilize and downsample time.</p></li>
 <li><p>Output shape: <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">F2,</span> <span class="pre">1,</span> <span class="pre">T₁)</span></code> with <code class="docutils literal notranslate"><span class="pre">F2</span> <span class="pre">=</span> <span class="pre">n_temporal_filters</span> <span class="pre">x</span> <span class="pre">spatial_expansion</span></code>.</p></li>
@@ -916,7 +919,7 @@ before the classifier; complements the convolutional priors with adaptive re-wei
 <ul class="simple">
 <li><p><strong>Classifier (aggregation + readout)</strong></p></li>
 </ul>
-<p><em>Operations.</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Flatten</span></code> → <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a> from
+<p><em>Operations.</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Flatten</span></code> → <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code> from
 <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">ch_dim·T₂)</span></code> to classes.</p>
 <p class="rubric">Convolutional Details</p>
 <ul class="simple">
@@ -1066,7 +1069,7 @@ the attention mechanism for further processing.</p></li>
 quantization or clustering strategies.</p></li>
 <li><p><strong>kernel_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The kernel size used in certain types of attention mechanisms for convolution
 operations.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation function class to apply. Should be a PyTorch activation
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]</span>) – Activation function class to apply. Should be a PyTorch activation
 module class like <code class="docutils literal notranslate"><span class="pre">nn.ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">nn.ELU</span></code>.</p></li>
 <li><p><strong>extra_params</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Flag to indicate whether additional, custom parameters should be passed to
 the attention mechanism.</p></li>

@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -47,6 +47,7 @@
     <script src="../_static/documentation_options.js?v=a67c6fc5"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-7Q43R82K6D"></script>
     <script>
@@ -474,6 +475,7 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGSimpleConv.html">braindecode.models.EEGSimpleConv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGSym.html">braindecode.models.EEGSym</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.EEGTCNet.html">braindecode.models.EEGTCNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.models.EMG2QwertyNet.html">braindecode.models.EMG2QwertyNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.FBCNet.html">braindecode.models.FBCNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.FBLightConvNet.html">braindecode.models.FBLightConvNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.FBMSNet.html">braindecode.models.FBMSNet</a></li>
@@ -486,6 +488,7 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.Labram.html">braindecode.models.Labram</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.LUNA.html">braindecode.models.LUNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.MEDFormer.html">braindecode.models.MEDFormer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.models.MetaNeuromotorHand.html">braindecode.models.MetaNeuromotorHand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.MSVTNet.html">braindecode.models.MSVTNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.PBT.html">braindecode.models.PBT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.models.REVE.html">braindecode.models.REVE</a></li>
@@ -872,14 +875,14 @@ stack; and swaps the MLP head for a TCN suited to 1-D EEG sequences.</p>
 <div><ul class="simple">
 <li><p><em>Operations.</em></p></li>
 <li><dl class="simple">
-<dt><strong>Temporal conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>) with kernel <code class="docutils literal notranslate"><span class="pre">(L_t,</span> <span class="pre">1)</span></code> builds a</dt><dd><p>FIR-like filter bank (<code class="docutils literal notranslate"><span class="pre">F1</span></code> maps).</p>
+<dt><strong>Temporal conv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code>) with kernel <code class="docutils literal notranslate"><span class="pre">(L_t,</span> <span class="pre">1)</span></code> builds a</dt><dd><p>FIR-like filter bank (<code class="docutils literal notranslate"><span class="pre">F1</span></code> maps).</p>
 </dd>
 </dl>
 </li>
-<li><p><strong>Depthwise spatial conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>, <code class="docutils literal notranslate"><span class="pre">groups=F1</span></code>) with kernel
+<li><p><strong>Depthwise spatial conv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code>, <code class="docutils literal notranslate"><span class="pre">groups=F1</span></code>) with kernel
 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">n_chans)</span></code> learns per-filter spatial projections (akin to EEGNet’s CSP-like step).</p></li>
 <li><p><strong>BN → ELU → AvgPool → Dropout</strong> to stabilize and condense activations.</p></li>
-<li><p><strong>Refining temporal conv</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code></a>) with kernel <code class="docutils literal notranslate"><span class="pre">(L_r,</span> <span class="pre">1)</span></code> +
+<li><p><strong>Refining temporal conv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Conv2d</span></code>) with kernel <code class="docutils literal notranslate"><span class="pre">(L_r,</span> <span class="pre">1)</span></code> +
 <strong>BN → ELU → AvgPool → Dropout</strong>.</p></li>
 </ul>
 </div></blockquote>
@@ -904,9 +907,9 @@ encoders over shifted contexts and is key to robustness on nonstationary EEG.</p
 <ul class="simple">
 <li><p><em>Operations.</em></p></li>
 <li><p>Rearrange to <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">T_w,</span> <span class="pre">F2)</span></code>,</p></li>
-<li><p>Normalization <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html#torch.nn.LayerNorm" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.LayerNorm</span></code></a></p></li>
+<li><p>Normalization <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.LayerNorm</span></code></p></li>
 <li><p>Custom MultiHeadAttention <code class="xref py py-class docutils literal notranslate"><span class="pre">_MHA</span></code> (<code class="docutils literal notranslate"><span class="pre">num_heads=H</span></code>, per-head dim <code class="docutils literal notranslate"><span class="pre">d_h</span></code>) + residual add,</p></li>
-<li><p>Dropout <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout.html#torch.nn.Dropout" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Dropout</span></code></a></p></li>
+<li><p>Dropout <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Dropout</span></code></p></li>
 <li><p>Rearrange back to <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">F2,</span> <span class="pre">T_w)</span></code>.</p></li>
 </ul>
 <p><em>Role.</em> Re-weights evidence across the window, letting the model emphasize informative
@@ -1039,7 +1042,7 @@ as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id21">[1]</a>.</
 <li><p><strong>tcn_kernel_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Temporal kernel size used in TCN block, denoted Kt in table 1 of the
 paper <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id22">[1]</a>. Defaults to 4 as in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id23">[1]</a>.</p></li>
 <li><p><strong>tcn_drop_prob</strong> – The description is missing.</p></li>
-<li><p><strong>tcn_activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Nonlinear activation to use. Defaults to nn.ELU().</p></li>
+<li><p><strong>tcn_activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]</span>) – Nonlinear activation to use. Defaults to nn.ELU().</p></li>
 <li><p><strong>concat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, concatenates each slidding window embedding before
 feeding it to a fully-connected layer, as done in <a class="reference internal" href="#r2ecdb73d6ab9-1" id="id24">[1]</a>. When <code class="docutils literal notranslate"><span class="pre">False</span></code>,
 maps each slidding window to <cite>n_outputs</cite> logits and average them.
@@ -1156,10 +1159,10 @@ registered hooks while the latter silently ignores them.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – The description is missing.</p>
+<dd class="field-odd"><p><strong>X</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The description is missing.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
