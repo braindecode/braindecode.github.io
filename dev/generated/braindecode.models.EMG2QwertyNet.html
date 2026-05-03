@@ -776,7 +776,33 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.util.set_random_seeds.html">braindecode.util.set_random_seeds</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.compute_amplitude_gradients.html">braindecode.visualization.compute_amplitude_gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.saliency.html">braindecode.visualization.saliency</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.input_x_gradient.html">braindecode.visualization.input_x_gradient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.integrated_gradients.html">braindecode.visualization.integrated_gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.layer_grad_cam.html">braindecode.visualization.layer_grad_cam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.guided_backprop.html">braindecode.visualization.guided_backprop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.deconvolution.html">braindecode.visualization.deconvolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.deep_lift.html">braindecode.visualization.deep_lift</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.lrp.html">braindecode.visualization.lrp</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.amplitude_gradients.html">braindecode.visualization.amplitude_gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.amplitude_gradients_per_trial.html">braindecode.visualization.amplitude_gradients_per_trial</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.random_target.html">braindecode.visualization.random_target</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.cascading_layer_reset.html">braindecode.visualization.cascading_layer_reset</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.compute_metrics.html">braindecode.visualization.compute_metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.compute_ssim_metrics.html">braindecode.visualization.compute_ssim_metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.METRIC_NAMES.html">braindecode.visualization.METRIC_NAMES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.SSIM_METRIC_NAMES.html">braindecode.visualization.SSIM_METRIC_NAMES</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.project_to_topomap.html">braindecode.visualization.project_to_topomap</a></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="braindecode.visualization.plot_confusion_matrix.html">braindecode.visualization.plot_confusion_matrix</a></li>
 </ul>
 </div>
@@ -855,11 +881,11 @@ typing vocabulary (98 keys + 1 CTC blank).</p>
 <p class="rubric">Pipeline</p>
 <ol class="arabic simple">
 <li><p><strong>Log-spectrogram front-end</strong>: per-channel Short-Time Fourier
-Transform (<code class="xref py py-func docutils literal notranslate"><span class="pre">stft()</span></code>) with Hann window, <code class="docutils literal notranslate"><span class="pre">center=False</span></code>,
+Transform (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.stft.html#torch.stft" title="(in PyTorch v2.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">stft()</span></code></a>) with Hann window, <code class="docutils literal notranslate"><span class="pre">center=False</span></code>,
 then squared magnitude and <code class="docutils literal notranslate"><span class="pre">log10(p</span> <span class="pre">+</span> <span class="pre">log_eps)</span></code>. With the
 defaults (<code class="docutils literal notranslate"><span class="pre">n_fft=64</span></code>, <code class="docutils literal notranslate"><span class="pre">hop_length=16</span></code>, <code class="docutils literal notranslate"><span class="pre">sfreq=2000</span></code>) the
 output frame rate is 125 Hz. No trainable parameters.</p></li>
-<li><p><strong>Spectrogram BatchNorm</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm2d</span></code> over
+<li><p><strong>Spectrogram BatchNorm</strong>: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html#torch.nn.BatchNorm2d" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm2d</span></code></a> over
 the <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">freq,</span> <span class="pre">time)</span></code> slice for each of the
 <code class="docutils literal notranslate"><span class="pre">num_bands</span> <span class="pre">×</span> <span class="pre">electrodes_per_band</span></code> channels.</p></li>
 <li><p><strong>Per-band rotation-invariant multi-layer perceptron (MLP)</strong>:
@@ -868,21 +894,21 @@ for each band, a shared MLP is applied to circular rolls
 <li><p><strong>TDS convolutional encoder</strong>: stack of <code class="docutils literal notranslate"><span class="pre">len(block_channels)</span></code>
 TDS conv blocks interleaved with feedforward blocks. No temporal
 padding, so each conv block strips <code class="docutils literal notranslate"><span class="pre">kernel_width</span> <span class="pre">-</span> <span class="pre">1</span></code> frames.</p></li>
-<li><p><strong>Linear classification head</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code>
+<li><p><strong>Linear classification head</strong>: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a>
 projecting to <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code>, optionally followed by
-<code class="xref py py-func docutils literal notranslate"><span class="pre">log_softmax()</span></code> (off by default;
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.log_softmax.html#torch.nn.functional.log_softmax" title="(in PyTorch v2.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_softmax()</span></code></a> (off by default;
 braindecode models return logits).</p></li>
 </ol>
 <p class="rubric">Output</p>
 <p>Returns <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">T_out,</span> <span class="pre">n_outputs)</span></code>. With <code class="docutils literal notranslate"><span class="pre">n_times=8000</span></code> and
-defaults, <code class="docutils literal notranslate"><span class="pre">T_out=373</span></code>. For <code class="xref py py-class docutils literal notranslate"><span class="pre">CTCLoss</span></code>, transpose
+defaults, <code class="docutils literal notranslate"><span class="pre">T_out=373</span></code>. For <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.CTCLoss.html#torch.nn.CTCLoss" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CTCLoss</span></code></a>, transpose
 to <code class="docutils literal notranslate"><span class="pre">(T_out,</span> <span class="pre">batch,</span> <span class="pre">n_outputs)</span></code>; use <a class="reference internal" href="#braindecode.models.EMG2QwertyNet.compute_output_lengths" title="braindecode.models.EMG2QwertyNet.compute_output_lengths"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_output_lengths()</span></code></a>
 for emission lengths.</p>
 <p class="rubric">Paper training recipe</p>
 <ul class="simple">
-<li><p><strong>Loss</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">CTCLoss</span></code> on log-softmax outputs.</p></li>
+<li><p><strong>Loss</strong>: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.CTCLoss.html#torch.nn.CTCLoss" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CTCLoss</span></code></a> on log-softmax outputs.</p></li>
 <li><p><strong>Vocabulary</strong>: 98 keys + 1 blank (<code class="docutils literal notranslate"><span class="pre">n_outputs</span> <span class="pre">=</span> <span class="pre">99</span></code>).</p></li>
-<li><p><strong>Optimizer</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">Adam</span></code>, lr 1e-3, weight decay 0.</p></li>
+<li><p><strong>Optimizer</strong>: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Adam</span></code></a>, lr 1e-3, weight decay 0.</p></li>
 <li><p><strong>Schedule</strong>: 10-epoch linear warmup from lr 1e-8, then cosine
 annealing to 1e-6 over 150 epochs. The slow warmup is required.
 Without it, CTC collapses to all-blank within one epoch (a trivial
@@ -941,16 +967,16 @@ rotation invariance. Defaults to <code class="docutils literal notranslate"><spa
 <code class="docutils literal notranslate"><span class="pre">num_features</span> <span class="pre">=</span> <span class="pre">num_bands</span> <span class="pre">*</span> <span class="pre">mlp_features[-1]</span></code> must be evenly
 divisible by each entry.</p></li>
 <li><p><strong>kernel_width</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Temporal kernel size of each TDS convolutional block.</p></li>
-<li><p><strong>log_softmax</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, apply <code class="xref py py-func docutils literal notranslate"><span class="pre">log_softmax()</span></code> to the
+<li><p><strong>log_softmax</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, apply <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.log_softmax.html#torch.nn.functional.log_softmax" title="(in PyTorch v2.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_softmax()</span></code></a> to the
 emissions. Disabled by default (braindecode models return logits).</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]</span>) – Activation class used inside the rotation-invariant MLP and the
-TDS blocks. Defaults to <code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code> (matches upstream
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Activation class used inside the rotation-invariant MLP and the
+TDS blocks. Defaults to <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code></a> (matches upstream
 emg2qwerty). Pass any non-parametrized activation class
-(<code class="xref py py-class docutils literal notranslate"><span class="pre">GELU</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SiLU</span></code>, …) for
+(<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.GELU.html#torch.nn.GELU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GELU</span></code></a>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.SiLU.html#torch.nn.SiLU" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SiLU</span></code></a>, …) for
 ablations.</p></li>
 <li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout probability applied inside each TDS feedforward block,
-once after the activation between the two <code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code>
-layers and again after the second <code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code>.
+once after the activation between the two <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a>
+layers and again after the second <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a>.
 Default <code class="docutils literal notranslate"><span class="pre">0.0</span></code> matches the upstream paper recipe (no dropout).
 Set <code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">0</span></code> for regularized training.</p></li>
 <li><p><strong>n_times</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Number of time samples of the input window.</p></li>
@@ -1089,10 +1115,10 @@ saved to the Hub and restored when loading.</p>
 <span class="pre">n_conv_blocks</span> <span class="pre">*</span> <span class="pre">(kernel_width</span> <span class="pre">-</span> <span class="pre">1)</span></code>, clamped to zero.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_lengths</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – The description is missing.</p>
+<dd class="field-odd"><p><strong>input_lengths</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – The description is missing.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1103,7 +1129,7 @@ saved to the Hub and restored when loading.</p>
 <dd><p>Run the full pipeline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span>) – Raw EMG of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans=32,</span> <span class="pre">n_times)</span></code>. <code class="docutils literal notranslate"><span class="pre">n_times</span></code>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – Raw EMG of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans=32,</span> <span class="pre">n_times)</span></code>. <code class="docutils literal notranslate"><span class="pre">n_times</span></code>
 must be at least the encoder’s receptive field, <code class="docutils literal notranslate"><span class="pre">n_fft</span> <span class="pre">+</span>
 <span class="pre">n_conv_blocks</span> <span class="pre">*</span> <span class="pre">(kernel_width</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">hop_length</span></code>.</p>
 </dd>
@@ -1112,7 +1138,7 @@ must be at least the encoder’s receptive field, <code class="docutils literal 
 <code class="docutils literal notranslate"><span class="pre">log_softmax=True</span></code>, otherwise logits.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1141,7 +1167,7 @@ at construction time.</p>
 <dt class="sig sig-object py" id="braindecode.models.EMG2QwertyNet.reset_head">
 <span class="sig-name descname"><span class="pre">reset_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/emg2qwerty.py#L340-L364"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.EMG2QwertyNet.reset_head" title="Link to this definition">#</a></dt>
 <dd><p>Replace the classification head for a new vocabulary size.</p>
-<p>The replacement <code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code> inherits the existing
+<p>The replacement <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span></code></a> inherits the existing
 head’s dtype and device so a subsequent <code class="docutils literal notranslate"><span class="pre">forward()</span></code> does not
 crash after <code class="docutils literal notranslate"><span class="pre">model.double()</span></code> or <code class="docutils literal notranslate"><span class="pre">model.to(device)</span></code>. The
 captured init config (<code class="docutils literal notranslate"><span class="pre">get_config()</span></code>) is also kept in sync so

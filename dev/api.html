@@ -493,7 +493,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section id="models">
 <h2>Models<a class="headerlink" href="#models" title="Link to this heading">#</a></h2>
 <p>Model zoo availables in braindecode. The models are implemented as <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code>
-<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code> and can be used for various EEG decoding ways tasks.</p>
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> and can be used for various EEG decoding ways tasks.</p>
 <p>All the models have the convention of having the signal related parameters named the
 same way, following the braindecode’s standards:</p>
 <ul class="simple">
@@ -1708,21 +1708,141 @@ models and evaluate their performance.</p>
 </section>
 <section id="visualization">
 <h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
-<p>Visualization module contains functions for visualizing EEG data, including plotting the
-confusion matrix and computing amplitude gradients. The visualization module is useful
-for understanding the performance of the model and for interpreting the results.</p>
+<p>Tools for opening up trained EEG decoders: per-trial attribution maps, sanity-check
+protocols that probe whether those maps reflect what the model actually learned,
+attribution-quality metrics, topographic projection, and confusion-matrix plotting.</p>
+<p>The end-to-end workflow tracks the EEG-XAI benchmark of Sujatha Ravindran &amp;
+Contreras-Vidal (Sci Rep 2023, DOI <a class="reference external" href="https://doi.org/10.1038/s41598-023-43871-8">10.1038/s41598-023-43871-8</a>): compute attributions, randomize labels
+and weights, score the resulting maps against the trained-model reference, and decide
+which methods are trustworthy on your data. See the <a class="reference internal" href="auto_examples/advanced_training/plot_interpretability.html#interpretability-tutorial"><span class="std std-ref">interpretability tutorial</span></a> for a worked example on BCI IV 2a.</p>
 <p><code class="xref py py-mod docutils literal notranslate"><span class="pre">braindecode.visualization</span></code>:</p>
+<section id="time-domain-attribution">
+<h3>Time-domain attribution<a class="headerlink" href="#time-domain-attribution" title="Link to this heading">#</a></h3>
+<p>Per-trial attribution maps in the input domain. Each function takes <code class="docutils literal notranslate"><span class="pre">(model,</span> <span class="pre">x,</span>
+<span class="pre">target)</span></code> and returns a tensor with the same spatial shape as <code class="docutils literal notranslate"><span class="pre">x</span></code>; all are thin
+wrappers around <a class="reference external" href="https://captum.ai/">captum</a> (a soft dependency installed via <code class="docutils literal notranslate"><span class="pre">pip</span>
+<span class="pre">install</span> <span class="pre">braindecode[viz]</span></code>) and raise <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImportError</span></code></a> without it.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.compute_amplitude_gradients.html#braindecode.visualization.compute_amplitude_gradients" title="braindecode.visualization.compute_amplitude_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_amplitude_gradients</span></code></a>(model, dataset, ...)</p></td>
-<td><p>Compute amplitude gradients after seeding for reproducibility.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.saliency.html#braindecode.visualization.saliency" title="braindecode.visualization.saliency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saliency</span></code></a>(model, x, target)</p></td>
+<td><p>Vanilla saliency: <code class="docutils literal notranslate"><span class="pre">|d</span> <span class="pre">y[target]</span> <span class="pre">/</span> <span class="pre">d</span> <span class="pre">x|</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.plot_confusion_matrix.html#braindecode.visualization.plot_confusion_matrix" title="braindecode.visualization.plot_confusion_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_confusion_matrix</span></code></a>(confusion_mat[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.input_x_gradient.html#braindecode.visualization.input_x_gradient" title="braindecode.visualization.input_x_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_x_gradient</span></code></a>(model, x, target)</p></td>
+<td><p>Element-wise input × input-gradient.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.integrated_gradients.html#braindecode.visualization.integrated_gradients" title="braindecode.visualization.integrated_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integrated_gradients</span></code></a>(model, x, target[, ...])</p></td>
+<td><p>Integrated Gradients (Sundararajan et al., 2017) via captum.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.layer_grad_cam.html#braindecode.visualization.layer_grad_cam" title="braindecode.visualization.layer_grad_cam"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layer_grad_cam</span></code></a>(model, x, target, layer)</p></td>
+<td><p>Layer GradCAM via captum: class-discriminative localization at <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.guided_backprop.html#braindecode.visualization.guided_backprop" title="braindecode.visualization.guided_backprop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">guided_backprop</span></code></a>(model, x, target)</p></td>
+<td><p>GuidedBackprop attribution (Springenberg et al., 2014) via captum.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.deconvolution.html#braindecode.visualization.deconvolution" title="braindecode.visualization.deconvolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deconvolution</span></code></a>(model, x, target)</p></td>
+<td><p>DeconvNet-style attribution (Zeiler &amp; Fergus, 2014) via captum.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.deep_lift.html#braindecode.visualization.deep_lift" title="braindecode.visualization.deep_lift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_lift</span></code></a>(model, x, target[, baseline])</p></td>
+<td><p>DeepLIFT attribution (Shrikumar et al., 2017) via captum.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.lrp.html#braindecode.visualization.lrp" title="braindecode.visualization.lrp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lrp</span></code></a>(model, x, target)</p></td>
+<td><p>Layer-wise Relevance Propagation (Bach et al., 2015) via captum.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="frequency-domain-attribution">
+<h3>Frequency-domain attribution<a class="headerlink" href="#frequency-domain-attribution" title="Link to this heading">#</a></h3>
+<p>Gradient of each model output with respect to the <strong>amplitude spectrum</strong> of the input —
+a complement to the time-domain methods that makes oscillatory contributions (e.g.
+alpha/beta motor imagery) visible directly in the topomap. Implemented in pure PyTorch
+via <code class="docutils literal notranslate"><span class="pre">rfft</span></code>/<code class="docutils literal notranslate"><span class="pre">irfft</span></code> round-tripping; no captum needed.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.amplitude_gradients.html#braindecode.visualization.amplitude_gradients" title="braindecode.visualization.amplitude_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amplitude_gradients</span></code></a>(model, x)</p></td>
+<td><p>Per-batch amplitude gradients.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.amplitude_gradients_per_trial.html#braindecode.visualization.amplitude_gradients_per_trial" title="braindecode.visualization.amplitude_gradients_per_trial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amplitude_gradients_per_trial</span></code></a>(model, ...)</p></td>
+<td><p>Concatenated <a class="reference internal" href="generated/braindecode.visualization.amplitude_gradients.html#braindecode.visualization.amplitude_gradients" title="braindecode.visualization.amplitude_gradients"><code class="xref py py-func docutils literal notranslate"><span class="pre">amplitude_gradients()</span></code></a> over every trial in a dataset.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sanity-check-protocols">
+<h3>Sanity-check protocols<a class="headerlink" href="#sanity-check-protocols" title="Link to this heading">#</a></h3>
+<p>Adebayo et al. (NeurIPS 2018) randomization checks for attribution maps, reused on EEG
+decoders by Sujatha Ravindran &amp; Contreras-Vidal. <a class="reference internal" href="generated/braindecode.visualization.random_target.html#braindecode.visualization.random_target" title="braindecode.visualization.random_target"><code class="xref py py-func docutils literal notranslate"><span class="pre">random_target()</span></code></a> powers the
+<strong>label-randomization</strong> check (does the map change when you ask about the wrong class?)
+and <a class="reference internal" href="generated/braindecode.visualization.cascading_layer_reset.html#braindecode.visualization.cascading_layer_reset" title="braindecode.visualization.cascading_layer_reset"><code class="xref py py-func docutils literal notranslate"><span class="pre">cascading_layer_reset()</span></code></a> powers the <strong>weight-randomization</strong> check (does the
+map collapse as the trained weights are progressively replaced?). An attribution method
+that survives both is suspicious — its output likely reflects architecture rather than
+learning.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.random_target.html#braindecode.visualization.random_target" title="braindecode.visualization.random_target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_target</span></code></a>(target, n_classes[, generator])</p></td>
+<td><p>Return labels uniformly sampled from <code class="docutils literal notranslate"><span class="pre">{0,</span> <span class="pre">...,</span> <span class="pre">n_classes-1}</span> <span class="pre">\</span> <span class="pre">target</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.cascading_layer_reset.html#braindecode.visualization.cascading_layer_reset" title="braindecode.visualization.cascading_layer_reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cascading_layer_reset</span></code></a>(model[, deepcopy_first])</p></td>
+<td><p>Yield model copies with progressively-randomized parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="attribution-quality-metrics">
+<h3>Attribution-quality metrics<a class="headerlink" href="#attribution-quality-metrics" title="Link to this heading">#</a></h3>
+<p>Score how similar two attribution maps are: typically a trained-model attribution
+against a randomized-model attribution, or against a ground-truth mask from a simulator.
+<a class="reference internal" href="generated/braindecode.visualization.compute_metrics.html#braindecode.visualization.compute_metrics" title="braindecode.visualization.compute_metrics"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_metrics()</span></code></a> returns twelve cosine / Pearson / mass-accuracy / rank-accuracy
+variants; <a class="reference internal" href="generated/braindecode.visualization.compute_ssim_metrics.html#braindecode.visualization.compute_ssim_metrics" title="braindecode.visualization.compute_ssim_metrics"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_ssim_metrics()</span></code></a> adds four SSIM-based scores using a pure-torch
+reimplementation of skimage’s structural similarity (no extra dependency). Pass
+<code class="docutils literal notranslate"><span class="pre">chs_info=</span></code> to score topographic projections instead of raw attribution maps.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.compute_metrics.html#braindecode.visualization.compute_metrics" title="braindecode.visualization.compute_metrics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_metrics</span></code></a>(explanations, reference[, ...])</p></td>
+<td><p>Compute attribution-quality metrics between explanations and reference.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.compute_ssim_metrics.html#braindecode.visualization.compute_ssim_metrics" title="braindecode.visualization.compute_ssim_metrics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_ssim_metrics</span></code></a>(explanations, reference)</p></td>
+<td><p>Compute four SSIM-based attribution-quality metrics.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.METRIC_NAMES.html#braindecode.visualization.METRIC_NAMES" title="braindecode.visualization.METRIC_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">METRIC_NAMES</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/braindecode.visualization.SSIM_METRIC_NAMES.html#braindecode.visualization.SSIM_METRIC_NAMES" title="braindecode.visualization.SSIM_METRIC_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSIM_METRIC_NAMES</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="topography">
+<h3>Topography<a class="headerlink" href="#topography" title="Link to this heading">#</a></h3>
+<p>Project per-channel scalar values onto a 2-D scalp topomap grid via Clough-Tocher
+triangulation on MNE-derived sensor coordinates. Returns a plain <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> so callers
+can compose with their own plotting stack rather than going through
+<a class="reference external" href="https://mne.tools/stable/generated/mne.viz.plot_topomap.html#mne.viz.plot_topomap" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.viz.plot_topomap()</span></code></a> (and its matplotlib roundtrip).</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.project_to_topomap.html#braindecode.visualization.project_to_topomap" title="braindecode.visualization.project_to_topomap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_to_topomap</span></code></a>(data, chs_info[, res])</p></td>
+<td><p>Project per-channel attribution values onto a 2-D scalp topomap grid.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="plotting">
+<h3>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/braindecode.visualization.plot_confusion_matrix.html#braindecode.visualization.plot_confusion_matrix" title="braindecode.visualization.plot_confusion_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_confusion_matrix</span></code></a>(confusion_mat[, ...])</p></td>
 <td><p>Generates a confusion matrix with additional precision and sensitivity metrics as in <a class="reference internal" href="generated/braindecode.visualization.plot_confusion_matrix.html#r8046536b33dd-1" id="id72"><span>[R8046536b33dd-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+</section>
 </section>
 </section>
 
@@ -1818,7 +1938,15 @@ for understanding the performance of the model and for interpreting the results.
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regressor">Regressor</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils">Utils</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-domain-attribution">Time-domain attribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#frequency-domain-attribution">Frequency-domain attribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-protocols">Sanity-check protocols</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attribution-quality-metrics">Attribution-quality metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#topography">Topography</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">Plotting</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

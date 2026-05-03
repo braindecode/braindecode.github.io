@@ -480,6 +480,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_exca_config.html">Experiment configuration with Pydantic and Exca</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_interpretability.html">Interpretability of EEG Decoders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
@@ -600,7 +601,7 @@ have been instantiated with parameter <cite>preload=False</cite>.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">optim</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.TUHAbnormal.html#braindecode.datasets.TUHAbnormal" title="braindecode.datasets.TUHAbnormal" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUHAbnormal</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a><span class="p">,</span> <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ShallowFBCSPNet</span></a>
@@ -613,9 +614,9 @@ have been instantiated with parameter <cite>preload=False</cite>.</p>
 <p>We start by setting two pytorch internal parameters that can affect the
 comparison:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">N_JOBS</span> <span class="o">=</span> <span class="mi">8</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Enables automatic algorithm optimizations</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">N_JOBS</span><span class="p">)</span>  <span class="c1"># Sets the available number of threads</span>
-<span class="n">cuda</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+<a href="https://docs.pytorch.org/docs/stable/backends.html#torch.backends.cudnn.benchmark" title="torch.backends.cudnn.benchmark" class="sphx-glr-backref-module-torch-backends-cudnn sphx-glr-backref-type-py-attribute"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span></a> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Enables automatic algorithm optimizations</span>
+<a href="https://docs.pytorch.org/docs/stable/generated/torch.set_num_threads.html#torch.set_num_threads" title="torch.set_num_threads" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span></a><span class="p">(</span><span class="n">N_JOBS</span><span class="p">)</span>  <span class="c1"># Sets the available number of threads</span>
+<span class="n">cuda</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span>
 <span class="n">seed</span> <span class="o">=</span> <span class="mi">20240205</span>
 <a href="../../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span><span class="p">)</span>
 </pre></div>
@@ -759,8 +760,8 @@ to prepare the data and train the model.</p>
     <span class="k">if</span> <span class="n">cuda</span><span class="p">:</span>
         <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+    <span class="n">loss</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss" title="torch.nn.CrossEntropyLoss" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span></a><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">optimizer</span>
 
@@ -821,7 +822,7 @@ to prepare the data and train the model.</p>
 <span class="n">NUM_WORKERS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># number of processes used by pytorch&#39;s Dataloader</span>
 <span class="n">PIN_MEMORY</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>  <span class="c1"># whether to use pinned memory</span>
 <span class="n">CUDA</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+    <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span> <span class="k">if</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
 <span class="p">)</span>  <span class="c1"># whether to use a CUDA device</span>
 
 <span class="n">N_REPETITIONS</span> <span class="o">=</span> <span class="p">(</span>
@@ -884,7 +885,7 @@ we set above to evaluate their execution time:</p>
 
     <span class="c1"># Create the data loader</span>
     <span class="n">training_setup_start</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
-    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">dataloader</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DataLoader</span></a><span class="p">(</span>
         <span class="n">dataset</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
         <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
