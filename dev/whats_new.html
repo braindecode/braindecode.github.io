@@ -633,6 +633,10 @@ state rather than trainable weights (<a class="reference external" href="https:/
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">type</span> <span class="pre">'Any'</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">subscriptable</span></code> when importing
 <code class="docutils literal notranslate"><span class="pre">braindecode.models.config</span></code> without <code class="docutils literal notranslate"><span class="pre">numpydantic</span></code> installed on
 Python 3.12+ (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/871">#871</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.create_fixed_length_windows()</span></code></a> crashing
+when only <code class="docutils literal notranslate"><span class="pre">window_size_samples</span></code> is provided without <code class="docutils literal notranslate"><span class="pre">window_stride_samples</span></code>,
+stride now defaults to window size as documented
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/990">#990</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">channel_embedding</span></code> parameter to <a class="reference internal" href="generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA" title="braindecode.models.SignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SignalJEPA</span></code></a> and
 <a class="reference internal" href="generated/braindecode.models.SignalJEPA_Contextual.html#braindecode.models.SignalJEPA_Contextual" title="braindecode.models.SignalJEPA_Contextual"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SignalJEPA_Contextual</span></code></a> to load pre-trained channel
 embedding weights when fine-tuning on a subset of the pre-training channels.
@@ -814,6 +818,14 @@ This replaced every model’s description with the parent mixin’s and
 marked all model-specific parameters as “The description is missing”
 when <code class="docutils literal notranslate"><span class="pre">DOCSTRING_INHERITANCE_ENABLE=1</span></code> was set during documentation
 builds (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/971">#971</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Expose <code class="docutils literal notranslate"><span class="pre">max_nbytes</span></code> directly on
+<code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.preprocessing.preprocess.preprocess()</span></code> and turn the
+cryptic <code class="docutils literal notranslate"><span class="pre">mmap</span> <span class="pre">can't</span> <span class="pre">resize</span> <span class="pre">a</span> <span class="pre">readonly</span></code> failure (raised when joblib
+memory-maps a preloaded array that a preprocessor later tries to
+resize) into an actionable error explaining how to fix it: pass
+<code class="docutils literal notranslate"><span class="pre">max_nbytes=None</span></code> to disable memory mapping, or supply a <code class="docutils literal notranslate"><span class="pre">save_dir</span></code>
+so data is reloaded with <code class="docutils literal notranslate"><span class="pre">preload=False</span></code>
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/325">#325</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
 </ul>
 </section>
 <section id="id3">
