@@ -492,6 +492,25 @@ for surface-EMG inputs shaped <code class="docutils literal notranslate"><span c
 Models small wristband rotation between sessions and relative timing
 noise between two arms, from the emg2qwerty paper (Sivakumar et al.,
 NeurIPS 2024).  By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
+<li><p>Build SpecAugment (Park et al., Interspeech 2019) into
+<a class="reference internal" href="generated/braindecode.models.EMG2QwertyNet.html#braindecode.models.EMG2QwertyNet" title="braindecode.models.EMG2QwertyNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EMG2QwertyNet</span></code></a> as a parameter-free submodule
+gated by a new <code class="docutils literal notranslate"><span class="pre">spec_augment</span></code> constructor flag (default <code class="docutils literal notranslate"><span class="pre">False</span></code>).
+When enabled, applies up to <code class="docutils literal notranslate"><span class="pre">n_time_masks</span></code> × <code class="docutils literal notranslate"><span class="pre">time_mask_param</span></code>
+time bands and <code class="docutils literal notranslate"><span class="pre">n_freq_masks</span></code> × <code class="docutils literal notranslate"><span class="pre">freq_mask_param</span></code> frequency bands
+on the log-spectrogram during <code class="docutils literal notranslate"><span class="pre">train()</span></code> only, with masks sampled
+IID per <code class="docutils literal notranslate"><span class="pre">(sample</span> <span class="pre">×</span> <span class="pre">band</span> <span class="pre">×</span> <span class="pre">electrode)</span></code> triple — same recipe as the
+upstream <code class="docutils literal notranslate"><span class="pre">emg2qwerty.transforms.SpecAugment</span></code> dataset transform. The
+mask fill value stays a 0-D on-device tensor (<code class="docutils literal notranslate"><span class="pre">spec.mean()</span></code>) so the
+forward pass adds no host round-trip on GPU. Also adds a
+<code class="docutils literal notranslate"><span class="pre">return_features</span></code> runtime flag to
+<a class="reference internal" href="generated/braindecode.models.EMG2QwertyNet.html#braindecode.models.EMG2QwertyNet.forward" title="braindecode.models.EMG2QwertyNet.forward"><code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.models.EMG2QwertyNet.forward()</span></code></a> (returns
+<code class="docutils literal notranslate"><span class="pre">{&quot;features&quot;:</span> <span class="pre">(B,</span> <span class="pre">T_out,</span> <span class="pre">num_features),</span> <span class="pre">&quot;cls_token&quot;:</span> <span class="pre">None}</span></code>,
+BIOT / signal-JEPA convention) and a matching <code class="docutils literal notranslate"><span class="pre">return_feature</span></code>
+constructor flag (returns <code class="docutils literal notranslate"><span class="pre">(emissions,</span> <span class="pre">features)</span></code> tuple, BIOT-style
+legacy path) so downstream wrappers — such as neuroai’s
+<code class="docutils literal notranslate"><span class="pre">DownstreamWrapperModel</span></code> — can pick up the encoder representation
+via <code class="docutils literal notranslate"><span class="pre">model_output_key=&quot;features&quot;</span></code> (dict) or <code class="docutils literal notranslate"><span class="pre">model_output_key=1</span></code>
+(tuple) without changes to their call site. By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_target" title="braindecode.datasets.BaseConcatDataset.set_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset.set_target()</span></code></a> to swap
 any per-window metadata column or per-record description field
 (e.g. a BIDS entity, a participants.tsv extra) into the dataset’s
@@ -573,7 +592,7 @@ TDS-Conv-CTC touch-typing decoder from
 model takes raw 32-channel surface EMG (two 16-electrode wristbands at
 2 kHz) and emits per-frame scores over a 99-class typing
 vocabulary (98 keys + CTC blank); pass <code class="docutils literal notranslate"><span class="pre">log_softmax=True</span></code> to get
-log-probabilities directly consumable by <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.CTCLoss.html#torch.nn.CTCLoss" title="(in PyTorch v2.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CTCLoss</span></code></a>. The pipeline is a parameter-free
+log-probabilities directly consumable by <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.CTCLoss.html#torch.nn.CTCLoss" title="(in PyTorch v2.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CTCLoss</span></code></a>. The pipeline is a parameter-free
 log-spectrogram front-end, per-electrode-per-band BatchNorm, a
 circular rotation-invariant MLP (one per band), and a stack of
 Time-Depth-Separable convolutional blocks (Hannun et al., 2019) without
@@ -919,7 +938,7 @@ Ingolfsson</a>)</p></li>
 <li><p>Improve <a class="reference internal" href="generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.preprocessing.Preprocessor</span></code></a> serialisation (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/813">#813</a> by
 <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> )</p></li>
 <li><p>Modify verbosity of create_window_from_events (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/814">#814</a> by <a class="reference external" href="https://github.com/MatthewChen37">Matthew Chen</a>)</p></li>
-<li><p>Including SIENA dataset and CHB_MIT datasets (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/818">#818</a> by <a class="reference external" href="https://github.com/danjjl">Jonathan Dan</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno
+<li><p>Including SIENA dataset and CHB_MIT datasets (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/818">#818</a> by <a class="reference external" href="https://github.com/jon-dan">Jonathan Dan</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno
 Aristimunha</a> )</p></li>
 <li><p>Modify the interface of FBMSNet for consistency with FBCNet + Unit Tests (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/819">#819</a> by
 <a class="reference external" href="https://github.com/MatthewChen37">Matthew Chen</a>)</p></li>
@@ -1076,7 +1095,7 @@ Aristimunha</a>)</p></li>
 <li><p>Added dropdown menus for selecting <cite>paradigm</cite>, <cite>type</cite>, and <cite>hyperparameters</cite> on the
 model summary page. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/718">#718</a> by <cite>Ganasekhar Kalla</cite>)</p></li>
 <li><p>Adding model page (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/715">#715</a> by <a class="reference external" href="https://github.com/lucas-heck">Lucas Heck</a>)</p></li>
-<li><p>Inference of shape for string module when using <a class="reference external" href="https://skorch.readthedocs.io/en/stable/helper.html#skorch.helper.SliceDataset" title="(in skorch v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.helper.SliceDataset</span></code></a>
+<li><p>Inference of shape for string module when using <a class="reference external" href="https://skorch.readthedocs.io/en/stable/helper.html#skorch.helper.SliceDataset" title="(in skorch v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">skorch.helper.SliceDataset</span></code></a>
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/716">#716</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix error when using n_njobs &gt; 1 on Windows (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/700">#700</a> by <a class="reference external" href="https://github.com/arnodelorme">Arnaud Delorme</a>)</p></li>
 <li><p>Adding <a class="reference internal" href="generated/braindecode.models.AttentionBaseNet.html#braindecode.models.AttentionBaseNet" title="braindecode.models.AttentionBaseNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.AttentionBaseNet</span></code></a> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/572">#572</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>
