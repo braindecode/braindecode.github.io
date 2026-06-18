@@ -507,6 +507,8 @@ Face Hub.</p></li>
 variant of <a class="reference internal" href="generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT" title="braindecode.models.EEGPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGPT</span></code></a> built with
 <code class="xref py py-func docutils literal notranslate"><span class="pre">InterpolatedModel()</span></code>.
 By <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>.</p></li>
+<li><p>Add <a class="reference internal" href="generated/braindecode.models.EEGDINO.html#braindecode.models.EEGDINO" title="braindecode.models.EEGDINO"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGDINO</span></code></a>, the EEG-DINO self-distillation
+foundation model (Small/Medium/Large) with pretrained S/M weights. By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -541,6 +543,15 @@ By <a class="reference external" href="https://github.com/adammounir">Adam Mouni
 one sample per channel during training.  The affected BatchNorm layers now
 use running statistics when <code class="docutils literal notranslate"><span class="pre">batch_size</span> <span class="pre">==</span> <span class="pre">1</span></code> in train mode.
 By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
+<li><p>Fix the auto-generated standalone-function preprocessors
+(<a class="reference internal" href="generated/braindecode.preprocessing.ComputeCurrentSourceDensity.html#braindecode.preprocessing.ComputeCurrentSourceDensity" title="braindecode.preprocessing.ComputeCurrentSourceDensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.preprocessing.ComputeCurrentSourceDensity</span></code></a>,
+<a class="reference internal" href="generated/braindecode.preprocessing.SetBipolarReference.html#braindecode.preprocessing.SetBipolarReference" title="braindecode.preprocessing.SetBipolarReference"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.preprocessing.SetBipolarReference</span></code></a>, and
+<a class="reference internal" href="generated/braindecode.preprocessing.OversampledTemporalProjection.html#braindecode.preprocessing.OversampledTemporalProjection" title="braindecode.preprocessing.OversampledTemporalProjection"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.preprocessing.OversampledTemporalProjection</span></code></a>) passing the
+function name as a string instead of the callable, so they failed to apply.
+These functions return the modified instance and are now wrapped as callables.
+Standalone functions that return auxiliary data (e.g. annotations or bad
+channels) are intentionally left on the existing path for now. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/885">#885</a> by
+<a class="reference external" href="https://github.com/YihengLi-1">Yiheng Li</a>)</p></li>
 <li><p>Fix incorrect import path in CONTRIBUTING.md by <a class="reference external" href="https://github.com/YihengLi-1">Yiheng Li</a></p></li>
 <li><p>Fix the broken EEGNeX quickstart snippet on the documentation landing page,
 which kept non-EEG channels (including the STIM trigger), hardcoded a
@@ -548,11 +559,23 @@ mismatched <code class="docutils literal notranslate"><span class="pre">n_times<
 with <code class="docutils literal notranslate"><span class="pre">y=None</span></code>; it now restricts to EEG channels and lets
 <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGClassifier</span></code> infer the signal dimensions from the data.
 By <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a></p></li>
+<li><p>Fix <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EEGRegressor</span></code> silently skipping all training when the
+training set is smaller than <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> (with the default
+<code class="docutils literal notranslate"><span class="pre">iterator_train__drop_last=True</span></code>). Previously every batch was dropped and
+the model was left untrained without any message; a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> is
+now raised telling the user to lower <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> or set
+<code class="docutils literal notranslate"><span class="pre">iterator_train__drop_last=False</span></code>.
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1053">#1053</a> by <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
 <h2>Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Install CPU-only PyTorch wheels in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> and <code class="docutils literal notranslate"><span class="pre">docs</span></code> CI
+workflows via <code class="docutils literal notranslate"><span class="pre">UV_TORCH_BACKEND=cpu</span></code>. GitHub runners have no GPU, so
+the default CUDA build pulled ~1.8 GiB of unused <code class="docutils literal notranslate"><span class="pre">nvidia-*</span></code> wheels and
+contributed to a disk-exhaustion crash. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1054">#1054</a> by <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>)</p></li>
 <li><p>Add a monthly scheduled workflow that cuts a stable PyPI release on
 the 1st of every month, complementing the existing per-push <code class="docutils literal notranslate"><span class="pre">.devN</span></code>
 pipeline. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1030">#1030</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>

@@ -416,6 +416,14 @@ window.BD_MODELS = [
     "params": "1 M",
     "paper": "",
     "desc": "Classification for Emotion Recognition"
+  },
+  {
+    "name": "EEGDINO",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.5 M",
+    "paper": "",
+    "desc": "Classification for General"
   }
 ];
 window.BD_CATEGORIES = [
