@@ -418,6 +418,14 @@ window.BD_MODELS = [
     "desc": "Classification for Emotion Recognition"
   },
   {
+    "name": "TCFormer",
+    "cat": "attention",
+    "year": null,
+    "params": "77.8 K",
+    "paper": "",
+    "desc": "Classification for Motor Imagery"
+  },
+  {
     "name": "EEGDINO",
     "cat": "foundation",
     "year": null,
