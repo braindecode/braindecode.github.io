@@ -509,6 +509,17 @@ variant of <a class="reference internal" href="generated/braindecode.models.EEGP
 By <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>.</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.models.EEGDINO.html#braindecode.models.EEGDINO" title="braindecode.models.EEGDINO"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGDINO</span></code></a>, the EEG-DINO self-distillation
 foundation model (Small/Medium/Large) with pretrained S/M weights. By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
+<li><p>Add separate EEGNet and TCN dropout rates to
+<a class="reference internal" href="generated/braindecode.models.EEGTCNet.html#braindecode.models.EEGTCNet" title="braindecode.models.EEGTCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGTCNet</span></code></a> via the new <code class="docutils literal notranslate"><span class="pre">drop_prob_eeg</span></code> and
+<code class="docutils literal notranslate"><span class="pre">drop_prob_tcn</span></code> arguments, enabling the source/paper configuration
+(<code class="docutils literal notranslate"><span class="pre">p_eeg=0.2</span></code>, <code class="docutils literal notranslate"><span class="pre">p_tcn=0.3</span></code>). Both default to <code class="docutils literal notranslate"><span class="pre">drop_prob</span></code>, so existing
+behavior is unchanged. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1060">#1060</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Add an opt-in <code class="docutils literal notranslate"><span class="pre">conv_max_norm_const</span></code> argument and a
+<a class="reference internal" href="generated/braindecode.models.ATCNet.html#braindecode.models.ATCNet.source_optimizer_param_groups" title="braindecode.models.ATCNet.source_optimizer_param_groups"><code class="xref py py-meth docutils literal notranslate"><span class="pre">source_optimizer_param_groups()</span></code></a> helper to
+<a class="reference internal" href="generated/braindecode.models.ATCNet.html#braindecode.models.ATCNet" title="braindecode.models.ATCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.ATCNet</span></code></a>, exposing the official implementation’s
+convolution/TCN max-norm constraint (<code class="docutils literal notranslate"><span class="pre">0.6</span></code>) and <code class="docutils literal notranslate"><span class="pre">L2</span></code> weight-decay groups
+(conv/TCN <code class="docutils literal notranslate"><span class="pre">0.009</span></code>, dense <code class="docutils literal notranslate"><span class="pre">0.5</span></code>). Defaults preserve current behavior.
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1061">#1061</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -520,6 +531,16 @@ deprecation in v1.2/v1.3: <code class="docutils literal notranslate"><span class
 <a class="reference internal" href="generated/braindecode.models.AttnSleep.html#braindecode.models.AttnSleep" title="braindecode.models.AttnSleep"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.AttnSleep</span></code></a>), <code class="docutils literal notranslate"><span class="pre">TSceptionV1</span></code> (use
 <a class="reference internal" href="generated/braindecode.models.TSception.html#braindecode.models.TSception" title="braindecode.models.TSception"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.TSception</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">BNCI2014001</span></code> (use
 <a class="reference internal" href="generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BNCI2014_001</span></code></a>). (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1045">#1045</a> by <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>)</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.models.EEGTCNet.html#braindecode.models.EEGTCNet" title="braindecode.models.EEGTCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGTCNet</span></code></a> now inserts a
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html#torch.nn.BatchNorm1d" title="(in PyTorch v2.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchNorm1d</span></code></a> after each TCN convolution (and uses a bias in
+the residual downsample), matching the original Keras implementation. This
+closes a documented replicability gap but changes the default architecture and
+parameter count; pass <code class="docutils literal notranslate"><span class="pre">tcn_batch_norm=False</span></code> to recover the previous
+behavior (e.g. to load checkpoints trained before this change). By
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
+<li><p>Change the default <code class="docutils literal notranslate"><span class="pre">proto_cpt_std</span></code> of <a class="reference internal" href="generated/braindecode.models.SSTDPN.html#braindecode.models.SSTDPN" title="braindecode.models.SSTDPN"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SSTDPN</span></code></a>
+from <code class="docutils literal notranslate"><span class="pre">0.01</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, matching the source <code class="docutils literal notranslate"><span class="pre">torch.randn</span></code> initialization
+of the intra-class compactness prototypes. By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -535,6 +556,10 @@ By <a class="reference external" href="https://github.com/adammounir">Adam Mouni
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Fix <a class="reference internal" href="generated/braindecode.models.SSTDPN.html#braindecode.models.SSTDPN" title="braindecode.models.SSTDPN"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SSTDPN</span></code></a> renormalizing <code class="docutils literal notranslate"><span class="pre">proto_sep</span></code> along the
+wrong axis: the inter-class separation prototypes are now constrained per
+class-row (<code class="docutils literal notranslate"><span class="pre">dim=0</span></code>) as in the paper/source (<code class="docutils literal notranslate"><span class="pre">||s_i||</span> <span class="pre">&lt;=</span> <span class="pre">S</span></code>), instead of
+across classes (<code class="docutils literal notranslate"><span class="pre">dim=1</span></code>). (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1059">#1059</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/braindecode.models.ContraWR.html#braindecode.models.ContraWR" title="braindecode.models.ContraWR"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContraWR</span></code></a>,
 <a class="reference internal" href="generated/braindecode.models.DeepSleepNet.html#braindecode.models.DeepSleepNet" title="braindecode.models.DeepSleepNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeepSleepNet</span></code></a>, and
 <a class="reference internal" href="generated/braindecode.models.EEGMiner.html#braindecode.models.EEGMiner" title="braindecode.models.EEGMiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGMiner</span></code></a> raising a confusing
