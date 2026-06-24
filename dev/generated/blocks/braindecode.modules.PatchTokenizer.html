@@ -510,6 +510,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.models.SleepStagerChambon2018.html">braindecode.models.SleepStagerChambon2018</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.models.SPARCNet.html">braindecode.models.SPARCNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.models.SSTDPN.html">braindecode.models.SSTDPN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../braindecode.models.STEEGFormer.html">braindecode.models.STEEGFormer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.models.SyncNet.html">braindecode.models.SyncNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.models.TCFormer.html">braindecode.models.TCFormer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../braindecode.models.TIDNet.html">braindecode.models.TIDNet</a></li>
@@ -875,25 +876,31 @@
 <h1>braindecode.modules.PatchTokenizer<a class="headerlink" href="#braindecode-modules-patchtokenizer" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="braindecode.modules.PatchTokenizer">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.modules.</span></span><span class="sig-name descname"><span class="pre">PatchTokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/blocks.py#L7-L84"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.PatchTokenizer" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">braindecode.modules.</span></span><span class="sig-name descname"><span class="pre">PatchTokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_non_divisible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'conv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel_patch'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/blocks.py#L7-L159"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.PatchTokenizer" title="Link to this definition">#</a></dt>
 <dd><p>Tokenize an EEG signal into non-overlapping temporal patches.</p>
 <p>Transforms <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_times)</span></code> into
 <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_patches,</span> <span class="pre">patch_dim)</span></code> by splitting the time axis into
 non-overlapping patches of <code class="docutils literal notranslate"><span class="pre">patch_size</span></code> samples. This is the shared
 patch / “tokenization” step used by transformer EEG foundation models
 (e.g. LaBraM, CBraMod, EEG-DINO).</p>
-<p>As in the filter-bank models (<a class="reference internal" href="../braindecode.models.FBCNet.html#braindecode.models.FBCNet" title="braindecode.models.FBCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FBCNet</span></code></a>,
-<a class="reference internal" href="../braindecode.models.FBMSNet.html#braindecode.models.FBMSNet" title="braindecode.models.FBMSNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FBMSNet</span></code></a>), when <code class="docutils literal notranslate"><span class="pre">n_times</span></code> is not a multiple of
-<code class="docutils literal notranslate"><span class="pre">patch_size</span></code> the input is right zero-padded (a warning is emitted at
-construction); it is never an error.</p>
+<p>By default, as in the filter-bank models
+(<a class="reference internal" href="../braindecode.models.FBCNet.html#braindecode.models.FBCNet" title="braindecode.models.FBCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FBCNet</span></code></a>, <a class="reference internal" href="../braindecode.models.FBMSNet.html#braindecode.models.FBMSNet" title="braindecode.models.FBMSNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FBMSNet</span></code></a>),
+when <code class="docutils literal notranslate"><span class="pre">n_times</span></code> is not a multiple of <code class="docutils literal notranslate"><span class="pre">patch_size</span></code> the input is right
+zero-padded (a warning is emitted at construction). Set
+<code class="docutils literal notranslate"><span class="pre">on_non_divisible=&quot;crop&quot;</span></code> to hard-crop the trailing samples instead, or
+<code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> to reject non-divisible inputs. Padding/cropping is applied at
+<code class="docutils literal notranslate"><span class="pre">forward</span></code> time to the actual input length (not the construction-time
+<code class="docutils literal notranslate"><span class="pre">n_times</span></code>), so the module also accepts inputs of a different length.</p>
 <p>Two modes:</p>
 <ul class="simple">
 <li><p><strong>non-learnable</strong> (<code class="docutils literal notranslate"><span class="pre">learnable=False</span></code>, default): a pure reshape, so
 <code class="docutils literal notranslate"><span class="pre">patch_dim</span> <span class="pre">==</span> <span class="pre">patch_size</span></code> and the raw samples of each patch are kept
 (the patch embedding, if any, lives in the model).</p></li>
-<li><p><strong>learnable</strong> (<code class="docutils literal notranslate"><span class="pre">learnable=True</span></code>): a strided <code class="docutils literal notranslate"><span class="pre">Conv1d</span></code> (kernel and
-stride equal to <code class="docutils literal notranslate"><span class="pre">patch_size</span></code>, applied per channel) maps each patch to
-<code class="docutils literal notranslate"><span class="pre">emb_dim</span></code> features, so <code class="docutils literal notranslate"><span class="pre">patch_dim</span> <span class="pre">==</span> <span class="pre">emb_dim</span></code>.</p></li>
+<li><p><strong>learnable</strong> (<code class="docutils literal notranslate"><span class="pre">learnable=True</span></code>): maps each patch to <code class="docutils literal notranslate"><span class="pre">emb_dim</span></code>
+features, so <code class="docutils literal notranslate"><span class="pre">patch_dim</span> <span class="pre">==</span> <span class="pre">emb_dim</span></code>. <code class="docutils literal notranslate"><span class="pre">projection=&quot;conv&quot;</span></code> keeps the
+historical strided <code class="docutils literal notranslate"><span class="pre">Conv1d</span></code> behavior; <code class="docutils literal notranslate"><span class="pre">projection=&quot;linear&quot;</span></code> first
+forms raw patches and then applies one <code class="docutils literal notranslate"><span class="pre">Linear(patch_size,</span> <span class="pre">emb_dim)</span></code> to
+each patch.</p></li>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -904,6 +911,14 @@ when <code class="docutils literal notranslate"><span class="pre">n_times</span>
 <li><p><strong>emb_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Output features per patch in learnable mode. Defaults to <code class="docutils literal notranslate"><span class="pre">patch_size</span></code>.
 Ignored when <code class="docutils literal notranslate"><span class="pre">learnable=False</span></code>.</p></li>
 <li><p><strong>learnable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether the tokenizer is a learned convolution or a fixed reshape.</p></li>
+<li><p><strong>on_non_divisible</strong> (<em>{&quot;pad&quot;</em><em>, </em><em>&quot;crop&quot;</em><em>, </em><em>&quot;error&quot;}</em><em>, </em><em>default=&quot;pad&quot;</em>) – How to handle a time dimension that is not divisible by <code class="docutils literal notranslate"><span class="pre">patch_size</span></code>.
+<code class="docutils literal notranslate"><span class="pre">&quot;pad&quot;</span></code> right-pads with zeros, <code class="docutils literal notranslate"><span class="pre">&quot;crop&quot;</span></code> drops the trailing samples,
+and <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> raises a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a>.</p></li>
+<li><p><strong>projection</strong> (<em>{&quot;conv&quot;</em><em>, </em><em>&quot;linear&quot;}</em><em>, </em><em>default=&quot;conv&quot;</em>) – Learnable projection type. Only used when <code class="docutils literal notranslate"><span class="pre">learnable=True</span></code>.</p></li>
+<li><p><strong>output_order</strong> (<em>{&quot;channel_patch&quot;</em><em>, </em><em>&quot;patch_channel&quot;}</em><em>, </em><em>default=&quot;channel_patch&quot;</em>) – Axis order after the batch dimension. <code class="docutils literal notranslate"><span class="pre">&quot;channel_patch&quot;</span></code> returns
+<code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_patches,</span> <span class="pre">patch_dim)</span></code> and preserves the historical
+output. <code class="docutils literal notranslate"><span class="pre">&quot;patch_channel&quot;</span></code> returns
+<code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_patches,</span> <span class="pre">n_chans,</span> <span class="pre">patch_dim)</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -918,7 +933,7 @@ Ignored when <code class="docutils literal notranslate"><span class="pre">learna
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="braindecode.modules.PatchTokenizer.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/blocks.py#L75-L84"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.PatchTokenizer.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/modules/blocks.py#L144-L159"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.modules.PatchTokenizer.forward" title="Link to this definition">#</a></dt>
 <dd><p>Define the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">

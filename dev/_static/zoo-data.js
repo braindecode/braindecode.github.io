@@ -432,6 +432,14 @@ window.BD_MODELS = [
     "params": "4.5 M",
     "paper": "",
     "desc": "Classification for General"
+  },
+  {
+    "name": "STEEGFormer",
+    "cat": "foundation",
+    "year": null,
+    "params": "25.3 M",
+    "paper": "",
+    "desc": "Classification for General"
   }
 ];
 window.BD_CATEGORIES = [
