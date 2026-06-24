@@ -11,10 +11,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 1.6.1 (GitHub): Enhancements: Add a revision keyword argument to braindecode.datasets.BaseConcatDataset.pull_from_hub() so callers can pin dataset downloads to a specific branch, tag, or co..." />
+<meta property="og:description" content="Current 1.6.1 (GitHub): Enhancements: Add opt-in electrode positions in the batch via braindecode.datasets.BaseConcatDataset.set_return_ch_pos() and a cached ch_pos accessor on windowed datasets, p..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 1.6.1 (GitHub): Enhancements: Add a revision keyword argument to braindecode.datasets.BaseConcatDataset.pull_from_hub() so callers can pin dataset downloads to a specific branch, tag, or co..." />
+<meta name="description" content="Current 1.6.1 (GitHub): Enhancements: Add opt-in electrode positions in the batch via braindecode.datasets.BaseConcatDataset.set_return_ch_pos() and a cached ch_pos accessor on windowed datasets, p..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -499,6 +499,14 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Add opt-in electrode positions in the batch via
+<a class="reference internal" href="generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_return_ch_pos" title="braindecode.datasets.BaseConcatDataset.set_return_ch_pos"><code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset.set_return_ch_pos()</span></code></a> and a cached
+<code class="docutils literal notranslate"><span class="pre">ch_pos</span></code> accessor on windowed datasets, plus
+<code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.pad_channels_collate()</span></code> to make collections with
+<strong>heterogeneous montages</strong> (different channel sets) batchable. Positions and a
+channel mask are routed into the model’s <code class="docutils literal notranslate"><span class="pre">forward</span></code> under
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code>. Default-off, so the <code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">y,</span> <span class="pre">crop_inds)</span></code>
+contract is unchanged. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1066">#1066</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add a <code class="docutils literal notranslate"><span class="pre">revision</span></code> keyword argument to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset.pull_from_hub()</span></code> so callers can
 pin dataset downloads to a specific branch, tag, or commit on the Hugging
@@ -531,6 +539,14 @@ Transformer for EEG motor-imagery decoding: a multi-kernel CNN front-end, a
 grouped-query attention Transformer with rotary positional embeddings, and a
 grouped temporal convolutional network head. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1065">#1065</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno
 Aristimunha</a>)</p></li>
+<li><p>Add an <code class="docutils literal notranslate"><span class="pre">n_augmentation</span></code> argument to
+<a class="reference internal" href="generated/braindecode.augmentation.AugmentedDataLoader.html#braindecode.augmentation.AugmentedDataLoader" title="braindecode.augmentation.AugmentedDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.augmentation.AugmentedDataLoader</span></code></a> for fixed set-expansion:
+each batch keeps its clean originals and appends <code class="docutils literal notranslate"><span class="pre">n_augmentation</span></code>
+independently transformed copies (e.g. the EEG-Inception 6x training set with
+<code class="docutils literal notranslate"><span class="pre">n_augmentation=5</span></code>); the default <code class="docutils literal notranslate"><span class="pre">0</span></code> preserves the current in-place
+behavior. The collate is now a picklable callable, so the loader supports
+<code class="docutils literal notranslate"><span class="pre">num_workers</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, and several augmentation transforms were vectorized for
+speed. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1070">#1070</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -603,6 +619,27 @@ the model was left untrained without any message; a <a class="reference external
 now raised telling the user to lower <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> or set
 <code class="docutils literal notranslate"><span class="pre">iterator_train__drop_last=False</span></code>.
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1053">#1053</a> by <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/filter/braindecode.modules.FilterBankLayer.html#braindecode.modules.FilterBankLayer" title="braindecode.modules.FilterBankLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.FilterBankLayer</span></code></a> producing <code class="docutils literal notranslate"><span class="pre">NaN</span></code> in
+<code class="docutils literal notranslate"><span class="pre">float32</span></code>: the IIR path downcast the float64 filter coefficients to the
+input dtype before <code class="xref py py-func docutils literal notranslate"><span class="pre">filtfilt()</span></code>, so band-pass banks
+with poles near the unit circle (e.g. the Chebyshev-II banks used by
+<a class="reference internal" href="generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet" title="braindecode.models.FBMSNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FBMSNet</span></code></a> and <a class="reference internal" href="generated/braindecode.models.FBCNet.html#braindecode.models.FBCNet" title="braindecode.models.FBCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FBCNet</span></code></a>)
+diverged. The recursion now runs in <code class="docutils literal notranslate"><span class="pre">float64</span></code> and is cast back.
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1067">#1067</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.models.EEGITNet.html#braindecode.models.EEGITNet" title="braindecode.models.EEGITNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGITNet</span></code></a> diverging from the reference
+implementation: the inception spatial depthwise convolutions and the final
+dense layer now carry the authors’ max-norm constraints (<code class="docutils literal notranslate"><span class="pre">1.0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">0.25</span></code>), and the dimensionality-reduction convolution uses <code class="docutils literal notranslate"><span class="pre">14</span></code> filters
+instead of <code class="docutils literal notranslate"><span class="pre">28</span></code>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1068">#1068</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.models.MSVTNet.html#braindecode.models.MSVTNet" title="braindecode.models.MSVTNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.MSVTNet</span></code></a> dropping the main classification head
+when <code class="docutils literal notranslate"><span class="pre">return_features=True</span></code> (it returned only the branch predictions, making
+the paper’s joint deep-supervision loss unreproducible). It now returns
+<code class="docutils literal notranslate"><span class="pre">(main_logits,</span> <span class="pre">stacked_branch_logits)</span></code>, matching the source.
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1069">#1069</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Fix the spatial convolutions in <a class="reference internal" href="generated/braindecode.models.EEGSym.html#braindecode.models.EEGSym" title="braindecode.models.EEGSym"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGSym</span></code></a> being dense
+(<code class="docutils literal notranslate"><span class="pre">groups=1</span></code>) with a bias: the authors’ <code class="docutils literal notranslate"><span class="pre">unit_dconv</span></code> uses grouped/depthwise
+convolutions without bias, so they now use <code class="docutils literal notranslate"><span class="pre">groups=out_channels</span></code> and
+<code class="docutils literal notranslate"><span class="pre">bias=False</span></code>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1071">#1071</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">

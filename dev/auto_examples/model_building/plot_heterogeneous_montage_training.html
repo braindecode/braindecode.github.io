@@ -1,0 +1,2488 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Training on recordings with different channels (heterogeneous montages)" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://braindecode.org/dev/auto_examples/model_building/plot_heterogeneous_montage_training.html" />
+<meta property="og:site_name" content="Braindecode" />
+<meta property="og:description" content="EEG datasets often do not share the same channels: recordings come from different caps, montages, or vendors. Stacking such recordings into a single training batch is normally impossible – the sign..." />
+<meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
+<meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
+<meta name="description" content="EEG datasets often do not share the same channels: recordings come from different caps, montages, or vendors. Stacking such recordings into a single training batch is normally impossible – the sign..." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@braindecode" />
+
+    <title>Training on recordings with different channels (heterogeneous montages) &#8212; Braindecode 1.6.1dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=f3e3feaa" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../../_static/documentation_options.js?v=bc6b04ce"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/model_building/plot_heterogeneous_montage_training';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.19.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://braindecode.org/dev/auto_examples/model_building/plot_heterogeneous_montage_training.html" />
+    <link rel="icon" href="../../_static/braindecode_symbol.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to train, test and tune your model?" href="plot_how_train_test_and_tune.html" />
+    <link rel="prev" title="Loading Pretrained Foundation Models on Arbitrary Channel Sets" href="plot_channel_interpolation.html" />
+  <!-- Google Tag Manager (single analytics entry point — drives any GA4 / GTAG
+       configured inside the GTM container; do not add a second gtag here).
+       Honors the Do-Not-Track signal so privacy-conscious users opt out. -->
+  <script>(function(w,d,s,l,i){
+    if (w.doNotTrack=='1' || w.navigator.doNotTrack=='1' || w.navigator.doNotTrack=='yes') return;
+    w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NWDKLVNR');</script>
+  <!-- End Google Tag Manager -->
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.6" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+
+  
+
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  
+<div class="pst-async-banner-revealer d-none">
+  <aside
+    id="bd-header-version-warning"
+    class="d-none d-print-none"
+    aria-label="Version warning"
+  ></aside>
+</div>
+
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <strong>Using Braindecode in academic work?</strong>
+    <a class="braindecode-announcement-cta" href="../../cite.html">
+      Cite Braindecode
+    </a>
+    <span class="braindecode-announcement-secondary">
+      DOI:
+      <a href="https://doi.org/10.5281/zenodo.17699192">10.5281/zenodo.17699192</a>
+    </span>
+  </div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Basic model building and training</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_eegprep_cleaning.html">Cleaning EEG Data with EEGPrep for Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_channel_interpolation.html">Loading Pretrained Foundation Models on Arbitrary Channel Sets</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Training on recordings with different channels (heterogeneous montages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_pretrained_models.html">Loading and Adapting Pretrained Foundation Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_training/index.html">Advanced neural network training strategies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_exca_config.html">Experiment configuration with Pydantic and Exca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_interpretability.html">Interpretability of EEG Decoders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/tutorial_create_fixed_window_length.html">Fixed-Length Windows Extraction</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Basic model building and training</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Training on recordings with different channels (heterogeneous montages)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-model-building-plot-heterogeneous-montage-training-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="training-on-recordings-with-different-channels-heterogeneous-montages">
+<span id="heterogeneous-montage-training"></span><span id="sphx-glr-auto-examples-model-building-plot-heterogeneous-montage-training-py"></span><h1>Training on recordings with different channels (heterogeneous montages)<a class="headerlink" href="#training-on-recordings-with-different-channels-heterogeneous-montages" title="Link to this heading">#</a></h1>
+<p>EEG datasets often do not share the same channels: recordings come from
+different caps, montages, or vendors. Stacking such recordings into a single
+training batch is normally impossible – the signal tensors have different
+numbers of channels and cannot be concatenated.</p>
+<p>This example shows braindecode’s tools for training a <strong>position-aware</strong> model
+across recordings with different channel sets:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_return_ch_pos" title="braindecode.datasets.BaseConcatDataset.set_return_ch_pos"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_return_ch_pos()</span></code></a> makes every
+window carry its electrode positions <code class="docutils literal notranslate"><span class="pre">(n_ch,</span> <span class="pre">3)</span></code> (x, y, z), so channel
+identity is encoded by <em>where</em> each electrode sits rather than by its row
+index.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">pad_channels_collate()</span></code> pads each batch to the
+largest channel count present and returns a boolean <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> marking the
+real (non-padded) channels.</p></li>
+</ul>
+<p>A model that consumes positions (and ignores padded channels via the mask) can
+then train on the mixed collection. Here we use a tiny illustrative model;
+swap in any position-aware architecture (e.g. <code class="docutils literal notranslate"><span class="pre">REVE</span></code>).</p>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#build-two-recordings-with-different-channel-sets" id="id1">Build two recordings with different channel sets</a></p></li>
+<li><p><a class="reference internal" href="#window-the-recordings-and-enable-channel-positions" id="id2">Window the recordings and enable channel positions</a></p></li>
+<li><p><a class="reference internal" href="#inspect-a-heterogeneous-batch" id="id3">Inspect a heterogeneous batch</a></p></li>
+<li><p><a class="reference internal" href="#a-minimal-position-aware-model" id="id4">A minimal position-aware model</a></p></li>
+<li><p><a class="reference internal" href="#train-with-eegclassifier" id="id5">Train with EEGClassifier</a></p></li>
+<li><p><a class="reference internal" href="#next-steps" id="id6">Next steps</a></p></li>
+</ul>
+</nav>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: The braindecode developers</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">,</span>
+    <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">RawDataset</span></a><span class="p">,</span>
+    <span class="n">pad_channels_collate</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a>
+
+<a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="build-two-recordings-with-different-channel-sets">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Build two recordings with different channel sets</a><a class="headerlink" href="#build-two-recordings-with-different-channel-sets" title="Link to this heading">#</a></h2>
+<p>We synthesise two short recordings: one with 8 channels and one with 10, both
+using <code class="docutils literal notranslate"><span class="pre">standard_1020</span></code> electrode positions. In practice these would be real
+datasets loaded with different montages.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_recording</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
+    <span class="n">info</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.create_info.html#mne.create_info" title="mne.create_info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">create_info</span></a><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">ch_types</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="numpy.random.RandomState" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span></a><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">),</span> <span class="mi">4000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+    <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray" title="mne.io.RawArray" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="s2">&quot;standard_1020&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <a href="../../generated/braindecode.datasets.RawDataset.html#braindecode.datasets.RawDataset" title="braindecode.datasets.RawDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">RawDataset</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">})</span>
+
+
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_a</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Fp1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fp2&quot;</span><span class="p">,</span> <span class="s2">&quot;F3&quot;</span><span class="p">,</span> <span class="s2">&quot;F4&quot;</span><span class="p">,</span> <span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="s2">&quot;C4&quot;</span><span class="p">,</span> <span class="s2">&quot;P3&quot;</span><span class="p">,</span> <span class="s2">&quot;P4&quot;</span><span class="p">]</span>  <span class="c1"># 8 channels</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_b</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Fz&quot;</span><span class="p">,</span> <span class="s2">&quot;Cz&quot;</span><span class="p">,</span> <span class="s2">&quot;Pz&quot;</span><span class="p">,</span> <span class="s2">&quot;Oz&quot;</span><span class="p">,</span> <span class="s2">&quot;T7&quot;</span><span class="p">,</span> <span class="s2">&quot;T8&quot;</span><span class="p">,</span> <span class="s2">&quot;O1&quot;</span><span class="p">,</span> <span class="s2">&quot;O2&quot;</span><span class="p">,</span> <span class="s2">&quot;F7&quot;</span><span class="p">,</span> <span class="s2">&quot;F8&quot;</span><span class="p">]</span>  <span class="c1"># 10 channels</span>
+
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">concat</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">make_recording</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_a</span></a><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">make_recording</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_b</span></a><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">make_recording</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_a</span></a><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+        <span class="n">make_recording</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chs_b</span></a><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="window-the-recordings-and-enable-channel-positions">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Window the recordings and enable channel positions</a><a class="headerlink" href="#window-the-recordings-and-enable-channel-positions" title="Link to this heading">#</a></h2>
+<p>After cutting fixed-length windows we assign the per-recording <code class="docutils literal notranslate"><span class="pre">label</span></code> as
+the target and turn on position returning for the whole collection.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">concat</span></a><span class="p">,</span>
+    <span class="n">window_size_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">window_stride_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_target" title="braindecode.datasets.BaseConcatDataset.set_target" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">set_target</span></a><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_return_ch_pos" title="braindecode.datasets.BaseConcatDataset.set_return_ch_pos" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method"><span class="n">windows</span><span class="o">.</span><span class="n">set_return_ch_pos</span></a><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<table border='1' class='dataframe'>
+  <thead><tr><th colspan='2'>BaseConcatDataset</th></tr></thead>
+  <tbody>
+<tr><td><b>Type</b></td><td>BaseConcatDataset of EEGWindowsDataset</td></tr>
+<tr><td><b>Recordings</b></td><td>4</td></tr>
+<tr><td><b>Total samples</b></td><td>80</td></tr>
+<tr><td><b>Sfreq*</b></td><td>100.0 Hz</td></tr>
+<tr><td><b>Channels*</b></td><td>8 (8 EEG)</td></tr>
+<tr><td><b>Ch. names*</b></td><td>Fp1, Fp2, F3, F4, C3, C4, P3, P4</td></tr>
+<tr><td><b>Montage*</b></td><td>head</td></tr>
+<tr><td colspan='2'><i>* from first recording</i></td></tr>
+<tr><td><b>Description</b></td><td>4 recordings × 1 columns [label]</td></tr>
+<tr><td><b>Window</b></td><td>200 samples (2.000 s)</td></tr>
+<tr><td><b>Targets</b></td><td>2 unique ({0: 40, 1: 40})</td></tr>
+  </tbody>
+</table>
+</div>
+<br />
+<br /></section>
+<section id="inspect-a-heterogeneous-batch">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Inspect a heterogeneous batch</a><a class="headerlink" href="#inspect-a-heterogeneous-batch" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pad_channels_collate</span></code> pads each batch to the largest channel count (10
+here) and returns a boolean <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code>. Because we mix 8- and 10-channel
+recordings, batches contain both – the mask tells real channels from padding.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows</span></a><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">collate_fn</span><span class="o">=</span><span class="n">pad_channels_collate</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">crop_inds</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mask</span></a> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">loader</span></a><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X       :&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">))</span>  <span class="c1"># (batch, max_ch, n_times)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ch_pos  :&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span><span class="o">.</span><span class="n">shape</span></a><span class="p">))</span>  <span class="c1"># (batch, max_ch, 3)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ch_mask :&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mask</span><span class="o">.</span><span class="n">shape</span></a><span class="p">))</span>  <span class="c1"># (batch, max_ch) bool</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;real channels per sample:&quot;</span><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mask</span></a><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>X       : (4, 10, 200)
+ch_pos  : (4, 10, 3)
+ch_mask : (4, 10)
+real channels per sample: [10, 10, 10, 10]
+</pre></div>
+</div>
+</section>
+<section id="a-minimal-position-aware-model">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">A minimal position-aware model</a><a class="headerlink" href="#a-minimal-position-aware-model" title="Link to this heading">#</a></h2>
+<p>This tiny model is permutation-invariant over channels: it embeds each
+channel from a small signal summary plus its (x, y, z) position, then
+<strong>masked-mean-pools</strong> over channels so padded channels are ignored. Any model
+that accepts <code class="docutils literal notranslate"><span class="pre">forward(x,</span> <span class="pre">pos=None,</span> <span class="pre">ch_mask=None)</span></code> works the same way – this
+is the signature braindecode routes positions and the mask into.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TinyPositionalNet</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Module</span></a><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="torch.nn.Sequential" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="torch.nn.Linear" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span></a><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">dim</span><span class="p">),</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="torch.nn.ReLU" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span></a><span class="p">(),</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="torch.nn.Linear" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span></a><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="torch.nn.Linear" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span></a><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">n_outputs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mask</span></a><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Per-channel signal summary: mean, std, max over time -&gt; (B, C, 3).</span>
+        <span class="n">feat</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.stack.html#torch.stack" title="torch.stack" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">stack</span></a><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.zeros_like.html#torch.zeros_like" title="torch.zeros_like" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span></a><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html#torch.cat" title="torch.cat" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span></a><span class="p">([</span><span class="n">feat</span><span class="p">,</span> <span class="n">pos</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># (B, C, dim)</span>
+        <span class="k">if</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mask</span></a> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_mask</span></a><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">m</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># masked mean over channels</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="train-with-eegclassifier">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Train with EEGClassifier</a><a class="headerlink" href="#train-with-eegclassifier" title="Link to this heading">#</a></h2>
+<p>We pass <code class="docutils literal notranslate"><span class="pre">pad_channels_collate</span></code> as the iterator’s <code class="docutils literal notranslate"><span class="pre">collate_fn</span></code>. braindecode
+routes the signal, positions and mask into the model’s <code class="docutils literal notranslate"><span class="pre">forward</span></code> for you.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
+    <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">TinyPositionalNet</span></a><span class="p">(</span><span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">classes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">pad_channels_collate</span><span class="p">,</span>
+    <span class="n">iterator_train__shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">iterator_train__drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier.fit" title="skorch.classifier.NeuralNetClassifier.fit" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-method"><span class="n">clf</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss     dur
+-------  ------------  ------
+      1        0.6953  0.0350
+      2        0.6942  0.0262
+      3        0.6949  0.0256
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<style>.sk-global {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+}
+
+.sk-global.light {
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: black;
+  --sklearn-color-background: white;
+  --sklearn-color-border-box: black;
+  --sklearn-color-icon: #696969;
+}
+
+.sk-global.dark {
+  --sklearn-color-text-on-default-background: white;
+  --sklearn-color-background: #111;
+  --sklearn-color-border-box: white;
+  --sklearn-color-icon: #878787;
+}
+
+.sk-global {
+  color: var(--sklearn-color-text);
+}
+
+.sk-global pre {
+  padding: 0;
+}
+
+.sk-global input.sk-hidden--visually {
+  border: 0;
+  clip-path: inset(100%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.sk-global div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+.sk-global div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+.sk-global div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+.sk-global div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+.sk-global div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+.sk-global div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.sk-global div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+.sk-global div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+.sk-global div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+.sk-global div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+.sk-global div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+.sk-global label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.sk-global label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+.sk-global label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+.sk-global label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+.sk-global div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+.sk-global div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.sk-global div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+.sk-global div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.sk-global input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.sk-global input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+.sk-global div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.sk-global div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+.sk-global div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.sk-global div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+.sk-global div.sk-label label.sk-toggleable__label,
+.sk-global div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+.sk-global div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+.sk-global div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+.sk-global div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1.2em;
+}
+
+.sk-global div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+.sk-global div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+.sk-global div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+.sk-global div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.sk-global div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-3) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3) 1pt solid;
+  color: var(--sklearn-color-fitted-level-3);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-0);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-fitted-level-0);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+.sk-global a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+.sk-global a.estimator_doc_link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+.sk-global a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+.sk-global a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-top-container.sk-global {
+  /* pydata-sphinx-theme hides overflow, so scrolling is disabled.
+   We need to set it to !important and add tabindex="0" in the HTML
+   to allow keyboard-only users to navigate the display. */
+  overflow-x: scroll !important;
+  max-width: 100%;
+}
+
+.estimator-table {
+    font-family: monospace;
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.estimator-table summary::marker {
+    font-size: 0.7rem;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 0;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover td {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table :is(td, th) {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+/*
+    `table td`is set in notebook with right text-align.
+    We need to overwrite it.
+*/
+.estimator-table table td.param {
+    text-align: left;
+    position: relative;
+    padding: 0;
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left !important;
+}
+
+.user-set td.value {
+    color:rgb(255, 94, 0);
+    background-color: transparent;
+}
+
+.default td, .estimator-table th {
+    color: black;
+    text-align: left !important;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+td.fitted-att-type {
+    white-space: preserve nowrap;
+}
+
+/*
+    Styles for parameter documentation links
+    We need styling for visited so jupyter doesn't overwrite it
+*/
+a.param-doc-link,
+a.param-doc-link:link,
+a.param-doc-link:visited {
+    text-decoration: underline dashed;
+    text-underline-offset: .3em;
+    color: inherit;
+    display: block;
+    padding: .5em;
+}
+
+@supports(anchor-name: --doc-link) {
+    a.param-doc-link,
+    a.param-doc-link:link,
+    a.param-doc-link:visited {
+    anchor-name: --doc-link;
+    }
+}
+
+/* "hack" to make the entire area of the cell containing the link clickable */
+a.param-doc-link::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+.param-doc-description {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    padding: .5ex;
+    margin-left: 1.5em;
+    color: var(--sklearn-color-text);
+    box-shadow: .3em .3em .4em #999;
+    width: max-content;
+    text-align: left;
+    max-height: 10em;
+    overflow-y: auto;
+
+    /* unfitted */
+    background: var(--sklearn-color-unfitted-level-0);
+    border: thin solid var(--sklearn-color-unfitted-level-3);
+}
+
+@supports(position-area: center right) {
+    .param-doc-description {
+    position-area: center right;
+    position: fixed;
+    margin-left: 0;
+    }
+}
+
+/* Fitted state for parameter tooltips */
+.fitted .param-doc-description {
+    /* fitted */
+    background: var(--sklearn-color-fitted-level-0);
+    border: thin solid var(--sklearn-color-fitted-level-3);
+}
+
+.param-doc-link:hover .param-doc-description {
+    display: block;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.features {
+  font-family: monospace;
+  cursor: pointer;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: .20em;
+  margin-bottom: 0.5em;
+  font-size: inherit; /* Needed for jupyter */
+}
+
+.features.fitted {
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.features summary {
+  cursor: pointer;
+  display: flex;
+  margin-bottom: 0;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: .25em;
+}
+
+.features details[open] > summary {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+  border-radius: .20em 0 0 0;
+}
+
+.features.fitted details[open] > summary {
+  background-color: var(--sklearn-color-fitted-level-2);
+  border-radius: .20em 0 0 0;
+}
+
+.features details > summary .arrow::before {
+  content: "▸";
+  color: grey;
+}
+
+.features details[open] > summary .arrow::before {
+  content: "▾";
+}
+
+.features details:hover > summary {
+  margin: 0;
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+.features.fitted details:hover > summary {
+  margin: 0;
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+.features .features-container {
+  max-width: 15em;
+  max-height: 10em;
+  overflow: auto;
+  scrollbar-width: thin;
+  padding: .25em 0.1rem;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 0 0 .5em .5em;
+}
+
+.features.fitted .features-container {
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+.features .image-container {
+  block-size: 1em;
+  inline-size: 1em;
+  padding: 0;
+  margin: 0%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.features .copy-paste-icon {
+  background-size: 1em 1em;
+  width: 1em;
+  height: 1em;
+  filter: grayscale(100%) opacity(60%);
+}
+
+.features .features-container table {
+  width: 100%;
+  margin: 0.01em;
+}
+
+.features .features-container table tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.features .features-container table tr:nth-child(even) {
+  background-color: #f6f6f6;
+}
+
+.features .features-container table tr:hover {
+  background-color: #e0e0e0;
+}
+
+.features .features-container table {
+  table-layout: inherit;
+}
+
+.features .features-container table td {
+  text-align: left;
+  padding: 0 0.5em;
+  border: 1px solid rgba(106, 105, 104, 0.232);
+  white-space: nowrap;
+  color: var(--sklearn-color-text);
+}
+
+.total_features {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5em;
+}
+</style><body><div id="sk-container-id-5" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>&lt;class &#x27;braindecode.classifier.EEGClassifier&#x27;&gt;[initialized](
+  module_=TinyPositionalNet(
+    (embed): Sequential(
+      (0): Linear(in_features=6, out_features=32, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=32, out_features=32, bias=True)
+    )
+    (head): Linear(in_features=32, out_features=2, bias=True)
+  ),
+)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-5" type="checkbox" checked><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>EEGClassifier</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('module',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">module</td>
+            <td class="value">TinyPositiona..., bias=True)
+)</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('iterator_train__drop_last',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">iterator_train__drop_last</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('optimizer',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">optimizer</td>
+            <td class="value">&lt;class &#x27;torch.optim.sgd.SGD&#x27;&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('lr',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">lr</td>
+            <td class="value">0.01</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('max_epochs',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">max_epochs</td>
+            <td class="value">3</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('batch_size',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">batch_size</td>
+            <td class="value">4</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('iterator_train',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">iterator_train</td>
+            <td class="value">&lt;class &#x27;torch...r.DataLoader&#x27;&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('iterator_valid',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">iterator_valid</td>
+            <td class="value">&lt;class &#x27;torch...r.DataLoader&#x27;&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('dataset',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">dataset</td>
+            <td class="value">&lt;class &#x27;skorc...aset.Dataset&#x27;&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('train_split',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">train_split</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('predict_nonlinearity',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">predict_nonlinearity</td>
+            <td class="value">&#x27;auto&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('warm_start',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">warm_start</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('verbose',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">verbose</td>
+            <td class="value">1</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('device',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">device</td>
+            <td class="value">&#x27;cpu&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('compile',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">compile</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('use_caching',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">use_caching</td>
+            <td class="value">&#x27;auto&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('torch_load_kwargs',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">torch_load_kwargs</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('_params_to_validate',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">_params_to_validate</td>
+            <td class="value">{&#x27;iterator_train__collate_fn&#x27;, &#x27;iterator_train__drop_last&#x27;, &#x27;iterator_train__shuffle&#x27;}</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('iterator_train__collate_fn',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">iterator_train__collate_fn</td>
+            <td class="value">&lt;function pad...x7f293a8294e0&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('classes',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">classes</td>
+            <td class="value">[0, 1]</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__epoch_timer',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__epoch_timer</td>
+            <td class="value">&lt;skorch.callb...x7f2964dfa480&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss</td>
+            <td class="value">&lt;skorch.callb...x7f2964df8e30&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss__scoring',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss__scoring</td>
+            <td class="value">&lt;function tra...x7f29462bec00&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss__lower_is_better',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss__lower_is_better</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss__on_train',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss__on_train</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss__name',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss__name</td>
+            <td class="value">&#x27;train_loss&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss__target_extractor',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss__target_extractor</td>
+            <td class="value">&lt;function noo...x7f29462bea20&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__train_loss__use_caching',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__train_loss__use_caching</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss</td>
+            <td class="value">&lt;skorch.callb...x7f2964df82f0&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss__scoring',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss__scoring</td>
+            <td class="value">&lt;function val...x7f29462beca0&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss__lower_is_better',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss__lower_is_better</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss__on_train',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss__on_train</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss__name',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss__name</td>
+            <td class="value">&#x27;valid_loss&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss__target_extractor',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss__target_extractor</td>
+            <td class="value">&lt;function noo...x7f29462bea20&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_loss__use_caching',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_loss__use_caching</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc</td>
+            <td class="value">&lt;skorch.callb...x7f2964df9cd0&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc__scoring',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc__scoring</td>
+            <td class="value">&#x27;accuracy&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc__lower_is_better',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc__lower_is_better</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc__on_train',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc__on_train</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc__name',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc__name</td>
+            <td class="value">&#x27;valid_acc&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc__target_extractor',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc__target_extractor</td>
+            <td class="value">&lt;function to_...x7f29462bdf80&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__valid_acc__use_caching',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__valid_acc__use_caching</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__print_log',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__print_log</td>
+            <td class="value">&lt;skorch.callb...x7f2964dfb5f0&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__print_log__keys_ignored',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__print_log__keys_ignored</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__print_log__sink',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__print_log__sink</td>
+            <td class="value">&lt;built-in function print&gt;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__print_log__tablefmt',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__print_log__tablefmt</td>
+            <td class="value">&#x27;simple&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__print_log__floatfmt',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__print_log__floatfmt</td>
+            <td class="value">&#x27;.4f&#x27;</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks__print_log__stralign',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks__print_log__stralign</td>
+            <td class="value">&#x27;right&#x27;</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('criterion',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">criterion</td>
+            <td class="value">&lt;class &#x27;torch...sEntropyLoss&#x27;&gt;</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('cropped',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">cropped</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('callbacks',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">callbacks</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('iterator_train__shuffle',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">iterator_train__shuffle</td>
+            <td class="value">True</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('aggregate_predictions',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">aggregate_predictions</td>
+            <td class="value">True</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+
+        <div class="estimator-table">
+            <details>
+                <summary>Fitted attributes</summary>
+                <table class="parameters-table">
+                    <tbody>
+                        <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        </tr>
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">callbacks_</a></td>
+           <td class="fitted-att-type">list</td>
+           <td>[(&#x27;ep...er&#x27;, &lt;skorch.callb...x7f2964df9670&gt;), (&#x27;tr...ss&#x27;, &lt;skorch.callb...x7f2964dfab40&gt;), (&#x27;va...ss&#x27;, &lt;skorch.callb...x7f2964dfb380&gt;), (&#x27;va...cc&#x27;, &lt;skorch.callb...x7f2964dfbc50&gt;), ...]</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">classes_</a></td>
+           <td class="fitted-att-type">ndarray[int64](2,)</td>
+           <td>[0,1]</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">criterion_</a></td>
+           <td class="fitted-att-type">CrossEntropyLoss</td>
+           <td>CrossEntropyLoss()</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">cuda_dependent_attributes_</a></td>
+           <td class="fitted-att-type">list</td>
+           <td>[&#x27;module_&#x27;, &#x27;cr...n_&#x27;, &#x27;op...r_&#x27;]</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">history_</a></td>
+           <td class="fitted-att-type">History</td>
+           <td>[{&#x27;batches&#x27;: ...best&#x27;: False}]</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">init_context_</a></td>
+           <td class="fitted-att-type">NoneType</td>
+           <td>None</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">initialized_</a></td>
+           <td class="fitted-att-type">bool</td>
+           <td>True</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">module_</a></td>
+           <td class="fitted-att-type">TinyPositionalNet</td>
+           <td>TinyPositiona..., bias=True)
+)</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">optimizer_</a></td>
+           <td class="fitted-att-type">SGD</td>
+           <td>SGD (
+Paramet...ght_decay: 0
+)</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">prefixes_</a></td>
+           <td class="fitted-att-type">list</td>
+           <td>[&#x27;it...in&#x27;, &#x27;it...id&#x27;, &#x27;ca...ks&#x27;, &#x27;dataset&#x27;, ...]</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">signal_args_set_</a></td>
+           <td class="fitted-att-type">bool</td>
+           <td>True</td>
+
+
+       </tr>
+
+
+       <tr class="default">
+           <td class="param"><a class="param-doc-link" style="text-decoration:none;">virtual_params_</a></td>
+           <td class="fitted-att-type">dict</td>
+           <td>{&#x27;lr&#x27;: functools.par...e=&#x27;optimizer&#x27;), &#x27;op..._*&#x27;: functools.par...e=&#x27;optimizer&#x27;), &#x27;op..._*&#x27;: functools.par...e=&#x27;optimizer&#x27;)}</td>
+
+
+       </tr>
+
+                    </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div></div></div><script>/*  Authors: The scikit-learn developers
+ SPDX-License-Identifier: BSD-3-Clause
+*/
+
+function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.copy-paste-icon').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+
+    const parent = element.parentElement;
+    if (!parent || !parent.nextElementSibling) {
+        console.warn('Expected copy-paste icon is missing from the DOM structure');
+        return;
+    }
+
+    const paramName = element.parentElement.nextElementSibling
+        .textContent.trim().split(' ')[0];
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+
+/**
+ * Copy the list of feature names formatted as a Python list.
+ *
+ * @param {HTMLElement} element - The copy button inside a `.features` block; its siblings
+ *   contain a `details` element and a table containing feature named.
+ * @returns {boolean} Always returns `false` so callers can prevent the default click behavior.
+ */
+function copyFeatureNamesToClipboard(element) {
+    var detailsElem = element.closest('.features').querySelector('details');
+    var wasOpen = detailsElem.open;
+    detailsElem.open = true;
+    var content = element.closest('.features').querySelector('tbody')
+                  .innerText.trim();
+    if (!wasOpen) detailsElem.open = false;
+    const rows = content.split('\n').map(row => `    "${row}"`);
+    const formattedText = `[\n${rows.join(',\n')},\n]`;
+    const originalHTML = element.innerHTML.replace('✔', '');
+    const originalStyle = element.style;
+    const copyMark = document.createElement('span');
+    copyMark.innerHTML = '✔';
+    copyMark.style.color = 'blue';
+    copyMark.style.fontSize = '1em';
+
+    navigator.clipboard.writeText(formattedText)
+        .then(() => {
+            element.style.display = 'none';
+            element.parentElement.appendChild(copyMark);
+
+            setTimeout(() => {
+                copyMark.remove();
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 1000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'orange';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 1000);
+        });
+    return false;
+}
+/**
+ * Adapted from Skrub
+ * https://github.com/skrub-data/skrub/blob/403466d1d5d4dc76a7ef569b3f8228db59a31dc3/skrub/_reporting/_data/templates/report.js#L789
+ * @returns "light" or "dark"
+ */
+function detectTheme(element) {
+    const body = document.querySelector('body');
+
+    // Check VSCode theme
+    const themeKindAttr = body.getAttribute('data-vscode-theme-kind');
+    const themeNameAttr = body.getAttribute('data-vscode-theme-name');
+
+    if (themeKindAttr && themeNameAttr) {
+        const themeKind = themeKindAttr.toLowerCase();
+        const themeName = themeNameAttr.toLowerCase();
+
+        if (themeKind.includes("dark") || themeName.includes("dark")) {
+            return "dark";
+        }
+        if (themeKind.includes("light") || themeName.includes("light")) {
+            return "light";
+        }
+    }
+
+    // Check Jupyter theme
+    if (body.getAttribute('data-jp-theme-light') === 'false') {
+        return 'dark';
+    } else if (body.getAttribute('data-jp-theme-light') === 'true') {
+        return 'light';
+    }
+
+    // Guess based on a parent element's color
+    const color = window.getComputedStyle(element.parentNode, null).getPropertyValue('color');
+    const match = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i);
+    if (match) {
+        const [r, g, b] = [
+            parseFloat(match[1]),
+            parseFloat(match[2]),
+            parseFloat(match[3])
+        ];
+
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (luma > 180) {
+            // If the text is very bright we have a dark theme
+            return 'dark';
+        }
+        if (luma < 75) {
+            // If the text is very dark we have a light theme
+            return 'light';
+        }
+        // Otherwise fall back to the next heuristic.
+    }
+
+    // Fallback to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+
+function forceTheme(elementId) {
+    const estimatorElement = document.querySelector(`#${elementId}`);
+    if (estimatorElement === null) {
+        console.error(`Element with id ${elementId} not found.`);
+    } else {
+        const theme = detectTheme(estimatorElement);
+        estimatorElement.classList.add(theme);
+    }
+}
+
+forceTheme('sk-container-id-5');</script></body>
+</div>
+<br />
+<br /></section>
+<section id="next-steps">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Next steps</a><a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<p>The data layer here makes a heterogeneous collection <strong>batchable</strong> and feeds
+positions plus a channel mask to the model. How a model <em>normalizes</em> and
+consumes variable channels (e.g. applying <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> inside attention, or
+mapping electrode positions to a canonical space) is model-specific and the
+natural next step when adapting a real architecture such as <code class="docutils literal notranslate"><span class="pre">REVE</span></code>.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.159 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  576 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-heterogeneous-montage-training-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/155c074457b476cf185eaafd73a64a02/plot_heterogeneous_montage_training.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_heterogeneous_montage_training.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/7fb7b1054dc3c7de3c4e03921276c5e5/plot_heterogeneous_montage_training.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_heterogeneous_montage_training.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/09b505fc87d84b7c20dca0fab29d4b39/plot_heterogeneous_montage_training.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_heterogeneous_montage_training.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_channel_interpolation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Loading Pretrained Foundation Models on Arbitrary Channel Sets</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_how_train_test_and_tune.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">How to train, test and tune your model?</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-two-recordings-with-different-channel-sets">Build two recordings with different channel sets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#window-the-recordings-and-enable-channel-positions">Window the recordings and enable channel positions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-a-heterogeneous-batch">Inspect a heterogeneous batch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-minimal-position-aware-model">A minimal position-aware model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-with-eegclassifier">Train with EEGClassifier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  <div class="sphx-glr-sidebar-component">
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="plot_heterogeneous_montage_training.py">
+          <a download href="../../_downloads/7fb7b1054dc3c7de3c4e03921276c5e5/plot_heterogeneous_montage_training.py">
+            <i class="fa-solid fa-download"></i>
+            Download source code
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="plot_heterogeneous_montage_training.ipynb">
+          <a download href="../../_downloads/155c074457b476cf185eaafd73a64a02/plot_heterogeneous_montage_training.ipynb">
+            <i class="fa-solid fa-download"></i>
+            Download Jupyter notebook
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="plot_heterogeneous_montage_training.zip">
+          <a download href="../../_downloads/09b505fc87d84b7c20dca0fab29d4b39/plot_heterogeneous_montage_training.zip">
+            <i class="fa-solid fa-download"></i>
+            Download zipped
+          </a>
+        </div>
+      
+    
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+
+
+
+
+
+
+<div class="sd-card sd-shadow-sm sd-mb-3">
+  <div class="sd-card-body" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-2" style="margin-bottom:0.75rem;">Run this example</p>
+
+  
+    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/dev/auto_examples/_notebooks/model_building/plot_heterogeneous_montage_training.ipynb" target="_blank" rel="noopener">
+      <img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle; height: 20px;">
+    </a>
+
+  </div>
+</div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+    <script src="https://braindecode.org/versionwarning.js" defer></script>
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2026, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
