@@ -11,10 +11,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 1.6.1 (GitHub): Enhancements: Add opt-in electrode positions in the batch via braindecode.datasets.BaseConcatDataset.set_return_ch_pos() and a cached ch_pos accessor on windowed datasets, p..." />
+<meta property="og:description" content="Current 1.6.1 (GitHub): Enhancements: Add braindecode.functional.sinusoidal_positional_encoding(), a shared sine/cosine positional-encoding primitive (handling odd dimensions), and reuse it in brai..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 1.6.1 (GitHub): Enhancements: Add opt-in electrode positions in the batch via braindecode.datasets.BaseConcatDataset.set_return_ch_pos() and a cached ch_pos accessor on windowed datasets, p..." />
+<meta name="description" content="Current 1.6.1 (GitHub): Enhancements: Add braindecode.functional.sinusoidal_positional_encoding(), a shared sine/cosine positional-encoding primitive (handling odd dimensions), and reuse it in brai..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -499,6 +499,22 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Add <a class="reference internal" href="generated/braindecode.functional.sinusoidal_positional_encoding.html#braindecode.functional.sinusoidal_positional_encoding" title="braindecode.functional.sinusoidal_positional_encoding"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.sinusoidal_positional_encoding()</span></code></a>, a shared
+sine/cosine positional-encoding primitive (handling odd dimensions), and reuse
+it in <a class="reference internal" href="generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BIOT</span></code></a>, <a class="reference internal" href="generated/braindecode.models.MEDFormer.html#braindecode.models.MEDFormer" title="braindecode.models.MEDFormer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.MEDFormer</span></code></a>,
+and <a class="reference internal" href="generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer" title="braindecode.models.STEEGFormer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.STEEGFormer</span></code></a> instead of re-deriving the table in
+each. Encodings are bit-identical, so model behavior is unchanged. Also add
+<a class="reference internal" href="generated/activation/braindecode.modules.GatedLinearUnit.html#braindecode.modules.GatedLinearUnit" title="braindecode.modules.GatedLinearUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.GatedLinearUnit</span></code></a>, a configurable GLU-family gate
+(GEGLU with the default <code class="docutils literal notranslate"><span class="pre">nn.GELU</span></code>, SwiGLU with <code class="docutils literal notranslate"><span class="pre">nn.SiLU</span></code>; <code class="docutils literal notranslate"><span class="pre">torch.nn.GLU</span></code>
+is hard-wired to the sigmoid) for building gated transformer feed-forwards.
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1078">#1078</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Add an optional spatial Fourier <a class="reference internal" href="generated/layers/braindecode.modules.ChannelMerger.html#braindecode.modules.ChannelMerger" title="braindecode.modules.ChannelMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelMerger</span></code></a>
+(with <a class="reference internal" href="generated/layers/braindecode.modules.FourierEmb.html#braindecode.modules.FourierEmb" title="braindecode.modules.FourierEmb"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.FourierEmb</span></code></a>) to
+<a class="reference internal" href="generated/braindecode.models.BrainModule.html#braindecode.models.BrainModule" title="braindecode.models.BrainModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BrainModule</span></code></a> via <code class="docutils literal notranslate"><span class="pre">use_merger=True</span></code>, implementing
+the montage-agnostic spatial attention its docstring described. Also fixes a
+latent crash for non-integer <code class="docutils literal notranslate"><span class="pre">dilation_growth</span></code> and sizes the channel
+accounting in forward order so <code class="docutils literal notranslate"><span class="pre">subject_layers</span></code>/STFT combinations work.
+Default-off, so existing behavior is unchanged. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1076">#1076</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add opt-in electrode positions in the batch via
 <a class="reference internal" href="generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_return_ch_pos" title="braindecode.datasets.BaseConcatDataset.set_return_ch_pos"><code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset.set_return_ch_pos()</span></code></a> and a cached
 <code class="docutils literal notranslate"><span class="pre">ch_pos</span></code> accessor on windowed datasets, plus
