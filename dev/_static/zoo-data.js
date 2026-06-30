@@ -440,6 +440,14 @@ window.BD_MODELS = [
     "params": "25.3 M",
     "paper": "",
     "desc": "Classification for General"
+  },
+  {
+    "name": "MVPFormer",
+    "cat": "foundation",
+    "year": null,
+    "params": "3.4 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   }
 ];
 window.BD_CATEGORIES = [
@@ -449,14 +457,14 @@ window.BD_CATEGORIES = [
     "color": "gray"
   },
   {
-    "id": "convolution",
-    "label": "Convolution",
-    "color": ""
-  },
-  {
     "id": "foundation",
     "label": "Foundation",
     "color": "purple"
+  },
+  {
+    "id": "convolution",
+    "label": "Convolution",
+    "color": ""
   },
   {
     "id": "attention",
