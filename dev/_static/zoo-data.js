@@ -434,6 +434,14 @@ window.BD_MODELS = [
     "desc": "Classification for General"
   },
   {
+    "name": "DANCE",
+    "cat": "attention",
+    "year": null,
+    "params": "29.8 M",
+    "paper": "",
+    "desc": "Event Detection for General"
+  },
+  {
     "name": "STEEGFormer",
     "cat": "foundation",
     "year": null,
