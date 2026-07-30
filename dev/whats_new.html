@@ -523,6 +523,13 @@ wrappers and pydantic configs (<a class="reference external" href="https://githu
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">nn.Dropout1d</span></code> instead of <code class="docutils literal notranslate"><span class="pre">nn.Dropout2d</span></code> for the channel-wise dropout
+inside <a class="reference internal" href="generated/braindecode.models.BDTCN.html#braindecode.models.BDTCN" title="braindecode.models.BDTCN"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BDTCN</span></code></a>, <code class="docutils literal notranslate"><span class="pre">braindecode.models.TCN</span></code> and
+<a class="reference internal" href="generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BENDR</span></code></a>. Those layers receive
+<code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">channels,</span> <span class="pre">times)</span></code> activations, which <code class="docutils literal notranslate"><span class="pre">nn.Dropout2d</span></code> only handles
+through a deprecated fallback that warns on every forward pass and is
+scheduled to be reinterpreted as unbatched input, masking batch items rather
+than channels. The masking behaviour is unchanged. By <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>.</p></li>
 <li><p>Clarify that <code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.training.scoring.predict_trials()</span></code>,
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.EEGClassifier.predict_trials()</span></code>, and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.EEGRegressor.predict_trials()</span></code> return ground-truth dataset
