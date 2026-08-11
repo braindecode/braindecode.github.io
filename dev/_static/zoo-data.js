@@ -456,6 +456,14 @@ window.BD_MODELS = [
     "params": "3.4 M",
     "paper": "",
     "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "ZUNA",
+    "cat": "foundation",
+    "year": null,
+    "params": "172.1 M",
+    "paper": "",
+    "desc": "Classification,Embedding for General"
   }
 ];
 window.BD_CATEGORIES = [
