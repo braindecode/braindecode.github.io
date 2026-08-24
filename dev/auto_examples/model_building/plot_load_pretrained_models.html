@@ -493,6 +493,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -636,9 +637,9 @@ library.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/authentication#huggingface_hub.login" title="huggingface_hub.login" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-function"><span class="n">login</span></a>
 
-<a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HF_TOKEN&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"HF_TOKEN"</span><span class="p">)</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">:</span>
     <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/authentication#huggingface_hub.login" title="huggingface_hub.login" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-function"><span class="n">login</span></a><span class="p">(</span><span class="n">token</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">)</span>
 </pre></div>
@@ -651,8 +652,8 @@ Hugging Face Hub.</p>
 <p>We start with BENDR <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> as an example:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">BENDR</span></a>
 
-<a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span><span class="s2">&quot;braindecode/braindecode-bendr&quot;</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded BENDR with n_outputs=</span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span><span class="s2">"braindecode/braindecode-bendr"</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loaded BENDR with n_outputs=</span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loaded BENDR with n_outputs=2
@@ -663,7 +664,7 @@ Hugging Face Hub.</p>
 <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.eval" title="torch.nn.Module.eval" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">eval</span></a><span class="p">()</span>
 <span class="k">with</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output shape: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output shape: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Output shape: torch.Size([2, 2])
@@ -678,12 +679,12 @@ Hugging Face Hub.</p>
 of classes, pass <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code> directly to <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code>. The
 backbone weights are loaded and the classification head is automatically
 rebuilt:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span><span class="s2">&quot;braindecode/braindecode-bendr&quot;</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n_outputs after loading: </span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span><span class="s2">"braindecode/braindecode-bendr"</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n_outputs after loading: </span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="k">with</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output shape with 4 classes: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output shape with 4 classes: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>n_outputs after loading: 4
@@ -692,11 +693,11 @@ Output shape with 4 classes: torch.Size([2, 4])
 </div>
 <p>You can also swap the head at any time using <code class="docutils literal notranslate"><span class="pre">reset_head</span></code>:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR.reset_head" title="braindecode.models.BENDR.reset_head" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">reset_head</span></a><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n_outputs after reset_head: </span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n_outputs after reset_head: </span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="k">with</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output shape after reset: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output shape after reset: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>n_outputs after reset_head: 10
@@ -717,12 +718,12 @@ Output shape after reset: torch.Size([2, 10])
 <span class="k">with</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <span class="n">return_features</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Features shape: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CLS token: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a><span class="p">[</span><span class="s1">&#39;cls_token&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Features shape: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a><span class="p">[</span><span class="s1">'features'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"CLS token: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out</span></a><span class="p">[</span><span class="s1">'cls_token'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Type: &lt;class &#39;dict&#39;&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Type: &lt;class 'dict'&gt;
 Features shape: torch.Size([2, 512])
 CLS token: None
 </pre></div>
@@ -741,25 +742,25 @@ See <a class="reference internal" href="../advanced_training/plot_finetune_found
 includes model-specific hyperparameters like <code class="docutils literal notranslate"><span class="pre">encoder_h</span></code>,
 <code class="docutils literal notranslate"><span class="pre">drop_prob</span></code>, <code class="docutils literal notranslate"><span class="pre">activation</span></code>, etc.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">config</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.get_config" title="braindecode.models.EEGModuleMixin.get_config" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/json.html#json.dumps" title="json.dumps" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">dumps</span></a><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">config</span></a><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;chs_info&quot;</span><span class="p">},</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/json.html#json.dumps" title="json.dumps" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">dumps</span></a><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">config</span></a><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">"chs_info"</span><span class="p">},</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{
-  &quot;n_chans&quot;: 20,
-  &quot;n_outputs&quot;: 2,
-  &quot;n_times&quot;: 1000,
-  &quot;input_window_seconds&quot;: null,
-  &quot;sfreq&quot;: 250,
-  &quot;encoder_h&quot;: 512,
-  &quot;contextualizer_hidden&quot;: 3076,
-  &quot;projection_head&quot;: false,
-  &quot;drop_prob&quot;: 0.1,
-  &quot;layer_drop&quot;: 0.0,
-  &quot;activation&quot;: &quot;torch.nn.modules.activation.GELU&quot;,
-  &quot;transformer_layers&quot;: 8,
-  &quot;transformer_heads&quot;: 8,
-  &quot;position_encoder_length&quot;: 25,
-  &quot;enc_width&quot;: [
+  "n_chans": 20,
+  "n_outputs": 2,
+  "n_times": 1000,
+  "input_window_seconds": null,
+  "sfreq": 250,
+  "encoder_h": 512,
+  "contextualizer_hidden": 3076,
+  "projection_head": false,
+  "drop_prob": 0.1,
+  "layer_drop": 0.0,
+  "activation": "torch.nn.modules.activation.GELU",
+  "transformer_layers": 8,
+  "transformer_heads": 8,
+  "position_encoder_length": 25,
+  "enc_width": [
     3,
     2,
     2,
@@ -767,7 +768,7 @@ includes model-specific hyperparameters like <code class="docutils literal notra
     2,
     2
   ],
-  &quot;enc_downsample&quot;: [
+  "enc_downsample": [
     3,
     2,
     2,
@@ -775,15 +776,15 @@ includes model-specific hyperparameters like <code class="docutils literal notra
     2,
     2
   ],
-  &quot;start_token&quot;: -5,
-  &quot;final_layer&quot;: true,
-  &quot;encoder_only&quot;: false
+  "start_token": -5,
+  "final_layer": true,
+  "encoder_only": false
 }
 </pre></div>
 </div>
 <p>You can reconstruct the model (without weights) using <code class="docutils literal notranslate"><span class="pre">from_config</span></code>:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_copy</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.from_config" title="braindecode.models.EEGModuleMixin.from_config" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_config</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">config</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reconstructed: n_outputs=</span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_copy</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Reconstructed: n_outputs=</span><span class="si">{</span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_copy</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reconstructed: n_outputs=2
@@ -791,9 +792,9 @@ includes model-specific hyperparameters like <code class="docutils literal notra
 </div>
 <p>When pushing to the Hub, the full config is saved automatically in
 <code class="docutils literal notranslate"><span class="pre">config.json</span></code> alongside the model weights:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span><span class="s2">&quot;username/my-bendr-model&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span><span class="s2">"username/my-bendr-model"</span><span class="p">)</span>
 <span class="c1"># Later:</span>
-<a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span><span class="s2">&quot;username/my-bendr-model&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/mixins#huggingface_hub.ModelHubMixin.from_pretrained" title="huggingface_hub.ModelHubMixin.from_pretrained" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-method"><span class="n">BENDR</span><span class="o">.</span><span class="n">from_pretrained</span></a><span class="p">(</span><span class="s2">"username/my-bendr-model"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -911,111 +912,111 @@ Parameter counts are read directly from the Hub.</p>
 <span class="c1"># (display_name, model_class, from_pretrained kwargs, org)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">checkpoints</span></a> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span>
-        <span class="s2">&quot;BENDR&quot;</span><span class="p">,</span>
+        <span class="s2">"BENDR"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">BENDR</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/braindecode-bendr&quot;</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/braindecode-bendr"</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;BIOT (16ch)&quot;</span><span class="p">,</span>
+        <span class="s2">"BIOT (16ch)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">BIOT</span></a><span class="p">,</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/biot-pretrained-prest-16chs&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/biot-pretrained-prest-16chs"</span><span class="p">),</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;BIOT (18ch)&quot;</span><span class="p">,</span>
+        <span class="s2">"BIOT (18ch)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">BIOT</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/biot-pretrained-shhs-prest-18chs&quot;</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/biot-pretrained-shhs-prest-18chs"</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;CBraMod&quot;</span><span class="p">,</span>
+        <span class="s2">"CBraMod"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod" title="braindecode.models.CBraMod" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">CBraMod</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/cbramod-pretrained&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/cbramod-pretrained"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
             <span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;CodeBrain&quot;</span><span class="p">,</span>
+        <span class="s2">"CodeBrain"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain" title="braindecode.models.CodeBrain" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">CodeBrain</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/codebrain-pretrained&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/codebrain-pretrained"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;EEGPT&quot;</span><span class="p">,</span>
+        <span class="s2">"EEGPT"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT" title="braindecode.models.EEGPT" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">EEGPT</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/eegpt-pretrained&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/eegpt-pretrained"</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">62</span><span class="p">,</span>
-            <span class="n">chan_proj_type</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="n">chan_proj_type</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;Labram&quot;</span><span class="p">,</span>
+        <span class="s2">"Labram"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">Labram</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/labram-pretrained&quot;</span><span class="p">,</span> <span class="n">n_chans</span><span class="o">=</span><span class="mi">128</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/labram-pretrained"</span><span class="p">,</span> <span class="n">n_chans</span><span class="o">=</span><span class="mi">128</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;SignalJEPA&quot;</span><span class="p">,</span>
+        <span class="s2">"SignalJEPA"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA" title="braindecode.models.SignalJEPA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">SignalJEPA</span></a><span class="p">,</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/signal-jepa&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/signal-jepa"</span><span class="p">),</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;STEEGFormer (small)&quot;</span><span class="p">,</span>
+        <span class="s2">"STEEGFormer (small)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer" title="braindecode.models.STEEGFormer" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">STEEGFormer</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;braindecode/STEEGFormer-small&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"braindecode/STEEGFormer-small"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;braindecode&quot;</span><span class="p">,</span>
+        <span class="s2">"braindecode"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;REVE (base)&quot;</span><span class="p">,</span>
+        <span class="s2">"REVE (base)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.REVE.html#braindecode.models.REVE" title="braindecode.models.REVE" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">REVE</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;brain-bzh/reve-base&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"brain-bzh/reve-base"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
             <span class="n">sfreq</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;brain-bzh&quot;</span><span class="p">,</span>
+        <span class="s2">"brain-bzh"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;REVE (large)&quot;</span><span class="p">,</span>
+        <span class="s2">"REVE (large)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.REVE.html#braindecode.models.REVE" title="braindecode.models.REVE" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">REVE</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;brain-bzh/reve-large&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"brain-bzh/reve-large"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
             <span class="n">sfreq</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;brain-bzh&quot;</span><span class="p">,</span>
+        <span class="s2">"brain-bzh"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;LUNA (base)&quot;</span><span class="p">,</span>
+        <span class="s2">"LUNA (base)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">LUNA</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;PulpBio/LUNA&quot;</span><span class="p">,</span>
-            <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;LUNA_base.safetensors&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"PulpBio/LUNA"</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s2">"LUNA_base.safetensors"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -1023,14 +1024,14 @@ Parameter counts are read directly from the Hub.</p>
             <span class="n">num_queries</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
             <span class="n">depth</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;PulpBio&quot;</span><span class="p">,</span>
+        <span class="s2">"PulpBio"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;LUNA (large)&quot;</span><span class="p">,</span>
+        <span class="s2">"LUNA (large)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">LUNA</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;PulpBio/LUNA&quot;</span><span class="p">,</span>
-            <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;LUNA_large.safetensors&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"PulpBio/LUNA"</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s2">"LUNA_large.safetensors"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -1038,14 +1039,14 @@ Parameter counts are read directly from the Hub.</p>
             <span class="n">num_queries</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
             <span class="n">depth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;PulpBio&quot;</span><span class="p">,</span>
+        <span class="s2">"PulpBio"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="p">(</span>
-        <span class="s2">&quot;LUNA (huge)&quot;</span><span class="p">,</span>
+        <span class="s2">"LUNA (huge)"</span><span class="p">,</span>
         <a href="../../generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">LUNA</span></a><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">&quot;PulpBio/LUNA&quot;</span><span class="p">,</span>
-            <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;LUNA_huge.safetensors&quot;</span><span class="p">,</span>
+            <span class="n">pretrained_model_name_or_path</span><span class="o">=</span><span class="s2">"PulpBio/LUNA"</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s2">"LUNA_huge.safetensors"</span><span class="p">,</span>
             <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -1053,13 +1054,13 @@ Parameter counts are read directly from the Hub.</p>
             <span class="n">num_queries</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
             <span class="n">depth</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s2">&quot;PulpBio&quot;</span><span class="p">,</span>
+        <span class="s2">"PulpBio"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">]</span>
 
 <span class="c1"># Skip gated models when no HF token is available (e.g. fork PRs)</span>
 <span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_token</span></a><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">checkpoints</span></a> <span class="o">=</span> <span class="p">[(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">checkpoints</span></a> <span class="k">if</span> <span class="n">o</span> <span class="o">!=</span> <span class="s2">&quot;brain-bzh&quot;</span><span class="p">]</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">checkpoints</span></a> <span class="o">=</span> <span class="p">[(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">checkpoints</span></a> <span class="k">if</span> <span class="n">o</span> <span class="o">!=</span> <span class="s2">"brain-bzh"</span><span class="p">]</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">names</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orgs</span></a> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">display</span></a><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">kwargs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">checkpoints</span></a><span class="p">:</span>
@@ -1072,7 +1073,7 @@ Parameter counts are read directly from the Hub.</p>
     <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">names</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">display</span></a><span class="p">)</span>
     <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_params</span></a> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orgs</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org</span></a><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">display</span></a><span class="si">:</span><span class="s2">15s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_params</span></a><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s2">8.1f</span><span class="si">}</span><span class="s2">M params&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">display</span></a><span class="si">:</span><span class="s2">15s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_params</span></a><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s2">8.1f</span><span class="si">}</span><span class="s2">M params"</span><span class="p">)</span>
 
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span></a><span class="p">)</span>
 
@@ -1086,27 +1087,27 @@ Parameter counts are read directly from the Hub.</p>
 
 <span class="c1"># -- palette ----------------------------------------------------------</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_palette</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;braindecode&quot;</span><span class="p">:</span> <span class="s2">&quot;#2D6A9F&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;brain-bzh&quot;</span><span class="p">:</span> <span class="s2">&quot;#C04E3E&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PulpBio&quot;</span><span class="p">:</span> <span class="s2">&quot;#4A8B6F&quot;</span><span class="p">,</span>
+    <span class="s2">"braindecode"</span><span class="p">:</span> <span class="s2">"#2D6A9F"</span><span class="p">,</span>
+    <span class="s2">"brain-bzh"</span><span class="p">:</span> <span class="s2">"#C04E3E"</span><span class="p">,</span>
+    <span class="s2">"PulpBio"</span><span class="p">:</span> <span class="s2">"#4A8B6F"</span><span class="p">,</span>
 <span class="p">}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_markers</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;braindecode&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;brain-bzh&quot;</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;PulpBio&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_markers</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">"braindecode"</span><span class="p">:</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"brain-bzh"</span><span class="p">:</span> <span class="s2">"D"</span><span class="p">,</span> <span class="s2">"PulpBio"</span><span class="p">:</span> <span class="s2">"s"</span><span class="p">}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_palette</span></a><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orgs</span></a><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">markers</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_markers</span></a><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orgs</span></a><span class="p">]</span>
 
 <span class="c1"># -- figure setup ------------------------------------------------------</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html#matplotlib.patches.Patch.set_facecolor" title="matplotlib.patches.Patch.set_facecolor" class="sphx-glr-backref-module-matplotlib-patches sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span></a><span class="p">(</span><span class="s2">&quot;#FAFAFA&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_facecolor.html#matplotlib.axes.Axes.set_facecolor" title="matplotlib.axes.Axes.set_facecolor" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span></a><span class="p">(</span><span class="s2">&quot;#FAFAFA&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html#matplotlib.patches.Patch.set_facecolor" title="matplotlib.patches.Patch.set_facecolor" class="sphx-glr-backref-module-matplotlib-patches sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span></a><span class="p">(</span><span class="s2">"#FAFAFA"</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_facecolor.html#matplotlib.axes.Axes.set_facecolor" title="matplotlib.axes.Axes.set_facecolor" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span></a><span class="p">(</span><span class="s2">"#FAFAFA"</span><span class="p">)</span>
 
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pos</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">names</span></a><span class="p">))</span>
 
 <span class="c1"># Horizontal reference lines (subtle, behind everything)</span>
 <span class="k">for</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">y</span></a> <span class="ow">in</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pos</span></a><span class="p">:</span>
-    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="matplotlib.axes.Axes.axhline" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">y</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#E8E8E8&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="matplotlib.axes.Axes.axhline" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">y</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#E8E8E8"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Stem lines from left edge to dot</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.hlines.html#matplotlib.axes.Axes.hlines" title="matplotlib.axes.Axes.hlines" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">hlines</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pos</span></a><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#D0D0D0&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.hlines.html#matplotlib.axes.Axes.hlines" title="matplotlib.axes.Axes.hlines" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">hlines</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pos</span></a><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#D0D0D0"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Dots (different shapes per org for accessibility)</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">names</span></a><span class="p">)):</span>
@@ -1117,7 +1118,7 @@ Parameter counts are read directly from the Hub.</p>
         <span class="n">s</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
         <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">marker</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">markers</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">],</span>
-        <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
         <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1126,44 +1127,44 @@ Parameter counts are read directly from the Hub.</p>
     <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="matplotlib.axes.Axes.text" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span>
         <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">pm</span></a> <span class="o">*</span> <span class="mf">1.12</span><span class="p">,</span>
         <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pos</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">pm</span></a><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">M&quot;</span><span class="p">,</span>
-        <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
-        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">pm</span></a><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">M"</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span>
+        <span class="n">va</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span>
         <span class="n">fontsize</span><span class="o">=</span><span class="mf">7.8</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#444444&quot;</span><span class="p">,</span>
-        <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">"#444444"</span><span class="p">,</span>
+        <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span>
         <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="p">)</span>
 
 <span class="c1"># Y-axis</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticks.html#matplotlib.axes.Axes.set_yticks" title="matplotlib.axes.Axes.set_yticks" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pos</span></a><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html#matplotlib.axes.Axes.set_yticklabels" title="matplotlib.axes.Axes.set_yticklabels" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">names</span></a><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#333333&quot;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html#matplotlib.axes.Axes.set_yticklabels" title="matplotlib.axes.Axes.set_yticklabels" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">names</span></a><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#333333"</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"medium"</span><span class="p">)</span>
 
 <span class="c1"># X-axis: log scale with human-readable labels</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html#matplotlib.axes.Axes.set_xscale" title="matplotlib.axes.Axes.set_xscale" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span></a><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html#matplotlib.axes.Axes.set_xscale" title="matplotlib.axes.Axes.set_xscale" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span></a><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlim.html#matplotlib.axes.Axes.set_xlim" title="matplotlib.axes.Axes.set_xlim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span></a><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params_m</span></a><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">2.5</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axis.Axis.set_major_formatter.html#matplotlib.axis.Axis.set_major_formatter" title="matplotlib.axis.Axis.set_major_formatter" class="sphx-glr-backref-module-matplotlib-axis sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FuncFormatter" title="matplotlib.ticker.FuncFormatter" class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class"><span class="n">FuncFormatter</span></a><span class="p">(</span><span class="k">lambda</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">M&quot;</span><span class="p">))</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axis.Axis.set_major_formatter.html#matplotlib.axis.Axis.set_major_formatter" title="matplotlib.axis.Axis.set_major_formatter" class="sphx-glr-backref-module-matplotlib-axis sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.FuncFormatter" title="matplotlib.ticker.FuncFormatter" class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class"><span class="n">FuncFormatter</span></a><span class="p">(</span><span class="k">lambda</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">M"</span><span class="p">))</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xticks.html#matplotlib.axes.Axes.set_xticks" title="matplotlib.axes.Axes.set_xticks" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span></a><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a><span class="o">=</span><span class="s2">&quot;#999999&quot;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colors</span></a><span class="o">=</span><span class="s2">"#999999"</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Title + subtitle</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span>
-    <span class="s2">&quot;EEG Foundation Models&quot;</span><span class="p">,</span>
+    <span class="s2">"EEG Foundation Models"</span><span class="p">,</span>
     <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
-    <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span>
-    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#1a1a1a&quot;</span><span class="p">,</span>
-    <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">"#1a1a1a"</span><span class="p">,</span>
+    <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span>
     <span class="n">pad</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
 <span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="matplotlib.axes.Axes.text" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span>
     <span class="mf">0.0</span><span class="p">,</span>
     <span class="mf">1.02</span><span class="p">,</span>
-    <span class="s2">&quot;Parameter count of curated checkpoints on Hugging Face Hub&quot;</span><span class="p">,</span>
+    <span class="s2">"Parameter count of curated checkpoints on Hugging Face Hub"</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/transformations.html#matplotlib.transforms.BboxTransformTo" title="matplotlib.transforms.BboxTransformTo" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span></a><span class="p">,</span>
     <span class="n">fontsize</span><span class="o">=</span><span class="mf">8.5</span><span class="p">,</span>
-    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#777777&quot;</span><span class="p">,</span>
-    <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">"#777777"</span><span class="p">,</span>
+    <span class="n">va</span><span class="o">=</span><span class="s2">"bottom"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Organization legend with shape + color</span>
@@ -1175,26 +1176,26 @@ Parameter counts are read directly from the Hub.</p>
         <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
         <span class="n">marker</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_markers</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_name</span></a><span class="p">],</span>
         <span class="n">label</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">org_name</span></a><span class="p">,</span>
-        <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
     <span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/legend_api.html#matplotlib.legend.Legend" title="matplotlib.legend.Legend" class="sphx-glr-backref-module-matplotlib-legend sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">legend</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span>
     <span class="n">fontsize</span><span class="o">=</span><span class="mf">7.5</span><span class="p">,</span>
-    <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">,</span>
+    <span class="n">loc</span><span class="o">=</span><span class="s2">"lower right"</span><span class="p">,</span>
     <span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">framealpha</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
-    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;#E0E0E0&quot;</span><span class="p">,</span>
+    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"#E0E0E0"</span><span class="p">,</span>
     <span class="n">handletextpad</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
     <span class="n">borderpad</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
     <span class="n">labelspacing</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
 <span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/legend_api.html#matplotlib.legend.Legend.get_frame" title="matplotlib.legend.Legend.get_frame" class="sphx-glr-backref-module-matplotlib-legend sphx-glr-backref-type-py-method"><span class="n">legend</span><span class="o">.</span><span class="n">get_frame</span></a><span class="p">()</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;#FAFAFA&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/legend_api.html#matplotlib.legend.Legend.get_frame" title="matplotlib.legend.Legend.get_frame" class="sphx-glr-backref-module-matplotlib-legend sphx-glr-backref-type-py-method"><span class="n">legend</span><span class="o">.</span><span class="n">get_frame</span></a><span class="p">()</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">"#FAFAFA"</span><span class="p">)</span>
 
 <span class="c1"># Clean spines</span>
 <span class="k">for</span> <a href="https://matplotlib.org/stable/api/spines_api.html#matplotlib.spines.Spine" title="matplotlib.spines.Spine" class="sphx-glr-backref-module-matplotlib-spines sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spine</span></a> <span class="ow">in</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
     <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.artist.Artist.set_visible.html#matplotlib.artist.Artist.set_visible" title="matplotlib.artist.Artist.set_visible" class="sphx-glr-backref-module-matplotlib-artist sphx-glr-backref-type-py-method"><span class="n">spine</span><span class="o">.</span><span class="n">set_visible</span></a><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># Minimal grid on x only</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axis.Axis.grid.html#matplotlib.axis.Axis.grid" title="matplotlib.axis.Axis.grid" class="sphx-glr-backref-module-matplotlib-axis sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#E8E8E8&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axis.Axis.grid.html#matplotlib.axis.Axis.grid" title="matplotlib.axis.Axis.grid" class="sphx-glr-backref-module-matplotlib-axis sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#E8E8E8"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axis.Axis.grid.html#matplotlib.axis.Axis.grid" title="matplotlib.axis.Axis.grid" class="sphx-glr-backref-module-matplotlib-axis sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_axisbelow.html#matplotlib.axes.Axes.set_axisbelow" title="matplotlib.axes.Axes.set_axisbelow" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_axisbelow</span></a><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1223,7 +1224,7 @@ LUNA (huge)         311.8M params
 <p>The <a class="reference external" href="https://huggingface.co/braindecode">braindecode</a> organization on
 Hugging Face re-hosts the official pretrained weights.
 All models below follow the same one-line loading pattern:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;&lt;repo-id&gt;&quot;</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=...</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"&lt;repo-id&gt;"</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=...</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1305,7 +1306,7 @@ is enough:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer" title="braindecode.models.STEEGFormer" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">STEEGFormer</span></a>
 
 <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer" title="braindecode.models.STEEGFormer" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">STEEGFormer</span></a><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-    <span class="s2">&quot;braindecode/STEEGFormer-small&quot;</span><span class="p">,</span>
+    <span class="s2">"braindecode/STEEGFormer-small"</span><span class="p">,</span>
     <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -1354,8 +1355,8 @@ single repository. Use the <code class="docutils literal notranslate"><span clas
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">LUNA</span></a>
 
 <a href="../../generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">LUNA</span></a><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-    <span class="s2">&quot;PulpBio/LUNA&quot;</span><span class="p">,</span>
-    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;LUNA_base.safetensors&quot;</span><span class="p">,</span>
+    <span class="s2">"PulpBio/LUNA"</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">"LUNA_base.safetensors"</span><span class="p">,</span>
     <span class="n">n_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">embed_dim</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">num_queries</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1386,8 +1387,8 @@ In Proceedings of the 34th European Signal Processing Conference
 (EUSIPCO 2026), Bruges, Belgium.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 54.969 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  4345 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 5.914 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  4491 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-load-pretrained-models-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fa7c2c982eb044a92a764e44b7365fd6/plot_load_pretrained_models.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_load_pretrained_models.ipynb</span></code></a></p>

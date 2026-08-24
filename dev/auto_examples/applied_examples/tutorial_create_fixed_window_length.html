@@ -493,6 +493,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Applied examples on real-world datasets</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -611,12 +612,12 @@ it can be applied to EEG datasets.</p>
     <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">reject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">flat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">targets_from</span><span class="o">=</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span>
+    <span class="n">targets_from</span><span class="o">=</span><span class="s1">'metadata'</span><span class="p">,</span>
     <span class="n">last_target_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">lazy_metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="s1">'error'</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="s1">'error'</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -709,7 +710,7 @@ it can be applied to EEG datasets.</p>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the EEG dataset</span>
-<span class="n">dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;BNCI2014_001&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">"BNCI2014_001"</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Preprocessing</p>
@@ -721,7 +722,7 @@ it can be applied to EEG datasets.</p>
 <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">preprocessors</span><span class="p">)</span>
 
 <span class="c1"># Sampling frequency</span>
-<span class="n">sfreq</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+<span class="n">sfreq</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Create windows</p>
@@ -737,25 +738,25 @@ it can be applied to EEG datasets.</p>
     <span class="n">drop_last_window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>  <span class="c1"># Only EEG channels</span>
+    <span class="n">picks</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">,</span>  <span class="c1"># Only EEG channels</span>
     <span class="n">reject</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mf">150e-6</span><span class="p">),</span>  <span class="c1"># Reject windows where EEG p2p &gt; 150 µV</span>
     <span class="n">flat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">targets_from</span><span class="o">=</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+    <span class="n">targets_from</span><span class="o">=</span><span class="s2">"metadata"</span><span class="p">,</span>
     <span class="n">last_target_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">on_missing</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="s2">"warning"</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="s2">"error"</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Let&#39;s inspect the output to better understand what we created.</span>
+<span class="c1"># Let's inspect the output to better understand what we created.</span>
 
 <span class="c1"># Check how many windows were created</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">windows_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">windows_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Each window contains EEG data of fixed size</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">windows_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window data shape: </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window label: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Window data shape: </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Window label: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -773,9 +774,9 @@ annotations are stored in auxiliary channels.</p></li>
 <li><p><strong>last_target_only=True</strong> (default): If multiple targets are present within a window (as in time-varying labels),
 use only the final target value in that window.</p></li>
 </ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: mapping session names (&quot;0train&quot; and &quot;1test&quot;) to integers</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: mapping session names ("0train" and "1test") to integers</span>
 
-<span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;0train&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;1test&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"0train"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"1test"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 
 <span class="n">windows_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a><span class="p">(</span>
     <span class="n">dataset</span><span class="p">,</span>
@@ -787,8 +788,8 @@ use only the final target value in that window.</p></li>
 <span class="p">)</span>
 
 <span class="c1"># View first few targets</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Targets for first 10 windows:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">windows_dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">&quot;target&quot;</span><span class="p">][:</span><span class="mi">10</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Targets for first 10 windows:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">windows_dataset</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">"target"</span><span class="p">][:</span><span class="mi">10</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -840,7 +841,7 @@ For example, start windowing 500 ms later into the recording.</p>
     <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of shifted windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shifted_windows_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Number of shifted windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shifted_windows_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Estimated memory usage:</strong>  0 MB</p>

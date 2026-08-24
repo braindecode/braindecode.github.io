@@ -493,6 +493,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -637,28 +638,28 @@ trains and evaluates different models on a motor-imagery dataset using Exca.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a>
 
-<a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
 
 <span class="c1"># The list of available MOABB datasets:</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DATASET_NAMES</span></a> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_list</span></a><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">WindowedMOABBDatasetConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
-    <span class="n">dataset_type</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><span class="s2">&quot;moabb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;moabb&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
+    <span class="n">dataset_type</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><span class="s2">"moabb"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"moabb"</span>
     <span class="n">infra</span><span class="p">:</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span> <span class="o">=</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span><span class="p">(</span>
         <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># no disk caching</span>
         <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># local execution</span>
         <span class="n">keep_in_ram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">dataset_name</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DATASET_NAMES</span></a><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BNCI2014_001&quot;</span>
+    <span class="n">dataset_name</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">DATASET_NAMES</span></a><span class="p">]</span> <span class="o">=</span> <span class="s2">"BNCI2014_001"</span>
     <span class="n">subject_id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">window_size_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span>
     <span class="n">overlap_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="nd">@infra</span><span class="o">.</span><span class="n">apply</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">:</span>
-        <span class="c1"># We don&#39;t apply any preprocessing here for simplicity, but in a real experiment,</span>
+        <span class="c1"># We don't apply any preprocessing here for simplicity, but in a real experiment,</span>
         <span class="c1"># you would typically want to filter the data, resample it, etc.</span>
         <span class="c1"># Instead, our config  directly extracts windows from the raw data.</span>
         <span class="n">dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span>
@@ -679,11 +680,11 @@ This allows for easy and efficient experimentation.</p>
 <p>Additionally, we define a small wrapper config to split the dataset into training and testing sets.
 Here, no caching is applied since the split operation is fast.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DatasetSplitConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
-    <span class="n">dataset_type</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;split&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
+    <span class="n">dataset_type</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Literal" title="typing.Literal" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Literal</span></a><span class="p">[</span><span class="s2">"split"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"split"</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="n">WindowedMOABBDatasetConfig</span>
     <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;session&quot;</span>
+    <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"session"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
@@ -695,7 +696,7 @@ Here, no caching is applied since the split operation is fast.</p>
 which can be either a <code class="docutils literal notranslate"><span class="pre">WindowedMOABBDatasetConfig</span></code> or a <code class="docutils literal notranslate"><span class="pre">DatasetSplitConfig</span></code>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">DatasetConfig</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="typing.Annotated" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Annotated</span></a><span class="p">[</span>
     <span class="n">WindowedMOABBDatasetConfig</span> <span class="o">|</span> <span class="n">DatasetSplitConfig</span><span class="p">,</span>
-    <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s2">&quot;dataset_type&quot;</span><span class="p">),</span>
+    <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s2">"dataset_type"</span><span class="p">),</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -712,9 +713,9 @@ It will simply load the data, instantiate the model, and train the model on the 
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TrainingConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">infra</span><span class="p">:</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span> <span class="o">=</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span><span class="p">(</span>
-        <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;.cache/&quot;</span><span class="p">,</span>
+        <span class="n">folder</span><span class="o">=</span><span class="s2">".cache/"</span><span class="p">,</span>
         <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># local execution</span>
     <span class="p">)</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">BraindecodeModelConfig</span>
@@ -728,7 +729,7 @@ It will simply load the data, instantiate the model, and train the model on the 
     <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">:</span>
         <span class="c1"># Load training data</span>
         <span class="n">train_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
-        <span class="n">train_y</span> <span class="o">=</span> <span class="n">train_set</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">train_y</span> <span class="o">=</span> <span class="n">train_set</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">"target"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
         <span class="c1"># Instantiate the model</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
@@ -738,7 +739,7 @@ It will simply load the data, instantiate the model, and train the model on the 
             <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
             <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">train_split</span><span class="o">=</span><a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-            <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">)],</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">)],</span>
             <span class="n">optimizer</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">Adam</span></a><span class="p">,</span>
         <span class="p">)</span>
 
@@ -755,9 +756,9 @@ It will simply load the data, instantiate the model, and train the model on the 
 <p>Finally, we define an evaluation config that will load the validation data,
 load the trained model from the training config, and evaluate it on the validation data.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EvaluationConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class"><span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span></a><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
     <span class="n">infra</span><span class="p">:</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span> <span class="o">=</span> <span class="n">exca</span><span class="o">.</span><span class="n">TaskInfra</span><span class="p">(</span>
-        <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;.cache/&quot;</span><span class="p">,</span>
+        <span class="n">folder</span><span class="o">=</span><span class="s2">".cache/"</span><span class="p">,</span>
         <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># local execution</span>
     <span class="p">)</span>
     <span class="n">test_dataset</span><span class="p">:</span> <span class="n">DatasetConfig</span>
@@ -767,7 +768,7 @@ load the trained model from the training config, and evaluate it on the validati
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="c1"># Load validation data</span>
         <span class="n">valid_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span><span class="o">.</span><span class="n">create_instance</span><span class="p">()</span>
-        <span class="n">test_y</span> <span class="o">=</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">test_y</span> <span class="o">=</span> <span class="n">valid_set</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()[</span><span class="s2">"target"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
         <span class="c1"># Load trained model</span>
         <span class="n">state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
@@ -802,36 +803,36 @@ Like any other braindecode model, it has a corresponding configuration class in 
 We instantiate it using the signal properties we extracted earlier.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGConformerConfig</span><span class="p">,</span> <span class="n">EEGNetConfig</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_times&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;n_chans&quot;</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span> <span class="s2">&quot;n_outputs&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">"n_times"</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">"n_chans"</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span> <span class="s2">"n_outputs"</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
 <span class="n">model_cfg</span> <span class="o">=</span> <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p>The config object can easily be serialized to a JSON format:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">))</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model_name_&#39;: &#39;EEGNet&#39;, &#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1000, &#39;final_conv_length&#39;: &#39;auto&#39;, &#39;pool_mode&#39;: &#39;mean&#39;, &#39;F1&#39;: 8, &#39;D&#39;: 2, &#39;F2&#39;: None, &#39;kernel_length&#39;: 64, &#39;depthwise_kernel_length&#39;: 16, &#39;pool1_kernel_size&#39;: 4, &#39;pool2_kernel_size&#39;: 8, &#39;conv_spatial_max_norm&#39;: 1, &#39;activation&#39;: &#39;torch.nn.modules.activation.ELU&#39;, &#39;batch_norm_momentum&#39;: 0.01, &#39;batch_norm_affine&#39;: True, &#39;batch_norm_eps&#39;: 0.001, &#39;drop_prob&#39;: 0.25, &#39;final_layer_with_constraint&#39;: False, &#39;norm_rate&#39;: 0.25, &#39;chs_info&#39;: None, &#39;input_window_seconds&#39;: None, &#39;sfreq&#39;: None}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{'model_name_': 'EEGNet', 'n_chans': 26, 'n_outputs': 4, 'n_times': 1000, 'final_conv_length': 'auto', 'pool_mode': 'mean', 'F1': 8, 'D': 2, 'F2': None, 'kernel_length': 64, 'depthwise_kernel_length': 16, 'pool1_kernel_size': 4, 'pool2_kernel_size': 8, 'conv_spatial_max_norm': 1, 'activation': 'torch.nn.modules.activation.ELU', 'batch_norm_momentum': 0.01, 'batch_norm_affine': True, 'batch_norm_eps': 0.001, 'drop_prob': 0.25, 'final_layer_with_constraint': False, 'norm_rate': 0.25, 'chs_info': None, 'input_window_seconds': None, 'sfreq': None}
 </pre></div>
 </div>
 <p>Alternatively, if you only want the non-default keys:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1000}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{'n_chans': 26, 'n_outputs': 4, 'n_times': 1000}
 </pre></div>
 </div>
 <p>The config class is checking the arguments types and values, and
 raises an error if something is wrong. For example, if we try to instantiate it using an incorrect type for <code class="docutils literal notranslate"><span class="pre">n_times</span></code>, we get an error:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># kept for restoration later:</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">true_n_times</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">true_n_times</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">"n_times"</span><span class="p">]</span>
 
 <span class="c1"># float instead of int:</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">22.5</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">"n_times"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">22.5</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">)</span>
 <span class="k">except</span> <a href="https://docs.python.org/3/library/exceptions.html#ValueError" title="builtins.ValueError" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-exception"><span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span></a> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation error raised as expected:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Validation error raised as expected:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Validation error raised as expected:
@@ -842,19 +843,19 @@ n_times
 </pre></div>
 </div>
 <p>Similarly, if a mandatory argument is missing, we get an error:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">"n_times"</span><span class="p">]</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">EEGNetConfig</span><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">)</span>
 <span class="k">except</span> <a href="https://docs.python.org/3/library/exceptions.html#ValueError" title="builtins.ValueError" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-exception"><span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span></a> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation error raised as expected:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Validation error raised as expected:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># We restore the correct value for ``n_times`` for the rest of the example:</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">&quot;n_times&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">true_n_times</span></a>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_kwargs</span></a><span class="p">[</span><span class="s2">"n_times"</span><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">true_n_times</span></a>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Validation error raised as expected:
 1 validation error for EEGNetConfig
-  Value error, n_times is required and could not be inferred.Either specify n_times or input_window_seconds and sfreq. [type=value_error, input_value={&#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4}, input_type=dict]
+  Value error, n_times is required and could not be inferred.Either specify n_times or input_window_seconds and sfreq. [type=value_error, input_value={'n_chans': 26, 'n_outputs': 4}, input_type=dict]
     For further information visit https://errors.pydantic.dev/2.13/v/value_error
 </pre></div>
 </div>
@@ -863,8 +864,8 @@ Creating the dataset, training and evaluation configurations is very similar and
 straightforward using the classes we defined earlier.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_cfg</span> <span class="o">=</span> <span class="n">WindowedMOABBDatasetConfig</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="n">train_dataset_cfg</span> <span class="o">=</span> <span class="n">DatasetSplitConfig</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_cfg</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;0train&quot;</span><span class="p">)</span>
-<span class="n">test_dataset_cfg</span> <span class="o">=</span> <span class="n">DatasetSplitConfig</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_cfg</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;1test&quot;</span><span class="p">)</span>
+<span class="n">train_dataset_cfg</span> <span class="o">=</span> <span class="n">DatasetSplitConfig</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_cfg</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"0train"</span><span class="p">)</span>
+<span class="n">test_dataset_cfg</span> <span class="o">=</span> <span class="n">DatasetSplitConfig</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_cfg</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"1test"</span><span class="p">)</span>
 
 <span class="n">train_cfg</span> <span class="o">=</span> <span class="n">TrainingConfig</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_cfg</span><span class="p">,</span> <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset_cfg</span><span class="p">)</span>
 
@@ -880,31 +881,31 @@ Suppose we have the following JSON configuration for our evaluation.
 We can load it as a nested dictionary using the <code class="docutils literal notranslate"><span class="pre">json</span></code> module:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">JSON_CFG</span></a> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{</span>
-<span class="s2">    &quot;trainer&quot;: {</span>
-<span class="s2">        &quot;model&quot;: {</span>
-<span class="s2">            &quot;model_name_&quot;: &quot;EEGNet&quot;,</span>
-<span class="s2">            &quot;n_times&quot;: 1000,</span>
-<span class="s2">            &quot;n_chans&quot;: 26,</span>
-<span class="s2">            &quot;n_outputs&quot;: 4</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">JSON_CFG</span></a> <span class="o">=</span> <span class="s2">"""{</span>
+<span class="s2">    "trainer": {</span>
+<span class="s2">        "model": {</span>
+<span class="s2">            "model_name_": "EEGNet",</span>
+<span class="s2">            "n_times": 1000,</span>
+<span class="s2">            "n_chans": 26,</span>
+<span class="s2">            "n_outputs": 4</span>
 <span class="s2">        },</span>
-<span class="s2">        &quot;train_dataset&quot;: {</span>
-<span class="s2">            &quot;dataset_type&quot;: &quot;split&quot;,</span>
-<span class="s2">            &quot;dataset&quot;: {&quot;subject_id&quot;: 1},</span>
-<span class="s2">            &quot;key&quot;: &quot;0train&quot;</span>
+<span class="s2">        "train_dataset": {</span>
+<span class="s2">            "dataset_type": "split",</span>
+<span class="s2">            "dataset": {"subject_id": 1},</span>
+<span class="s2">            "key": "0train"</span>
 <span class="s2">        }</span>
 <span class="s2">    },</span>
-<span class="s2">    &quot;test_dataset&quot;: {</span>
-<span class="s2">        &quot;dataset_type&quot;: &quot;split&quot;,</span>
-<span class="s2">        &quot;dataset&quot;: {&quot;subject_id&quot;: 1},</span>
-<span class="s2">        &quot;key&quot;: &quot;1test&quot;</span>
+<span class="s2">    "test_dataset": {</span>
+<span class="s2">        "dataset_type": "split",</span>
+<span class="s2">        "dataset": {"subject_id": 1},</span>
+<span class="s2">        "key": "1test"</span>
 <span class="s2">    }</span>
-<span class="s2">}&quot;&quot;&quot;</span>
+<span class="s2">}"""</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">NESTED_DICT_CFG</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/json.html#json.loads" title="json.loads" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">loads</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">JSON_CFG</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">NESTED_DICT_CFG</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;trainer&#39;: {&#39;model&#39;: {&#39;model_name_&#39;: &#39;EEGNet&#39;, &#39;n_times&#39;: 1000, &#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4}, &#39;train_dataset&#39;: {&#39;dataset_type&#39;: &#39;split&#39;, &#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;0train&#39;}}, &#39;test_dataset&#39;: {&#39;dataset_type&#39;: &#39;split&#39;, &#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;1test&#39;}}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{'trainer': {'model': {'model_name_': 'EEGNet', 'n_times': 1000, 'n_chans': 26, 'n_outputs': 4}, 'train_dataset': {'dataset_type': 'split', 'dataset': {'subject_id': 1}, 'key': '0train'}}, 'test_dataset': {'dataset_type': 'split', 'dataset': {'subject_id': 1}, 'key': '1test'}}
 </pre></div>
 </div>
 <p>We can instantiate the evaluation configuration from the nested dictionary
@@ -922,7 +923,7 @@ In particular, it will also include the <code class="docutils literal notranslat
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eval_cfg</span><span class="o">.</span><span class="n">infra</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;test_dataset&#39;: {&#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;1test&#39;, &#39;dataset_type&#39;: &#39;split&#39;}, &#39;trainer&#39;: {&#39;model&#39;: {&#39;n_chans&#39;: 26, &#39;n_outputs&#39;: 4, &#39;n_times&#39;: 1000, &#39;model_name_&#39;: &#39;EEGNet&#39;}, &#39;train_dataset&#39;: {&#39;dataset&#39;: {&#39;subject_id&#39;: 1}, &#39;key&#39;: &#39;0train&#39;, &#39;dataset_type&#39;: &#39;split&#39;}}}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{'test_dataset': {'dataset': {'subject_id': 1}, 'key': '1test', 'dataset_type': 'split'}, 'trainer': {'model': {'n_chans': 26, 'n_outputs': 4, 'n_times': 1000, 'model_name_': 'EEGNet'}, 'train_dataset': {'dataset': {'subject_id': 1}, 'key': '0train', 'dataset_type': 'split'}}}
 </pre></div>
 </div>
 </section>
@@ -940,16 +941,16 @@ we will time the execution to see the benefits of caching.</p>
 <span class="n">train_cfg</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Training took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2478        1.3865       0.2586            0.2586        1.3864  0.7905
-      2            0.2478        1.3804       0.2586            0.2586        1.3863  0.7366
-      3            0.2478        1.3724       0.2586            0.2586        1.3864  0.7349
+      1            0.2478        1.3865       0.2586            0.2586        1.3864  0.8007
+      2            0.2478        1.3804       0.2586            0.2586        1.3863  0.7032
+      3            0.2478        1.3724       0.2586            0.2586        1.3864  0.7027
 Stopping since valid_loss has not improved in the last 3 epochs.
-Training took 6.07 seconds
+Training took 5.80 seconds
 </pre></div>
 </div>
 <p>If we call the <code class="docutils literal notranslate"><span class="pre">train()</span></code> method again, using the same configuration parameters, even if it is a new instance, the results will be loaded from the cache:</p>
@@ -961,10 +962,10 @@ Training took 6.07 seconds
 <span class="n">train_cfg</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rerunning training using cached results took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.4f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rerunning training using cached results took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.4f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Rerunning training using cached results took 0.2645 seconds
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Rerunning training using cached results took 0.2998 seconds
 </pre></div>
 </div>
 <p>We can run the evaluation in the same way, by calling the <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> method of the evaluation configuration.
@@ -973,12 +974,12 @@ Internally, this method calls the <code class="docutils literal notranslate"><sp
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluation score: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluation took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Evaluation score: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">score</span></a><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Evaluation took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Evaluation score: 0.25
-Evaluation took 0.64 seconds
+Evaluation took 0.67 seconds
 </pre></div>
 </div>
 </section>
@@ -989,7 +990,7 @@ we can easily scale up to compare multiple model configurations.</p>
 <p>First, let’s define a small utility function to flatten nested dictionaries.
 This will help us later when we want to log results from different configurations.
 See in the example below, the keys of different levels are concatenated with a dot “.” separator.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">flatten_nested_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">leaf_types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">flatten_nested_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">leaf_types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"."</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">parent_key</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -999,13 +1000,13 @@ See in the example below, the keys of different levels are concatenated with a d
                 <span class="n">out</span><span class="p">[</span><span class="n">parent_key</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">return</span> <span class="n">out</span>
 
-    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 
 
-<span class="n">flatten_nested_dict</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}},</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]})</span>
+<span class="n">flatten_nested_dict</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"z"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}},</span> <span class="s2">"c"</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]})</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;a&#39;: 1, &#39;b.x&#39;: 1, &#39;b.y.z&#39;: 2}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{'a': 1, 'b.x': 1, 'b.y.z': 2}
 </pre></div>
 </div>
 <p>In a real experiment, we would launch all runs in parallel on a different nodes of a compute cluster.
@@ -1034,75 +1035,75 @@ Here, for simplicity, we will just run them locally and sequentially.</p>
             <span class="n">eval_cfg</span><span class="o">.</span><span class="n">infra</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="c1"># evaluate and log accuracy:</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2522        3.0528       0.2414            0.2414        6.5574  0.8638
-      2            0.2478        2.3525       0.2586            0.2586        6.8145  0.7341
-      3            0.2478        2.6215       0.2586            0.2586        5.1211  0.7584
-      4            0.2522        1.8110       0.2414            0.2414        5.5233  0.7348
-      5            0.2522        1.4727       0.2414            0.2414        3.9814  0.7325
-      6            0.2522        1.3359       0.2414            0.2414        4.9916  0.7348
-      7            0.2478        1.3164       0.2586            0.2586        4.2181  0.7344
-      8            0.2522        1.2829       0.2414            0.2414        2.9500  0.7352
-      9            0.2522        1.2729       0.2414            0.2414        4.4220  0.7343
-     10            0.2522        1.2322       0.2414            0.2414        2.6615  0.7320
+      1            0.2522        3.0528       0.2414            0.2414        6.5574  0.8373
+      2            0.2478        2.3525       0.2586            0.2586        6.8145  0.6982
+      3            0.2478        2.6215       0.2586            0.2586        5.1211  0.7008
+      4            0.2522        1.8110       0.2414            0.2414        5.5233  0.7027
+      5            0.2522        1.4727       0.2414            0.2414        3.9814  0.6984
+      6            0.2522        1.3359       0.2414            0.2414        4.9916  0.6987
+      7            0.2478        1.3164       0.2586            0.2586        4.2181  0.6982
+      8            0.2522        1.2829       0.2414            0.2414        2.9500  0.7096
+      9            0.2522        1.2729       0.2414            0.2414        4.4220  0.6957
+     10            0.2522        1.2322       0.2414            0.2414        2.6615  0.6995
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2522        3.0284       0.2414            0.2414        2.7720  0.7358
-      2            0.2478        3.0157       0.2586            0.2586       10.0452  0.7361
-      3            0.2478        2.5823       0.2586            0.2586        7.9003  0.7334
+      1            0.2522        3.0284       0.2414            0.2414        2.7720  0.6996
+      2            0.2478        3.0157       0.2586            0.2586       10.0452  0.7052
+      3            0.2478        2.5823       0.2586            0.2586        7.9003  0.7002
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2522        3.5753       0.2414            0.2414       18.3401  0.7359
-      2            0.2522        2.1994       0.2414            0.2414       20.6113  0.7368
-      3            0.2522        2.0980       0.2414            0.2414        4.3083  0.7345
-      4            0.2522        1.5496       0.2414            0.2414        6.0386  0.7368
-      5            0.2522        1.4396       0.2414            0.2414        5.4633  0.7420
-      6            0.2478        1.3745       0.2586            0.2586        1.7885  0.7389
-      7            0.2478        1.3618       0.2586            0.2586        2.7665  0.7347
-      8            0.2478        1.2898       0.2586            0.2586        2.6433  0.7417
+      1            0.2522        3.5753       0.2414            0.2414       18.3401  0.6973
+      2            0.2522        2.1994       0.2414            0.2414       20.6113  0.6964
+      3            0.2522        2.0980       0.2414            0.2414        4.3083  0.6967
+      4            0.2522        1.5496       0.2414            0.2414        6.0386  0.6970
+      5            0.2522        1.4396       0.2414            0.2414        5.4633  0.7231
+      6            0.2478        1.3745       0.2586            0.2586        1.7885  0.6958
+      7            0.2478        1.3618       0.2586            0.2586        2.7665  0.6964
+      8            0.2478        1.2898       0.2586            0.2586        2.6433  0.6945
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2478     9610.8055       0.2586            0.2586    25175.5944  3.1509
-      2            0.2478     7916.4275       0.2586            0.2586        5.2813  2.9747
-      3            0.2478       51.3584       0.2586            0.2586        5.9033  2.9621
-      4            0.2478        6.0545       0.2586            0.2586        5.6446  2.9825
-      5            0.2478        5.6946       0.2586            0.2586        4.9646  2.9945
-      6            0.2478        4.8434       0.2586            0.2586        4.0976  3.0122
-      7            0.2478        4.0032       0.2586            0.2586        3.1945  3.0149
-      8            0.2478        3.3446       0.2586            0.2586        2.4203  2.9953
-      9            0.2478        2.8794       0.2586            0.2586        1.8647  3.0029
-     10            0.2478        2.5735       0.2586            0.2586        1.5335  3.0146
+      1            0.2478     9610.8055       0.2586            0.2586    25175.5944  2.9556
+      2            0.2478     7916.4275       0.2586            0.2586        5.2813  2.8184
+      3            0.2478       51.3584       0.2586            0.2586        5.9033  2.8068
+      4            0.2478        6.0545       0.2586            0.2586        5.6446  2.8280
+      5            0.2478        5.6946       0.2586            0.2586        4.9646  2.8193
+      6            0.2478        4.8434       0.2586            0.2586        4.0976  2.8363
+      7            0.2478        4.0032       0.2586            0.2586        3.1945  2.8338
+      8            0.2478        3.3446       0.2586            0.2586        2.4203  2.8260
+      9            0.2478        2.8794       0.2586            0.2586        1.8647  2.8257
+     10            0.2478        2.5735       0.2586            0.2586        1.5335  2.8423
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2522     4428.2179       0.2414            0.2414      709.4718  2.9488
-      2            0.2478     1761.7330       0.2586            0.2586        2.7898  2.9482
-      3            0.2522        3.0476       0.2414            0.2414        2.5260  3.0330
-      4            0.2522        2.9238       0.2414            0.2414        2.4137  2.9770
-      5            0.2522        2.7019       0.2414            0.2414        2.0201  2.9753
-      6            0.2522        2.5585       0.2414            0.2414        1.5432  2.9866
-      7            0.2478        2.2599       0.2586            0.2586        1.3874  2.9810
-      8            0.2478        2.1390       0.2586            0.2586        1.3861  2.9946
-      9            0.2522        2.3472       0.2414            0.2414        1.4106  2.9932
-     10            0.2522        2.3382       0.2414            0.2414        1.4750  2.9897
+      1            0.2522     4428.2179       0.2414            0.2414      709.4718  2.8018
+      2            0.2478     1761.7330       0.2586            0.2586        2.7898  2.7624
+      3            0.2522        3.0476       0.2414            0.2414        2.5260  2.8039
+      4            0.2522        2.9238       0.2414            0.2414        2.4137  2.7799
+      5            0.2522        2.7019       0.2414            0.2414        2.0201  2.8006
+      6            0.2522        2.5585       0.2414            0.2414        1.5432  2.8075
+      7            0.2478        2.2599       0.2586            0.2586        1.3874  2.8066
+      8            0.2478        2.1390       0.2586            0.2586        1.3861  2.8006
+      9            0.2522        2.3472       0.2414            0.2414        1.4106  2.8187
+     10            0.2522        2.3382       0.2414            0.2414        1.4750  2.7944
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------
-      1            0.2478     7851.6674       0.2586            0.2586    13393.2464  2.9413
-      2            0.2478    16175.3559       0.2586            0.2586        4.2100  2.9545
-      3            0.2522      215.1143       0.2414            0.2414        4.0048  2.9638
-      4            0.2522        4.2101       0.2414            0.2414        3.5523  2.9940
-      5            0.2522        3.6617       0.2414            0.2414        3.1060  2.9992
-      6            0.2522        3.6875       0.2414            0.2414        2.7912  3.0218
-      7            0.2522        3.2992       0.2414            0.2414        2.5815  3.0053
-      8            0.2522        2.9434       0.2414            0.2414        2.3531  2.9885
-      9            0.2522      555.2781       0.2414            0.2414        1.9456  3.0138
-     10            0.2522     4263.8579       0.2414            0.2414        1.5775  3.0056
+      1            0.2478     7851.6674       0.2586            0.2586    13393.2464  2.7866
+      2            0.2478    16175.3559       0.2586            0.2586        4.2100  2.7804
+      3            0.2522      215.1143       0.2414            0.2414        4.0048  2.7736
+      4            0.2522        4.2101       0.2414            0.2414        3.5523  2.8062
+      5            0.2522        3.6617       0.2414            0.2414        3.1060  2.7947
+      6            0.2522        3.6875       0.2414            0.2414        2.7912  2.7951
+      7            0.2522        3.2992       0.2414            0.2414        2.5815  2.8363
+      8            0.2522        2.9434       0.2414            0.2414        2.3531  2.7911
+      9            0.2522      555.2781       0.2414            0.2414        1.9456  2.7991
+     10            0.2522     4263.8579       0.2414            0.2414        1.5775  2.8675
 </pre></div>
 </div>
 </section>
@@ -1137,14 +1138,14 @@ The cached results will be loaded in a few seconds instead of re-running the exp
             <span class="n">eval_cfg</span><span class="o">.</span><span class="n">infra</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="c1"># evaluate and log accuracy:</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eval_cfg</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading all results from cache took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loading all results from cache took </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading all results from cache took 1.91 seconds
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading all results from cache took 2.18 seconds
 </pre></div>
 </div>
 </section>
@@ -1169,8 +1170,8 @@ The cached results will be loaded in a few seconds instead of re-running the exp
 </pre></div>
 </div>
 <p>Or first aggregated over seeds:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">agg_results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;trainer.model.model_name_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-    <span class="p">{</span><span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]}</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">agg_results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"trainer.model.model_name_"</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">"accuracy"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">]}</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">agg_results_df</span><span class="p">)</span>
 </pre></div>
@@ -1182,7 +1183,7 @@ EEGConformer                  0.25  0.0
 EEGNet                        0.25  0.0
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 41.106 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 34.161 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  1565 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-exca-config-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

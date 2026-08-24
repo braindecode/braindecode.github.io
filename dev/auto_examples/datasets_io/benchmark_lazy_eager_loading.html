@@ -493,6 +493,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -615,7 +616,7 @@ have been instantiated with parameter <cite>preload=False</cite>.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.preprocessing.create_fixed_length_windows.html#braindecode.preprocessing.create_fixed_length_windows" title="braindecode.preprocessing.create_fixed_length_windows" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_fixed_length_windows</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.util</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds" title="braindecode.util.set_random_seeds" class="sphx-glr-backref-module-braindecode-util sphx-glr-backref-type-py-function"><span class="n">set_random_seeds</span></a>
 
-<a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;WARNING&quot;</span><span class="p">)</span>  <span class="c1"># avoid messages every time a window is extracted</span>
+<a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">"WARNING"</span><span class="p">)</span>  <span class="c1"># avoid messages every time a window is extracted</span>
 </pre></div>
 </div>
 <p>We start by setting two pytorch internal parameters that can affect the
@@ -635,7 +636,7 @@ We then train a neural network for a few epochs.</p>
 <p>Each one of these steps will be timed, so we can report the total time taken
 to prepare the data and train the model.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_example_data</span><span class="p">(</span><span class="n">preload</span><span class="p">,</span> <span class="n">window_len_s</span><span class="p">,</span> <span class="n">n_recordings</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create windowed dataset from subjects of the TUH Abnormal dataset.</span>
+<span class="w">    </span><span class="sd">"""Create windowed dataset from subjects of the TUH Abnormal dataset.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -656,17 +657,17 @@ to prepare the data and train the model.</p>
 <span class="sd">        sampling rate. The following assumes that the files have already been</span>
 <span class="sd">        resampled to a common sampling rate.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">recording_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_recordings</span><span class="p">))</span>
 
     <span class="n">ds</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.TUHAbnormal.html#braindecode.datasets.TUHAbnormal" title="braindecode.datasets.TUHAbnormal" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TUHAbnormal</span></a><span class="p">(</span>
         <span class="n">TUH_PATH</span><span class="p">,</span>
         <span class="n">recording_ids</span><span class="o">=</span><span class="n">recording_ids</span><span class="p">,</span>
-        <span class="n">target_name</span><span class="o">=</span><span class="s2">&quot;pathological&quot;</span><span class="p">,</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="s2">"pathological"</span><span class="p">,</span>
         <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">fs</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">]</span>
     <span class="n">window_len_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="n">window_len_s</span><span class="p">)</span>
     <span class="n">window_stride_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
     <span class="c1"># window_stride_samples = int(fs * window_len_s)</span>
@@ -683,7 +684,7 @@ to prepare the data and train the model.</p>
     <span class="c1"># Drop bad epochs</span>
     <span class="c1"># XXX: This could be parallelized.</span>
     <span class="c1"># XXX: Also, this could be implemented in the Dataset object itself.</span>
-    <span class="c1"># We don&#39;t support drop_bad since the last version braindecode,</span>
+    <span class="c1"># We don't support drop_bad since the last version braindecode,</span>
     <span class="c1"># to optimize the dataset speed. If you know how to fix, please open a PR.</span>
     <span class="c1"># for ds in windows_ds.datasets:</span>
     <span class="c1">#    ds.raw.drop_bad()</span>
@@ -693,9 +694,9 @@ to prepare the data and train the model.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">create_example_model</span><span class="p">(</span>
-    <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">window_len_samples</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;shallow&quot;</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">window_len_samples</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"shallow"</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create model, loss and optimizer.</span>
+<span class="w">    </span><span class="sd">"""Create model, loss and optimizer.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -706,7 +707,7 @@ to prepare the data and train the model.</p>
 <span class="sd">    n_classes : int</span>
 <span class="sd">        Number of classes in the output</span>
 <span class="sd">    kind : str</span>
-<span class="sd">        &#39;shallow&#39; or &#39;deep&#39;</span>
+<span class="sd">        'shallow' or 'deep'</span>
 <span class="sd">    cuda : bool</span>
 <span class="sd">        If True, move the model to a CUDA device.</span>
 
@@ -719,8 +720,8 @@ to prepare the data and train the model.</p>
 <span class="sd">    optimizer :</span>
 <span class="sd">        Optimizer</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;shallow&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"shallow"</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <a href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ShallowFBCSPNet</span></a><span class="p">(</span>
             <span class="n">n_channels</span><span class="p">,</span>
             <span class="n">n_classes</span><span class="p">,</span>
@@ -730,18 +731,18 @@ to prepare the data and train the model.</p>
             <span class="n">n_filters_spat</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
             <span class="n">pool_time_length</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span>
             <span class="n">pool_time_stride</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
-            <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
             <span class="n">split_first_layer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">batch_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">batch_norm_alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">drop_prob</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;deep&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"deep"</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <a href="../../generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Deep4Net</span></a><span class="p">(</span>
             <span class="n">n_channels</span><span class="p">,</span>
             <span class="n">n_classes</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="n">window_len_samples</span><span class="p">,</span>
-            <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">final_conv_length</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
             <span class="n">n_filters_time</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
             <span class="n">n_filters_spat</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
             <span class="n">filter_time_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -753,8 +754,8 @@ to prepare the data and train the model.</p>
             <span class="n">filter_length_3</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
             <span class="n">n_filters_4</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
             <span class="n">filter_length_4</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-            <span class="n">first_pool_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
-            <span class="n">later_pool_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
+            <span class="n">first_pool_mode</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span>
+            <span class="n">later_pool_mode</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span>
             <span class="n">drop_prob</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
             <span class="n">split_first_layer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">batch_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -774,7 +775,7 @@ to prepare the data and train the model.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">run_training</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run training loop.</span>
+<span class="w">    </span><span class="sd">"""Run training loop.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -796,7 +797,7 @@ to prepare the data and train the model.</p>
 <span class="sd">    model : torch.nn.Module</span>
 <span class="sd">        Trained model.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
         <span class="n">loss_vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
@@ -813,7 +814,7 @@ to prepare the data and train the model.</p>
             <span class="n">loss_val</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> - mean training loss: </span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">loss_vals</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Epoch </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> - mean training loss: </span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">loss_vals</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
@@ -824,9 +825,9 @@ to prepare the data and train the model.</p>
 <span class="n">WINDOW_LEN_S</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>  <span class="c1"># Window length, in seconds</span>
 <span class="n">N_EPOCHS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Number of epochs to train the model for</span>
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">256</span><span class="p">]</span>  <span class="c1"># Training minibatch size</span>
-<span class="n">MODEL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;shallow&quot;</span><span class="p">,</span> <span class="s2">&quot;deep&quot;</span><span class="p">]</span>
+<span class="n">MODEL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"shallow"</span><span class="p">,</span> <span class="s2">"deep"</span><span class="p">]</span>
 
-<span class="n">NUM_WORKERS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># number of processes used by pytorch&#39;s Dataloader</span>
+<span class="n">NUM_WORKERS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># number of processes used by pytorch's Dataloader</span>
 <span class="n">PIN_MEMORY</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>  <span class="c1"># whether to use pinned memory</span>
 <span class="n">CUDA</span> <span class="o">=</span> <span class="p">(</span>
     <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span> <span class="k">if</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
@@ -840,8 +841,8 @@ to prepare the data and train the model.</p>
 <p>The following path needs to be changed to your local folder containing the
 TUH Abnormal corpus:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TUH_PATH</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;/storage/store/data/tuh_eeg/www.isip.piconepress.com/projects/&quot;</span>
-    <span class="s2">&quot;tuh_eeg/downloads/tuh_eeg_abnormal/v2.0.0/edf/&quot;</span>
+    <span class="s2">"/storage/store/data/tuh_eeg/www.isip.piconepress.com/projects/"</span>
+    <span class="s2">"tuh_eeg/downloads/tuh_eeg_abnormal/v2.0.0/edf/"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -872,18 +873,18 @@ we set above to evaluate their execution time:</p>
     <span class="n">CUDA</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;repetition&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
-        <span class="s2">&quot;preload&quot;</span><span class="p">:</span> <span class="n">preload</span><span class="p">,</span>
-        <span class="s2">&quot;n_recordings&quot;</span><span class="p">:</span> <span class="n">n_recordings</span><span class="p">,</span>
-        <span class="s2">&quot;win_len_s&quot;</span><span class="p">:</span> <span class="n">win_len_s</span><span class="p">,</span>
-        <span class="s2">&quot;n_epochs&quot;</span><span class="p">:</span> <span class="n">n_epochs</span><span class="p">,</span>
-        <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="n">batch_size</span><span class="p">,</span>
-        <span class="s2">&quot;model_kind&quot;</span><span class="p">:</span> <span class="n">model_kind</span><span class="p">,</span>
-        <span class="s2">&quot;num_workers&quot;</span><span class="p">:</span> <span class="n">num_workers</span><span class="p">,</span>
-        <span class="s2">&quot;pin_memory&quot;</span><span class="p">:</span> <span class="n">pin_memory</span><span class="p">,</span>
-        <span class="s2">&quot;cuda&quot;</span><span class="p">:</span> <span class="n">cuda</span><span class="p">,</span>
+        <span class="s2">"repetition"</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+        <span class="s2">"preload"</span><span class="p">:</span> <span class="n">preload</span><span class="p">,</span>
+        <span class="s2">"n_recordings"</span><span class="p">:</span> <span class="n">n_recordings</span><span class="p">,</span>
+        <span class="s2">"win_len_s"</span><span class="p">:</span> <span class="n">win_len_s</span><span class="p">,</span>
+        <span class="s2">"n_epochs"</span><span class="p">:</span> <span class="n">n_epochs</span><span class="p">,</span>
+        <span class="s2">"batch_size"</span><span class="p">:</span> <span class="n">batch_size</span><span class="p">,</span>
+        <span class="s2">"model_kind"</span><span class="p">:</span> <span class="n">model_kind</span><span class="p">,</span>
+        <span class="s2">"num_workers"</span><span class="p">:</span> <span class="n">num_workers</span><span class="p">,</span>
+        <span class="s2">"pin_memory"</span><span class="p">:</span> <span class="n">pin_memory</span><span class="p">,</span>
+        <span class="s2">"cuda"</span><span class="p">:</span> <span class="n">cuda</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Repetition </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">N_REPETITIONS</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Repetition </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">N_REPETITIONS</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Load the dataset</span>
     <span class="n">data_loading_start</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
@@ -919,29 +920,29 @@ we set above to evaluate their execution time:</p>
     <span class="k">del</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">trained_model</span>
 
     <span class="c1"># Record timing results</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;data_preparation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_loading_end</span> <span class="o">-</span> <span class="n">data_loading_start</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;training_setup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">training_setup_end</span> <span class="o">-</span> <span class="n">training_setup_start</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;model_training&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_training_end</span> <span class="o">-</span> <span class="n">model_training_start</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">"data_preparation"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_loading_end</span> <span class="o">-</span> <span class="n">data_loading_start</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">"training_setup"</span><span class="p">]</span> <span class="o">=</span> <span class="n">training_setup_end</span> <span class="o">-</span> <span class="n">training_setup_start</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">"model_training"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_training_end</span> <span class="o">-</span> <span class="n">model_training_start</span>
     <span class="n">all_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The results are formatted into a pandas DataFrame and saved locally as a CSV
 file.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">all_results</span><span class="p">)</span>
-<span class="n">fname</span> <span class="o">=</span> <span class="s2">&quot;lazy_vs_eager_loading_results.csv&quot;</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="s2">"lazy_vs_eager_loading_results.csv"</span>
 <span class="n">results_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Results saved under </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Results saved under </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We can finally summarize this information into the following plot:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">catplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">results_df</span><span class="p">,</span>
-    <span class="n">row</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
-    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;model_kind&quot;</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;model_training&quot;</span><span class="p">,</span>
-    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;num_workers&quot;</span><span class="p">,</span>
-    <span class="n">col</span><span class="o">=</span><span class="s2">&quot;preload&quot;</span><span class="p">,</span>
-    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;strip&quot;</span><span class="p">,</span>
+    <span class="n">row</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"model_kind"</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">"model_training"</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">"num_workers"</span><span class="p">,</span>
+    <span class="n">col</span><span class="o">=</span><span class="s2">"preload"</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"strip"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>

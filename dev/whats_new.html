@@ -11,10 +11,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 1.8.0 (GitHub): Enhancements: None yet. API and behavior changes: None yet. Requirements: None yet. Bug fixes: Make braindecode.datasets.SleepPhysionet wake cropping retain the complete fin..." />
+<meta property="og:description" content="Current 1.8.0 (GitHub): Enhancements: Add a transfer-learning tutorial illustrating the TUAB-to-NMT pathology workflow with offline synthetic recordings (#580 by Mohammad Javad D and Bruno Aristimu..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 1.8.0 (GitHub): Enhancements: None yet. API and behavior changes: None yet. Requirements: None yet. Bug fixes: Make braindecode.datasets.SleepPhysionet wake cropping retain the complete fin..." />
+<meta name="description" content="Current 1.8.0 (GitHub): Enhancements: Add a transfer-learning tutorial illustrating the TUAB-to-NMT pathology workflow with offline synthetic recordings (#580 by Mohammad Javad D and Bruno Aristimu..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -499,7 +499,9 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>Add a transfer-learning tutorial illustrating the TUAB-to-NMT pathology
+workflow with offline synthetic recordings
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/580">#580</a> by <a class="reference external" href="https://github.com/javadbayazi">Mohammad Javad D</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -520,6 +522,32 @@
 <li><p>Make <a class="reference internal" href="generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet" title="braindecode.datasets.SleepPhysionet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.SleepPhysionet</span></code></a> wake cropping retain the complete
 final sleep annotation without including an extra endpoint sample (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/612">#612</a> by
 <a class="reference external" href="https://github.com/OverLordGoldDragon/">John Muradeli</a>).</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.training.mixup_criterion.html#braindecode.training.mixup_criterion" title="braindecode.training.mixup_criterion"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.training.mixup_criterion()</span></code></a> treating a plain target
+tensor of three elements as a mixup <code class="docutils literal notranslate"><span class="pre">(y_a,</span> <span class="pre">y_b,</span> <span class="pre">lam)</span></code> triple. The branch
+was selected on <code class="docutils literal notranslate"><span class="pre">len(target)</span> <span class="pre">==</span> <span class="pre">3</span></code>, which is also true for the targets of
+any batch holding three windows, so a validation batch or a last partial
+batch of that size failed with <code class="docutils literal notranslate"><span class="pre">Expected</span> <span class="pre">input</span> <span class="pre">batch_size</span> <span class="pre">(3)</span> <span class="pre">to</span> <span class="pre">match</span>
+<span class="pre">target</span> <span class="pre">batch_size</span> <span class="pre">(0)</span></code>. The mixup branch is now selected on the container
+type. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1122">#1122</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Keep the mixing coefficient of <a class="reference internal" href="generated/braindecode.augmentation.Mixup.html#braindecode.augmentation.Mixup" title="braindecode.augmentation.Mixup"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.augmentation.Mixup</span></code></a> on the
+dtype of the batch. With <code class="docutils literal notranslate"><span class="pre">beta_per_sample=True</span></code> it came straight from numpy
+as <code class="docutils literal notranslate"><span class="pre">float64</span></code>, which upcast the loss returned by
+<a class="reference internal" href="generated/braindecode.training.mixup_criterion.html#braindecode.training.mixup_criterion" title="braindecode.training.mixup_criterion"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.training.mixup_criterion()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">float64</span></code> while the model
+stayed in <code class="docutils literal notranslate"><span class="pre">float32</span></code>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1122">#1122</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Let <a class="reference internal" href="generated/braindecode.augmentation.AugmentedDataLoader.html#braindecode.augmentation.AugmentedDataLoader" title="braindecode.augmentation.AugmentedDataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.augmentation.AugmentedDataLoader</span></code></a> used with
+<code class="docutils literal notranslate"><span class="pre">n_augmentation</span></code> greater than zero carry the targets of a transform that
+mixes them. Batches were concatenated as plain tensors, so combining that
+option with <a class="reference internal" href="generated/braindecode.augmentation.Mixup.html#braindecode.augmentation.Mixup" title="braindecode.augmentation.Mixup"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.augmentation.Mixup</span></code></a> raised <code class="docutils literal notranslate"><span class="pre">expected</span> <span class="pre">Tensor</span>
+<span class="pre">as</span> <span class="pre">element</span> <span class="pre">1</span> <span class="pre">in</span> <span class="pre">argument</span> <span class="pre">0,</span> <span class="pre">but</span> <span class="pre">got</span> <span class="pre">tuple</span></code>. The triple parts are now
+concatenated one by one and the clean originals get a mixing coefficient of
+one. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1122">#1122</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>)</p></li>
+<li><p>Let <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGRegressor</span></code>
+train with a transform that mixes targets. The loader wrapper cast every
+target with <code class="docutils literal notranslate"><span class="pre">y.type(...)</span></code>, so a batch carrying the <code class="docutils literal notranslate"><span class="pre">(y_a,</span> <span class="pre">y_b,</span> <span class="pre">lam)</span></code>
+triple of <a class="reference internal" href="generated/braindecode.augmentation.Mixup.html#braindecode.augmentation.Mixup" title="braindecode.augmentation.Mixup"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.augmentation.Mixup</span></code></a> stopped the fit with
+<code class="docutils literal notranslate"><span class="pre">'tuple'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'type'</span></code> before the first batch was seen.
+The triple parts now follow the same classification/regression dtype contract
+as a plain target. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1122">#1122</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>).</p></li>
 <li><p>Keep <a class="reference internal" href="generated/braindecode.preprocessing.EEGPrep.html#braindecode.preprocessing.EEGPrep" title="braindecode.preprocessing.EEGPrep"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.preprocessing.EEGPrep</span></code></a> compatible with EEGPrep 0.3,
 which no longer exposes the <code class="docutils literal notranslate"><span class="pre">eegprep.utils</span></code> namespace used for sampling-rate
 validation (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1123">#1123</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>

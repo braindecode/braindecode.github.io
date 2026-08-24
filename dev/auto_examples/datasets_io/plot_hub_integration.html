@@ -493,6 +493,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -603,11 +604,11 @@ the Hugging Face Hub using braindecode.</p>
 <span class="p">)</span>
 
 <span class="c1"># Login to Hugging Face Hub using token from environment variable</span>
-<span class="n">hf_token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HUGGING_FACE_TOKEN&quot;</span><span class="p">)</span>
+<span class="n">hf_token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"HUGGING_FACE_TOKEN"</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">hf_token</span><span class="p">:</span>
     <a href="https://huggingface.co/docs/huggingface_hub/main/en/package_reference/authentication#huggingface_hub.login" title="huggingface_hub.login" class="sphx-glr-backref-module-huggingface_hub sphx-glr-backref-type-py-function"><span class="n">login</span></a><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">hf_token</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: HUGGING_FACE_TOKEN not set. Hub uploads will fail.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Warning: HUGGING_FACE_TOKEN not set. Hub uploads will fail."</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Warning: HUGGING_FACE_TOKEN not set. Hub uploads will fail.
@@ -616,13 +617,13 @@ the Hugging Face Hub using braindecode.</p>
 <section id="load-and-prepare-datasets">
 <h2>Load and prepare datasets<a class="headerlink" href="#load-and-prepare-datasets" title="Link to this heading">#</a></h2>
 <p>We’ll demonstrate all three supported dataset types.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading BNCI2014_001 dataset...&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Loading BNCI2014_001 dataset..."</span><span class="p">)</span>
 <span class="c1"># Load only subject 1 for this example</span>
 <a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">(</span><span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Channels: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Sampling frequency: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Channels: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Sampling frequency: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'sfreq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading BNCI2014_001 dataset...
@@ -635,7 +636,7 @@ the Hugging Face Hub using braindecode.</p>
 <section id="example-1-windowsdataset-epoched-data">
 <h2>Example 1: WindowsDataset (Epoched data)<a class="headerlink" href="#example-1-windowsdataset-epoched-data" title="Link to this heading">#</a></h2>
 <p>Create epoched data using mne.Epochs (use_mne_epochs=True)</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">1. Creating WindowsDataset (epoched data)...&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">1. Creating WindowsDataset (epoched data)..."</span><span class="p">)</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
     <span class="n">concat_ds</span><span class="o">=</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
     <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -643,8 +644,8 @@ the Hugging Face Hub using braindecode.</p>
     <span class="n">use_mne_epochs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Creates WindowsDataset with mne.Epochs</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Total windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Dataset type: WindowsDataset (epoched)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"   Total windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">windows_dataset</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"   Dataset type: WindowsDataset (epoched)"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1. Creating WindowsDataset (epoched data)...
@@ -656,7 +657,7 @@ the Hugging Face Hub using braindecode.</p>
 <section id="example-2-eegwindowsdataset-continuous-with-windowing">
 <h2>Example 2: EEGWindowsDataset (Continuous with windowing)<a class="headerlink" href="#example-2-eegwindowsdataset-continuous-with-windowing" title="Link to this heading">#</a></h2>
 <p>Create continuous raw data with windowing metadata (use_mne_epochs=False)</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">2. Creating EEGWindowsDataset (continuous with windowing)...&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">2. Creating EEGWindowsDataset (continuous with windowing)..."</span><span class="p">)</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eegwindows_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">create_windows_from_events</span></a><span class="p">(</span>
     <span class="n">concat_ds</span><span class="o">=</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
     <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -664,8 +665,8 @@ the Hugging Face Hub using braindecode.</p>
     <span class="n">use_mne_epochs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Creates EEGWindowsDataset with continuous raw</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Total windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eegwindows_dataset</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Dataset type: EEGWindowsDataset (continuous)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"   Total windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eegwindows_dataset</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"   Dataset type: EEGWindowsDataset (continuous)"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2. Creating EEGWindowsDataset (continuous with windowing)...
@@ -677,11 +678,11 @@ the Hugging Face Hub using braindecode.</p>
 <section id="example-3-rawdataset-continuous-without-windowing">
 <h2>Example 3: RawDataset (Continuous without windowing)<a class="headerlink" href="#example-3-rawdataset-continuous-without-windowing" title="Link to this heading">#</a></h2>
 <p>Use the original raw data without any windowing</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">3. Using RawDataset (continuous without windowing)...&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">3. Using RawDataset (continuous without windowing)..."</span><span class="p">)</span>
 <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">BaseConcatDataset</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Dataset type: RawDataset (continuous, no windows)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"   Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"   Dataset type: RawDataset (continuous, no windows)"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>3. Using RawDataset (continuous without windowing)...
@@ -700,55 +701,55 @@ the Hugging Face Hub using braindecode.</p>
 </ol>
 <p><strong>Note:</strong> This example shows the code but doesn’t actually upload.
 Uncomment the code below to perform an actual upload.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UPLOADING TO HUGGING FACE HUB&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"UPLOADING TO HUGGING FACE HUB"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
 
 <span class="c1"># Skip Hub operations if no token is available (e.g., during docs build)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">hf_token</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️  Skipping Hub upload examples (no HUGGING_FACE_TOKEN set)&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To run this example with actual uploads, set HUGGING_FACE_TOKEN&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">⚠️  Skipping Hub upload examples (no HUGGING_FACE_TOKEN set)"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"To run this example with actual uploads, set HUGGING_FACE_TOKEN"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="c1"># Example 1: Upload WindowsDataset</span>
     <span class="c1"># ---------------------------------</span>
-    <span class="n">repo_id_windows</span> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-windows&quot;</span>
+    <span class="n">repo_id_windows</span> <span class="o">=</span> <span class="s2">"braindecode/example_dataset-windows"</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Uploading WindowsDataset to </span><span class="si">{</span><span class="n">repo_id_windows</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Uploading WindowsDataset to </span><span class="si">{</span><span class="n">repo_id_windows</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">url</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.push_to_hub" title="braindecode.datasets.bids.HubDatasetMixin.push_to_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">windows_dataset</span><span class="o">.</span><span class="n">push_to_hub</span></a><span class="p">(</span>
         <span class="n">repo_id</span><span class="o">=</span><span class="n">repo_id_windows</span><span class="p">,</span>
         <span class="n">private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!"</span><span class="p">)</span>
 
     <span class="c1"># Example 2: Upload EEGWindowsDataset</span>
     <span class="c1"># ------------------------------------</span>
-    <span class="n">repo_id_eegwindows</span> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-eegwindows&quot;</span>
+    <span class="n">repo_id_eegwindows</span> <span class="o">=</span> <span class="s2">"braindecode/example_dataset-eegwindows"</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Uploading EEGWindowsDataset to </span><span class="si">{</span><span class="n">repo_id_eegwindows</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Uploading EEGWindowsDataset to </span><span class="si">{</span><span class="n">repo_id_eegwindows</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">url</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.push_to_hub" title="braindecode.datasets.bids.HubDatasetMixin.push_to_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">eegwindows_dataset</span><span class="o">.</span><span class="n">push_to_hub</span></a><span class="p">(</span>
         <span class="n">repo_id</span><span class="o">=</span><span class="n">repo_id_eegwindows</span><span class="p">,</span>
         <span class="n">private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!"</span><span class="p">)</span>
 
     <span class="c1"># Example 3: Upload RawDataset</span>
     <span class="c1"># -----------------------------</span>
-    <span class="n">repo_id_raw</span> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-raw&quot;</span>
+    <span class="n">repo_id_raw</span> <span class="o">=</span> <span class="s2">"braindecode/example_dataset-raw"</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Uploading RawDataset to </span><span class="si">{</span><span class="n">repo_id_raw</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Uploading RawDataset to </span><span class="si">{</span><span class="n">repo_id_raw</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">url</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.push_to_hub" title="braindecode.datasets.bids.HubDatasetMixin.push_to_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">raw_dataset</span><span class="o">.</span><span class="n">push_to_hub</span></a><span class="p">(</span>
         <span class="n">repo_id</span><span class="o">=</span><span class="n">repo_id_raw</span><span class="p">,</span>
         <span class="n">private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✅ Uploaded to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">!"</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">The example above demonstrates uploading to the Hugging Face Hub.</span>
 <span class="s2">All datasets are converted to Zarr format (optimized for fast loading)</span>
 <span class="s2">and uploaded with auto-generated dataset cards.</span>
 
 <span class="s2">For your own datasets, replace the repo_id with your Hugging Face username.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
@@ -782,56 +783,56 @@ but can be customized if needed.</p>
 <section id="download-datasets-from-hugging-face-hub">
 <h2>Download datasets from Hugging Face Hub<a class="headerlink" href="#download-datasets-from-hugging-face-hub" title="Link to this heading">#</a></h2>
 <p>Loading datasets from the Hub is simple and automatic!</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DOWNLOADING FROM HUGGING FACE HUB&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"DOWNLOADING FROM HUGGING FACE HUB"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
 
 <span class="c1"># Skip Hub downloads if no token (docs build)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">hf_token</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️  Skipping Hub download examples (no HUGGING_FACE_TOKEN set)&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To run this example with actual downloads, set HUGGING_FACE_TOKEN&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">⚠️  Skipping Hub download examples (no HUGGING_FACE_TOKEN set)"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"To run this example with actual downloads, set HUGGING_FACE_TOKEN"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="c1"># Example 1: Download WindowsDataset</span>
     <span class="c1"># -----------------------------------</span>
-    <span class="n">public_repo_windows</span> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-windows&quot;</span>
+    <span class="n">public_repo_windows</span> <span class="o">=</span> <span class="s2">"braindecode/example_dataset-windows"</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Downloading WindowsDataset from </span><span class="si">{</span><span class="n">public_repo_windows</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Downloading WindowsDataset from </span><span class="si">{</span><span class="n">public_repo_windows</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">loaded_windows</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" title="braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">BaseConcatDataset</span><span class="o">.</span><span class="n">pull_from_hub</span></a><span class="p">(</span>
         <span class="n">public_repo_windows</span><span class="p">,</span>
         <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Load into memory (False for lazy loading)</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Loaded WindowsDataset!&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_windows</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Loaded WindowsDataset!"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"   Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_windows</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Example 2: Download EEGWindowsDataset</span>
     <span class="c1"># --------------------------------------</span>
-    <span class="n">public_repo_eeg</span> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-eegwindows&quot;</span>
+    <span class="n">public_repo_eeg</span> <span class="o">=</span> <span class="s2">"braindecode/example_dataset-eegwindows"</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Downloading EEGWindowsDataset from </span><span class="si">{</span><span class="n">public_repo_eeg</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Downloading EEGWindowsDataset from </span><span class="si">{</span><span class="n">public_repo_eeg</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">loaded_eeg</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" title="braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">BaseConcatDataset</span><span class="o">.</span><span class="n">pull_from_hub</span></a><span class="p">(</span>
         <span class="n">public_repo_eeg</span><span class="p">,</span>
         <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Loaded EEGWindowsDataset!&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_eeg</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Loaded EEGWindowsDataset!"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"   Number of windows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_eeg</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Example 3: Download RawDataset</span>
     <span class="c1"># -------------------------------</span>
-    <span class="n">public_repo_raw</span> <span class="o">=</span> <span class="s2">&quot;braindecode/example_dataset-raw&quot;</span>
+    <span class="n">public_repo_raw</span> <span class="o">=</span> <span class="s2">"braindecode/example_dataset-raw"</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Downloading RawDataset from </span><span class="si">{</span><span class="n">public_repo_raw</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Downloading RawDataset from </span><span class="si">{</span><span class="n">public_repo_raw</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">loaded_raw</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" title="braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">BaseConcatDataset</span><span class="o">.</span><span class="n">pull_from_hub</span></a><span class="p">(</span>
         <span class="n">public_repo_raw</span><span class="p">,</span>
         <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Loaded RawDataset!&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_raw</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Loaded RawDataset!"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"   Number of recordings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_raw</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">The example above demonstrates downloading datasets from the Hub.</span>
 <span class="s2">Datasets are automatically downloaded and cached locally.</span>
 <span class="s2">Subsequent loads use the cache for faster access.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
@@ -850,9 +851,9 @@ Subsequent loads use the cache for faster access.
 <section id="using-datasets-with-pytorch-dataloader">
 <h2>Using datasets with PyTorch DataLoader<a class="headerlink" href="#using-datasets-with-pytorch-dataloader" title="Link to this heading">#</a></h2>
 <p>Datasets loaded from the Hub work seamlessly with PyTorch.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;USING WITH PYTORCH DATALOADER&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"USING WITH PYTORCH DATALOADER"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a>
 
@@ -864,12 +865,12 @@ Subsequent loads use the cache for faster access.
     <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># Set to &gt; 0 for parallel loading</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DataLoader created:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Batch size: 32&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Total batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_loader</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">DataLoader created:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  Batch size: 32"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Total batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_loader</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Iterate over a few batches</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Sample batches:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">  Sample batches:"</span><span class="p">)</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_data</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_loader</span></a><span class="p">):</span>
     <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Show only 3 batches</span>
         <span class="k">break</span>
@@ -879,14 +880,14 @@ Subsequent loads use the cache for faster access.
     <span class="k">else</span><span class="p">:</span>
         <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_batch</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_batch</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_data</span></a>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;    Batch </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: X shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_batch</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;y shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"    Batch </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: X shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_batch</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
+        <span class="sa">f</span><span class="s2">"y shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">This works the same way for datasets loaded from the Hub!</span>
-<span class="s2">The Hub integration is fully compatible with PyTorch&#39;s training pipeline.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">The Hub integration is fully compatible with PyTorch's training pipeline.</span>
+<span class="s2">"""</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
@@ -902,7 +903,7 @@ DataLoader created:
     Batch 2: X shape=(16, 26, 1000), y shape=(16,)
 
 This works the same way for datasets loaded from the Hub!
-The Hub integration is fully compatible with PyTorch&#39;s training pipeline.
+The Hub integration is fully compatible with PyTorch's training pipeline.
 </pre></div>
 </div>
 </section>
@@ -915,7 +916,7 @@ and collaborate with others through pull requests and reviews in the Hub UI.</p>
 <p><strong>Private datasets</strong></p>
 <p>For sensitive data or work-in-progress:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
-    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;username/private-dataset&quot;</span><span class="p">,</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">"username/private-dataset"</span><span class="p">,</span>
     <span class="n">private</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
@@ -941,10 +942,10 @@ size and speed for your use case.</p></li>
 <li><p><strong>Test before sharing</strong> - Always test that your uploaded dataset can be
 downloaded and used correctly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Upload</span>
-<a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span><span class="s2">&quot;braindecode/example_dataset&quot;</span><span class="p">)</span>
+<a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span><span class="s2">"braindecode/example_dataset"</span><span class="p">)</span>
 
 <span class="c1"># Test download</span>
-<span class="n">test_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" title="braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">BaseConcatDataset</span><span class="o">.</span><span class="n">pull_from_hub</span></a><span class="p">(</span><span class="s2">&quot;braindecode/example_dataset&quot;</span><span class="p">)</span>
+<span class="n">test_dataset</span> <span class="o">=</span> <a href="../../generated/braindecode.datasets.bids.HubDatasetMixin.html#braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" title="braindecode.datasets.bids.HubDatasetMixin.pull_from_hub" class="sphx-glr-backref-module-braindecode-datasets-bids sphx-glr-backref-type-py-method"><span class="n">BaseConcatDataset</span><span class="o">.</span><span class="n">pull_from_hub</span></a><span class="p">(</span><span class="s2">"braindecode/example_dataset"</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><a href="../../generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001" title="braindecode.datasets.BNCI2014_001" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -952,10 +953,10 @@ downloaded and used correctly:</p>
 <li><p><strong>Consider privacy</strong> - Ensure you have permission to share the data and
 that personal information has been properly anonymized.</p></li>
 </ol>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SUMMARY&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"SUMMARY"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">Hugging Face Hub integration supports three dataset types:</span>
 
 <span class="s2">✓ WindowsDataset - Epoched data (mne.Epochs)</span>
@@ -974,7 +975,7 @@ that personal information has been properly anonymized.</p></li>
 <span class="s2">- Hugging Face Hub: https://huggingface.co</span>
 <span class="s2">- Braindecode docs: https://braindecode.org</span>
 <span class="s2">- Hub docs: https://huggingface.co/docs/hub</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>======================================================================
@@ -1001,7 +1002,7 @@ For more information:
 - Hub docs: https://huggingface.co/docs/hub
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.635 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.972 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  571 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-hub-integration-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
