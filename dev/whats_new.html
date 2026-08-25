@@ -551,6 +551,22 @@ as a plain target. (<a class="reference external" href="https://github.com/brain
 <li><p>Keep <a class="reference internal" href="generated/braindecode.preprocessing.EEGPrep.html#braindecode.preprocessing.EEGPrep" title="braindecode.preprocessing.EEGPrep"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.preprocessing.EEGPrep</span></code></a> compatible with EEGPrep 0.3,
 which no longer exposes the <code class="docutils literal notranslate"><span class="pre">eegprep.utils</span></code> namespace used for sampling-rate
 validation (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1123">#1123</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Leave recordings shorter than <code class="docutils literal notranslate"><span class="pre">n_windows</span></code> out of the draw in
+<a class="reference internal" href="generated/braindecode.samplers.BalancedSequenceSampler.html#braindecode.samplers.BalancedSequenceSampler" title="braindecode.samplers.BalancedSequenceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.samplers.BalancedSequenceSampler</span></code></a> instead of failing on
+them. Such a recording holds no valid sequence start, which made the sampling
+range empty and raised <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">high</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> on the first sequence that
+landed there. <a class="reference internal" href="generated/braindecode.samplers.SequenceSampler.html#braindecode.samplers.SequenceSampler" title="braindecode.samplers.SequenceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.samplers.SequenceSampler</span></code></a> already skips
+those recordings. A clear error now names the longest recording when none of
+them can hold a sequence (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1125">#1125</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>).</p></li>
+<li><p>Keep <code class="docutils literal notranslate"><span class="pre">file_ids</span></code> of <a class="reference internal" href="generated/braindecode.samplers.SequenceSampler.html#braindecode.samplers.SequenceSampler" title="braindecode.samplers.SequenceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.samplers.SequenceSampler</span></code></a> integer.
+The ids were built from untyped lists, so an empty list coming from a
+recording too short for a sequence turned the concatenated array into
+<code class="docutils literal notranslate"><span class="pre">float64</span></code>, against the documented dtype and unusable as an index
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1125">#1125</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>).</p></li>
+<li><p>Document the <code class="docutils literal notranslate"><span class="pre">randomize</span></code> parameter of
+<a class="reference internal" href="generated/braindecode.samplers.SequenceSampler.html#braindecode.samplers.SequenceSampler" title="braindecode.samplers.SequenceSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.samplers.SequenceSampler</span></code></a> under its own name. The
+docstring described it as <code class="docutils literal notranslate"><span class="pre">random</span></code>, which no signature accepts
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1125">#1125</a> by <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak Tayal</a>).</p></li>
 </ul>
 </section>
 <section id="code-health">
