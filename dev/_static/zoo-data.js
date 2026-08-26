@@ -261,7 +261,7 @@ window.BD_MODELS = [
     "name": "AttnSleep",
     "cat": "attention",
     "year": null,
-    "params": "719.9 K",
+    "params": "522.8 K",
     "paper": "",
     "desc": "Prediction for Sleep Staging"
   },
