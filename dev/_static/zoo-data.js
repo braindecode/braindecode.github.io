@@ -338,6 +338,30 @@ window.BD_MODELS = [
     "desc": "CTC Sequence for Touch typing (sEMG)"
   },
   {
+    "name": "VEMG2Pose",
+    "cat": "recurrent",
+    "year": null,
+    "params": "6 M",
+    "paper": "",
+    "desc": "Sequence Regression for Hand pose (sEMG)"
+  },
+  {
+    "name": "NeuroPose",
+    "cat": "convolution",
+    "year": null,
+    "params": "6.4 M",
+    "paper": "",
+    "desc": "Sequence Regression for Hand pose (sEMG)"
+  },
+  {
+    "name": "SensingDynamics",
+    "cat": "channel",
+    "year": null,
+    "params": "1.7 M",
+    "paper": "",
+    "desc": "Sequence Regression for Hand pose (sEMG)"
+  },
+  {
     "name": "FBLightConvNet",
     "cat": "filterbank",
     "year": null,
