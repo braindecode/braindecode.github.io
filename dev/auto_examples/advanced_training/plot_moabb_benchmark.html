@@ -11,10 +11,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/auto_examples/advanced_training/plot_moabb_benchmark.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="This example shows how to use BrainDecode in combination with MOABB evaluation. In this example, we use the architecture EEGNet. In this example, we will use only the dataset BNCI2014_001. Running ..." />
+<meta property="og:description" content="This example shows how to use BrainDecode in combination with MOABB evaluation. In this example, we use the architecture EEGNet.# Authors: Igor Carrara &lt;igor.carrara@inria.fr&gt;# Bruno Aristimu..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="This example shows how to use BrainDecode in combination with MOABB evaluation. In this example, we use the architecture EEGNet. In this example, we will use only the dataset BNCI2014_001. Running ..." />
+<meta name="description" content="This example shows how to use BrainDecode in combination with MOABB evaluation. In this example, we use the architecture EEGNet.# Authors: Igor Carrara &lt;igor.carrara@inria.fr&gt;# Bruno Aristimu..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -41,7 +41,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -576,38 +576,37 @@ to download the full example code.</p>
 <span id="sphx-glr-auto-examples-advanced-training-plot-moabb-benchmark-py"></span><h1>Cross-session motor imagery with deep learning EEGNet v4 model<a class="headerlink" href="#cross-session-motor-imagery-with-deep-learning-eegnet-v4-model" title="Link to this heading">#</a></h1>
 <p>This example shows how to use BrainDecode in combination with MOABB evaluation.
 In this example, we use the architecture EEGNet.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Igor Carrara &lt;igor.carrara@inria.fr&gt;</span>
-<span class="c1">#          Bruno Aristimunha &lt;b.aristimunha@gmail.com&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD (3-clause)</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNCI2014_001</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <span class="n">MotorImagery</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_seed</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">skorch.callbacks</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EpochScoring</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">skorch.dataset</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">EEGNet</span></a>
-
-<a href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-
-<span class="c1"># Print Information PyTorch</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Torch Version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># Set up GPU if it is there</span>
-<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="s2">"cuda"</span> <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s2">"cpu"</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"GPU is"</span><span class="p">,</span> <span class="s2">"AVAILABLE"</span> <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s2">"NOT AVAILABLE"</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Torch Version: 2.13.0+cpu
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Authors: Igor Carrara &lt;igor.carrara&#64;inria.fr&gt;</span><span class="w">
+</span><span class="c1">#          Bruno Aristimunha &lt;b.aristimunha&#64;gmail.com&gt;</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># License: BSD (3-clause)</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNCI2014_001</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">evaluations</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC"><span class="n">CrossSessionEvaluation</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">paradigms</span><span class="w"> </span><span class="kn">import</span> <span class="n">MotorImagery</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_seed</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="nn">.</span><span class="nn">pipeline</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch</span><span class="nn">.</span><span class="nn">callbacks</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping"><span class="n">EarlyStopping</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring"><span class="n">EpochScoring</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">skorch</span><span class="nn">.</span><span class="nn">dataset</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit"><span class="n">ValidSplit</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">EEGClassifier</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">models</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">EEGNet</span></a><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Print Information PyTorch</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Torch Version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Set up GPU if it is there</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="bool"><span class="n">cuda</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">device</span></a> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">cuda</span><span class="s2">&quot;</span> <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="bool"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">cpu</span><span class="s2">&quot;</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">GPU is</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">AVAILABLE</span><span class="s2">&quot;</span> <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="bool"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">NOT AVAILABLE</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Torch Version: 2.14.0+cpu
 GPU is NOT AVAILABLE
 </pre></div>
 </div>
@@ -621,33 +620,70 @@ EPOCH = 1000
 PATIENCE = 300</p>
 <p>This code is implemented to run on the CPU. If you’re using a GPU, do not use multithreading
 (i.e. set n_jobs=1)</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set random seed to be able to reproduce results</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a> <span class="o">=</span> <span class="mi">42</span>
-<span class="n">setup_seed</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">)</span>
-
-<span class="c1"># Ensure that all operations are deterministic on GPU (if used) for reproducibility</span>
-<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span></a> <span class="o">=</span> <span class="kc">True</span>
-<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span></a> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="c1"># Hyperparameter</span>
-<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LEARNING_RATE</span></a> <span class="o">=</span> <span class="mf">0.0625</span> <span class="o">*</span> <span class="mf">0.01</span>  <span class="c1"># parameter taken from Braindecode</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">WEIGHT_DECAY</span></a> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># parameter taken from Braindecode</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BATCH_SIZE</span></a> <span class="o">=</span> <span class="mi">64</span>  <span class="c1"># parameter taken from BrainDecode</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EPOCH</span></a> <span class="o">=</span> <span class="mi">10</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">PATIENCE</span></a> <span class="o">=</span> <span class="mi">3</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a> <span class="o">=</span> <span class="mi">4</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mi">100</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">tmax</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="c1"># Load the dataset</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">BNCI2014_001</span><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">"right_hand"</span><span class="p">,</span> <span class="s2">"left_hand"</span><span class="p">]</span>
-<span class="n">paradigm</span> <span class="o">=</span> <span class="n">MotorImagery</span><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">),</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span>
-<span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Set random seed to be able to reproduce results</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">seed</span></a> <span class="o">=</span> <span class="mi">42</span><span class="w">
+</span><span class="n">setup_seed</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">seed</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Ensure that all operations are deterministic on GPU (if used) for reproducibility</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="bool"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span></a> <span class="o">=</span> <span class="kc">True</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="bool"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span></a> <span class="o">=</span> <span class="kc">False</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Hyperparameter</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">LEARNING_RATE</span></a> <span class="o">=</span> <span class="mf">0.0625</span> <span class="o">*</span> <span class="mf">0.01</span>  <span class="c1"># parameter taken from Braindecode</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">WEIGHT_DECAY</span></a> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># parameter taken from Braindecode</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">BATCH_SIZE</span></a> <span class="o">=</span> <span class="mi">64</span>  <span class="c1"># parameter taken from BrainDecode</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">EPOCH</span></a> <span class="o">=</span> <span class="mi">10</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">PATIENCE</span></a> <span class="o">=</span> <span class="mi">3</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fmin</span></a> <span class="o">=</span> <span class="mi">4</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mi">100</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">tmin</span></a> <span class="o">=</span> <span class="mi">0</span><span class="w">
+</span><span class="n">tmax</span> <span class="o">=</span> <span class="kc">None</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Load the dataset</span><span class="w">
+</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">BNCI2014_001</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">events</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">right_hand</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">left_hand</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">MotorImagery</span><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">events</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">events</span></a><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">events</span></a><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fmin</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fmin</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fmax</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fmax</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">tmin</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">tmin</span></a><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
 </pre></div>
 </div>
 </section>
@@ -660,92 +696,174 @@ Here, we will use the EEGNet v4 model <a class="footnote-reference brackets" hre
 This model has mandatory hyperparameters (the number of channels, the number of classes,
 and the temporal length of the input) but we do not need to specify them because they will
 be set dynamically by EEGClassifier using the input data during the call to the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a Skorch classifier</span>
-<span class="n">clf</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
-    <span class="n">module</span><span class="o">=</span><a href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet" class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class"><span class="n">EEGNet</span></a><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">,</span>
-    <span class="n">optimizer__lr</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LEARNING_RATE</span></a><span class="p">,</span>
-    <span class="n">batch_size</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BATCH_SIZE</span></a><span class="p">,</span>
-    <span class="n">max_epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EPOCH</span></a><span class="p">,</span>
-    <span class="n">train_split</span><span class="o">=</span><a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed</span></a><span class="p">),</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">,</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
-        <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">"valid_loss"</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">PATIENCE</span></a><span class="p">),</span>
-        <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EpochScoring</span></a><span class="p">(</span>
-            <span class="n">scoring</span><span class="o">=</span><span class="s2">"accuracy"</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"train_acc"</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">),</span>
-        <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EpochScoring</span></a><span class="p">(</span>
-            <span class="n">scoring</span><span class="o">=</span><span class="s2">"accuracy"</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"valid_acc"</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">),</span>
-    <span class="p">],</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Not printing the results for each epoch</span>
-<span class="p">)</span>
-
-<span class="c1"># Create the pipelines</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes</span></a><span class="p">[</span><span class="s2">"EEGNet"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Define a Skorch classifier</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">clf</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">EEGClassifier</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">module</span><span class="o">=</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">EEGNet</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">optimizer</span><span class="o">=</span><a class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam"><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">optimizer__lr</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">LEARNING_RATE</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">batch_size</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">BATCH_SIZE</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">max_epochs</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">EPOCH</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">train_split</span><span class="o">=</span><a class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit"><span class="n">ValidSplit</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">seed</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">device</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">device</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping"><span class="n">EarlyStopping</span></a><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">valid_loss</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">PATIENCE</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring"><span class="n">EpochScoring</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">accuracy</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">train_acc</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="w">
+</span>        <span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring"><span class="n">EpochScoring</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">accuracy</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">valid_acc</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="w">
+</span>        <span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Not printing the results for each epoch</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Create the pipelines</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipes</span></a> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipes</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">EEGNet</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">clf</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="evaluation">
 <h2>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="n">evaluation</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a><span class="p">(</span>
-    <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm</span><span class="p">,</span>
-    <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
-    <span class="n">suffix</span><span class="o">=</span><span class="s2">"braindecode_example"</span><span class="p">,</span>
-    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">return_epochs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes</span></a><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.7047       0.4828        0.6968  0.2238
-      2       0.5625        0.6923       0.4828        0.6967  0.1961
-      3       0.4844        0.7158       0.4828        0.6962  0.1951
-      4       0.4531        0.7037       0.4828        0.6954  0.1950
-      5       0.5781        0.6853       0.4828        0.6947  0.1973
-      6       0.5156        0.6836       0.4828        0.6941  0.1942
-      7       0.4688        0.6960       0.4828        0.6936  0.1935
-      8       0.6406        0.6598       0.4828        0.6931  0.1935
-      9       0.5312        0.7011       0.4828        0.6928  0.1924
-     10       0.5625        0.6737       0.4828        0.6924  0.1944
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span><span class="n">evaluation</span> <span class="o">=</span> <a class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC"><span class="n">CrossSessionEvaluation</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm</span><span class="p">,</span><span class="w">
+</span>    <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span><span class="w">
+</span>    <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">braindecode_example</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="n">return_epochs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipes</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/analysis/results.py:110: RuntimeWarning: Setting non-standard config type: "MOABB_RESULTS"
+  set_config("MOABB_RESULTS", mne_data)
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.7024       0.5517        0.6913  0.1946
-      2       0.5625        0.6767       0.5517        0.6913  0.1936
-      3       0.5156        0.6934       0.5172        0.6913  0.1923
+      1       0.5000        0.6967       0.4828        0.7004  0.3642
+      2       0.4844        0.6953       0.4483        0.7000  0.3434
+      3       0.5000        0.6977       0.4483        0.6995  0.3425
+      4       0.4219        0.7426       0.4828        0.6988  0.3416
+      5       0.6562        0.6922       0.5172        0.6981  0.3487
+      6       0.4531        0.7165       0.5172        0.6976  0.3443
+      7       0.5938        0.6762       0.5517        0.6971  0.3443
+      8       0.5000        0.6854       0.5517        0.6967  0.3416
+      9       0.5156        0.6931       0.5517        0.6962  0.3407
+     10       0.5781        0.6744       0.5517        0.6958  0.3495
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.4688        0.6917       0.4828        0.6955  0.3571
+      2       0.5469        0.6844       0.5172        0.6953  0.3480
+      3       0.5625        0.6764       0.4828        0.6953  0.3415
+      4       0.5781        0.6822       0.4828        0.6953  0.3703
+      5       0.5469        0.6803       0.4828        0.6953  0.3480
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5938        0.6816       0.4828        0.6873  0.1947
-      2       0.5156        0.6964       0.4828        0.6863  0.1959
-      3       0.5938        0.6887       0.4828        0.6856  0.1933
-      4       0.6875        0.6538       0.5172        0.6850  0.1976
-      5       0.5781        0.6805       0.5172        0.6846  0.1947
-      6       0.5156        0.7040       0.5172        0.6843  0.1947
-      7       0.4844        0.6934       0.4828        0.6842  0.1932
-      8       0.5625        0.6705       0.4828        0.6842  0.1928
-      9       0.5469        0.6640       0.4828        0.6840  0.1968
-     10       0.6094        0.6627       0.4828        0.6838  0.1956
+      1       0.5156        0.7046       0.4483        0.7028  0.3362
+      2       0.5000        0.6862       0.4828        0.7011  0.3644
+      3       0.4844        0.7148       0.4828        0.7004  0.3423
+      4       0.4688        0.7149       0.5172        0.6988  0.3425
+      5       0.5156        0.7045       0.5172        0.6978  0.3521
+      6       0.4531        0.7027       0.5172        0.6969  0.3422
+      7       0.5625        0.6886       0.5517        0.6961  0.3506
+      8       0.5469        0.6806       0.5172        0.6955  0.3488
+      9       0.4531        0.6912       0.5172        0.6949  0.3549
+     10       0.5625        0.6719       0.5172        0.6944  0.3477
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.6875        0.6621       0.5862        0.6879  0.1952
-      2       0.5312        0.7219       0.5862        0.6882  0.1925
-      3       0.5312        0.6897       0.5862        0.6884  0.1924
-Stopping since valid_loss has not improved in the last 3 epochs.
+      1       0.3906        0.7251       0.5172        0.6967  0.3454
+      2       0.5000        0.7117       0.5172        0.6958  0.3478
+      3       0.5000        0.6872       0.5517        0.6950  0.3396
+      4       0.4375        0.7056       0.5517        0.6947  0.3649
+      5       0.5000        0.7006       0.5517        0.6945  0.3444
+      6       0.5781        0.6784       0.5862        0.6943  0.3669
+      7       0.5625        0.6814       0.5862        0.6941  0.3435
+      8       0.5938        0.6599       0.5862        0.6939  0.3360
+      9       0.5000        0.6860       0.5862        0.6939  0.3408
+     10       0.5312        0.6802       0.5517        0.6940  0.3629
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
       score      time  samples  ...  n_sessions       dataset pipeline
-0  0.529514  2.162513    144.0  ...           2  BNCI2014-001   EEGNet
-1  0.544174  0.817687    144.0  ...           2  BNCI2014-001   EEGNet
-2  0.559028  2.018611    144.0  ...           2  BNCI2014-001   EEGNet
-3  0.472994  0.814972    144.0  ...           2  BNCI2014-001   EEGNet
+0  0.506559  5.007825    144.0  ...           2  BNCI2014-001   EEGNet
+1  0.478781  2.150499    144.0  ...           2  BNCI2014-001   EEGNet
+2  0.484182  3.547030    144.0  ...           2  BNCI2014-001   EEGNet
+3  0.445216  3.556599    144.0  ...           2  BNCI2014-001   EEGNet
 
 [4 rows x 11 columns]
 </pre></div>
@@ -753,12 +871,18 @@ Stopping since valid_loss has not improved in the last 3 epochs.
 </section>
 <section id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"score"</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"subject"</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"viridis"</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">score</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">subject</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">viridis</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_plot_moabb_benchmark_001.png" srcset="../../_images/sphx_glr_plot_moabb_benchmark_001.png" alt="plot moabb benchmark" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/examples/advanced_training/plot_moabb_benchmark.py:141: FutureWarning:
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.barplot(data=results, y="score", x="subject", palette="viridis")
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_moabb_benchmark_001.png" srcset="../../_images/sphx_glr_plot_moabb_benchmark_001.png" alt="plot moabb benchmark" class = "sphx-glr-single-img"/></section>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <aside class="footnote-list brackets">
@@ -770,8 +894,7 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.753 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  576 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.921 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-moabb-benchmark-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cb62940d13f700ed2b9e813705e9d437/plot_moabb_benchmark.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_moabb_benchmark.ipynb</span></code></a></p>

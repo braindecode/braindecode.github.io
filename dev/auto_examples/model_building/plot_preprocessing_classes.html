@@ -41,7 +41,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -577,54 +577,329 @@ to download the full example code.</p>
 <p>This example demonstrates the various preprocessing classes available in
 Braindecode that wrap MNE-Python functionality. These classes provide a
 convenient and type-safe way to preprocess EEG data.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Bruno Aristimunha &lt;b.aristimunha@gmail.com&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD (3-clause)</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <a href="../../generated/braindecode.preprocessing.Anonymize.html#braindecode.preprocessing.Anonymize" title="braindecode.preprocessing.Anonymize" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Anonymize</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.ApplyHilbert.html#braindecode.preprocessing.ApplyHilbert" title="braindecode.preprocessing.ApplyHilbert" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">ApplyHilbert</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.Crop.html#braindecode.preprocessing.Crop" title="braindecode.preprocessing.Crop" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Crop</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Filter</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Pick</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.Resample.html#braindecode.preprocessing.Resample" title="braindecode.preprocessing.Resample" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Resample</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.SetEEGReference.html#braindecode.preprocessing.SetEEGReference" title="braindecode.preprocessing.SetEEGReference" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">SetEEGReference</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.SetMontage.html#braindecode.preprocessing.SetMontage" title="braindecode.preprocessing.SetMontage" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">SetMontage</span></a><span class="p">,</span>
-    <a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Authors: Bruno Aristimunha &lt;b.aristimunha&#64;gmail.com&gt;</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># License: BSD (3-clause)</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">MOABBDataset</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Anonymize.html#braindecode.preprocessing.Anonymize" title="braindecode.preprocessing.Anonymize"><span class="n">Anonymize</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.ApplyHilbert.html#braindecode.preprocessing.ApplyHilbert" title="braindecode.preprocessing.ApplyHilbert"><span class="n">ApplyHilbert</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Crop.html#braindecode.preprocessing.Crop" title="braindecode.preprocessing.Crop"><span class="n">Crop</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter"><span class="n">Filter</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick"><span class="n">Pick</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Resample.html#braindecode.preprocessing.Resample" title="braindecode.preprocessing.Resample"><span class="n">Resample</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.SetEEGReference.html#braindecode.preprocessing.SetEEGReference" title="braindecode.preprocessing.SetEEGReference"><span class="n">SetEEGReference</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.SetMontage.html#braindecode.preprocessing.SetMontage" title="braindecode.preprocessing.SetMontage"><span class="n">SetMontage</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <section id="load-a-sample-dataset">
 <h2>Load a sample dataset<a class="headerlink" href="#load-a-sample-dataset" title="Link to this heading">#</a></h2>
 <p>We’ll use a small MOABB dataset for demonstration</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">"BNCI2014_001"</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">BNCI2014_001</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
 </pre></div>
 </div>
 </section>
 <section id="signal-processing">
 <h2>Signal Processing<a class="headerlink" href="#signal-processing" title="Link to this heading">#</a></h2>
 <p>Apply common signal processing operations</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Resample to reduce computational load</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Original sampling frequency: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'sfreq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz"</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_signal</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.Resample.html#braindecode.preprocessing.Resample" title="braindecode.preprocessing.Resample" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Resample</span></a><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>  <span class="c1"># Downsample to 100 Hz</span>
-<span class="p">]</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_signal</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"After resampling: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'sfreq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz"</span><span class="p">)</span>
-
-<span class="c1"># 2. Remove power line noise and apply bandpass filter</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_filtering</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Filter</span></a><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>  <span class="c1"># Bandpass filter 4-30 Hz</span>
-<span class="p">]</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_filtering</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Applied bandpass filter 4-30 Hz"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># 1. Resample to reduce computational load</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Original sampling frequency: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'</span><span class="s1">sfreq</span><span class="s1">'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_signal</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Resample.html#braindecode.preprocessing.Resample" title="braindecode.preprocessing.Resample"><span class="n">Resample</span></a><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># Downsample to 100 Hz</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_signal</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">After resampling: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'</span><span class="s1">sfreq</span><span class="s1">'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># 2. Remove power line noise and apply bandpass filter</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_filtering</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter"><span class="n">Filter</span></a><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># Bandpass filter 4-30 Hz</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_filtering</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Applied bandpass filter 4-30 Hz</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Original sampling frequency: 250.0 Hz
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
 After resampling: 100.0 Hz
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 165 samples (1.650 s)
+
 Applied bandpass filter 4-30 Hz
 </pre></div>
 </div>
@@ -632,25 +907,24 @@ Applied bandpass filter 4-30 Hz
 <section id="channel-management">
 <h2>Channel Management<a class="headerlink" href="#channel-management" title="Link to this heading">#</a></h2>
 <p>Select and manipulate channels</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Pick only EEG channels</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_channels</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Pick</span></a><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">),</span>  <span class="c1"># Select only EEG channels</span>
-<span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Channels before pick: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_channels</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Channels after pick: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># 4. Rename channels (example - just for demonstration)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">original_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Original channel names (first 3): </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">original_names</span></a><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="c1"># Note: We won't actually rename to avoid breaking the example,</span>
-<span class="c1"># but this is how you would do it:</span>
-<span class="c1"># preprocessors_rename = [</span>
-<span class="c1">#     RenameChannels(mapping={'C3': 'C3_renamed', 'C4': 'C4_renamed'}),</span>
-<span class="c1"># ]</span>
-<span class="c1"># preprocess(dataset, preprocessors_rename)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># 3. Pick only EEG channels</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_channels</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick"><span class="n">Pick</span></a><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">eeg</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># Select only EEG channels</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Channels before pick: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_channels</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Channels after pick: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># 4. Rename channels (example - just for demonstration)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">original_names</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Original channel names (first 3): </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">original_names</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Note: We won't actually rename to avoid breaking the example,</span><span class="w">
+</span><span class="c1"># but this is how you would do it:</span><span class="w">
+</span><span class="c1"># preprocessors_rename = [</span><span class="w">
+</span><span class="c1">#     RenameChannels(mapping={'C3': 'C3_renamed', 'C4': 'C4_renamed'}),</span><span class="w">
+</span><span class="c1"># ]</span><span class="w">
+</span><span class="c1"># preprocess(dataset, preprocessors_rename)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Channels before pick: 26
 Channels after pick: 22
 Original channel names (first 3): ['Fz', 'FC3', 'FC1']
@@ -660,25 +934,62 @@ Original channel names (first 3): ['Fz', 'FC3', 'FC1']
 <section id="reference-montage">
 <h2>Reference &amp; Montage<a class="headerlink" href="#reference-montage" title="Link to this heading">#</a></h2>
 <p>Set reference and channel positions</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 5. Set EEG reference to average</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_reference</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.SetEEGReference.html#braindecode.preprocessing.SetEEGReference" title="braindecode.preprocessing.SetEEGReference" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">SetEEGReference</span></a><span class="p">(</span><span class="n">ref_channels</span><span class="o">=</span><span class="s2">"average"</span><span class="p">),</span>
-<span class="p">]</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_reference</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Set EEG reference to average"</span><span class="p">)</span>
-
-<span class="c1"># 6. Set montage for proper channel positions</span>
-<a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="mne.channels.make_standard_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span></a><span class="p">(</span><span class="s2">"standard_1020"</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_montage</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.SetMontage.html#braindecode.preprocessing.SetMontage" title="braindecode.preprocessing.SetMontage" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">SetMontage</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="o">=</span><a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">,</span> <span class="n">match_case</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">),</span>
-<span class="p">]</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_montage</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">"Set montage, number of positions: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()[</span><span class="s1">'ch_pos'</span><span class="p">])</span><span class="si">}</span><span class="s2">"</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Set EEG reference to average
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># 5. Set EEG reference to average</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_reference</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.SetEEGReference.html#braindecode.preprocessing.SetEEGReference" title="braindecode.preprocessing.SetEEGReference"><span class="n">SetEEGReference</span></a><span class="p">(</span><span class="n">ref_channels</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">average</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_reference</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Set EEG reference to average</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># 6. Set montage for proper channel positions</span><span class="w">
+</span><a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage"><span class="n">montage</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function reference external" href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="mne.channels.make_standard_montage"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">standard_1020</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_montage</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.SetMontage.html#braindecode.preprocessing.SetMontage" title="braindecode.preprocessing.SetMontage"><span class="n">SetMontage</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage"><span class="n">montage</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage"><span class="n">montage</span></a><span class="p">,</span> <span class="n">match_case</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ignore</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_montage</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Set montage, number of positions: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">get_positions</span><span class="p">(</span><span class="p">)</span><span class="p">[</span><span class="s1">'</span><span class="s1">ch_pos</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Set EEG reference to average
+/home/runner/work/braindecode/braindecode/examples/model_building/plot_preprocessing_classes.py:93: FutureWarning: Montage name 'standard_1020' is deprecated and will be removed in MNE 1.14. Use 'colin27_1020' instead.
+  montage = mne.channels.make_standard_montage("standard_1020")
 Set montage, number of positions: 22
 </pre></div>
 </div>
@@ -686,15 +997,14 @@ Set montage, number of positions: 22
 <section id="data-transformation">
 <h2>Data Transformation<a class="headerlink" href="#data-transformation" title="Link to this heading">#</a></h2>
 <p>Apply transformations to the data</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 7. Crop data to specific time range</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_crop</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.Crop.html#braindecode.preprocessing.Crop" title="braindecode.preprocessing.Crop" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Crop</span></a><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>  <span class="c1"># Keep only first 60 seconds</span>
-<span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data duration before crop: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_crop</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data duration after crop: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># 7. Crop data to specific time range</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_crop</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Crop.html#braindecode.preprocessing.Crop" title="braindecode.preprocessing.Crop"><span class="n">Crop</span></a><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># Keep only first 60 seconds</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Data duration before crop: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_crop</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Data duration after crop: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Data duration before crop: 386.9 s
 Data duration after crop: 60.0 s
 </pre></div>
@@ -703,14 +1013,13 @@ Data duration after crop: 60.0 s
 <section id="metadata-configuration">
 <h2>Metadata &amp; Configuration<a class="headerlink" href="#metadata-configuration" title="Link to this heading">#</a></h2>
 <p>Modify metadata and configuration</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 8. Anonymize measurement information</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_anonymize</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.Anonymize.html#braindecode.preprocessing.Anonymize" title="braindecode.preprocessing.Anonymize" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Anonymize</span></a><span class="p">(),</span>
-<span class="p">]</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_anonymize</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Anonymized measurement information"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># 8. Anonymize measurement information</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_anonymize</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Anonymize.html#braindecode.preprocessing.Anonymize" title="braindecode.preprocessing.Anonymize"><span class="n">Anonymize</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_anonymize</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Anonymized measurement information</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Anonymized measurement information
 </pre></div>
 </div>
@@ -718,15 +1027,14 @@ Data duration after crop: 60.0 s
 <section id="advanced-envelope-extraction">
 <h2>Advanced: Envelope Extraction<a class="headerlink" href="#advanced-envelope-extraction" title="Link to this heading">#</a></h2>
 <p>Extract signal envelope using Hilbert transform</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 9. Compute envelope (useful for some analyses)</span>
-<span class="c1"># Note: This modifies the data, so use carefully</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_envelope</span></a> <span class="o">=</span> <span class="p">[</span>
-    <a href="../../generated/braindecode.preprocessing.ApplyHilbert.html#braindecode.preprocessing.ApplyHilbert" title="braindecode.preprocessing.ApplyHilbert" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">ApplyHilbert</span></a><span class="p">(</span><span class="n">envelope</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="p">]</span>
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">preprocessors_envelope</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Computed signal envelope"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># 9. Compute envelope (useful for some analyses)</span><span class="w">
+</span><span class="c1"># Note: This modifies the data, so use carefully</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_envelope</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.ApplyHilbert.html#braindecode.preprocessing.ApplyHilbert" title="braindecode.preprocessing.ApplyHilbert"><span class="n">ApplyHilbert</span></a><span class="p">(</span><span class="n">envelope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">preprocessors_envelope</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Computed signal envelope</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computed signal envelope
 </pre></div>
 </div>
@@ -734,54 +1042,367 @@ Data duration after crop: 60.0 s
 <section id="combining-multiple-preprocessing-steps">
 <h2>Combining Multiple Preprocessing Steps<a class="headerlink" href="#combining-multiple-preprocessing-steps" title="Link to this heading">#</a></h2>
 <p>You can combine multiple preprocessing steps in a single pipeline</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Complete Preprocessing Pipeline Example"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-
-<span class="c1"># Reload dataset for complete pipeline demonstration</span>
-<a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span></a> <span class="o">=</span> <a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">"BNCI2014_001"</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-<span class="c1"># Set montage first (needed for interpolation)</span>
-<a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="mne.channels.make_standard_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span></a><span class="p">(</span><span class="s2">"standard_1020"</span><span class="p">)</span>
-
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">complete_pipeline</span></a> <span class="o">=</span> <span class="p">[</span>
-    <span class="c1"># 1. Set montage</span>
-    <a href="../../generated/braindecode.preprocessing.SetMontage.html#braindecode.preprocessing.SetMontage" title="braindecode.preprocessing.SetMontage" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">SetMontage</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="o">=</span><a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">,</span> <span class="n">match_case</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">),</span>
-    <span class="c1"># 2. Set reference</span>
-    <a href="../../generated/braindecode.preprocessing.SetEEGReference.html#braindecode.preprocessing.SetEEGReference" title="braindecode.preprocessing.SetEEGReference" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">SetEEGReference</span></a><span class="p">(</span><span class="n">ref_channels</span><span class="o">=</span><span class="s2">"average"</span><span class="p">),</span>
-    <span class="c1"># 3. Bandpass filter</span>
-    <a href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Filter</span></a><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
-    <span class="c1"># 4. Downsample</span>
-    <a href="../../generated/braindecode.preprocessing.Resample.html#braindecode.preprocessing.Resample" title="braindecode.preprocessing.Resample" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Resample</span></a><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
-    <span class="c1"># 5. Select only EEG channels</span>
-    <a href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Pick</span></a><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">),</span>
-    <span class="c1"># 6. Crop to region of interest</span>
-    <a href="../../generated/braindecode.preprocessing.Crop.html#braindecode.preprocessing.Crop" title="braindecode.preprocessing.Crop" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Crop</span></a><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
-    <span class="c1"># 7. Anonymize</span>
-    <a href="../../generated/braindecode.preprocessing.Anonymize.html#braindecode.preprocessing.Anonymize" title="braindecode.preprocessing.Anonymize" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class"><span class="n">Anonymize</span></a><span class="p">(),</span>
-<span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">"Original: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'sfreq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz, "</span>
-    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s, "</span>
-    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> channels"</span>
-<span class="p">)</span>
-
-<a href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess" class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function"><span class="n">preprocess</span></a><span class="p">(</span><a href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset" class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">complete_pipeline</span></a><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">"After preprocessing: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'sfreq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz, "</span>
-    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s, "</span>
-    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> channels"</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Preprocessing complete!"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">=</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Complete Preprocessing Pipeline Example</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">=</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Reload dataset for complete pipeline demonstration</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset_complete</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">BNCI2014_001</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Set montage first (needed for interpolation)</span><span class="w">
+</span><a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage"><span class="n">montage</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function reference external" href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="mne.channels.make_standard_montage"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">standard_1020</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">complete_pipeline</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span>    <span class="c1"># 1. Set montage</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.SetMontage.html#braindecode.preprocessing.SetMontage" title="braindecode.preprocessing.SetMontage"><span class="n">SetMontage</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage"><span class="n">montage</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage"><span class="n">montage</span></a><span class="p">,</span> <span class="n">match_case</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ignore</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># 2. Set reference</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.SetEEGReference.html#braindecode.preprocessing.SetEEGReference" title="braindecode.preprocessing.SetEEGReference"><span class="n">SetEEGReference</span></a><span class="p">(</span><span class="n">ref_channels</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">average</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># 3. Bandpass filter</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Filter.html#braindecode.preprocessing.Filter" title="braindecode.preprocessing.Filter"><span class="n">Filter</span></a><span class="p">(</span><span class="n">l_freq</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># 4. Downsample</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Resample.html#braindecode.preprocessing.Resample" title="braindecode.preprocessing.Resample"><span class="n">Resample</span></a><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># 5. Select only EEG channels</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Pick.html#braindecode.preprocessing.Pick" title="braindecode.preprocessing.Pick"><span class="n">Pick</span></a><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">eeg</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># 6. Crop to region of interest</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Crop.html#braindecode.preprocessing.Crop" title="braindecode.preprocessing.Crop"><span class="n">Crop</span></a><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># 7. Anonymize</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Anonymize.html#braindecode.preprocessing.Anonymize" title="braindecode.preprocessing.Anonymize"><span class="n">Anonymize</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Original: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'</span><span class="s1">sfreq</span><span class="s1">'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz, </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s, </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> channels</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset_complete</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">complete_pipeline</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">After preprocessing: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'</span><span class="s1">sfreq</span><span class="s1">'</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz, </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s, </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset_complete</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> channels</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Preprocessing complete!</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>============================================================
 Complete Preprocessing Pipeline Example
 ============================================================
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/moabb/datasets/bnci/base.py:456: FutureWarning: Montage name 'standard_1005' is deprecated and will be removed in MNE 1.14. Use 'colin27_1005' instead.
+  montage = make_standard_montage("standard_1005")
+/home/runner/work/braindecode/braindecode/examples/model_building/plot_preprocessing_classes.py:153: FutureWarning: Montage name 'standard_1020' is deprecated and will be removed in MNE 1.14. Use 'colin27_1020' instead.
+  montage = mne.channels.make_standard_montage("standard_1020")
 Original: 250.0 Hz, 386.9 s, 26 channels
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+EEG channel type selected for re-referencing
+Applying average reference.
+Applying a custom ('EEG',) reference.
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
+Finding events on: STI
+48 events found on stim channel STI
+Event IDs: [1 2 3 4]
 After preprocessing: 100.0 Hz, 60.0 s, 22 channels
 
 Preprocessing complete!
@@ -807,8 +1428,7 @@ AnnotateMovement, AnnotateMuscleZscore, AnnotateNan</p>
 <p><strong>Metadata &amp; Configuration</strong>: Anonymize, SetAnnotations, SetMeasDate,
 AddEvents, FixMagCoilTypes, ApplyGradientCompensation</p>
 <p>See the API documentation for details on each class and their parameters.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.838 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  574 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.611 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-preprocessing-classes-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a868f9d41de95f5f6defc26e291cf4aa/plot_preprocessing_classes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_preprocessing_classes.ipynb</span></code></a></p>
