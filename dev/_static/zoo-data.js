@@ -34,6 +34,14 @@ window.BD_MODELS = [
     "desc": "Prediction for Sleep Staging, Epilepsy"
   },
   {
+    "name": "BrainBERT",
+    "cat": "foundation",
+    "year": null,
+    "params": "603.3 K",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "CBraMod",
     "cat": "foundation",
     "year": null,
