@@ -394,6 +394,14 @@ window.BD_MODELS = [
     "desc": "Prediction for Speech Decoding"
   },
   {
+    "name": "Brant",
+    "cat": "foundation",
+    "year": null,
+    "params": "2.9 M",
+    "paper": "",
+    "desc": "Prediction for Epilepsy"
+  },
+  {
     "name": "PBT",
     "cat": "foundation",
     "year": null,
