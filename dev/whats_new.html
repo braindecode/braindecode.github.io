@@ -544,6 +544,18 @@ MNE version via <a class="reference internal" href="generated/braindecode.util.r
 is 1, which made <a class="reference internal" href="generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.ShallowFBCSPNet</span></code></a> and
 <a class="reference internal" href="generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net" title="braindecode.models.Deep4Net"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.Deep4Net</span></code></a> unusable on single-channel data
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1154">#1154</a> by <a class="reference external" href="https://github.com/julien-gadonneix">Julien Gadonneix</a>).</p></li>
+<li><p>Fix <a class="reference internal" href="generated/braindecode.models.EEGMiner.html#braindecode.models.EEGMiner" title="braindecode.models.EEGMiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGMiner</span></code></a> on Intel Gaudi (HPU) and under
+<code class="docutils literal notranslate"><span class="pre">torch.jit.trace</span></code>: <a class="reference internal" href="generated/filter/braindecode.modules.GeneralizedGaussianFilter.html#braindecode.modules.GeneralizedGaussianFilter" title="braindecode.modules.GeneralizedGaussianFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.GeneralizedGaussianFilter</span></code></a>
+now clamps its parameters in place under <code class="docutils literal notranslate"><span class="pre">torch.no_grad()</span></code> instead of
+reassigning <code class="docutils literal notranslate"><span class="pre">.data</span></code>, and <a class="reference internal" href="generated/braindecode.functional.hilbert_freq.html#braindecode.functional.hilbert_freq" title="braindecode.functional.hilbert_freq"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.hilbert_freq()</span></code></a>
+computes the complex FFT step in float32 for bfloat16 inputs, so the phase
+features work under bfloat16 autocast (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1183">#1183</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Fix <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.MaxNormParametrize</span></code> failing on Intel Gaudi
+(HPU), which affects every model with a max-norm weight constraint
+(e.g. <a class="reference internal" href="generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGNet</span></code></a>,
+<a class="reference internal" href="generated/braindecode.models.ATCNet.html#braindecode.models.ATCNet" title="braindecode.models.ATCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.ATCNet</span></code></a>). The row rescale is now written out
+instead of calling <code class="docutils literal notranslate"><span class="pre">Tensor.renorm</span></code>; values and gradients are unchanged
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1184">#1184</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="current-1-8-0-2026-08-31">
