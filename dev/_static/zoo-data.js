@@ -18,6 +18,14 @@ window.BD_MODELS = [
     "desc": "Prediction for Motor Imagery"
   },
   {
+    "name": "BaRISTA",
+    "cat": "foundation",
+    "year": null,
+    "params": "870.3 K",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "BDTCN",
     "cat": "recurrent",
     "year": null,
