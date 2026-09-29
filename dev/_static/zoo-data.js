@@ -504,6 +504,14 @@ window.BD_MODELS = [
     "params": "172.1 M",
     "paper": "",
     "desc": "Classification,Embedding for General"
+  },
+  {
+    "name": "MIRepNet",
+    "cat": "foundation",
+    "year": null,
+    "params": "5.1 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Motor Imagery"
   }
 ];
 window.BD_CATEGORIES = [
