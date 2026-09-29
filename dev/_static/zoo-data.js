@@ -202,6 +202,14 @@ window.BD_MODELS = [
     "desc": "Prediction for Motor Imagery"
   },
   {
+    "name": "MSCFormer",
+    "cat": "attention",
+    "year": null,
+    "params": "150.7 K",
+    "paper": "",
+    "desc": "Prediction for Motor Imagery"
+  },
+  {
     "name": "SCCNet",
     "cat": "convolution",
     "year": null,
@@ -464,6 +472,14 @@ window.BD_MODELS = [
     "params": "1 M",
     "paper": "",
     "desc": "Prediction for Emotion Recognition"
+  },
+  {
+    "name": "DIVER1",
+    "cat": "foundation",
+    "year": null,
+    "params": "12.7 M",
+    "paper": "",
+    "desc": "Prediction for General"
   },
   {
     "name": "TCFormer",
