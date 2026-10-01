@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 1.8.1 (2026-08-31): Enhancements: Clarify decoder temporal embedding indexing in braindecode.models.Labram and cover its one-token-per-temporal-patch behavior (#1155 by Bruno Aristimunha).,..." />
+<meta property="og:description" content="Current 1.8.1 (2026-08-31): Enhancements: Restore acceptance tests on supported Python versions as seeded decoding checks on BNCI2014_001 (held-out accuracy thresholds, a shuffled-label control and..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 1.8.1 (2026-08-31): Enhancements: Clarify decoder temporal embedding indexing in braindecode.models.Labram and cover its one-token-per-temporal-patch behavior (#1155 by Bruno Aristimunha).,..." />
+<meta name="description" content="Current 1.8.1 (2026-08-31): Enhancements: Restore acceptance tests on supported Python versions as seeded decoding checks on BNCI2014_001 (held-out accuracy thresholds, a shuffled-label control and..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -498,6 +498,10 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Restore acceptance tests on supported Python versions as seeded decoding
+checks on BNCI2014_001 (held-out accuracy thresholds, a shuffled-label
+control and a replicability check), run by a dedicated CI job
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1159">#1159</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Clarify decoder temporal embedding indexing in <a class="reference internal" href="generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.Labram</span></code></a>
 and cover its one-token-per-temporal-patch behavior
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1155">#1155</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
@@ -577,6 +581,10 @@ PyTorch stopped providing its binary packages after 2.2.
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.EEGClassifier.predict_trials()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.EEGRegressor.predict_trials()</span></code> no longer raise a
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on trials of different lengths; they return a list with one
+prediction array per trial (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1159">#1159</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/braindecode.models.EEGMiner.html#braindecode.models.EEGMiner" title="braindecode.models.EEGMiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGMiner</span></code></a> on Intel Gaudi (HPU), part 2 of
 <a class="reference external" href="https://github.com/braindecode/braindecode/issues/1183">#1183</a>: <a class="reference internal" href="generated/filter/braindecode.modules.GeneralizedGaussianFilter.html#braindecode.modules.GeneralizedGaussianFilter" title="braindecode.modules.GeneralizedGaussianFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.GeneralizedGaussianFilter</span></code></a> and
 <a class="reference internal" href="generated/braindecode.functional.hilbert_freq.html#braindecode.functional.hilbert_freq" title="braindecode.functional.hilbert_freq"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.hilbert_freq()</span></code></a> now use a real-valued DFT on
@@ -602,6 +610,11 @@ time table is now a non-persistent buffer that follows <code class="docutils lit
 encoding is built with <code class="docutils literal notranslate"><span class="pre">torch.cat</span></code> instead of strided in-place writes (the
 temporal part was 73 % off on Gaudi2). State-dict keys and CPU/CUDA outputs are
 unchanged (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1191">#1191</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Fix <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGRegressor</span></code> training on datasets with one target per
+trial: the <code class="docutils literal notranslate"><span class="pre">(batch,)</span></code> target is now reshaped to match a <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">1)</span></code>
+prediction instead of being broadcast to <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">batch)</span></code> by the loss, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.EEGRegressor.fit()</span></code> now returns <code class="docutils literal notranslate"><span class="pre">self</span></code>
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1180">#1180</a> by <a class="reference external" href="https://github.com/Arthur031221">Arthur031221</a>).</p></li>
 <li><p>Preserve shared class targets when creating MNE epochs from different event
 annotations, as in sleep staging. MNE event IDs remain unique.
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1174">#1174</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
