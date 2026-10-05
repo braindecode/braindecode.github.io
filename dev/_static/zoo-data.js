@@ -426,6 +426,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "PopulationTransformer",
+    "cat": "foundation",
+    "year": null,
+    "params": "20 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "SSTDPN",
     "cat": "attention",
     "year": null,
