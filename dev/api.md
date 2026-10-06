@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [1412f015f667b946e4515f0311fad7cc61ca3376](https://github.com/braindecode/braindecode/tree/1412f015f667b946e4515f0311fad7cc61ca3376)
+Source commit: [c282258aada14f4af0d447c33fae284936fd9e65](https://github.com/braindecode/braindecode/tree/c282258aada14f4af0d447c33fae284936fd9e65)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -78,6 +78,8 @@ organization:
 - [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod) - Criss-Cross Transformer model with pre-trained weights
 - [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain) - Scalable EEG pre-training with temporal and spectral code
   prediction
+- [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain) - Cross-scale spatiotemporal brain foundation model with
+  structured sparse attention
 - [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram) - Large Brain Model with pre-trained weights
 - [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE) - EEG foundation model with pre-trained weights
 - [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA) - Universal EEG embedding model with pre-trained weights
@@ -147,6 +149,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod)([n_outputs, n_chans, chs_info, ...])                                 | **C**riss-**C**ross **Bra**in **Mod**el for EEG Decoding from Wang et al. (2025) [[Rdb05ba1b4969-cbramod]](generated/braindecode.models.CBraMod.html#rdb05ba1b4969-cbramod).                         |
 | [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain)([n_outputs, n_chans, chs_info, ...])                           | CodeBrain: Scalable Code EEG Pre-Training for Unified Downstream BCI Tasks.                                                                                                                          |
 | [`ContraWR`](generated/braindecode.models.ContraWR.html#braindecode.models.ContraWR)([n_chans, n_outputs, sfreq, ...])                                 | Contrast with the World Representation ContraWR from Yang et al (2021) [[Ra71465cb6797-Yang2021]](generated/braindecode.models.ContraWR.html#ra71465cb6797-yang2021).                                |
+| [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain)([n_outputs, n_chans, chs_info, ...])                                 | Cross-scale Spatiotemporal Brain Foundation Model from Zhou et al. (2025) [[R4dd11cf2e832-zhou2025csbrain]](generated/braindecode.models.CSBrain.html#r4dd11cf2e832-zhou2025csbrain).                |
 | [`CTNet`](generated/braindecode.models.CTNet.html#braindecode.models.CTNet)([n_outputs, n_chans, sfreq, chs_info, ...])                                | CTNet from Zhao, W et al (2024) [[Rc7f1d6cec70c-ctnet]](generated/braindecode.models.CTNet.html#rc7f1d6cec70c-ctnet).                                                                                |
 | [`DGCNN`](generated/braindecode.models.DGCNN.html#braindecode.models.DGCNN)([n_outputs, n_chans, chs_info, ...])                                       | DGCNN for EEG classification from Song et al. (2018) [[Rff991d0fb90b-dgcnn]](generated/braindecode.models.DGCNN.html#rff991d0fb90b-dgcnn).                                                           |
 | [`DIVER1`](generated/braindecode.models.DIVER1.html#braindecode.models.DIVER1)([n_outputs, n_chans, chs_info, ...])                                    | DIVER-1 from Han et al. (2025) [[Raa6ac0ab42e7-Han2025]](generated/braindecode.models.DIVER1.html#raa6ac0ab42e7-han2025).                                                                            |

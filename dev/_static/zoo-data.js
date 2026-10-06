@@ -66,6 +66,14 @@ window.BD_MODELS = [
     "desc": "Prediction, Embedding for General"
   },
   {
+    "name": "CSBrain",
+    "cat": "foundation",
+    "year": null,
+    "params": "11 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "ContraWR",
     "cat": "convolution",
     "year": null,
