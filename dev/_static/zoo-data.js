@@ -458,6 +458,14 @@ window.BD_MODELS = [
     "desc": "Prediction, Embedding for General"
   },
   {
+    "name": "MAPA",
+    "cat": "foundation",
+    "year": null,
+    "params": "21.3 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "MEDFormer",
     "cat": "foundation",
     "year": null,
@@ -488,6 +496,14 @@ window.BD_MODELS = [
     "params": "12.7 M",
     "paper": "",
     "desc": "Prediction for General"
+  },
+  {
+    "name": "BrainTokenizer",
+    "cat": "foundation",
+    "year": null,
+    "params": "5.1 M",
+    "paper": "",
+    "desc": "Embedding for General"
   },
   {
     "name": "TCFormer",
@@ -544,6 +560,14 @@ window.BD_MODELS = [
     "params": "5.1 M",
     "paper": "",
     "desc": "Prediction, Embedding for Motor Imagery"
+  },
+  {
+    "name": "SeizureTransformer",
+    "cat": "attention",
+    "year": null,
+    "params": "37.8 M",
+    "paper": "",
+    "desc": "Event Detection for Epilepsy"
   }
 ];
 window.BD_CATEGORIES = [
