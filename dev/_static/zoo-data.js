@@ -498,6 +498,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "BrainOmni",
+    "cat": "foundation",
+    "year": null,
+    "params": "14 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "BrainTokenizer",
     "cat": "foundation",
     "year": null,

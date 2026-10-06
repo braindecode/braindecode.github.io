@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [bc80538b1df5e3b2a6df8eb06dae75665683b134](https://github.com/braindecode/braindecode/tree/bc80538b1df5e3b2a6df8eb06dae75665683b134)
+Source commit: [6d9800c7b18b353b98e6e2c0b26f48c8be9c7d72](https://github.com/braindecode/braindecode/tree/6d9800c7b18b353b98e6e2c0b26f48c8be9c7d72)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -73,6 +73,8 @@ organization:
 - [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT) - Foundation model with pre-trained weights
 - [`BrainBERT`](generated/braindecode.models.BrainBERT.html#braindecode.models.BrainBERT) - Intracranial (sEEG/iEEG) foundation model with pre-trained
   weights
+- [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni) - Unified EEG/MEG foundation model; official raw weights are
+  available from the authors
 - [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod) - Criss-Cross Transformer model with pre-trained weights
 - [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain) - Scalable EEG pre-training with temporal and spectral code
   prediction
@@ -139,6 +141,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT)([embed_dim, num_heads, num_layers, ...])                                      | BIOT from Yang et al (2023) [[R606e26b38fe6-Yang2023]](generated/braindecode.models.BIOT.html#r606e26b38fe6-yang2023)                                                                                |
 | [`BrainBERT`](generated/braindecode.models.BrainBERT.html#braindecode.models.BrainBERT)([hidden_dim, ffn_dim, n_layers, ...])                          | BrainBERT from Wang et al. (2023) [[Rf54fa634480e-BrainBERT2023]](generated/braindecode.models.BrainBERT.html#rf54fa634480e-brainbert2023).                                                          |
 | [`BrainModule`](generated/braindecode.models.BrainModule.html#braindecode.models.BrainModule)([n_chans, n_outputs, n_times, ...])                      | BrainModule from [[Rf869b8ed6368-brainmagick]](generated/braindecode.models.BrainModule.html#rf869b8ed6368-brainmagick), also known as SimpleConv.                                                   |
+| [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni)([n_outputs, n_chans, chs_info, ...])                           | BrainOmni from Xiao et al. (2025) [[R9a8f28a4d509-brainomni]](generated/braindecode.models.BrainOmni.html#r9a8f28a4d509-brainomni).                                                                  |
 | [`BrainTokenizer`](generated/braindecode.models.BrainTokenizer.html#braindecode.models.BrainTokenizer)([n_outputs, n_chans, ...])                      | BrainTokenizer from Xiao et al. (2025) [[R9031df3dd5f0-brainomni]](generated/braindecode.models.BrainTokenizer.html#r9031df3dd5f0-brainomni).                                                        |
 | [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod)([n_outputs, n_chans, chs_info, ...])                                 | **C**riss-**C**ross **Bra**in **Mod**el for EEG Decoding from Wang et al. (2025) [[Rdb05ba1b4969-cbramod]](generated/braindecode.models.CBraMod.html#rdb05ba1b4969-cbramod).                         |
 | [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain)([n_outputs, n_chans, chs_info, ...])                           | CodeBrain: Scalable Code EEG Pre-Training for Unified Downstream BCI Tasks.                                                                                                                          |
