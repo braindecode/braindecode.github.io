@@ -570,6 +570,14 @@ window.BD_MODELS = [
     "desc": "Prediction, Embedding for Motor Imagery"
   },
   {
+    "name": "NeuroRVQ",
+    "cat": "foundation",
+    "year": null,
+    "params": "7.1 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "SeizureTransformer",
     "cat": "attention",
     "year": null,
