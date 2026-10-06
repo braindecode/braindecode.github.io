@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [28b51ff95850ab3df1b3621f1c13c0dcb8e34fe9](https://github.com/braindecode/braindecode/tree/28b51ff95850ab3df1b3621f1c13c0dcb8e34fe9)
+Source commit: [1412f015f667b946e4515f0311fad7cc61ca3376](https://github.com/braindecode/braindecode/tree/1412f015f667b946e4515f0311fad7cc61ca3376)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
@@ -227,22 +227,6 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -271,21 +255,6 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
 - Filter length: 413 samples (1.652 s)
 
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
@@ -317,6 +286,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Filter length: 413 samples (1.652 s)
 
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -331,6 +301,36 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
 - Filter length: 413 samples (1.652 s)
 
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -562,10 +562,10 @@ clf.fit(train_set, y=None, epochs=n_epochs)
 ```none
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------  ------
-      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  2.1068
-      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.0456
-      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.0684
-      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  2.0732
+      1            0.2500        1.6341       0.2500            0.2500        5.8027  0.0006  2.7726
+      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.7575
+      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.7657
+      4            0.2604        1.0877       0.2535            0.2535        4.9447  0.0000  2.7486
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 265-276 -->
@@ -697,7 +697,7 @@ ConfusionMatrixDisplay.from_predictions(
 
 ![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png)
 ```none
-<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7feab748eb40>
+<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7f1e0ddf0230>
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 374-392 -->
@@ -726,6 +726,6 @@ nipy, NIPY, Nipy, etc... -->
 <!-- spd_learn -->
 <!-- vim: ft=rst -->
 
-**Total running time of the script:** (0 minutes 19.313 seconds)
+**Total running time of the script:** (0 minutes 26.413 seconds)
 
 <a id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></a>
