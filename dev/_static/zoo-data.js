@@ -274,6 +274,22 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "SleepFM",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.8 M",
+    "paper": "",
+    "desc": "Prediction for Sleep Staging, Disease Prediction"
+  },
+  {
+    "name": "SleepFMStager",
+    "cat": "foundation",
+    "year": null,
+    "params": "5.5 M",
+    "paper": "",
+    "desc": "Prediction for Sleep Staging"
+  },
+  {
     "name": "SleepStagerBlanco2020",
     "cat": "convolution",
     "year": null,

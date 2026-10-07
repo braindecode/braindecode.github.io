@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [3b5413c619ab356e368bef644b5494eb64d96491](https://github.com/braindecode/braindecode/tree/3b5413c619ab356e368bef644b5494eb64d96491)
+Source commit: [f86998476aaf86ea56b4c913e37fb243f6926e1b](https://github.com/braindecode/braindecode/tree/f86998476aaf86ea56b4c913e37fb243f6926e1b)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -91,6 +91,9 @@ organization:
 - [`EEGPT`](generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT) - Pretrained transformer for universal EEG
 - [`STEEGFormer`](generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer) - ViT-MAE EEG foundation model with braindecode-format
   re-hosted weights
+- [`SleepFM`](generated/braindecode.models.SleepFM.html#braindecode.models.SleepFM) and [`SleepFMStager`](generated/braindecode.models.SleepFMStager.html#braindecode.models.SleepFMStager) - Multimodal PSG foundation encoder
+  and token-wise sleep-staging model compatible with the authors’ CC BY-NC
+  checkpoints
 
 **Example - Loading a pre-trained model:**
 
@@ -197,6 +200,8 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`SignalJEPA_PostLocal`](generated/braindecode.models.SignalJEPA_PostLocal.html#braindecode.models.SignalJEPA_PostLocal)([n_outputs, n_chans, ...])    | Post-local downstream architecture introduced in signal-JEPA Guetschel, P et al (2024) [[R29e8e87440e5-1]](generated/braindecode.models.SignalJEPA_PostLocal.html#r29e8e87440e5-1).                  |
 | [`SignalJEPA_PreLocal`](generated/braindecode.models.SignalJEPA_PreLocal.html#braindecode.models.SignalJEPA_PreLocal)([n_outputs, n_chans, ...])       | Pre-local downstream architecture introduced in signal-JEPA Guetschel, P et al (2024) [[R795e75e58da6-1]](generated/braindecode.models.SignalJEPA_PreLocal.html#r795e75e58da6-1).                    |
 | [`SincShallowNet`](generated/braindecode.models.SincShallowNet.html#braindecode.models.SincShallowNet)([num_time_filters, ...])                        | Sinc-ShallowNet from Borra, D et al (2020) [[R4fd1ba6a7153-borra2020]](generated/braindecode.models.SincShallowNet.html#r4fd1ba6a7153-borra2020).                                                    |
+| [`SleepFM`](generated/braindecode.models.SleepFM.html#braindecode.models.SleepFM)([n_outputs, n_chans, chs_info, ...])                                 | Sleep foundation model for multimodal polysomnography [[Ra3952947b700-sleepfm2026]](generated/braindecode.models.SleepFM.html#ra3952947b700-sleepfm2026).                                            |
+| [`SleepFMStager`](generated/braindecode.models.SleepFMStager.html#braindecode.models.SleepFMStager)([n_outputs, n_chans, ...])                         | SleepFM encoder with the released patch-wise sleep-staging head [[R121a10d69779-sleepfm2026]](generated/braindecode.models.SleepFMStager.html#r121a10d69779-sleepfm2026).                            |
 | [`SleepStagerBlanco2020`](generated/braindecode.models.SleepStagerBlanco2020.html#braindecode.models.SleepStagerBlanco2020)([n_chans, sfreq, ...])     | Sleep staging architecture from Blanco et al (2020) from [[Rb3eee9d9e81a-Blanco2020]](generated/braindecode.models.SleepStagerBlanco2020.html#rb3eee9d9e81a-blanco2020)                              |
 | [`SleepStagerChambon2018`](generated/braindecode.models.SleepStagerChambon2018.html#braindecode.models.SleepStagerChambon2018)([n_chans, sfreq, ...])  | Sleep staging architecture from Chambon et al. (2018) [[R89163c5eab6a-Chambon2018]](generated/braindecode.models.SleepStagerChambon2018.html#r89163c5eab6a-chambon2018).                             |
 | [`SPARCNet`](generated/braindecode.models.SPARCNet.html#braindecode.models.SPARCNet)([n_chans, n_times, n_outputs, ...])                               | Seizures, Periodic and Rhythmic pattern Continuum Neural Network (SPaRCNet) from Jing et al (2023) [[Rf8eed20f8ca2-jing2023]](generated/braindecode.models.SPARCNet.html#rf8eed20f8ca2-jing2023).    |
