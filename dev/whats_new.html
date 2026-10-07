@@ -72,7 +72,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="How to cite Braindecode" href="cite.html" />
-    <link rel="prev" title="braindecode.visualization.plot_confusion_matrix" href="generated/braindecode.visualization.plot_confusion_matrix.html" />
+    <link rel="prev" title="Channel strategies: any montage in" href="user_guide/channel_strategies.html" />
   <!-- Google Tag Manager (single analytics entry point — drives any GA4 / GTAG
        configured inside the GTM container; do not add a second gtag here).
        Honors the Do-Not-Track signal so privacy-conscious users opt out. -->
@@ -223,26 +223,43 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/channel_strategies.html">
+    Channel strategies
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#" aria-current="page">
     What's new
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="cite.html">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="cite.html">
     Cite
   </a>
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="help.html">
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="help.html">
     Get help
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -367,6 +384,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api.html">
     API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/channel_strategies.html">
+    Channel strategies
   </a>
 </li>
 
@@ -515,22 +539,26 @@ different subjects, by passing each one’s electrode metadata to <code class="d
 and <code class="docutils literal notranslate"><span class="pre">normalization=&quot;session&quot;</span></code> takes a spectrogram normalized over the whole
 recording, which reproduces the reference inputs
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1178">#1178</a> by <a class="reference external" href="https://github.com/julien-gadonneix">Julien Gadonneix</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.models.MAPA.html#braindecode.models.MAPA" title="braindecode.models.MAPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.MAPA</span></code></a> loads the released <code class="docutils literal notranslate"><span class="pre">mapa_vits384</span></code> with
+<code class="docutils literal notranslate"><span class="pre">MAPA.from_pretrained(&quot;braindecode/mapa-pretrained&quot;,</span> <span class="pre">...)</span></code>; the key mapping
+for the original checkpoint is removed (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">test/unit_tests/models/test_pretrained_compat.py</span></code>: every model with released
 weights is built on a grid of input geometries (canonical montage, permuted order,
 a 64-channel montage outside the 10-20 vocabulary, coordinates-only channels, names
 without coordinates, 1 s / 30 s / non-divisible windows) and must forward or raise
 the error its declared channel strategy implies; unhandled cells are strict
 <code class="docutils literal notranslate"><span class="pre">xfail</span></code> markers (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1228">#1228</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
-<li><p>Add <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelTokenizer</span></code>, one module gathering the five
-ways a pretrained checkpoint identifies its input channels (<code class="docutils literal notranslate"><span class="pre">names</span></code> with a shared
-alias table and an <code class="docutils literal notranslate"><span class="pre">on_unknown</span></code> policy, <code class="docutils literal notranslate"><span class="pre">coords</span></code> with <code class="docutils literal notranslate"><span class="pre">on_missing_loc</span></code>,
-<code class="docutils literal notranslate"><span class="pre">fixed_order</span></code> = today’s <a class="reference internal" href="generated/filter/braindecode.modules.ChannelInterpolationLayer.html#braindecode.modules.ChannelInterpolationLayer" title="braindecode.modules.ChannelInterpolationLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelInterpolationLayer</span></code></a>,
-<code class="docutils literal notranslate"><span class="pre">index_slots</span></code>, <code class="docutils literal notranslate"><span class="pre">agnostic</span></code>). <a class="reference internal" href="generated/braindecode.models.BENDR.html#braindecode.models.BENDR" title="braindecode.models.BENDR"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BENDR</span></code></a> now adapts an
-arbitrary montage through it instead of refusing any non-canonical <code class="docutils literal notranslate"><span class="pre">chs_info</span></code>
-(including a plain permutation), and <a class="reference internal" href="generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA" title="braindecode.models.SignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SignalJEPA</span></code></a> no
-longer returns <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for channel names without coordinates. Every released
-checkpoint’s canonical forward is unchanged (max-abs diff 0.0) and its state_dict
-keys are stable (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1227">#1227</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">channel_strategy</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;exact&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;zero&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;idw&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;spline&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;field&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;source&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;region&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;wiener&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;latent&quot;</span></code>; default <code class="docutils literal notranslate"><span class="pre">&quot;native&quot;</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">channel_strategy_kwargs</span></code> to the 19 pretrained models, saved in the config. A
+<a class="reference internal" href="generated/channels/braindecode.modules.ChannelLayer.html#braindecode.modules.ChannelLayer" title="braindecode.modules.ChannelLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelLayer</span></code></a> (one matrix per montage) maps any montage
+onto the channels the backbone consumes, also per call with
+<code class="docutils literal notranslate"><span class="pre">model(x,</span> <span class="pre">chs_info=...)</span></code>. <code class="docutils literal notranslate"><span class="pre">&quot;native&quot;</span></code> keeps every released checkpoint
+bit-identical with the same <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>. It replaces the unreleased
+<code class="docutils literal notranslate"><span class="pre">ChannelTokenizer</span></code>; BENDR adapts a non-canonical montage with an MNE spline and
+SignalJEPA no longer returns <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for names without coordinates. See
+<a class="reference internal" href="user_guide/channel_strategies.html"><span class="doc">Channel strategies: any montage in</span></a> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1227">#1227</a>, <a class="reference external" href="https://github.com/braindecode/braindecode/issues/1241">#1241</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add registry-wide model contract tests that automatically cover every registered
 model, checking eval-mode input/state purity, finite batched outputs,
 batch-permutation equivariance, and <code class="docutils literal notranslate"><span class="pre">get_config</span></code> + <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>
@@ -569,6 +597,10 @@ released pretrained checkpoint (<a class="reference external" href="https://gith
 <a class="reference internal" href="generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod" title="braindecode.models.CBraMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CBraMod</span></code></a> instead of a copy of it; state-dict keys,
 outputs with loaded weights and same-seed initial weights are unchanged
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1240">#1240</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">head_drop_prob</span></code> to <a class="reference internal" href="generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain" title="braindecode.models.CSBrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CSBrain</span></code></a>, the task-head
+dropout of the reference fine-tuning models (default: <code class="docutils literal notranslate"><span class="pre">drop_prob</span></code>, so
+existing models are unchanged), and document the checkpoint key names
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1247">#1247</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.models.DIVER1.html#braindecode.models.DIVER1" title="braindecode.models.DIVER1"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.DIVER1</span></code></a>, an any-variate EEG/iEEG foundation
 model with pretrained encoders and support for varying montages through
 <a class="reference internal" href="api.html#braindecode.models.diver1.channel_metadata_from_chs_info" title="braindecode.models.diver1.channel_metadata_from_chs_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.models.diver1.channel_metadata_from_chs_info()</span></code></a>
@@ -649,6 +681,11 @@ now loads into the mean-pooling model as in the original fine-tuning script
 to keep the [CLS] readout, for instance to load a checkpoint fine-tuned with
 it, which no longer loads into the default model
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1155">#1155</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">InterpolatedBENDR</span></code>, <code class="docutils literal notranslate"><span class="pre">InterpolatedBIOT</span></code>, <code class="docutils literal notranslate"><span class="pre">InterpolatedEEGPT</span></code>,
+<code class="docutils literal notranslate"><span class="pre">InterpolatedLaBraM</span></code>, <code class="docutils literal notranslate"><span class="pre">InterpolatedSignalJEPA</span></code>, <code class="docutils literal notranslate"><span class="pre">InterpolatedModel</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ChannelInterpolationLayer</span></code> and <code class="docutils literal notranslate"><span class="pre">interpolated_models_dict</span></code>: use
+<code class="docutils literal notranslate"><span class="pre">BENDR(chs_info=...,</span> <span class="pre">channel_strategy=&quot;spline&quot;)</span></code> instead (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1241">#1241</a> by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -865,6 +902,12 @@ computing its loss on a <code class="docutils literal notranslate"><span class="
 <code class="docutils literal notranslate"><span class="pre">(n_trials,</span> <span class="pre">1)</span></code>, and <a class="reference internal" href="generated/braindecode.training.CroppedLoss.html#braindecode.training.CroppedLoss" title="braindecode.training.CroppedLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.training.CroppedLoss</span></code></a> squeezed the
 time-averaged prediction to <code class="docutils literal notranslate"><span class="pre">(batch_size,)</span></code>. It now keeps the output
 dimension when the target is 2-D (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1198">#1198</a> by <a class="reference external" href="https://github.com/raghav-rathi">Raghav Rathi</a>).</p></li>
+<li><p>Fix channel resolution in the channel layer: <code class="docutils literal notranslate"><span class="pre">T3</span></code> and <code class="docutils literal notranslate"><span class="pre">T7</span></code> stay distinct; a
+misspelt strategy raises with the closest name; coordinate-only channels match a
+target within 15 mm; non-EEG channels raise (or are dropped with
+<code class="docutils literal notranslate"><span class="pre">drop_non_eeg=True</span></code>); legacy names are copies; <code class="docutils literal notranslate"><span class="pre">spline</span></code> is regularised
+(<code class="docutils literal notranslate"><span class="pre">reg=1e-3</span></code>) and a row gain above 2 warns; fewer than four positioned channels
+raise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1241">#1241</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="current-1-8-0-2026-08-31">
@@ -1170,7 +1213,7 @@ By <a class="reference external" href="https://github.com/tayal-sarthak">Sarthak
 <li><p>Add a <code class="docutils literal notranslate"><span class="pre">Modality</span></code> column (EEG, MEG, sEMG, …) to the model summary table so
 models can be filtered by the bio-signal they target, and validate it against a
 controlled vocabulary. By <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>.</p></li>
-<li><p>Add <a class="reference internal" href="generated/braindecode.models.InterpolatedEEGPT.html#braindecode.models.InterpolatedEEGPT" title="braindecode.models.InterpolatedEEGPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedEEGPT</span></code></a>, a channel-interpolation
+<li><p>Add <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedEEGPT</span></code>, a channel-interpolation
 variant of <a class="reference internal" href="generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT" title="braindecode.models.EEGPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGPT</span></code></a> built with
 <code class="xref py py-func docutils literal notranslate"><span class="pre">InterpolatedModel()</span></code>.
 By <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>.</p></li>
@@ -1394,7 +1437,7 @@ case-insensitively matches each name to
 <code class="xref py py-data docutils literal notranslate"><span class="pre">braindecode.models.labram.LABRAM_CHANNEL_ORDER</span></code> and indexes into
 the canonical position-embedding bank, so callers can forward an
 arbitrary subset of canonical channels without going through
-<a class="reference internal" href="generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code></a>. The strict <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code>. The strict <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
 raised in 1.5.0 when <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> did not match
 <code class="docutils literal notranslate"><span class="pre">LABRAM_CHANNEL_ORDER</span></code> is downgraded to a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> so that
 downstream wrappers (e.g. neuroai’s <code class="docutils literal notranslate"><span class="pre">_LabramChannelWrapper</span></code>) can
@@ -1450,20 +1493,20 @@ memory-efficient backends on other devices).
 By <a class="reference external" href="https://github.com/leob000">Léo Burgund</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>.
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/902">#902</a>)</p></li>
 <li><p>Add experimental channel interpolation feature: new
-<a class="reference internal" href="generated/filter/braindecode.modules.ChannelInterpolationLayer.html#braindecode.modules.ChannelInterpolationLayer" title="braindecode.modules.ChannelInterpolationLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelInterpolationLayer</span></code></a> plus the
-<a class="reference internal" href="generated/braindecode.models.InterpolatedModel.html#braindecode.models.InterpolatedModel" title="braindecode.models.InterpolatedModel"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedModel()</span></code></a> class factory project arbitrary
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelInterpolationLayer</span></code> plus the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedModel()</span></code> class factory project arbitrary
 user channel sets to a model’s canonical set via an MNE-backed (frozen by
 default) interpolation matrix. Ship pre-built variants
-<a class="reference internal" href="generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code></a>,
-<a class="reference internal" href="generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedSignalJEPA</span></code></a>, and
-<a class="reference internal" href="generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBIOT</span></code></a> for the corresponding
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedSignalJEPA</span></code>, and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBIOT</span></code> for the corresponding
 pre-trained models. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/993">#993</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 <li><p>Add a tutorial walking through the experimental <code class="docutils literal notranslate"><span class="pre">Interpolated*</span></code> family
-(<a class="reference internal" href="auto_examples/model_building/plot_channel_interpolation.html#channel-interpolation-tutorial"><span class="std std-ref">Loading Pretrained Foundation Models on Arbitrary Channel Sets</span></a>): failure mode of the vanilla
+(<a class="reference internal" href="auto_examples/model_building/plot_channel_interpolation.html#channel-interpolation-tutorial"><span class="std std-ref">Running a Pretrained Model on Any Channel Set with the Channel Layer</span></a>): failure mode of the vanilla
 backbones on non-canonical channel sets, one-line fix via
-<a class="reference internal" href="generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code></a> /
-<a class="reference internal" href="generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT" title="braindecode.models.InterpolatedBIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBIOT</span></code></a> /
-<a class="reference internal" href="generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA" title="braindecode.models.InterpolatedSignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedSignalJEPA</span></code></a>, side-by-side
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code> /
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBIOT</span></code> /
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedSignalJEPA</span></code>, side-by-side
 visualisation of the <code class="docutils literal notranslate"><span class="pre">name_match</span></code> vs <code class="docutils literal notranslate"><span class="pre">always</span></code> interpolation matrices,
 and the <code class="docutils literal notranslate"><span class="pre">trainable=True</span></code> flag. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/994">#994</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 <li><p>Mark deterministic index buffers (<a class="reference internal" href="generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BIOT</span></code></a> encoder’s
@@ -1531,8 +1574,8 @@ convention: boolean masks use <code class="docutils literal notranslate"><span c
 the 20 pre-training channels as <code class="docutils literal notranslate"><span class="pre">_BENDR_TARGET_CHS_TUPLES</span></code>. The official
 <code class="docutils literal notranslate"><span class="pre">braindecode/braindecode-bendr</span></code> checkpoint has been re-uploaded flat so
 <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code> now loads its 99 weights (previously 0 of 99 matched
-silently). Also ships <a class="reference internal" href="generated/braindecode.models.InterpolatedBENDR.html#braindecode.models.InterpolatedBENDR" title="braindecode.models.InterpolatedBENDR"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBENDR</span></code></a>, the
-<a class="reference internal" href="generated/braindecode.models.InterpolatedModel.html#braindecode.models.InterpolatedModel" title="braindecode.models.InterpolatedModel"><code class="xref py py-func docutils literal notranslate"><span class="pre">InterpolatedModel()</span></code></a> wrapper that accepts arbitrary
+silently). Also ships <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedBENDR</span></code>, the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">InterpolatedModel()</span></code> wrapper that accepts arbitrary
 user <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> and projects to the canonical 20 BENDR channels (the
 <code class="docutils literal notranslate"><span class="pre">SCALE</span></code> target has no physical position, so its interpolation row is a
 spatial spline of the user’s EEG — not the dn3 amplitude statistic).
@@ -1541,7 +1584,7 @@ spatial spline of the user’s EEG — not the dn3 amplitude statistic).
 <code class="docutils literal notranslate"><span class="pre">LABRAM_CHANNEL_ORDER</span></code> exactly (128 channels, canonical order). The
 <code class="docutils literal notranslate"><span class="pre">on_unknown_chs</span></code> parameter and the forward-time <code class="docutils literal notranslate"><span class="pre">ch_names</span></code> argument are
 removed. Users with arbitrary channel sets should migrate to
-<a class="reference internal" href="generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM" title="braindecode.models.InterpolatedLaBraM"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code></a>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/993">#993</a>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.InterpolatedLaBraM</span></code>. (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/993">#993</a>
 by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
@@ -2508,12 +2551,12 @@ instead of 0 to indicate the end of the recording (<a class="reference external"
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="generated/braindecode.visualization.plot_confusion_matrix.html"
+       href="user_guide/channel_strategies.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">braindecode.visualization.plot_confusion_matrix</p>
+        <p class="prev-next-title">Channel strategies: any montage in</p>
       </div>
     </a>
     <a class="right-next"

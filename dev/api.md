@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [f86998476aaf86ea56b4c913e37fb243f6926e1b](https://github.com/braindecode/braindecode/tree/f86998476aaf86ea56b4c913e37fb243f6926e1b)
+Source commit: [030d24f21f26ea25f39821a1db7e576c4d4f4e24](https://github.com/braindecode/braindecode/tree/030d24f21f26ea25f39821a1db7e576c4d4f4e24)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -175,12 +175,6 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`FBLightConvNet`](generated/braindecode.models.FBLightConvNet.html#braindecode.models.FBLightConvNet)([n_chans, n_outputs, ...])                      | LightConvNet from Ma, X et al (2023) [[R501137d6e8c9-lightconvnet]](generated/braindecode.models.FBLightConvNet.html#r501137d6e8c9-lightconvnet).                                                    |
 | [`FBMSNet`](generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet)([n_chans, n_outputs, chs_info, ...])                                 | FBMSNet from Liu et al (2022) [[Re7850041dabd-fbmsnet]](generated/braindecode.models.FBMSNet.html#re7850041dabd-fbmsnet).                                                                            |
 | [`IFNet`](generated/braindecode.models.IFNet.html#braindecode.models.IFNet)([n_chans, n_outputs, n_times, ...])                                        | IFNetV2 from Wang J et al (2023) [[Rd9f3b242e751-ifnet]](generated/braindecode.models.IFNet.html#rd9f3b242e751-ifnet).                                                                               |
-| [`InterpolatedBENDR`](generated/braindecode.models.InterpolatedBENDR.html#braindecode.models.InterpolatedBENDR)(chs_info[, n_outputs, ...])            | Channel-interpolating wrapper around [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR).                                                                                    |
-| [`InterpolatedBIOT`](generated/braindecode.models.InterpolatedBIOT.html#braindecode.models.InterpolatedBIOT)(chs_info[, n_outputs, ...])               | Channel-interpolating wrapper around [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT).                                                                                       |
-| [`InterpolatedEEGPT`](generated/braindecode.models.InterpolatedEEGPT.html#braindecode.models.InterpolatedEEGPT)(chs_info[, n_outputs, ...])            | Channel-interpolating wrapper around [`EEGPT`](generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT).                                                                                    |
-| [`InterpolatedLaBraM`](generated/braindecode.models.InterpolatedLaBraM.html#braindecode.models.InterpolatedLaBraM)(chs_info[, n_outputs, ...])         | Channel-interpolating wrapper around [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram).                                                                                 |
-| [`InterpolatedModel`](generated/braindecode.models.InterpolatedModel.html#braindecode.models.InterpolatedModel)(model_cls, target_chs_info)            | Return a subclass of `model_cls` that interpolates channels to `target_chs_info`.                                                                                                                    |
-| [`InterpolatedSignalJEPA`](generated/braindecode.models.InterpolatedSignalJEPA.html#braindecode.models.InterpolatedSignalJEPA)(chs_info[, ...])        | Channel-interpolating wrapper around [`SignalJEPA`](generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA).                                                                     |
 | [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram)([n_times, n_outputs, chs_info, ...])                                    | Labram from Jiang, W B et al (2024) [[Rb5cdfc6ea4fe-Jiang2024]](generated/braindecode.models.Labram.html#rb5cdfc6ea4fe-jiang2024).                                                                   |
 | [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA)([n_outputs, n_chans, n_times, sfreq, ...])                                    | LUNA from Döner et al [[Ra888573a1c66-LUNA]](generated/braindecode.models.LUNA.html#ra888573a1c66-luna).                                                                                             |
 | [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA)([n_outputs, n_chans, chs_info, ...])                                          | MAPA from Tang, Spalding and Cogan (2026) [[Rdfa8ba30d9a1-Tang2026]](generated/braindecode.models.MAPA.html#rdfa8ba30d9a1-tang2026).                                                                 |
@@ -303,6 +297,18 @@ perceptrons (MLPs) and inception blocks.
 | [`InceptionBlock`](generated/blocks/braindecode.modules.InceptionBlock.html#braindecode.modules.InceptionBlock)(branches)                          | Inception block module.                                                  |
 | [`PatchTokenizer`](generated/blocks/braindecode.modules.PatchTokenizer.html#braindecode.modules.PatchTokenizer)(patch_size, n_times[, ...])        | Tokenize an EEG signal into non-overlapping temporal patches.            |
 
+<a id="channels"></a>
+
+### Channels
+
+The channel layer behind `channel_strategy=` (see
+[Channel strategies: any montage in](user_guide/channel_strategies.html)).
+
+`braindecode.modules.channels`:
+
+| [`ChannelLayer`](generated/channels/braindecode.modules.ChannelLayer.html#braindecode.modules.ChannelLayer)(target, strategy[, chs_info, ...])   | Map any montage onto `target` with one matrix per montage.   |
+|--------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+
 <a id="convolution"></a>
 
 ### Convolution
@@ -328,10 +334,9 @@ These modules implement Filter Bank as Layer and generalizer Gaussian layer.
 
 `braindecode.modules.filter`:
 
-| [`ChannelInterpolationLayer`](generated/filter/braindecode.modules.ChannelInterpolationLayer.html#braindecode.modules.ChannelInterpolationLayer)(src_chs_info, ...)   | Projects an input from one channel set to another via a fixed (or learnable) matrix.                                                                                         |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`FilterBankLayer`](generated/filter/braindecode.modules.FilterBankLayer.html#braindecode.modules.FilterBankLayer)(n_chans, sfreq[, ...])                             | Apply multiple band-pass filters to generate multiview signal representation.                                                                                                |
-| [`GeneralizedGaussianFilter`](generated/filter/braindecode.modules.GeneralizedGaussianFilter.html#braindecode.modules.GeneralizedGaussianFilter)(in_channels, ...)    | Generalized Gaussian Filter from Ludwig et al (2024) [[Raf65b68c9f5f-eegminer]](generated/filter/braindecode.modules.GeneralizedGaussianFilter.html#raf65b68c9f5f-eegminer). |
+| [`FilterBankLayer`](generated/filter/braindecode.modules.FilterBankLayer.html#braindecode.modules.FilterBankLayer)(n_chans, sfreq[, ...])                          | Apply multiple band-pass filters to generate multiview signal representation.                                                                                                |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`GeneralizedGaussianFilter`](generated/filter/braindecode.modules.GeneralizedGaussianFilter.html#braindecode.modules.GeneralizedGaussianFilter)(in_channels, ...) | Generalized Gaussian Filter from Ludwig et al (2024) [[Raf65b68c9f5f-eegminer]](generated/filter/braindecode.modules.GeneralizedGaussianFilter.html#raf65b68c9f5f-eegminer). |
 
 <a id="layers"></a>
 
