@@ -608,6 +608,14 @@ window.BD_MODELS = [
     "params": "37.8 M",
     "paper": "",
     "desc": "Event Detection for Epilepsy"
+  },
+  {
+    "name": "NeuroRVQTokenizer",
+    "cat": "foundation",
+    "year": null,
+    "params": "75.7 M",
+    "paper": "",
+    "desc": "Embedding for General"
   }
 ];
 window.BD_CATEGORIES = [

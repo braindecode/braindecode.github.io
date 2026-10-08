@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [63b0d026a62e4094f706170f04e27b663876a2ee](https://github.com/braindecode/braindecode/tree/63b0d026a62e4094f706170f04e27b663876a2ee)
+Source commit: [83a1e6774073510bb0b51a554890d44d2f17da95](https://github.com/braindecode/braindecode/tree/83a1e6774073510bb0b51a554890d44d2f17da95)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -73,8 +73,7 @@ organization:
 - [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT) - Foundation model with pre-trained weights
 - [`BrainBERT`](generated/braindecode.models.BrainBERT.html#braindecode.models.BrainBERT) - Intracranial (sEEG/iEEG) foundation model with pre-trained
   weights
-- [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni) - Unified EEG/MEG foundation model; official raw weights are
-  available from the authors
+- [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni) - Unified EEG/MEG foundation model with pre-trained weights
 - [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod) - Criss-Cross Transformer model with pre-trained weights
 - [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain) - Scalable EEG pre-training with temporal and spectral code
   prediction
@@ -86,6 +85,7 @@ organization:
 - [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA) - Masked autoencoder for intracranial EEG with anatomical priors
 - `MIRepNet` - Motor-imagery pre-trained model
 - [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ) - Multi-scale biosignal tokenizer foundation model
+- [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer) - Residual vector quantization EEG tokenizer
 - [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR) - Foundation model with pre-trained weights
 - [`SignalJEPA`](generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA) - Self-supervised learning model with pre-trained weights
 - [`EEGPT`](generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT) - Pretrained transformer for universal EEG
@@ -183,6 +183,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`MSCFormer`](generated/braindecode.models.MSCFormer.html#braindecode.models.MSCFormer)([n_outputs, n_chans, sfreq, ...])                              | MSCFormer from Zhao, W et al (2025) [[R145bcee8b1ba-mscformer]](generated/braindecode.models.MSCFormer.html#r145bcee8b1ba-mscformer).                                                                |
 | [`MSVTNet`](generated/braindecode.models.MSVTNet.html#braindecode.models.MSVTNet)([n_chans, n_outputs, n_times, ...])                                  | MSVTNet model from Liu K et al (2024) from [[R0733e66fed6d-msvt2024]](generated/braindecode.models.MSVTNet.html#r0733e66fed6d-msvt2024).                                                             |
 | [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ)([n_outputs, n_chans, chs_info, ...])                              | NeuroRVQ-EEG foundation model from Barmpas et al. [neurorvq].                                                                                                                                        |
+| [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer)([n_outputs, n_chans, ...])             | NeuroRVQ multi-scale residual-vector-quantized EEG tokenizer from Barmpas et al. [neurorvq].                                                                                                         |
 | [`PBT`](generated/braindecode.models.PBT.html#braindecode.models.PBT)([n_chans, n_outputs, n_times, chs_info, ...])                                    | Patched Brain Transformer (PBT) model from Klein et al (2025) [[Re7f840f86627-pbt]](generated/braindecode.models.PBT.html#re7f840f86627-pbt).                                                        |
 | [`PopulationTransformer`](generated/braindecode.models.PopulationTransformer.html#braindecode.models.PopulationTransformer)([n_outputs, n_chans, ...]) | PopulationTransformer (PopT) from Chau et al. (2024) [[R1b4476d13843-PopT2024]](generated/braindecode.models.PopulationTransformer.html#r1b4476d13843-popt2024).                                     |
 | [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE)([n_outputs, n_chans, chs_info, ...])                                          | **R**epresentation for **E**EG with **V**ersatile **E**mbeddings (REVE) from El Ouahidi et al. (2025) [[Rfc92bf36d5c3-reve]](generated/braindecode.models.REVE.html#rfc92bf36d5c3-reve).             |
@@ -434,6 +435,7 @@ The functional module contains various functions that can be used like functiona
 | [`rescale_parameter`](generated/braindecode.functional.rescale_parameter.html#braindecode.functional.rescale_parameter)(param, layer_id)                                         | Recaling the l-th transformer layer.                                                  |
 | [`safe_log`](generated/braindecode.functional.safe_log.html#braindecode.functional.safe_log)(x[, eps])                                                                           | Prevents $log(0)$ by using $log(max(x, eps))$.                                        |
 | [`sinusoidal_positional_encoding`](generated/braindecode.functional.sinusoidal_positional_encoding.html#braindecode.functional.sinusoidal_positional_encoding)(n_positions, dim) | Fixed sine/cosine positional-encoding table of shape `(n_positions, dim)`.            |
+| [`spectral_input`](generated/braindecode.functional.spectral_input.html#braindecode.functional.spectral_input)(x)                                                                | Prepare `x` for an FFT, STFT or eigendecomposition.                                   |
 | [`square`](generated/braindecode.functional.square.html#braindecode.functional.square)(x)                                                                                        |                                                                                       |
 
 <a id="datasets"></a>
