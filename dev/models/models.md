@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [cb1ca885d1bf7860fa0d74f87c8f46ad274e1646](https://github.com/braindecode/braindecode/tree/cb1ca885d1bf7860fa0d74f87c8f46ad274e1646)
+Source commit: [a619f4b38333de6060811ffb8a5a4b1104551ff9](https://github.com/braindecode/braindecode/tree/a619f4b38333de6060811ffb8a5a4b1104551ff9)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 
@@ -262,6 +262,13 @@ Weibang Jiang, Liming Zhao, and Bao-liang Lu. Large Brain Model for Learning Gen
 [27] 
 
 Guangyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. EEGPT: pretrained transformer for universal and reliable representation of EEG signals. In *The Thirty-eighth Annual Conference on Neural Information Processing Systems*. 2024. URL: [https://openreview.net/forum?id=lvS2b8CjG5](https://openreview.net/forum?id=lvS2b8CjG5).
+
+
+
+<a id="id270"></a>
+[28] 
+
+Jathurshan Pradeepkumar, Xihao Piao, Zheng Chen, and Jimeng Sun. Tokenizing single-channel EEG with time-frequency motif learning. In *The Fourteenth International Conference on Learning Representations*. 2026. URL: [https://openreview.net/forum?id=2sPmWHZ8Ir](https://openreview.net/forum?id=2sPmWHZ8Ir).
 
 
 

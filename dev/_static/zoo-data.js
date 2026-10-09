@@ -10,6 +10,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "AXON",
+    "cat": "foundation",
+    "year": null,
+    "params": "118.6 M",
+    "paper": "",
+    "desc": "Classification,Embedding for General"
+  },
+  {
     "name": "AttentionBaseNet",
     "cat": "attention",
     "year": null,
@@ -214,6 +222,14 @@ window.BD_MODELS = [
     "cat": "attention",
     "year": null,
     "params": "150.7 K",
+    "paper": "",
+    "desc": "Prediction for Motor Imagery"
+  },
+  {
+    "name": "TMSANet",
+    "cat": "attention",
+    "year": null,
+    "params": "20.3 K",
     "paper": "",
     "desc": "Prediction for Motor Imagery"
   },
@@ -544,6 +560,14 @@ window.BD_MODELS = [
     "params": "77.8 K",
     "paper": "",
     "desc": "Classification for Motor Imagery"
+  },
+  {
+    "name": "TFMTokenizer",
+    "cat": "foundation",
+    "year": null,
+    "params": "1.2 M",
+    "paper": "",
+    "desc": "Pretraining, Tokenization for General"
   },
   {
     "name": "EEGDINO",
