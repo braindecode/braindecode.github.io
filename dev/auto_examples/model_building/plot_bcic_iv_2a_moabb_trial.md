@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [ceedaa306a0a5a549ae23d16c9b5be0538409d67](https://github.com/braindecode/braindecode/tree/ceedaa306a0a5a549ae23d16c9b5be0538409d67)
+Source commit: [c00dea44618a4c1776c8ef33d90150101575aa42](https://github.com/braindecode/braindecode/tree/c00dea44618a4c1776c8ef33d90150101575aa42)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
@@ -161,9 +161,9 @@ preprocess(dataset, preprocessors, n_jobs=-1)
 ```
 
 ```none
-/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:78: UserWarning: apply_on_array can only be True if fn is a callable function. Automatically correcting to apply_on_array=False.
+/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:79: UserWarning: apply_on_array can only be True if fn is a callable function. Automatically correcting to apply_on_array=False.
   warn(
-/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:76: UserWarning: Preprocessing choices with lambda functions cannot be saved.
+/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:77: UserWarning: Preprocessing choices with lambda functions cannot be saved.
   warn("Preprocessing choices with lambda functions cannot be saved.")
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
@@ -241,8 +241,6 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
 - Filter length: 413 samples (1.652 s)
 
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -257,6 +255,8 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
 - Filter length: 413 samples (1.652 s)
 
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -562,10 +562,10 @@ clf.fit(train_set, y=None, epochs=n_epochs)
 ```none
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------  ------
-      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  2.3571
-      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.2945
-      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.2904
-      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  2.3336
+      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  2.3419
+      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.2996
+      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.3016
+      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  2.2984
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 265-276 -->
@@ -697,7 +697,7 @@ ConfusionMatrixDisplay.from_predictions(
 
 ![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png)
 ```none
-<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7f78c457bd70>
+<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7fd402581d60>
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 374-392 -->
@@ -726,6 +726,6 @@ nipy, NIPY, Nipy, etc... -->
 <!-- spd_learn -->
 <!-- vim: ft=rst -->
 
-**Total running time of the script:** (0 minutes 19.993 seconds)
+**Total running time of the script:** (0 minutes 19.206 seconds)
 
 <a id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></a>
