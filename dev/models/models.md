@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [a619f4b38333de6060811ffb8a5a4b1104551ff9](https://github.com/braindecode/braindecode/tree/a619f4b38333de6060811ffb8a5a4b1104551ff9)
+Source commit: [31bb32c62b90a7f75fe332a2cc524d1756a068b6](https://github.com/braindecode/braindecode/tree/31bb32c62b90a7f75fe332a2cc524d1756a068b6)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 
@@ -265,10 +265,17 @@ Guangyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. EEGPT: pr
 
 
 
-<a id="id270"></a>
+<a id="id271"></a>
 [28] 
 
 Jathurshan Pradeepkumar, Xihao Piao, Zheng Chen, and Jimeng Sun. Tokenizing single-channel EEG with time-frequency motif learning. In *The Fourteenth International Conference on Learning Representations*. 2026. URL: [https://openreview.net/forum?id=2sPmWHZ8Ir](https://openreview.net/forum?id=2sPmWHZ8Ir).
+
+
+
+<a id="id270"></a>
+[29] 
+
+Tidiane Camaret N'dir, Robin Tibor Schirrmeister, and Tonio Ball. EEG-CLIP: learning EEG representations from natural language descriptions. *Frontiers in Robotics and AI*, 12:1625731, 2025. URL: [https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2025.1625731/full](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2025.1625731/full), [doi:10.3389/frobt.2025.1625731](https://doi.org/10.3389/frobt.2025.1625731).
 
 
 

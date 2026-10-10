@@ -122,6 +122,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "EEGCLIP",
+    "cat": "foundation",
+    "year": null,
+    "params": "530.6 K",
+    "paper": "",
+    "desc": "Embedding, Prediction for General"
+  },
+  {
     "name": "EEGPT",
     "cat": "foundation",
     "year": null,
