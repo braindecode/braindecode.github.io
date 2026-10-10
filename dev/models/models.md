@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [31bb32c62b90a7f75fe332a2cc524d1756a068b6](https://github.com/braindecode/braindecode/tree/31bb32c62b90a7f75fe332a2cc524d1756a068b6)
+Source commit: [8a2c4a8956a2c62aec8178b137fd922f57856450](https://github.com/braindecode/braindecode/tree/8a2c4a8956a2c62aec8178b137fd922f57856450)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 

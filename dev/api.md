@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [31bb32c62b90a7f75fe332a2cc524d1756a068b6](https://github.com/braindecode/braindecode/tree/31bb32c62b90a7f75fe332a2cc524d1756a068b6)
+Source commit: [8a2c4a8956a2c62aec8178b137fd922f57856450](https://github.com/braindecode/braindecode/tree/8a2c4a8956a2c62aec8178b137fd922f57856450)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -79,6 +79,8 @@ organization:
   prediction
 - [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain) - Cross-scale spatiotemporal brain foundation model with
   structured sparse attention
+- [`Guetschel2026`](generated/braindecode.models.Guetschel2026.html#braindecode.models.Guetschel2026) - 58 MAE/JEPA encoders sharing one backbone, from the EEG
+  masking-geometry study
 - [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram) - Large Brain Model with pre-trained weights
 - [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE) - EEG foundation model with pre-trained weights
 - [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA) - Universal EEG embedding model with pre-trained weights
@@ -176,6 +178,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`FBCNet`](generated/braindecode.models.FBCNet.html#braindecode.models.FBCNet)([n_chans, n_outputs, chs_info, ...])                                    | FBCNet from Mane, R et al (2021) [[R9769c9f8e3f7-fbcnet2021]](generated/braindecode.models.FBCNet.html#r9769c9f8e3f7-fbcnet2021).                                                                    |
 | [`FBLightConvNet`](generated/braindecode.models.FBLightConvNet.html#braindecode.models.FBLightConvNet)([n_chans, n_outputs, ...])                      | LightConvNet from Ma, X et al (2023) [[R501137d6e8c9-lightconvnet]](generated/braindecode.models.FBLightConvNet.html#r501137d6e8c9-lightconvnet).                                                    |
 | [`FBMSNet`](generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet)([n_chans, n_outputs, chs_info, ...])                                 | FBMSNet from Liu et al (2022) [[Re7850041dabd-fbmsnet]](generated/braindecode.models.FBMSNet.html#re7850041dabd-fbmsnet).                                                                            |
+| [`Guetschel2026`](generated/braindecode.models.Guetschel2026.html#braindecode.models.Guetschel2026)([n_outputs, n_chans, ...])                         | Encoder of the EEG masking-geometry study from Guetschel et al. (2026) [[R308a17ba52fb-guetschel2026]](generated/braindecode.models.Guetschel2026.html#r308a17ba52fb-guetschel2026).                 |
 | [`IFNet`](generated/braindecode.models.IFNet.html#braindecode.models.IFNet)([n_chans, n_outputs, n_times, ...])                                        | IFNetV2 from Wang J et al (2023) [[Rd9f3b242e751-ifnet]](generated/braindecode.models.IFNet.html#rd9f3b242e751-ifnet).                                                                               |
 | [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram)([n_times, n_outputs, chs_info, ...])                                    | Labram from Jiang, W B et al (2024) [[Rb5cdfc6ea4fe-Jiang2024]](generated/braindecode.models.Labram.html#rb5cdfc6ea4fe-jiang2024).                                                                   |
 | [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA)([n_outputs, n_chans, n_times, sfreq, ...])                                    | LUNA from Döner et al [[Ra888573a1c66-LUNA]](generated/braindecode.models.LUNA.html#ra888573a1c66-luna).                                                                                             |

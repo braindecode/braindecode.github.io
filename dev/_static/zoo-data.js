@@ -648,6 +648,14 @@ window.BD_MODELS = [
     "params": "75.7 M",
     "paper": "",
     "desc": "Embedding for General"
+  },
+  {
+    "name": "Guetschel2026",
+    "cat": "foundation",
+    "year": null,
+    "params": "12.9 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   }
 ];
 window.BD_CATEGORIES = [
