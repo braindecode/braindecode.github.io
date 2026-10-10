@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2a3079d399a019afae66ff3aad44ee3145b86809](https://github.com/braindecode/braindecode/tree/2a3079d399a019afae66ff3aad44ee3145b86809)
+Source commit: [ceedaa306a0a5a549ae23d16c9b5be0538409d67](https://github.com/braindecode/braindecode/tree/ceedaa306a0a5a549ae23d16c9b5be0538409d67)
 
 Canonical HTML: [ShallowFBCSPNet model reference](https://braindecode.org/dev/generated/braindecode.models.ShallowFBCSPNet.html)
 
