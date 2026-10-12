@@ -934,7 +934,7 @@
 <h1>braindecode.functional.prefer_fft_conv<a class="headerlink" href="#braindecode-functional-prefer-fft-conv" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="braindecode.functional.prefer_fft_conv">
-<span class="sig-prename descclassname"><span class="pre">braindecode.functional.</span></span><span class="sig-name descname"><span class="pre">prefer_fft_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/functional/functions.py#L109-L131"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.functional.prefer_fft_conv" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">braindecode.functional.</span></span><span class="sig-name descname"><span class="pre">prefer_fft_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/functional/functions.py#L123-L150"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.functional.prefer_fft_conv" title="Link to this definition">#</a></dt>
 <dd><p>Whether <a class="reference internal" href="braindecode.functional.fft_conv1d.html#braindecode.functional.fft_conv1d" title="braindecode.functional.fft_conv1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">fft_conv1d()</span></code></a> is expected to beat a direct convolution.</p>
 <p>Rule measured for <a class="reference internal" href="braindecode.models.EEGInceptionMI.html#braindecode.models.EEGInceptionMI" title="braindecode.models.EEGInceptionMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGInceptionMI</span></code></a> (48 to 240
 channels, 128-500 Hz, 2 CPU threads, oneDNN on and off): on CPU the FFT
@@ -942,8 +942,11 @@ wins for float16/bfloat16 inputs (no fast half-precision CPU convolution)
 and from <code class="docutils literal notranslate"><span class="pre">batch_size</span> <span class="pre">*</span> <span class="pre">kernel_size</span> <span class="pre">&gt;=</span> <span class="pre">600</span></code> if also
 <code class="docutils literal notranslate"><span class="pre">in_channels</span> <span class="pre">*</span> <span class="pre">kernel_size</span> <span class="pre">&gt;=</span> <span class="pre">120</span></code>: with one or two input channels a
 float32 direct convolution stays cheaper up to k = 85 / 31 (13 long
-temporal convolutions of the model zoo, 22 channels x batch 32). GPUs and
-HPUs (no complex dtype) keep the direct convolution.</p>
+temporal convolutions of the model zoo, 22 channels x batch 32). On Intel
+Gaudi (HPU) a direct convolution costs about <code class="docutils literal notranslate"><span class="pre">batch_size</span> <span class="pre">*</span> <span class="pre">n_times</span> <span class="pre">*</span>
+<span class="pre">kernel_size</span></code> and the FFT about a fixed few milliseconds in eager mode: the
+FFT wins from 8 input channels and <code class="docutils literal notranslate"><span class="pre">batch_size</span> <span class="pre">*</span> <span class="pre">n_times</span> <span class="pre">*</span> <span class="pre">kernel_size</span> <span class="pre">&gt;=</span>
+<span class="pre">8e6</span></code>. GPUs keep the direct convolution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
