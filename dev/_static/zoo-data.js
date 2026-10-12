@@ -466,6 +466,14 @@ window.BD_MODELS = [
     "desc": "Prediction for Epilepsy"
   },
   {
+    "name": "EpiNT",
+    "cat": "foundation",
+    "year": null,
+    "params": "19.2 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Epilepsy"
+  },
+  {
     "name": "PBT",
     "cat": "foundation",
     "year": null,

@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [68f0e83fda749a92608e74c8b15ea1eb5bb2501c](https://github.com/braindecode/braindecode/tree/68f0e83fda749a92608e74c8b15ea1eb5bb2501c)
+Source commit: [fb22621824c9abc361e241185652824cc20fdd8d](https://github.com/braindecode/braindecode/tree/fb22621824c9abc361e241185652824cc20fdd8d)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -175,6 +175,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`EEGSym`](generated/braindecode.models.EEGSym.html#braindecode.models.EEGSym)([n_chans, n_outputs, n_times, ...])                                     | EEGSym from Pérez-Velasco et al (2022) [[R871bea9be1d1-eegsym2022]](generated/braindecode.models.EEGSym.html#r871bea9be1d1-eegsym2022).                                                              |
 | [`EEGTCNet`](generated/braindecode.models.EEGTCNet.html#braindecode.models.EEGTCNet)([n_chans, n_outputs, n_times, ...])                               | EEGTCNet model from Ingolfsson et al (2020) [[Rc25b3d8a3a40-ingolfsson2020]](generated/braindecode.models.EEGTCNet.html#rc25b3d8a3a40-ingolfsson2020).                                               |
 | [`EMG2QwertyNet`](generated/braindecode.models.EMG2QwertyNet.html#braindecode.models.EMG2QwertyNet)([n_outputs, n_chans, sfreq, ...])                  | Decoder mapping surface electromyography (sEMG) to keystrokes (emg2qwerty) [[R6311dcb4571d-emg2qwerty2024]](generated/braindecode.models.EMG2QwertyNet.html#r6311dcb4571d-emg2qwerty2024).           |
+| [`EpiNT`](generated/braindecode.models.EpiNT.html#braindecode.models.EpiNT)([patch_size, embed_dim, n_layers, ...])                                    | EpiNT from Zhang et al. (2025) [[Rf7b0d36f5d53-EpiNT2025]](generated/braindecode.models.EpiNT.html#rf7b0d36f5d53-epint2025).                                                                         |
 | [`FBCNet`](generated/braindecode.models.FBCNet.html#braindecode.models.FBCNet)([n_chans, n_outputs, chs_info, ...])                                    | FBCNet from Mane, R et al (2021) [[R9769c9f8e3f7-fbcnet2021]](generated/braindecode.models.FBCNet.html#r9769c9f8e3f7-fbcnet2021).                                                                    |
 | [`FBLightConvNet`](generated/braindecode.models.FBLightConvNet.html#braindecode.models.FBLightConvNet)([n_chans, n_outputs, ...])                      | LightConvNet from Ma, X et al (2023) [[R501137d6e8c9-lightconvnet]](generated/braindecode.models.FBLightConvNet.html#r501137d6e8c9-lightconvnet).                                                    |
 | [`FBMSNet`](generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet)([n_chans, n_outputs, chs_info, ...])                                 | FBMSNet from Liu et al (2022) [[Re7850041dabd-fbmsnet]](generated/braindecode.models.FBMSNet.html#re7850041dabd-fbmsnet).                                                                            |
