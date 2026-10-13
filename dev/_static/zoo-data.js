@@ -554,6 +554,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "DuIN",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.2 M",
+    "paper": "",
+    "desc": "Prediction for Speech Decoding"
+  },
+  {
     "name": "BrainOmni",
     "cat": "foundation",
     "year": null,
