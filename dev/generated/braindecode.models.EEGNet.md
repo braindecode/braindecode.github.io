@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [631d49ffcf0c5dab889a00a3d8191ccd1fa299d7](https://github.com/braindecode/braindecode/tree/631d49ffcf0c5dab889a00a3d8191ccd1fa299d7)
+Source commit: [c4f2b9f20f8d67970469804636c74a8303c6df7a](https://github.com/braindecode/braindecode/tree/c4f2b9f20f8d67970469804636c74a8303c6df7a)
 
 Canonical HTML: [EEGNet model reference](https://braindecode.org/dev/generated/braindecode.models.EEGNet.html)
 

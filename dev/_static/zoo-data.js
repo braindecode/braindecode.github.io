@@ -664,6 +664,14 @@ window.BD_MODELS = [
     "params": "12.9 M",
     "paper": "",
     "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "GCNsNet",
+    "cat": "graph",
+    "year": null,
+    "params": "359.4 K",
+    "paper": "",
+    "desc": "Prediction for Motor Imagery"
   }
 ];
 window.BD_CATEGORIES = [

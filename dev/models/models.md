@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [631d49ffcf0c5dab889a00a3d8191ccd1fa299d7](https://github.com/braindecode/braindecode/tree/631d49ffcf0c5dab889a00a3d8191ccd1fa299d7)
+Source commit: [c4f2b9f20f8d67970469804636c74a8303c6df7a](https://github.com/braindecode/braindecode/tree/c4f2b9f20f8d67970469804636c74a8303c6df7a)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 
@@ -146,28 +146,28 @@ Jean-Rémi King, Laura Gwilliams, Chris Holdgraf, Jona Sassenhagen, Alexandre Ba
 
 
 
-<a id="id30"></a>
+<a id="id31"></a>
 [11] 
 
 Ravikiran Mane, Effie Chew, Karen Chua, Kai Keng Ang, Neethu Robinson, A Prasad Vinod, Seong-Whan Lee, and Cuntai Guan. Fbcnet: a multi-view convolutional neural network for brain-computer interface. *arXiv preprint arXiv:2104.01233*, 2021.
 
 
 
-<a id="id31"></a>
+<a id="id32"></a>
 [12] 
 
 Ke Liu, Mingzhao Yang, Zhuliang Yu, Guoyin Wang, and Wei Wu. Fbmsnet: a filter-bank multi-scale convolutional neural network for eeg-based motor imagery decoding. *IEEE Transactions on Biomedical Engineering*, 70(2):436–445, 2022.
 
 
 
-<a id="id29"></a>
+<a id="id30"></a>
 [13] 
 
 Davide Borra, Silvia Fantozzi, and Elisa Magosso. Interpretable and lightweight convolutional neural network for eeg decoding: application to movement execution and imagination. *Neural Networks*, 129:55–74, 2020.
 
 
 
-<a id="id28"></a>
+<a id="id29"></a>
 [14] 
 
 Siegfried Ludwig, Stylianos Bakas, Dimitrios A Adamos, Nikolaos Laskaris, Yannis Panagakis, and Stefanos Zafeiriou. Eegminer: discovering interpretable features of brain activity with learnable filters. *Journal of Neural Engineering*, 21(3):036010, 2024.
@@ -202,21 +202,21 @@ Hamdi Altaheri, Ghulam Muhammad, and Mansour Alsulaiman. Physics-informed attent
 
 
 
-<a id="id26"></a>
+<a id="id27"></a>
 [19] 
 
 Zhiwu Huang and Luc Van Gool. A riemannian network for spd matrix learning. In *Proceedings of the AAAI conference on artificial intelligence*, volume 31. 2017.
 
 
 
-<a id="id27"></a>
+<a id="id28"></a>
 [20] 
 
 Bruno Aristimunha, Ce Ju, Antoine Collas, Florent Bouchard, Ammar Mian, Bertrand Thirion, Sylvain Chevallier, and Reinmar Kobler. Spd learn: a geometric deep learning python library for neural decoding through trivialization. *arXiv preprint arXiv:2602.22895*, 2026.
 
 
 
-<a id="id25"></a>
+<a id="id26"></a>
 [21] 
 
 Tengfei Song, Wenming Zheng, Peng Song, and Zhen Cui. Eeg emotion recognition using dynamical graph convolutional neural networks. *IEEE Transactions on Affective Computing*, 11(3):532–541, 2020. [doi:10.1109/TAFFC.2018.2817622](https://doi.org/10.1109/TAFFC.2018.2817622).
@@ -244,7 +244,7 @@ Zhige Chen, Rui Yang, Mengjie Huang, Fumin Li, Guoping Lu, and Zidong Wang. Eegp
 
 
 
-<a id="id32"></a>
+<a id="id33"></a>
 [25] 
 
 Chaoqi Yang, M Westover, and Jimeng Sun. Biot: biosignal transformer for cross-data learning in the wild. *Advances in Neural Information Processing Systems*, 36:78240–78260, 2023.
@@ -258,21 +258,21 @@ Weibang Jiang, Liming Zhao, and Bao-liang Lu. Large Brain Model for Learning Gen
 
 
 
-<a id="id267"></a>
+<a id="id268"></a>
 [27] 
 
 Guangyu Wang, Wenchao Liu, Yuhong He, Cong Xu, Lin Ma, and Haifeng Li. EEGPT: pretrained transformer for universal and reliable representation of EEG signals. In *The Thirty-eighth Annual Conference on Neural Information Processing Systems*. 2024. URL: [https://openreview.net/forum?id=lvS2b8CjG5](https://openreview.net/forum?id=lvS2b8CjG5).
 
 
 
-<a id="id271"></a>
+<a id="id272"></a>
 [28] 
 
 Jathurshan Pradeepkumar, Xihao Piao, Zheng Chen, and Jimeng Sun. Tokenizing single-channel EEG with time-frequency motif learning. In *The Fourteenth International Conference on Learning Representations*. 2026. URL: [https://openreview.net/forum?id=2sPmWHZ8Ir](https://openreview.net/forum?id=2sPmWHZ8Ir).
 
 
 
-<a id="id270"></a>
+<a id="id271"></a>
 [29] 
 
 Tidiane Camaret N'dir, Robin Tibor Schirrmeister, and Tonio Ball. EEG-CLIP: learning EEG representations from natural language descriptions. *Frontiers in Robotics and AI*, 12:1625731, 2025. URL: [https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2025.1625731/full](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2025.1625731/full), [doi:10.3389/frobt.2025.1625731](https://doi.org/10.3389/frobt.2025.1625731).
