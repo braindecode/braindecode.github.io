@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [25aa68215bb02208f2bb3164b96aa5214357fff5](https://github.com/braindecode/braindecode/tree/25aa68215bb02208f2bb3164b96aa5214357fff5)
+Source commit: [3b0764043693f732814f5966fc18ee39cb25762a](https://github.com/braindecode/braindecode/tree/3b0764043693f732814f5966fc18ee39cb25762a)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -320,6 +320,9 @@ The channel layer behind `channel_strategy=` (see
 
 | [`ChannelLayer`](generated/channels/braindecode.modules.ChannelLayer.html#braindecode.modules.ChannelLayer)(target, strategy[, chs_info, ...])   | Map any montage onto `target` with one matrix per montage.   |
 |--------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+
+| [`resolve_channel_positions`](generated/channels/braindecode.modules.resolve_channel_positions.html#braindecode.modules.resolve_channel_positions)(chs_info, bank[, ...])   | Positions of `chs_info` in a name -> position `bank` (REVE's bank).   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 
 <a id="convolution"></a>
 
