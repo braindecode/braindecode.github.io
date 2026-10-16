@@ -38,6 +38,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_autodoc_typehints.css?v=057ac668" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -953,16 +954,14 @@ annotated or do not contain any events and are at least
 <code class="docutils literal notranslate"><span class="pre">min_break_duration</span></code> seconds long, and then proceeds to creating
 annotations for those break periods.</p>
 </div></blockquote>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier">instance of Raw</span></dt><dd><p>The continuous data to analyze.</p>
-</dd>
-<dt><strong>events</strong><span class="classifier">None | array, shape (n_events, 3)</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), operate based solely on the annotations present
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw</strong> (<em>instance</em><em> of </em><em>Raw</em>) – The continuous data to analyze.</p></li>
+<li><p><strong>events</strong> (<em>None</em><em> | </em><em>array</em><em>, </em><em>shape</em><em> (</em><em>n_events</em><em>, </em><em>3</em><em>)</em>) – If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), operate based solely on the annotations present
 in <code class="docutils literal notranslate"><span class="pre">raw</span></code>. If an events array, ignore any annotations in the raw data,
-and operate based on these events only.</p>
-</dd>
-<dt><strong>min_break_duration</strong><span class="classifier">float</span></dt><dd><p>The minimum time span in seconds between the offset of one and the
+and operate based on these events only.</p></li>
+<li><p><strong>min_break_duration</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – <p>The minimum time span in seconds between the offset of one and the
 onset of the subsequent annotation (if <code class="docutils literal notranslate"><span class="pre">events</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) or
 between two consecutive events (if <code class="docutils literal notranslate"><span class="pre">events</span></code> is an array) to consider
 this period a “break”. Defaults to 15 seconds.</p>
@@ -973,8 +972,8 @@ the data, <strong>not</strong> the minimum duration of the generated
 annotations! See also <code class="docutils literal notranslate"><span class="pre">t_start_after_previous</span></code> and
 <code class="docutils literal notranslate"><span class="pre">t_stop_before_next</span></code> for details.</p>
 </div>
-</dd>
-<dt><strong>t_start_after_previous, t_stop_before_next</strong><span class="classifier">float</span></dt><dd><p>Specifies how far the to-be-created “break” annotation extends towards
+</p></li>
+<li><p><strong>t_start_after_previous</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – <p>Specifies how far the to-be-created “break” annotation extends towards
 the two annotations or events spanning the break. This can be used to
 ensure e.g. that the break annotation doesn’t start and end immediately
 with a stimulation event. If, for example, your data contains a break
@@ -991,29 +990,42 @@ first annotation or event (or from last annotation or event
 until recording end) is at least <code class="docutils literal notranslate"><span class="pre">min_break_duration</span></code>
 seconds long.</p>
 </div>
-</dd>
-<dt><strong>ignore</strong><span class="classifier">iterable of str</span></dt><dd><p>Annotation descriptions starting with these strings will be ignored by
+</p></li>
+<li><p><strong>t_stop_before_next</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – <p>Specifies how far the to-be-created “break” annotation extends towards
+the two annotations or events spanning the break. This can be used to
+ensure e.g. that the break annotation doesn’t start and end immediately
+with a stimulation event. If, for example, your data contains a break
+of 30 seconds between two stimuli, and <code class="docutils literal notranslate"><span class="pre">t_start_after_previous</span></code> is
+set to <code class="docutils literal notranslate"><span class="pre">5</span></code> and <code class="docutils literal notranslate"><span class="pre">t_stop_before_next</span></code> is set to <code class="docutils literal notranslate"><span class="pre">3</span></code>, the break
+annotation will start 5 seconds after the first stimulus, and end 3
+seconds before the second stimulus, yielding an annotated break of
+<code class="docutils literal notranslate"><span class="pre">30</span> <span class="pre">-</span> <span class="pre">5</span> <span class="pre">-</span> <span class="pre">3</span> <span class="pre">=</span> <span class="pre">22</span></code> seconds. Both default to 5 seconds.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The beginning and the end of the recording will be annotated
+as breaks, too, if the period from recording start until the
+first annotation or event (or from last annotation or event
+until recording end) is at least <code class="docutils literal notranslate"><span class="pre">min_break_duration</span></code>
+seconds long.</p>
+</div>
+</p></li>
+<li><p><strong>ignore</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Annotation descriptions starting with these strings will be ignored by
 the break-finding algorithm. The string comparison is case-insensitive,
 i.e., <code class="docutils literal notranslate"><span class="pre">('bad',)</span></code> and <code class="docutils literal notranslate"><span class="pre">('BAD',)</span></code> are equivalent. By default, all
 annotation descriptions starting with “bad” and annotations
 indicating “edges” (produced by data concatenation) will be
 ignored. Pass an empty list or tuple to take all existing annotations
-into account. If <code class="docutils literal notranslate"><span class="pre">events</span></code> is passed, this parameter has no effect.</p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier">bool | str | int | None</span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+into account. If <code class="docutils literal notranslate"><span class="pre">events</span></code> is passed, this parameter has no effect.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> | </em><em>None</em>) – Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.15)"><span class="xref std std-ref">logging documentation</span></a> and
 <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
-argument.</p>
-</dd>
-</dl>
+argument.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>break_annotations</strong><span class="classifier">instance of Annotations</span></dt><dd><p>The break annotations, each with the description <code class="docutils literal notranslate"><span class="pre">'BAD_break'</span></code>. If
+<dd class="field-even"><p><strong>break_annotations</strong> (instance of Annotations) – The break annotations, each with the description <code class="docutils literal notranslate"><span class="pre">'BAD_break'</span></code>. If
 no breaks could be found given the provided function parameters, an
 empty <cite>~mne.Annotations</cite> object will be returned.</p>
-</dd>
-</dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
