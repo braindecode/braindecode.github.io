@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [e3d1604e3dd3de9d9a5756fe1c381438e140c8af](https://github.com/braindecode/braindecode/tree/e3d1604e3dd3de9d9a5756fe1c381438e140c8af)
+Source commit: [47912a9a6121dba5c0c9164ee3aa2d8d96ac01df](https://github.com/braindecode/braindecode/tree/47912a9a6121dba5c0c9164ee3aa2d8d96ac01df)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -303,11 +303,12 @@ perceptrons (MLPs) and inception blocks.
 
 `braindecode.modules.blocks`:
 
-| [`MLP`](generated/blocks/braindecode.modules.MLP.html#braindecode.modules.MLP)(in_features[, hidden_features, ...])                                | Multilayer Perceptron (MLP) with GELU activation and optional dropout.   |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| [`FeedForwardBlock`](generated/blocks/braindecode.modules.FeedForwardBlock.html#braindecode.modules.FeedForwardBlock)(emb_size, expansion, drop_p) | Feedforward network block.                                               |
-| [`InceptionBlock`](generated/blocks/braindecode.modules.InceptionBlock.html#braindecode.modules.InceptionBlock)(branches)                          | Inception block module.                                                  |
-| [`PatchTokenizer`](generated/blocks/braindecode.modules.PatchTokenizer.html#braindecode.modules.PatchTokenizer)(patch_size, n_times[, ...])        | Tokenize an EEG signal into non-overlapping temporal patches.            |
+| [`MLP`](generated/blocks/braindecode.modules.MLP.html#braindecode.modules.MLP)(in_features[, hidden_features, ...])                                | Multilayer Perceptron (MLP) with GELU activation and optional dropout.                                                                                       |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`TimmMlp`](generated/blocks/braindecode.modules.TimmMlp.html#braindecode.modules.TimmMlp)(in_features[, hidden_features, ...])                    | Two-layer MLP with timm's parameter names (`fc1`, `act`, `fc2`, `drop`), as in ViT/MAE checkpoints: dropout after the activation and after the second layer. |
+| [`FeedForwardBlock`](generated/blocks/braindecode.modules.FeedForwardBlock.html#braindecode.modules.FeedForwardBlock)(emb_size, expansion, drop_p) | Feedforward network block.                                                                                                                                   |
+| [`InceptionBlock`](generated/blocks/braindecode.modules.InceptionBlock.html#braindecode.modules.InceptionBlock)(branches)                          | Inception block module.                                                                                                                                      |
+| [`PatchTokenizer`](generated/blocks/braindecode.modules.PatchTokenizer.html#braindecode.modules.PatchTokenizer)(patch_size, n_times[, ...])        | Tokenize an EEG signal into non-overlapping temporal patches.                                                                                                |
 
 <a id="channels"></a>
 
