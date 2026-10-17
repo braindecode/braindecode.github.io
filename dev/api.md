@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [d0f5d9f2abf01f31179a7c2f9ad74ccfdd5b2e13](https://github.com/braindecode/braindecode/tree/d0f5d9f2abf01f31179a7c2f9ad74ccfdd5b2e13)
+Source commit: [e3d1604e3dd3de9d9a5756fe1c381438e140c8af](https://github.com/braindecode/braindecode/tree/e3d1604e3dd3de9d9a5756fe1c381438e140c8af)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -363,14 +363,16 @@ input shapes and dimensions.
 
 `braindecode.modules.layers`:
 
-| [`ChannelMerger`](generated/layers/braindecode.modules.ChannelMerger.html#braindecode.modules.ChannelMerger)([out_channels, pos_dim, ...])   | Spatial Fourier-attention merge: `n_chans` -> `out_channels`.        |
-|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| [`Chomp1d`](generated/layers/braindecode.modules.Chomp1d.html#braindecode.modules.Chomp1d)(chomp_size)                                       | Remove samples from the end of a sequence.                           |
-| [`DropPath`](generated/layers/braindecode.modules.DropPath.html#braindecode.modules.DropPath)([drop_prob])                                   | Drop paths, also known as Stochastic Depth, per sample.              |
-| [`Ensure4d`](generated/layers/braindecode.modules.Ensure4d.html#braindecode.modules.Ensure4d)(\*args, \*\*kwargs)                            | Ensure the input tensor has 4 dimensions.                            |
-| [`FourierEmb`](generated/layers/braindecode.modules.FourierEmb.html#braindecode.modules.FourierEmb)([dimension, margin])                     | 2D Fourier positional embedding over electrode `(x, y)` in `[0, 1]`. |
-| [`SubjectLayers`](generated/layers/braindecode.modules.SubjectLayers.html#braindecode.modules.SubjectLayers)(in_channels, out_channels, ...) | Per-subject linear transformation layer.                             |
-| [`TimeDistributed`](generated/layers/braindecode.modules.TimeDistributed.html#braindecode.modules.TimeDistributed)(module)                   | Apply module on multiple windows.                                    |
+| [`ChannelMerger`](generated/layers/braindecode.modules.ChannelMerger.html#braindecode.modules.ChannelMerger)([out_channels, pos_dim, ...])    | Spatial Fourier-attention merge: `n_chans` -> `out_channels`.        |
+|-----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| [`Chomp1d`](generated/layers/braindecode.modules.Chomp1d.html#braindecode.modules.Chomp1d)(chomp_size)                                        | Remove samples from the end of a sequence.                           |
+| [`DropPath`](generated/layers/braindecode.modules.DropPath.html#braindecode.modules.DropPath)([drop_prob])                                    | Drop paths, also known as Stochastic Depth, per sample.              |
+| [`PostNormResidual`](generated/layers/braindecode.modules.PostNormResidual.html#braindecode.modules.PostNormResidual)(module, dim, drop_prob) | Post-norm residual connection `LayerNorm(dropout(module(x)) + x)`.   |
+| [`Residual`](generated/layers/braindecode.modules.Residual.html#braindecode.modules.Residual)(fn[, drop_path])                                | Residual connection `x + drop_path(fn(x))`.                          |
+| [`Ensure4d`](generated/layers/braindecode.modules.Ensure4d.html#braindecode.modules.Ensure4d)(\*args, \*\*kwargs)                             | Ensure the input tensor has 4 dimensions.                            |
+| [`FourierEmb`](generated/layers/braindecode.modules.FourierEmb.html#braindecode.modules.FourierEmb)([dimension, margin])                      | 2D Fourier positional embedding over electrode `(x, y)` in `[0, 1]`. |
+| [`SubjectLayers`](generated/layers/braindecode.modules.SubjectLayers.html#braindecode.modules.SubjectLayers)(in_channels, out_channels, ...)  | Per-subject linear transformation layer.                             |
+| [`TimeDistributed`](generated/layers/braindecode.modules.TimeDistributed.html#braindecode.modules.TimeDistributed)(module)                    | Apply module on multiple windows.                                    |
 
 <a id="linear"></a>
 
@@ -449,6 +451,7 @@ The functional module contains various functions that can be used like functiona
 | [`plv_time`](generated/braindecode.functional.plv_time.html#braindecode.functional.plv_time)(x[, forward_fourier, epsilon])                                                      | Compute the Phase Locking Value (PLV) metric in the time domain.                                                                                       |
 | [`prefer_fft_conv`](generated/braindecode.functional.prefer_fft_conv.html#braindecode.functional.prefer_fft_conv)(x, kernel_size)                                                | Whether [`fft_conv1d()`](generated/braindecode.functional.fft_conv1d.html#braindecode.functional.fft_conv1d) is expected to beat a direct convolution. |
 | [`rescale_parameter`](generated/braindecode.functional.rescale_parameter.html#braindecode.functional.rescale_parameter)(param, layer_id)                                         | Recaling the l-th transformer layer.                                                                                                                   |
+| [`init_weights_`](generated/braindecode.functional.init_weights_.html#braindecode.functional.init_weights_)(module[, weights, norms, ...])                                       | Initialize one module by layer type; apply to a model with `model.apply`.                                                                              |
 | [`safe_log`](generated/braindecode.functional.safe_log.html#braindecode.functional.safe_log)(x[, eps])                                                                           | Prevents $log(0)$ by using $log(max(x, eps))$.                                                                                                         |
 | [`sinusoidal_positional_encoding`](generated/braindecode.functional.sinusoidal_positional_encoding.html#braindecode.functional.sinusoidal_positional_encoding)(n_positions, dim) | Fixed sine/cosine positional-encoding table of shape `(n_positions, dim)`.                                                                             |
 | [`spectral_input`](generated/braindecode.functional.spectral_input.html#braindecode.functional.spectral_input)(x)                                                                | Prepare `x` for an FFT, STFT or eigendecomposition.                                                                                                    |
