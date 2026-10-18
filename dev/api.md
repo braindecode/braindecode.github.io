@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [1a21207ce35f444a6f93db5ae80adaede9acc903](https://github.com/braindecode/braindecode/tree/1a21207ce35f444a6f93db5ae80adaede9acc903)
+Source commit: [8c618f15a702f63d4899e3e8bc2e6f10a5f54151](https://github.com/braindecode/braindecode/tree/8c618f15a702f63d4899e3e8bc2e6f10a5f54151)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -449,6 +449,8 @@ The functional module contains various functions that can be used like functiona
 | [`glorot_weight_zero_bias`](generated/braindecode.functional.glorot_weight_zero_bias.html#braindecode.functional.glorot_weight_zero_bias)(model)                                 | Set the weights of BatchNorm layers to one and all biases to zero.                                                                                     |
 | [`hilbert_freq`](generated/braindecode.functional.hilbert_freq.html#braindecode.functional.hilbert_freq)(x[, forward_fourier])                                                   | Compute the Hilbert transform using PyTorch, separating the real and imaginary parts.                                                                  |
 | [`identity`](generated/braindecode.functional.identity.html#braindecode.functional.identity)(x)                                                                                  |                                                                                                                                                        |
+| [`pad_or_crop_to_patches`](generated/braindecode.functional.pad_or_crop_to_patches.html#braindecode.functional.pad_or_crop_to_patches)(x, patch_size[, ...])                     | Right zero-pad or crop the last axis so the patches tile it.                                                                                           |
+| [`patch_count`](generated/braindecode.functional.patch_count.html#braindecode.functional.patch_count)(n_times, patch_size[, ...])                                                | Number of patches cut from `n_times` samples.                                                                                                          |
 | [`plv_time`](generated/braindecode.functional.plv_time.html#braindecode.functional.plv_time)(x[, forward_fourier, epsilon])                                                      | Compute the Phase Locking Value (PLV) metric in the time domain.                                                                                       |
 | [`prefer_fft_conv`](generated/braindecode.functional.prefer_fft_conv.html#braindecode.functional.prefer_fft_conv)(x, kernel_size)                                                | Whether [`fft_conv1d()`](generated/braindecode.functional.fft_conv1d.html#braindecode.functional.fft_conv1d) is expected to beat a direct convolution. |
 | [`rescale_parameter`](generated/braindecode.functional.rescale_parameter.html#braindecode.functional.rescale_parameter)(param, layer_id)                                         | Recaling the l-th transformer layer.                                                                                                                   |
