@@ -72,7 +72,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="braindecode.functional.spectral_input" href="braindecode.functional.spectral_input.html" />
-    <link rel="prev" title="braindecode.functional.safe_log" href="braindecode.functional.safe_log.html" />
+    <link rel="prev" title="braindecode.functional.scaled_dot_product_attention" href="braindecode.functional.scaled_dot_product_attention.html" />
   <!-- Google Tag Manager (single analytics entry point — drives any GA4 / GTAG
        configured inside the GTM container; do not add a second gtag here).
        Honors the Do-Not-Track signal so privacy-conscious users opt out. -->
@@ -648,7 +648,13 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.functional.prefer_fft_conv.html">braindecode.functional.prefer_fft_conv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.functional.rescale_parameter.html">braindecode.functional.rescale_parameter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.functional.init_weights_.html">braindecode.functional.init_weights</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.functional.apply_rotary.html">braindecode.functional.apply_rotary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.functional.rotary_angles.html">braindecode.functional.rotary_angles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.functional.rotary_frequencies.html">braindecode.functional.rotary_frequencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.functional.rotate_half.html">braindecode.functional.rotate_half</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.functional.rotate_pairs.html">braindecode.functional.rotate_pairs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.functional.safe_log.html">braindecode.functional.safe_log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.functional.scaled_dot_product_attention.html">braindecode.functional.scaled_dot_product_attention</a></li>
 <li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">braindecode.functional.sinusoidal_positional_encoding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.functional.spectral_input.html">braindecode.functional.spectral_input</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.functional.square.html">braindecode.functional.square</a></li>
@@ -950,7 +956,7 @@
 <h1>braindecode.functional.sinusoidal_positional_encoding<a class="headerlink" href="#braindecode-functional-sinusoidal-positional-encoding" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="braindecode.functional.sinusoidal_positional_encoding">
-<span class="sig-prename descclassname"><span class="pre">braindecode.functional.</span></span><span class="sig-name descname"><span class="pre">sinusoidal_positional_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float32</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/functional/functions.py#L586-L630"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.functional.sinusoidal_positional_encoding" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">braindecode.functional.</span></span><span class="sig-name descname"><span class="pre">sinusoidal_positional_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/functional/functions.py#L586-L634"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.functional.sinusoidal_positional_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Fixed sine/cosine positional-encoding table of shape <code class="docutils literal notranslate"><span class="pre">(n_positions,</span> <span class="pre">dim)</span></code>.</p>
 <p>The standard encoding of Vaswani et al. (2017): for position <span class="math notranslate nohighlight">\(p\)</span> and
 channel <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(pe[p, 2i] = \sin(p / 10000^{2i/d})\)</span> and
@@ -966,6 +972,8 @@ wrappers (e.g. <code class="xref py py-class docutils literal notranslate"><span
 <li><p><strong>dim</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Embedding dimension of each position.</p></li>
 <li><p><strong>device</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code></a> | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – Device of the table (default: CPU), for tables built inside <code class="docutils literal notranslate"><span class="pre">forward</span></code>.</p></li>
 <li><p><strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensor_attributes.html#torch.dtype" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code></a></span>) – Floating dtype the table is computed in.</p></li>
+<li><p><strong>base</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Longest wavelength, the <code class="docutils literal notranslate"><span class="pre">10000</span></code> of Vaswani et al.; SignalJEPA uses the
+largest number of time samples it encodes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -991,12 +999,12 @@ dropout, or offset.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="braindecode.functional.safe_log.html"
+       href="braindecode.functional.scaled_dot_product_attention.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">braindecode.functional.safe_log</p>
+        <p class="prev-next-title">braindecode.functional.scaled_dot_product_attention</p>
       </div>
     </a>
     <a class="right-next"
