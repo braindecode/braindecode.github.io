@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [1fffe570f56c78e6c5a6d053737eaf25609b32d5](https://github.com/braindecode/braindecode/tree/1fffe570f56c78e6c5a6d053737eaf25609b32d5)
+Source commit: [bc0fdff80fc9a5c63501ee66d6f16fba762820eb](https://github.com/braindecode/braindecode/tree/bc0fdff80fc9a5c63501ee66d6f16fba762820eb)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
@@ -241,21 +241,6 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Filter length: 413 samples (1.652 s)
 
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -271,6 +256,21 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Filter length: 413 samples (1.652 s)
 
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -562,10 +562,10 @@ clf.fit(train_set, y=None, epochs=n_epochs)
 ```none
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------  ------
-      1            0.2500        1.6341       0.2500            0.2500        5.8027  0.0006  2.7554
-      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.6827
-      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.5529
-      4            0.2604        1.0877       0.2535            0.2535        4.9447  0.0000  2.6198
+      1            0.2500        1.6341       0.2500            0.2500        5.8027  0.0006  2.1426
+      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.1672
+      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.1997
+      4            0.2604        1.0877       0.2535            0.2535        4.9447  0.0000  2.4160
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 265-276 -->
@@ -697,7 +697,7 @@ ConfusionMatrixDisplay.from_predictions(
 
 ![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png)
 ```none
-<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7f5541a60830>
+<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7f28305d1b20>
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 374-392 -->
@@ -726,6 +726,6 @@ nipy, NIPY, Nipy, etc... -->
 <!-- spd_learn -->
 <!-- vim: ft=rst -->
 
-**Total running time of the script:** (0 minutes 25.118 seconds)
+**Total running time of the script:** (0 minutes 14.865 seconds)
 
 <a id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></a>
