@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [4669903f9f27b3798c2ad42ebd607ec539b0be12](https://github.com/braindecode/braindecode/tree/4669903f9f27b3798c2ad42ebd607ec539b0be12)
+Source commit: [1fffe570f56c78e6c5a6d053737eaf25609b32d5](https://github.com/braindecode/braindecode/tree/1fffe570f56c78e6c5a6d053737eaf25609b32d5)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -305,6 +305,7 @@ perceptrons (MLPs) and inception blocks.
 
 | [`MLP`](generated/blocks/braindecode.modules.MLP.html#braindecode.modules.MLP)(in_features[, hidden_features, ...])                                | Multilayer Perceptron (MLP) with GELU activation and optional dropout.                                                                                       |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`TimmAttention`](generated/blocks/braindecode.modules.TimmAttention.html#braindecode.modules.TimmAttention)(dim[, num_heads, qkv_bias, ...])      | Multi-head self-attention with timm's parameter names (`qkv`, `proj`), as in ViT/MAE/BEiT checkpoints.                                                       |
 | [`TimmMlp`](generated/blocks/braindecode.modules.TimmMlp.html#braindecode.modules.TimmMlp)(in_features[, hidden_features, ...])                    | Two-layer MLP with timm's parameter names (`fc1`, `act`, `fc2`, `drop`), as in ViT/MAE checkpoints: dropout after the activation and after the second layer. |
 | [`FeedForwardBlock`](generated/blocks/braindecode.modules.FeedForwardBlock.html#braindecode.modules.FeedForwardBlock)(emb_size, expansion, drop_p) | Feedforward network block.                                                                                                                                   |
 | [`InceptionBlock`](generated/blocks/braindecode.modules.InceptionBlock.html#braindecode.modules.InceptionBlock)(branches)                          | Inception block module.                                                                                                                                      |
