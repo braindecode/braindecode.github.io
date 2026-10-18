@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [bc0fdff80fc9a5c63501ee66d6f16fba762820eb](https://github.com/braindecode/braindecode/tree/bc0fdff80fc9a5c63501ee66d6f16fba762820eb)
+Source commit: [5e0b0193b8fae15397678e8fe739cdb8541bac0c](https://github.com/braindecode/braindecode/tree/5e0b0193b8fae15397678e8fe739cdb8541bac0c)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -370,6 +370,7 @@ input shapes and dimensions.
 | [`Chomp1d`](generated/layers/braindecode.modules.Chomp1d.html#braindecode.modules.Chomp1d)(chomp_size)                                        | Remove samples from the end of a sequence.                           |
 | [`DropPath`](generated/layers/braindecode.modules.DropPath.html#braindecode.modules.DropPath)([drop_prob])                                    | Drop paths, also known as Stochastic Depth, per sample.              |
 | [`PostNormResidual`](generated/layers/braindecode.modules.PostNormResidual.html#braindecode.modules.PostNormResidual)(module, dim, drop_prob) | Post-norm residual connection `LayerNorm(dropout(module(x)) + x)`.   |
+| [`PreNormBlock`](generated/layers/braindecode.modules.PreNormBlock.html#braindecode.modules.PreNormBlock)(dim, attn, mlp[, norm_layer, ...])  | Pre-norm transformer block with timm's parameter names.              |
 | [`Residual`](generated/layers/braindecode.modules.Residual.html#braindecode.modules.Residual)(fn[, drop_path])                                | Residual connection `x + drop_path(fn(x))`.                          |
 | [`Ensure4d`](generated/layers/braindecode.modules.Ensure4d.html#braindecode.modules.Ensure4d)(\*args, \*\*kwargs)                             | Ensure the input tensor has 4 dimensions.                            |
 | [`FourierEmb`](generated/layers/braindecode.modules.FourierEmb.html#braindecode.modules.FourierEmb)([dimension, margin])                      | 2D Fourier positional embedding over electrode `(x, y)` in `[0, 1]`. |

@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [bc0fdff80fc9a5c63501ee66d6f16fba762820eb](https://github.com/braindecode/braindecode/tree/bc0fdff80fc9a5c63501ee66d6f16fba762820eb)
+Source commit: [5e0b0193b8fae15397678e8fe739cdb8541bac0c](https://github.com/braindecode/braindecode/tree/5e0b0193b8fae15397678e8fe739cdb8541bac0c)
 
 Canonical HTML: [Installation from PyPI](https://braindecode.org/dev/install/install_pip.html)
 
