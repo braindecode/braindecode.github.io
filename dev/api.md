@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [d882908c3c25ef82b7c71a2f9f741b77f5e01e8d](https://github.com/braindecode/braindecode/tree/d882908c3c25ef82b7c71a2f9f741b77f5e01e8d)
+Source commit: [19fa78480c7d16d4b25980a297cb1af1a23d8efb](https://github.com/braindecode/braindecode/tree/19fa78480c7d16d4b25980a297cb1af1a23d8efb)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -560,17 +560,17 @@ dataset loading and Hugging Face Hub push/pull functionality.
 
 ### EEGPrep Pipeline
 
-| [`EEGPrep`](generated/braindecode.preprocessing.EEGPrep.html#braindecode.preprocessing.EEGPrep)(\*[, resample_to, flatline_maxdur, ...])                                  | Preprocessor for an MNE Raw object that applies the EEGPrep pipeline.                             |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
-| [`ReinterpolateRemovedChannels`](generated/braindecode.preprocessing.ReinterpolateRemovedChannels.html#braindecode.preprocessing.ReinterpolateRemovedChannels)(\*[, ...]) | Reinterpolate previously removed EEG channels to restore original channel set.                    |
-| [`RemoveBadChannels`](generated/braindecode.preprocessing.RemoveBadChannels.html#braindecode.preprocessing.RemoveBadChannels)(\*[, corr_threshold, ...])                  | Removes EEG channels with problematic data; variant that uses channel locations.                  |
-| [`RemoveBadChannelsNoLocs`](generated/braindecode.preprocessing.RemoveBadChannelsNoLocs.html#braindecode.preprocessing.RemoveBadChannelsNoLocs)(\*[, min_corr, ...])      | Remove EEG channels with problematic data; variant that does not use channel locations.           |
-| [`RemoveBadWindows`](generated/braindecode.preprocessing.RemoveBadWindows.html#braindecode.preprocessing.RemoveBadWindows)(\*[, max_bad_channels, ...])                   | Remove periods with abnormally high-power content from continuous data.                           |
-| [`RemoveBursts`](generated/braindecode.preprocessing.RemoveBursts.html#braindecode.preprocessing.RemoveBursts)(\*[, cutoff, window_len, ...])                             | Run the Artifact Subspace Reconstruction (ASR) method on EEG data to remove burst-type artifacts. |
-| [`RemoveCommonAverageReference`](generated/braindecode.preprocessing.RemoveCommonAverageReference.html#braindecode.preprocessing.RemoveCommonAverageReference)(\*[, ...]) | Subtracts the common average reference from the EEG data (EEGPrep version).                       |
-| [`RemoveDCOffset`](generated/braindecode.preprocessing.RemoveDCOffset.html#braindecode.preprocessing.RemoveDCOffset)(\*[, can_change_duration, ...])                      | Remove the DC offset from the EEG data by subtracting the per-channel median.                     |
-| [`RemoveDrifts`](generated/braindecode.preprocessing.RemoveDrifts.html#braindecode.preprocessing.RemoveDrifts)([transition, attenuation, method])                         | Remove drifts from the EEG data using a forward-backward high-pass filter.                        |
-| [`RemoveFlatChannels`](generated/braindecode.preprocessing.RemoveFlatChannels.html#braindecode.preprocessing.RemoveFlatChannels)(\*[, ...])                               | Removes EEG channels that flat-line for extended periods of time.                                 |
+| [`EEGPrep`](generated/braindecode.preprocessing.EEGPrep.html#braindecode.preprocessing.EEGPrep)(\*[, resample_to, flatline_maxdur, ...])                                          | Preprocessor for an MNE Raw object that applies the EEGPrep pipeline.                             |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| [`ReinterpolateRemovedChannels`](generated/braindecode.preprocessing.ReinterpolateRemovedChannels.html#braindecode.preprocessing.ReinterpolateRemovedChannels)(\*[, force_dtype]) | Reinterpolate previously removed EEG channels to restore original channel set.                    |
+| [`RemoveBadChannels`](generated/braindecode.preprocessing.RemoveBadChannels.html#braindecode.preprocessing.RemoveBadChannels)(\*[, corr_threshold, ...])                          | Removes EEG channels with problematic data; variant that uses channel locations.                  |
+| [`RemoveBadChannelsNoLocs`](generated/braindecode.preprocessing.RemoveBadChannelsNoLocs.html#braindecode.preprocessing.RemoveBadChannelsNoLocs)(\*[, min_corr, ...])              | Remove EEG channels with problematic data; variant that does not use channel locations.           |
+| [`RemoveBadWindows`](generated/braindecode.preprocessing.RemoveBadWindows.html#braindecode.preprocessing.RemoveBadWindows)(\*[, max_bad_channels, ...])                           | Remove periods with abnormally high-power content from continuous data.                           |
+| [`RemoveBursts`](generated/braindecode.preprocessing.RemoveBursts.html#braindecode.preprocessing.RemoveBursts)(\*[, cutoff, window_len, ...])                                     | Run the Artifact Subspace Reconstruction (ASR) method on EEG data to remove burst-type artifacts. |
+| [`RemoveCommonAverageReference`](generated/braindecode.preprocessing.RemoveCommonAverageReference.html#braindecode.preprocessing.RemoveCommonAverageReference)(\*[, force_dtype]) | Subtracts the common average reference from the EEG data (EEGPrep version).                       |
+| [`RemoveDCOffset`](generated/braindecode.preprocessing.RemoveDCOffset.html#braindecode.preprocessing.RemoveDCOffset)(\*[, force_dtype])                                           | Remove the DC offset from the EEG data by subtracting the per-channel median.                     |
+| [`RemoveDrifts`](generated/braindecode.preprocessing.RemoveDrifts.html#braindecode.preprocessing.RemoveDrifts)([transition, attenuation, method])                                 | Remove drifts from the EEG data using a forward-backward high-pass filter.                        |
+| [`RemoveFlatChannels`](generated/braindecode.preprocessing.RemoveFlatChannels.html#braindecode.preprocessing.RemoveFlatChannels)(\*[, ...])                                       | Removes EEG channels that flat-line for extended periods of time.                                 |
 
 <a id="signal-processing"></a>
 
