@@ -1000,7 +1000,7 @@ encoder feature map of the same resolution at every level.</p></li>
 <p class="rubric">Macro Components</p>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">SeizureTransformer.encoder</span></code></dt><dd><p><strong>Operations.</strong> At each level, a “same”-padded
-<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv1d</span></code></a> with kernel <code class="docutils literal notranslate"><span class="pre">encoder_kernel_sizes[i]</span></code> and
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv1d</span></code></a> with kernel <code class="docutils literal notranslate"><span class="pre">encoder_kernel_sizes[i]</span></code> and
 <code class="docutils literal notranslate"><span class="pre">n_filters[i]</span></code> output channels, followed by <code class="docutils literal notranslate"><span class="pre">activation</span></code>. The
 result is kept for the decoder, then <code class="docutils literal notranslate"><span class="pre">SeizureTransformer.pool</span></code>
 halves the time axis (max pooling, rounding odd lengths up).</p>
@@ -1009,13 +1009,13 @@ increasingly coarse time scales.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">SeizureTransformer.res_blocks</span></code></dt><dd><p><strong>Operations.</strong> Pre-activation residual blocks, one per entry of
 <code class="docutils literal notranslate"><span class="pre">res_kernel_sizes</span></code>: twice batch normalisation, <code class="docutils literal notranslate"><span class="pre">activation_res</span></code>,
-channel dropout (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout1d.html#torch.nn.Dropout1d" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dropout1d</span></code></a>) and a “same”-padded
+channel dropout (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Dropout1d.html#torch.nn.Dropout1d" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dropout1d</span></code></a>) and a “same”-padded
 convolution, plus an identity shortcut.</p>
 <p><strong>Role.</strong> Refine the down-sampled features with small kernels before
 global attention, as in EQTransformer <a class="reference internal" href="#re066a283f37e-mousavi2020" id="id5">[Mousavi2020]</a>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">SeizureTransformer.transformer</span></code></dt><dd><p><strong>Operations.</strong> <code class="docutils literal notranslate"><span class="pre">num_layers</span></code> post-norm
-<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.TransformerEncoderLayer.html#torch.nn.TransformerEncoderLayer" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerEncoderLayer</span></code></a> blocks with <code class="docutils literal notranslate"><span class="pre">num_heads</span></code>
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.TransformerEncoderLayer.html#torch.nn.TransformerEncoderLayer" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerEncoderLayer</span></code></a> blocks with <code class="docutils literal notranslate"><span class="pre">num_heads</span></code>
 heads and a <code class="docutils literal notranslate"><span class="pre">dim_feedforward</span></code> feed-forward width, applied after fixed
 sinusoidal positions and dropout.</p>
 <p><strong>Role.</strong> Capture dependencies across the whole window and give the
@@ -1029,14 +1029,14 @@ kernel <code class="docutils literal notranslate"><span class="pre">decoder_kern
 the encoder feature map is added.</p>
 <p><strong>Role.</strong> Restore the input resolution for per-sample predictions.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">SeizureTransformer.final_layer</span></code></dt><dd><p><strong>Operations.</strong> A <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv1d</span></code></a> with <code class="docutils literal notranslate"><span class="pre">final_kernel_size</span></code>
+<dt><code class="docutils literal notranslate"><span class="pre">SeizureTransformer.final_layer</span></code></dt><dd><p><strong>Operations.</strong> A <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv1d</span></code></a> with <code class="docutils literal notranslate"><span class="pre">final_kernel_size</span></code>
 taps from <code class="docutils literal notranslate"><span class="pre">n_filters[0]</span></code> channels to <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code>.</p>
 <p><strong>Role.</strong> Map each time sample to its logits. The output has shape
 <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_outputs,</span> <span class="pre">n_times)</span></code>.</p>
 </dd>
 </dl>
 <p class="rubric">Usage</p>
-<p>The model returns logits. With <code class="docutils literal notranslate"><span class="pre">n_outputs=1</span></code>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.sigmoid.html#torch.sigmoid" title="(in PyTorch v2.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.sigmoid()</span></code></a>
+<p>The model returns logits. With <code class="docutils literal notranslate"><span class="pre">n_outputs=1</span></code>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.sigmoid.html#torch.sigmoid" title="(in PyTorch v2.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.sigmoid()</span></code></a>
 gives the seizure probability of each sample, and the paper trains with
 binary cross-entropy <a class="reference internal" href="#re066a283f37e-wu2025" id="id6">[Wu2025]</a>. The authors’ competition model uses the
 defaults and expects this input, which the model does not prepare itself:</p>
@@ -1094,8 +1094,8 @@ level up.</p></li>
 <li><p><strong>dim_feedforward</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Hidden width of the Transformer feed-forward blocks.</p></li>
 <li><p><strong>drop_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Dropout probability of the residual blocks, the positional encoding
 and the Transformer layers.</p></li>
-<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Non-linearity after the encoder and decoder convolutions.</p></li>
-<li><p><strong>activation_res</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Non-linearity inside the residual blocks.</p></li>
+<li><p><strong>activation</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Non-linearity after the encoder and decoder convolutions.</p></li>
+<li><p><strong>activation_res</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]</span>) – Non-linearity inside the residual blocks.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1196,14 +1196,14 @@ saved to the Hub and restored when loading.</p>
 <dd><p>Predict logits for every time sample.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – Input of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_times)</span></code>. Inputs shorter than
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span>) – Input of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_times)</span></code>. Inputs shorter than
 the configured <code class="docutils literal notranslate"><span class="pre">n_times</span></code> are accepted.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Logits of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_outputs,</span> <span class="pre">n_times)</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
