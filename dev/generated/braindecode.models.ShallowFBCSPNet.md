@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [aaa31f003aecd25adc5c435f3c5556fdf3566e5e](https://github.com/braindecode/braindecode/tree/aaa31f003aecd25adc5c435f3c5556fdf3566e5e)
+Source commit: [d19b024aa37a334f783b4873285b1b52044721d5](https://github.com/braindecode/braindecode/tree/d19b024aa37a334f783b4873285b1b52044721d5)
 
 Canonical HTML: [ShallowFBCSPNet model reference](https://braindecode.org/dev/generated/braindecode.models.ShallowFBCSPNet.html)
 
@@ -90,10 +90,11 @@ from braindecode.models import ShallowFBCSPNet
 model = ShallowFBCSPNet(n_chans=22, n_outputs=4, n_times=1000)
 # ... training code ...
 
-# Push to the Hub
+# Push to the Hub; ``datasets`` and ``base_model`` go to the card
 model.push_to_hub(
     repo_id="username/my-shallowfbcspnet-model",
     commit_message="Initial model upload",
+    model_card_kwargs={"datasets": ["BNCI2014_001"]},
 )
 ```
 
@@ -104,6 +105,8 @@ from braindecode.models import ShallowFBCSPNet
 
 # Load pretrained model
 model = ShallowFBCSPNet.from_pretrained("username/my-shallowfbcspnet-model")
+# Data the weights were trained on, from the Hub model card
+print(model.card_data.datasets if model.card_data else None)
 
 # Load with a different number of outputs (head is rebuilt automatically)
 model = ShallowFBCSPNet.from_pretrained("username/my-shallowfbcspnet-model", n_outputs=4)

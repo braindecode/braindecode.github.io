@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [aaa31f003aecd25adc5c435f3c5556fdf3566e5e](https://github.com/braindecode/braindecode/tree/aaa31f003aecd25adc5c435f3c5556fdf3566e5e)
+Source commit: [d19b024aa37a334f783b4873285b1b52044721d5](https://github.com/braindecode/braindecode/tree/d19b024aa37a334f783b4873285b1b52044721d5)
 
 Canonical HTML: [EEGNet model reference](https://braindecode.org/dev/generated/braindecode.models.EEGNet.html)
 
@@ -139,10 +139,11 @@ from braindecode.models import EEGNet
 model = EEGNet(n_chans=22, n_outputs=4, n_times=1000)
 # ... training code ...
 
-# Push to the Hub
+# Push to the Hub; ``datasets`` and ``base_model`` go to the card
 model.push_to_hub(
     repo_id="username/my-eegnet-model",
     commit_message="Initial model upload",
+    model_card_kwargs={"datasets": ["BNCI2014_001"]},
 )
 ```
 
@@ -153,6 +154,8 @@ from braindecode.models import EEGNet
 
 # Load pretrained model
 model = EEGNet.from_pretrained("username/my-eegnet-model")
+# Data the weights were trained on, from the Hub model card
+print(model.card_data.datasets if model.card_data else None)
 
 # Load with a different number of outputs (head is rebuilt automatically)
 model = EEGNet.from_pretrained("username/my-eegnet-model", n_outputs=4)
@@ -198,6 +201,8 @@ See [Loading and Adapting Pretrained Foundation Models](../auto_examples/model_b
 
 <!-- start-sphx-glr-thumbnails -->
 <!-- thumbnail-parent-div-open -->
+* [Which data did a pretrained checkpoint see? Reading the model card](../auto_examples/model_building/plot_pretraining_overlap.html)
+
 * [Experiment configuration with Pydantic and Exca](../auto_examples/advanced_training/plot_exca_config.html)
 
 * [Cross-session motor imagery with deep learning EEGNet v4 model](../auto_examples/advanced_training/plot_moabb_benchmark.html)

@@ -2,7 +2,7 @@ Braindecode package version: 1.8.1
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [aaa31f003aecd25adc5c435f3c5556fdf3566e5e](https://github.com/braindecode/braindecode/tree/aaa31f003aecd25adc5c435f3c5556fdf3566e5e)
+Source commit: [d19b024aa37a334f783b4873285b1b52044721d5](https://github.com/braindecode/braindecode/tree/d19b024aa37a334f783b4873285b1b52044721d5)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -507,6 +507,7 @@ Raw and MNE Epochs.
 | [`CHBMIT`](generated/braindecode.datasets.CHBMIT.html#braindecode.datasets.CHBMIT)([root])                                                                            | The Children's Hospital Boston EEG Dataset.                |
 | [`HGD`](generated/braindecode.datasets.HGD.html#braindecode.datasets.HGD)(subject_ids)                                                                                | High-gamma dataset described in Schirrmeister et al. 2017. |
 | [`MOABBDataset`](generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset)(dataset_name[, subject_ids, ...])                                | A class for moabb datasets.                                |
+| [`NEMARDataset`](generated/braindecode.datasets.NEMARDataset.html#braindecode.datasets.NEMARDataset)(dataset_id[, subjects, ...])                                     | Stream a dataset from the NEMAR Zarr serving copy.         |
 | [`NMT`](generated/braindecode.datasets.NMT.html#braindecode.datasets.NMT)([path, target_name, recording_ids, ...])                                                    | The NMT Scalp EEG Dataset.                                 |
 | [`SleepPhysionet`](generated/braindecode.datasets.SleepPhysionet.html#braindecode.datasets.SleepPhysionet)([subject_ids, recording_ids, ...])                         | Sleep Physionet dataset.                                   |
 | [`SIENA`](generated/braindecode.datasets.SIENA.html#braindecode.datasets.SIENA)([root])                                                                               | The Siena EEG Dataset.                                     |

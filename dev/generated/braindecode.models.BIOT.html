@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/generated/braindecode.models.BIOT.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Examples using braindecode.models.BIOT: Loading and Adapting Pretrained Foundation Models" />
+<meta property="og:description" content="Examples using braindecode.models.BIOT: Loading and Adapting Pretrained Foundation Models Which data did a pretrained checkpoint see? Reading the model card" />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Examples using braindecode.models.BIOT: Loading and Adapting Pretrained Foundation Models" />
+<meta name="description" content="Examples using braindecode.models.BIOT: Loading and Adapting Pretrained Foundation Models Which data did a pretrained checkpoint see? Reading the model card" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -699,6 +699,7 @@
 <li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.CHBMIT.html">braindecode.datasets.CHBMIT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.HGD.html">braindecode.datasets.HGD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.MOABBDataset.html">braindecode.datasets.MOABBDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.NEMARDataset.html">braindecode.datasets.NEMARDataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.NMT.html">braindecode.datasets.NMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.SleepPhysionet.html">braindecode.datasets.SleepPhysionet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="braindecode.datasets.SIENA.html">braindecode.datasets.SIENA</a></li>
@@ -1114,10 +1115,11 @@ Hugging Face Hub. Install with:</p>
 <span class="n">model</span> <span class="o">=</span> <span class="n">BIOT</span><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 <span class="c1"># ... training code ...</span>
 
-<span class="c1"># Push to the Hub</span>
+<span class="c1"># Push to the Hub; ``datasets`` and ``base_model`` go to the card</span>
 <span class="n">model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span>
     <span class="n">repo_id</span><span class="o">=</span><span class="s2">"username/my-biot-model"</span><span class="p">,</span>
     <span class="n">commit_message</span><span class="o">=</span><span class="s2">"Initial model upload"</span><span class="p">,</span>
+    <span class="n">model_card_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"datasets"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"BNCI2014_001"</span><span class="p">]},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1126,6 +1128,8 @@ Hugging Face Hub. Install with:</p>
 
 <span class="c1"># Load pretrained model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">BIOT</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"username/my-biot-model"</span><span class="p">)</span>
+<span class="c1"># Data the weights were trained on, from the Hub model card</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">card_data</span><span class="o">.</span><span class="n">datasets</span> <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">card_data</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
 
 <span class="c1"># Load with a different number of outputs (head is rebuilt automatically)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">BIOT</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"username/my-biot-model"</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -1220,6 +1224,9 @@ back. Implementations requiring positive outputs can also use
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="   &lt;div style=&quot;display: flex; align-items: center; justify-content: center;                gap: 20px; margin-bottom: 24px; padding: 18px 24px;                background: linear-gradient(135deg, #f0f7ff 0%, #fdf6ec 100%);                border-radius: 10px; border: 1px solid #e0e8f0;&quot;&gt;      &lt;img src=&quot;../../_static/braindecode_symbol.png&quot;           style=&quot;height: 55px;&quot; alt=&quot;Braindecode&quot;&gt;      &lt;span style=&quot;font-size: 26px; color: #9ca3af; font-weight: 300;&quot;&gt;+&lt;/span&gt;      &lt;img src=&quot;../../_static/hf-logo-with-title.png&quot;           style=&quot;height: 55px;&quot; alt=&quot;Hugging Face&quot;&gt;    &lt;/div&gt;"><img alt="" src="../_images/sphx_glr_plot_load_pretrained_models_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/model_building/plot_load_pretrained_models.html"><span class="doc">Loading and Adapting Pretrained Foundation Models</span></a></p>
   <div class="sphx-glr-thumbnail-title">Loading and Adapting Pretrained Foundation Models</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Foundation models such as Labram, CBraMod or BIOT are pretrained without labels on large EEG collections, then fine-tuned on a downstream task. A downstream result is usually reported as subject-independent because the test subjects are excluded from fine-tuning. That says nothing about pretraining: if the evaluation recordings were part of the pretraining corpus, the encoder has already seen the test subjects&#x27; signals, and the result is not held out from the model as a whole."><img alt="" src="../_images/sphx_glr_plot_pretraining_overlap_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/model_building/plot_pretraining_overlap.html"><span class="doc">Which data did a pretrained checkpoint see? Reading the model card</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Which data did a pretrained checkpoint see? Reading the model card</div>
 </div></div><div style='clear:both'></div></section>
 </section>
 
