@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 1.8.1 (2026-08-31): Enhancements: CI: tests marked slow run only with--run-slow or-m slow; the coverage job runs them in their own step, reusing its TorchInductor cache. The acceleration_ca..." />
+<meta property="og:description" content="Current 1.8.1 (2026-08-31): Enhancements: Add a CPU/Gloo distributed-window evaluation recipe with identity checks, chronological trial reconstruction and global metrics; it is a recipe, not an est..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 1.8.1 (2026-08-31): Enhancements: CI: tests marked slow run only with--run-slow or-m slow; the coverage job runs them in their own step, reusing its TorchInductor cache. The acceleration_ca..." />
+<meta name="description" content="Current 1.8.1 (2026-08-31): Enhancements: Add a CPU/Gloo distributed-window evaluation recipe with identity checks, chronological trial reconstruction and global metrics; it is a recipe, not an est..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -73,7 +73,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="How to cite Braindecode" href="cite.html" />
-    <link rel="prev" title="Channel strategies: any montage in" href="user_guide/channel_strategies.html" />
+    <link rel="prev" title="Cropped inference: trials, chunks and lifecycle" href="user_guide/cropped_inference.html" />
   <!-- Google Tag Manager (single analytics entry point — drives any GA4 / GTAG
        configured inside the GTM container; do not add a second gtag here).
        Honors the Do-Not-Track signal so privacy-conscious users opt out. -->
@@ -232,9 +232,9 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    What's new
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/cropped_inference.html">
+    Cropped inference
   </a>
 </li>
 
@@ -246,6 +246,13 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    What's new
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="cite.html">
     Cite
@@ -397,6 +404,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/cropped_inference.html">
+    Cropped inference
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#" aria-current="page">
     What's new
@@ -524,6 +538,70 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Add a <a class="reference internal" href="user_guide/cropped_inference.html#distributed-window-evaluation"><span class="std std-ref">CPU/Gloo distributed-window evaluation recipe</span></a> with identity checks, chronological trial
+reconstruction and global metrics; it is a recipe, not an estimator backend
+(by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset</span></code></a> takes the opt-in,
+keyword-only <code class="docutils literal notranslate"><span class="pre">coalesce_reads=False</span></code>: a DataLoader batch of consecutive,
+heavily overlapping windows of one lazy FIF recording is read as one union
+of samples instead of one read per window. Samples, targets, crop indices,
+order and random number use equal the default’s; with the default <code class="docutils literal notranslate"><span class="pre">False</span></code>
+outputs are unchanged. Other batches
+(shuffled, adjacent, sparse, several recordings, preloaded, Zarr,
+<a class="reference internal" href="generated/braindecode.datasets.WindowsDataset.html#braindecode.datasets.WindowsDataset" title="braindecode.datasets.WindowsDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">WindowsDataset</span></code></a>) take the default path. On a
+synthetic 22-channel 250 Hz FIF with 4-s windows every 1 s (512 windows,
+batches of 32, 4 CPUs, Intel Xeon Gold 6230R, five paired fresh processes),
+the median epoch took 27.8 ms instead of 133.6 ms with <code class="docutils literal notranslate"><span class="pre">num_workers=0</span></code> and
+66.7 ms instead of 132.2 ms with 2 workers; with 4 workers 63.2 ms instead
+of 80.6 ms, where one of five pairs did not improve beyond its
+epoch-to-epoch spread. Two cases were slower with 2 workers: adjacent
+windows (median paired ratio 1.050) and batches spanning two recordings
+(1.042), both above their measured baseline-versus-baseline variation.
+These three cases failed the pre-registered acceleration gate, so the option
+stays off by default; enable it only for overlapping-window datasets
+(by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">braindecode</span></code> and <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">braindecode.models</span></code> no longer import
+every model, the estimators, scikit-learn and pandas up front: the model
+classes, <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">EEGRegressor</span></code>,
+the subpackages and <code class="docutils literal notranslate"><span class="pre">models_dict</span></code> load on first access (PEP 562 module
+<code class="docutils literal notranslate"><span class="pre">__getattr__</span></code>), with the same names, <code class="docutils literal notranslate"><span class="pre">__all__</span></code> and model registry. On
+CPU with torch 2.14.1, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">braindecode</span></code> took 5 ms instead of 3.1 s and
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">braindecode.models</span> <span class="pre">import</span> <span class="pre">EEGNet</span></code> 1.6 s instead of 3.1 s. A new model
+needs one import line, in the <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">TYPE_CHECKING:</span></code> block of
+<code class="docutils literal notranslate"><span class="pre">braindecode/models/__init__.py</span></code>, as the new-model checklist says (by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.LUNA</span></code></a> reuses differentiable rotary tables within
+each attention forward (no persistent cache); <a class="reference internal" href="generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.Labram</span></code></a>
+splits its fused qkv projection with <code class="docutils literal notranslate"><span class="pre">unbind</span></code> instead of three selects.
+Parameters, checkpoint keys and numerical computations are preserved; LUNA
+trainable-frequency gradients can differ by floating-point accumulation
+rounding, and rotary-module hooks run once rather than twice per forward
+(by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.models.EEGConformer.html#braindecode.models.EEGConformer" title="braindecode.models.EEGConformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGConformer</span></code></a> takes the opt-in, keyword-only
+<code class="docutils literal notranslate"><span class="pre">activation_checkpointing=False</span></code>: non-reentrant activation checkpointing
+recomputes pure transformer blocks during backward with RNG preservation.
+Outputs, gradients and an optimizer step were bit-identical to checkpointing
+off in eager tests on PyTorch 2.14.1 CPU; old pickled models still load.
+Checkpointing requires eager execution; unsupported configurations are
+explicitly rejected (see the parameter documentation). On an Intel Xeon
+Gold 6230R CPU with four PyTorch/BLAS threads,
+FP32, embedding dimension 64, eight heads, six layers and dropout, five paired
+fresh processes at input shape <code class="docutils literal notranslate"><span class="pre">[8,</span> <span class="pre">22,</span> <span class="pre">8192]</span></code> measured 55.39% lower peak
+process RSS (median paired ratio 0.446142) and 73.14% extra train-step time
+(median paired ratio 1.731425) at equal batch. The largest passing integer
+batch under a 4 GiB peak process RSS budget increased from 17 to 68 in a
+fresh-process capacity search; this machine/runtime-qualified, one-run
+boundary is a memory-capacity result, not an equal-batch speed improvement
+(by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Add <a class="reference internal" href="generated/braindecode.training.iter_trial_predictions.html#braindecode.training.iter_trial_predictions" title="braindecode.training.iter_trial_predictions"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.training.iter_trial_predictions()</span></code></a>,
+<a class="reference internal" href="generated/braindecode.training.iter_trial_prediction_chunks.html#braindecode.training.iter_trial_prediction_chunks" title="braindecode.training.iter_trial_prediction_chunks"><code class="xref py py-func docutils literal notranslate"><span class="pre">iter_trial_prediction_chunks()</span></code></a> and
+<a class="reference internal" href="generated/braindecode.training.TrialPredictionChunk.html#braindecode.training.TrialPredictionChunk" title="braindecode.training.TrialPredictionChunk"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrialPredictionChunk</span></code></a> to stream cropped
+predictions one trial, or one chunk of at most <code class="docutils literal notranslate"><span class="pre">windows_per_chunk</span></code> windows,
+at a time. See <a class="reference internal" href="user_guide/cropped_inference.html#cropped-inference"><span class="std std-ref">Cropped inference: trials, chunks and lifecycle</span></a> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.training.predict_trials.html#braindecode.training.predict_trials" title="braindecode.training.predict_trials"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.training.predict_trials()</span></code></a> now reconstructs through the
+same streaming code and takes <code class="docutils literal notranslate"><span class="pre">loader_kwargs</span></code>; its outputs are unchanged.
+The single-window warning is now raised after inference, not before it
+(by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>CI: tests marked <code class="docutils literal notranslate"><span class="pre">slow</span></code> run only with <code class="docutils literal notranslate"><span class="pre">--run-slow</span></code> or <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">slow</span></code>; the
 coverage job runs them in their own step, reusing its TorchInductor cache.
 The <code class="docutils literal notranslate"><span class="pre">acceleration_caller_state</span></code> test fixture restores the RNG, thread and
@@ -927,6 +1005,12 @@ for decoding time-resolved EEG motor imagery signals, from Hou et al. (2022)
 <section id="api-and-behavior-changes">
 <h2>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>With opt-in <code class="docutils literal notranslate"><span class="pre">compile=True</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGRegressor</span></code> compile the module in place, keeping supplied
+Parameters and state-dict keys. <code class="docutils literal notranslate"><span class="pre">_orig_mod.</span></code> keys from skorch’s wrapper are
+<strong>not</strong> rewritten on load, and a pickled or copied estimator runs eagerly until
+<code class="docutils literal notranslate"><span class="pre">initialize()</span></code>;
+see <a class="reference internal" href="user_guide/cropped_inference.html#compile-checkpoint-migration"><span class="std std-ref">Opt-in compilation and checkpoint migration</span></a> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.get_metadata" title="braindecode.datasets.BaseConcatDataset.get_metadata"><code class="xref py py-meth docutils literal notranslate"><span class="pre">braindecode.datasets.BaseConcatDataset.get_metadata()</span></code></a> returns an <code class="docutils literal notranslate"><span class="pre">i_dataset</span></code> column with the position of the dataset each window comes from, and raises a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if a description or the window metadata already has that key. The samplers in <code class="xref py py-mod docutils literal notranslate"><span class="pre">braindecode.samplers</span></code> take each dataset as one recording; pass the metadata without <code class="docutils literal notranslate"><span class="pre">i_dataset</span></code> to group the one-trial datasets of <a class="reference internal" href="generated/braindecode.datasets.create_from_X_y.html#braindecode.datasets.create_from_X_y" title="braindecode.datasets.create_from_X_y"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.create_from_X_y()</span></code></a> or <a class="reference internal" href="generated/braindecode.datasets.create_from_mne_epochs.html#braindecode.datasets.create_from_mne_epochs" title="braindecode.datasets.create_from_mne_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.create_from_mne_epochs()</span></code></a> by subject, session and run as before. The samplers’ <code class="docutils literal notranslate"><span class="pre">info</span></code> gets a <code class="docutils literal notranslate"><span class="pre">recording</span></code> index level after subject, session and run (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1369">#1369</a> by <a class="reference external" href="https://github.com/raghav-rathi">Raghav Rathi</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.Labram</span></code></a>, <a class="reference internal" href="generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod" title="braindecode.models.CBraMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CBraMod</span></code></a> and
 <a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.LUNA</span></code></a> tokenize the time axis with the shared
@@ -976,6 +1060,11 @@ PyTorch stopped providing its binary packages after 2.2.
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Zarr cache creation reserves a unique temporary file per call (exclusive
+creation), so threads of one process no longer share one; permissions and
+existing caches are unchanged (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.training.PostEpochTrainScoring.html#braindecode.training.PostEpochTrainScoring" title="braindecode.training.PostEpochTrainScoring"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.training.PostEpochTrainScoring</span></code></a> restores the saved CPU
+Torch RNG state even when its reevaluation fails (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/filter/braindecode.modules.FilterBankLayer.html#braindecode.modules.FilterBankLayer" title="braindecode.modules.FilterBankLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.FilterBankLayer</span></code></a>, and so <a class="reference internal" href="generated/braindecode.models.FBCNet.html#braindecode.models.FBCNet" title="braindecode.models.FBCNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FBCNet</span></code></a>, <a class="reference internal" href="generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet" title="braindecode.models.FBMSNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FBMSNet</span></code></a>, <a class="reference internal" href="generated/braindecode.models.FBLightConvNet.html#braindecode.models.FBLightConvNet" title="braindecode.models.FBLightConvNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FBLightConvNet</span></code></a> and <a class="reference internal" href="generated/braindecode.models.IFNet.html#braindecode.models.IFNet" title="braindecode.models.IFNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.IFNet</span></code></a>, script again with PyTorch 2.15, where <code class="docutils literal notranslate"><span class="pre">torch.jit.script</span></code> failed inside <code class="xref py py-func docutils literal notranslate"><span class="pre">torchaudio.functional.lfilter()</span></code> (“Expression of type dots cannot be used in a type expression”). Eager filtering still calls torchaudio; the scripted graph runs the same operations as before, so outputs are unchanged (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1501">#1501</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Model loading validates relative custom weight paths and local symlink containment,
 without changing Hugging Face’s process-global filename. Serialized module classes
@@ -2976,12 +3065,12 @@ instead of 0 to indicate the end of the recording (<a class="reference external"
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="user_guide/channel_strategies.html"
+       href="user_guide/cropped_inference.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Channel strategies: any montage in</p>
+        <p class="prev-next-title">Cropped inference: trials, chunks and lifecycle</p>
       </div>
     </a>
     <a class="right-next"
