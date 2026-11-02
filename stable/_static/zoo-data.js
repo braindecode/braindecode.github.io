@@ -7,7 +7,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "113.7 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
+  },
+  {
+    "name": "AXON",
+    "cat": "foundation",
+    "year": null,
+    "params": "118.6 M",
+    "paper": "",
+    "desc": "Classification,Embedding for General"
   },
   {
     "name": "AttentionBaseNet",
@@ -15,7 +23,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "3.7 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
+  },
+  {
+    "name": "BaRISTA",
+    "cat": "foundation",
+    "year": null,
+    "params": "870.3 K",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "BDTCN",
@@ -23,7 +39,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "456.5 K",
     "paper": "",
-    "desc": "Classification for Normal Abnormal"
+    "desc": "Prediction for Normal Abnormal"
   },
   {
     "name": "BIOT",
@@ -31,7 +47,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "3.2 M",
     "paper": "",
-    "desc": "Classification for Sleep Staging, Epilepsy"
+    "desc": "Prediction for Sleep Staging, Epilepsy"
+  },
+  {
+    "name": "BrainBERT",
+    "cat": "foundation",
+    "year": null,
+    "params": "603.3 K",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "CBraMod",
@@ -39,7 +63,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "4.9 M",
     "paper": "",
-    "desc": "Classification,Embedding for General"
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "CodeBrain",
@@ -47,7 +71,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "15.2 M",
     "paper": "",
-    "desc": "Classification,Embedding for General"
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "CSBrain",
+    "cat": "foundation",
+    "year": null,
+    "params": "11 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "ContraWR",
@@ -55,7 +87,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "1.2 M",
     "paper": "",
-    "desc": "Classification, Embedding for Sleep Staging"
+    "desc": "Prediction, Embedding for Sleep Staging"
   },
   {
     "name": "CTNet",
@@ -63,7 +95,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "26.9 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "Deep4Net",
@@ -71,7 +103,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "282.9 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
   },
   {
     "name": "DeepSleepNet",
@@ -79,7 +111,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "24.7 M",
     "paper": "",
-    "desc": "Classification for Sleep Staging"
+    "desc": "Prediction for Sleep Staging"
   },
   {
     "name": "EEGConformer",
@@ -87,7 +119,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "789.6 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
+  },
+  {
+    "name": "EEGCLIP",
+    "cat": "foundation",
+    "year": null,
+    "params": "530.6 K",
+    "paper": "",
+    "desc": "Embedding, Prediction for General"
   },
   {
     "name": "EEGPT",
@@ -95,7 +135,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "25.5 M",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
   },
   {
     "name": "EEGInceptionERP",
@@ -103,7 +143,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "14.9 K",
     "paper": "",
-    "desc": "Classification for ERP, SSVEP"
+    "desc": "Prediction for ERP, SSVEP"
   },
   {
     "name": "EEGInceptionMI",
@@ -111,7 +151,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "558 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "EEGITNet",
@@ -119,7 +159,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "5.2 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "EEGNet",
@@ -127,7 +167,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "2.5 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
   },
   {
     "name": "EEGNeX",
@@ -135,7 +175,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "55.9 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "EEGSym",
@@ -143,7 +183,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "299.2 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "EEGMiner",
@@ -151,7 +191,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "7.6 K",
     "paper": "",
-    "desc": "Classification for Emotion Recognition"
+    "desc": "Prediction for Emotion Recognition"
   },
   {
     "name": "EEGSimpleConv",
@@ -159,7 +199,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "730.4 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "EEGTCNet",
@@ -167,7 +207,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "4.5 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "Labram",
@@ -175,7 +215,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "5.9 M",
     "paper": "",
-    "desc": "Classification, Embedding for General"
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "MSVTNet",
@@ -183,7 +223,23 @@ window.BD_MODELS = [
     "year": null,
     "params": "75.5 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
+  },
+  {
+    "name": "MSCFormer",
+    "cat": "attention",
+    "year": null,
+    "params": "150.7 K",
+    "paper": "",
+    "desc": "Prediction for Motor Imagery"
+  },
+  {
+    "name": "TMSANet",
+    "cat": "attention",
+    "year": null,
+    "params": "20.3 K",
+    "paper": "",
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "SCCNet",
@@ -191,7 +247,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "12.1 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "SignalJEPA",
@@ -207,7 +263,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "3.5 M",
     "paper": "",
-    "desc": "Classification for Motor Imagery, ERP, SSVEP"
+    "desc": "Prediction for Motor Imagery, ERP, SSVEP"
   },
   {
     "name": "SignalJEPA_PostLocal",
@@ -215,7 +271,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "16.1 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery, ERP, SSVEP"
+    "desc": "Prediction for Motor Imagery, ERP, SSVEP"
   },
   {
     "name": "SignalJEPA_PreLocal",
@@ -223,7 +279,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "16.1 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery, ERP, SSVEP"
+    "desc": "Prediction for Motor Imagery, ERP, SSVEP"
   },
   {
     "name": "SincShallowNet",
@@ -231,7 +287,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "21.9 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "ShallowFBCSPNet",
@@ -239,7 +295,23 @@ window.BD_MODELS = [
     "year": null,
     "params": "46.1 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
+  },
+  {
+    "name": "SleepFM",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.8 M",
+    "paper": "",
+    "desc": "Prediction for Sleep Staging, Disease Prediction"
+  },
+  {
+    "name": "SleepFMStager",
+    "cat": "foundation",
+    "year": null,
+    "params": "5.5 M",
+    "paper": "",
+    "desc": "Prediction for Sleep Staging"
   },
   {
     "name": "SleepStagerBlanco2020",
@@ -247,7 +319,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "2.8 K",
     "paper": "",
-    "desc": "Classification for Sleep Staging"
+    "desc": "Prediction for Sleep Staging"
   },
   {
     "name": "SleepStagerChambon2018",
@@ -255,15 +327,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "5.8 K",
     "paper": "",
-    "desc": "Classification for Sleep Staging"
+    "desc": "Prediction for Sleep Staging"
   },
   {
     "name": "AttnSleep",
     "cat": "attention",
     "year": null,
-    "params": "719.9 K",
+    "params": "522.8 K",
     "paper": "",
-    "desc": "Classification for Sleep Staging"
+    "desc": "Prediction for Sleep Staging"
   },
   {
     "name": "SPARCNet",
@@ -271,7 +343,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "1.1 M",
     "paper": "",
-    "desc": "Classification for Epilepsy"
+    "desc": "Prediction for Epilepsy"
   },
   {
     "name": "SyncNet",
@@ -279,7 +351,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "554",
     "paper": "",
-    "desc": "Classification for Emotion Recognition, Alcoholism"
+    "desc": "Prediction for Emotion Recognition, Alcoholism"
   },
   {
     "name": "TSception",
@@ -287,7 +359,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "2.2 M",
     "paper": "",
-    "desc": "Classification for Emotion Recognition"
+    "desc": "Prediction for Emotion Recognition"
   },
   {
     "name": "TIDNet",
@@ -295,7 +367,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "240.4 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
   },
   {
     "name": "USleep",
@@ -303,7 +375,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "2.5 M",
     "paper": "",
-    "desc": "Classification for Sleep Staging"
+    "desc": "Prediction for Sleep Staging"
   },
   {
     "name": "FBCNet",
@@ -311,7 +383,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "11.8 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "FBMSNet",
@@ -319,7 +391,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "16.2 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "MetaNeuromotorHand",
@@ -338,12 +410,36 @@ window.BD_MODELS = [
     "desc": "CTC Sequence for Touch typing (sEMG)"
   },
   {
+    "name": "VEMG2Pose",
+    "cat": "recurrent",
+    "year": null,
+    "params": "6 M",
+    "paper": "",
+    "desc": "Sequence Regression for Hand pose (sEMG)"
+  },
+  {
+    "name": "NeuroPose",
+    "cat": "convolution",
+    "year": null,
+    "params": "6.4 M",
+    "paper": "",
+    "desc": "Sequence Regression for Hand pose (sEMG)"
+  },
+  {
+    "name": "SensingDynamics",
+    "cat": "channel",
+    "year": null,
+    "params": "1.7 M",
+    "paper": "",
+    "desc": "Sequence Regression for Hand pose (sEMG)"
+  },
+  {
     "name": "FBLightConvNet",
     "cat": "filterbank",
     "year": null,
     "params": "6.6 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "IFNet",
@@ -351,7 +447,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "9.9 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "BrainModule",
@@ -359,7 +455,23 @@ window.BD_MODELS = [
     "year": null,
     "params": "6.2 M",
     "paper": "",
-    "desc": "Classification for Speech Decoding"
+    "desc": "Prediction for Speech Decoding"
+  },
+  {
+    "name": "Brant",
+    "cat": "foundation",
+    "year": null,
+    "params": "2.9 M",
+    "paper": "",
+    "desc": "Prediction for Epilepsy"
+  },
+  {
+    "name": "EpiNT",
+    "cat": "foundation",
+    "year": null,
+    "params": "19.2 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Epilepsy"
   },
   {
     "name": "PBT",
@@ -367,7 +479,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "818.9 K",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
+  },
+  {
+    "name": "PopulationTransformer",
+    "cat": "foundation",
+    "year": null,
+    "params": "20 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "SSTDPN",
@@ -375,7 +495,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "19.5 K",
     "paper": "",
-    "desc": "Classification for Motor Imagery"
+    "desc": "Prediction for Motor Imagery"
   },
   {
     "name": "BENDR",
@@ -383,7 +503,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "157.1 M",
     "paper": "",
-    "desc": "Classification,Embedding for General"
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "LUNA",
@@ -391,7 +511,15 @@ window.BD_MODELS = [
     "year": null,
     "params": "7.1 M",
     "paper": "",
-    "desc": "Classification,Embedding for General"
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "MAPA",
+    "cat": "foundation",
+    "year": null,
+    "params": "21.3 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   },
   {
     "name": "MEDFormer",
@@ -399,7 +527,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "5.3 M",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
   },
   {
     "name": "REVE",
@@ -407,7 +535,7 @@ window.BD_MODELS = [
     "year": null,
     "params": "69.5 M",
     "paper": "",
-    "desc": "Classification for General"
+    "desc": "Prediction for General"
   },
   {
     "name": "DGCNN",
@@ -415,7 +543,143 @@ window.BD_MODELS = [
     "year": null,
     "params": "1 M",
     "paper": "",
-    "desc": "Classification for Emotion Recognition"
+    "desc": "Prediction for Emotion Recognition"
+  },
+  {
+    "name": "DIVER1",
+    "cat": "foundation",
+    "year": null,
+    "params": "12.7 M",
+    "paper": "",
+    "desc": "Prediction for General"
+  },
+  {
+    "name": "DuIN",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.2 M",
+    "paper": "",
+    "desc": "Prediction for Speech Decoding"
+  },
+  {
+    "name": "BrainOmni",
+    "cat": "foundation",
+    "year": null,
+    "params": "14 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "BrainTokenizer",
+    "cat": "foundation",
+    "year": null,
+    "params": "5.1 M",
+    "paper": "",
+    "desc": "Embedding for General"
+  },
+  {
+    "name": "TCFormer",
+    "cat": "attention",
+    "year": null,
+    "params": "77.8 K",
+    "paper": "",
+    "desc": "Classification for Motor Imagery"
+  },
+  {
+    "name": "TFMTokenizer",
+    "cat": "foundation",
+    "year": null,
+    "params": "1.2 M",
+    "paper": "",
+    "desc": "Pretraining, Tokenization for General"
+  },
+  {
+    "name": "EEGDINO",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.5 M",
+    "paper": "",
+    "desc": "Classification for General"
+  },
+  {
+    "name": "DANCE",
+    "cat": "attention",
+    "year": null,
+    "params": "29.8 M",
+    "paper": "",
+    "desc": "Event Detection for General"
+  },
+  {
+    "name": "STEEGFormer",
+    "cat": "foundation",
+    "year": null,
+    "params": "25.3 M",
+    "paper": "",
+    "desc": "Classification for General"
+  },
+  {
+    "name": "MVPFormer",
+    "cat": "foundation",
+    "year": null,
+    "params": "3.4 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "ZUNA",
+    "cat": "foundation",
+    "year": null,
+    "params": "172.1 M",
+    "paper": "",
+    "desc": "Classification,Embedding for General"
+  },
+  {
+    "name": "MIRepNet",
+    "cat": "foundation",
+    "year": null,
+    "params": "5.1 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Motor Imagery"
+  },
+  {
+    "name": "NeuroRVQ",
+    "cat": "foundation",
+    "year": null,
+    "params": "7.1 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "SeizureTransformer",
+    "cat": "attention",
+    "year": null,
+    "params": "37.8 M",
+    "paper": "",
+    "desc": "Event Detection for Epilepsy"
+  },
+  {
+    "name": "NeuroRVQTokenizer",
+    "cat": "foundation",
+    "year": null,
+    "params": "75.7 M",
+    "paper": "",
+    "desc": "Embedding for General"
+  },
+  {
+    "name": "Guetschel2026",
+    "cat": "foundation",
+    "year": null,
+    "params": "12.9 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "GCNsNet",
+    "cat": "graph",
+    "year": null,
+    "params": "359.4 K",
+    "paper": "",
+    "desc": "Prediction for Motor Imagery"
   }
 ];
 window.BD_CATEGORIES = [
@@ -425,14 +689,14 @@ window.BD_CATEGORIES = [
     "color": "gray"
   },
   {
-    "id": "convolution",
-    "label": "Convolution",
-    "color": ""
-  },
-  {
     "id": "foundation",
     "label": "Foundation",
     "color": "purple"
+  },
+  {
+    "id": "convolution",
+    "label": "Convolution",
+    "color": ""
   },
   {
     "id": "attention",

@@ -227,7 +227,7 @@ windows_dataset = create_windows_from_events(
     trial_stop_offset_samples=0,
     window_size_samples=n_times,
     window_stride_samples=n_preds_per_input,
-    drop_last_window=False,
+    on_last_window="overlap",
     preload=True,
 )
 
@@ -246,7 +246,7 @@ valid_set = splitted["1test"]  # Session evaluation
 # Training
 # --------
 # In difference to trialwise decoding, we now should supply
-# ``cropped=True`` to the :class:`EEGClassifer
+# ``cropped=True`` to the :class:`EEGClassifier
 # <braindecode.classifier.EEGClassifier>`, and :class:`CroppedLoss
 # <braindecode.training.CroppedLoss>` as the criterion,
 # as well as ``criterion__loss_function`` as the loss function

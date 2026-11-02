@@ -195,6 +195,11 @@ print(f"Reconstructed: n_outputs={model_copy.n_outputs}")
 #      - |check|
 #      - |check|
 #      - |check|
+#    * - :class:`~braindecode.models.Brant`
+#      - |check|
+#      - |check|
+#      - |check|
+#      - |check|
 #    * - :class:`~braindecode.models.CBraMod`
 #      - |check|
 #      - |check|
@@ -230,11 +235,18 @@ print(f"Reconstructed: n_outputs={model_copy.n_outputs}")
 #      - |check|
 #      - |check|
 #      - |check|
+#    * - :class:`~braindecode.models.STEEGFormer`
+#      - |check|
+#      - |check|
+#      - |check| (+ ``cls_token``)
+#      - |check|
 #
 # .. |check| unicode:: 0x2714
 #
 # The feature shapes differ between models (reflecting their
 # architecture), but the API is always the same.
+# Brant's row describes that generic save/load API; the converted official
+# weights are on the Hub as ``braindecode/brant-pretrained``.
 
 ######################################################################
 # Available pretrained weights
@@ -265,6 +277,7 @@ from braindecode.models import (
     CodeBrain,
     Labram,
     SignalJEPA,
+    STEEGFormer,
 )
 
 # (display_name, model_class, from_pretrained kwargs, org)
@@ -334,6 +347,15 @@ checkpoints = [
         "SignalJEPA",
         SignalJEPA,
         dict(pretrained_model_name_or_path="braindecode/signal-jepa"),
+        "braindecode",
+    ),
+    (
+        "STEEGFormer (small)",
+        STEEGFormer,
+        dict(
+            pretrained_model_name_or_path="braindecode/STEEGFormer-small",
+            n_outputs=2,
+        ),
         "braindecode",
     ),
     (
@@ -591,15 +613,56 @@ plt.show()
 #    * - :class:`~braindecode.models.EEGPT`
 #      - ``braindecode/eegpt-pretrained``
 #      - 62 ch, 250 Hz
+#    * - :class:`~braindecode.models.VEMG2Pose`
+#      - ``braindecode/EMG2Pose-emg2pose``
+#      - regression, MLP decoder
+#    * - :class:`~braindecode.models.VEMG2Pose`
+#      - ``braindecode/EMG2Pose-emg2pose-tracking``
+#      - tracking, MLP decoder
 #    * - :class:`~braindecode.models.Labram`
 #      - ``braindecode/labram-pretrained``
 #      - 128 channels
+#    * - :class:`~braindecode.models.NeuroPose`
+#      - ``braindecode/NeuroPose-emg2pose``
+#      - regression, 16 ch, 2 kHz
 #    * - :class:`~braindecode.models.SignalJEPA` and downstream variants
 #      - ``braindecode/signal-jepa``
 #      - 62 channels + pre-trained channel embedding
 #    * - :class:`~braindecode.models.SignalJEPA` and downstream variants
 #      - ``braindecode/signal-jepa_without-chans``
 #      - arbitrary channel set (embedding stripped)
+#    * - :class:`~braindecode.models.STEEGFormer`
+#      - ``braindecode/STEEGFormer-small``
+#      - 25M params, 145-slot channel vocabulary
+#    * - :class:`~braindecode.models.STEEGFormer`
+#      - ``braindecode/STEEGFormer-base``
+#      - 85M params, 145-slot channel vocabulary
+#    * - :class:`~braindecode.models.STEEGFormer`
+#      - ``braindecode/STEEGFormer-large``
+#      - 302M params, 145-slot channel vocabulary
+#    * - :class:`~braindecode.models.STEEGFormer`
+#      - ``braindecode/STEEGFormer-largeV2``
+#      - 302M params, 256-slot HBN channel vocabulary
+#    * - :class:`~braindecode.models.VEMG2Pose`
+#      - ``braindecode/VEMG2Pose-emg2pose``
+#      - regression, recurrent decoder
+#    * - :class:`~braindecode.models.VEMG2Pose`
+#      - ``braindecode/VEMG2Pose-emg2pose-tracking``
+#      - tracking, recurrent decoder
+#
+# The STEEGFormer checkpoints above are braindecode-format re-hosts of the
+# official MAE encoder weights. The saved ``config.json`` selects the correct
+# width/depth and channel-vocabulary size, so the usual one-line loading pattern
+# is enough:
+#
+# .. code-block:: python
+#
+#    from braindecode.models import STEEGFormer
+#
+#    model = STEEGFormer.from_pretrained(
+#        "braindecode/STEEGFormer-small",
+#        n_outputs=4,
+#    )
 #
 # External organizations
 # ~~~~~~~~~~~~~~~~~~~~~~
