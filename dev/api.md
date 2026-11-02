@@ -2,7 +2,7 @@ Braindecode package version: 2.0.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [535e058fe900a30c74eedc1b240b20f5b55d937d](https://github.com/braindecode/braindecode/tree/535e058fe900a30c74eedc1b240b20f5b55d937d)
+Source commit: [a9af010078c4325ee4bc31b2b353ce5ea3b15d4f](https://github.com/braindecode/braindecode/tree/a9af010078c4325ee4bc31b2b353ce5ea3b15d4f)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -85,7 +85,7 @@ organization:
 - [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE) - EEG foundation model with pre-trained weights
 - [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA) - Universal EEG embedding model with pre-trained weights
 - [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA) - Masked autoencoder for intracranial EEG with anatomical priors
-- `MIRepNet` - Motor-imagery pre-trained model
+- [`MIRepNet`](generated/braindecode.models.MIRepNet.html#braindecode.models.MIRepNet) - Motor-imagery pre-trained model
 - [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ) - Multi-scale biosignal tokenizer foundation model
 - [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer) - Residual vector quantization EEG tokenizer
 - [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR) - Foundation model with pre-trained weights
@@ -128,9 +128,9 @@ For more details, see the [`EEGModuleMixin`](generated/braindecode.models.EEGMod
 and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/datasets_io/plot_hub_integration.html#hub-integration) tutorial.
 
 * **note:**
-  Auto-generated Pydantic configs are available when the optional
-  `braindecode[pydantic]` extra (which installs `pydantic` and `numpydantic`) is
-  installed; otherwise config generation is skipped.
+  Model configs are generated with Pydantic, a core dependency. With the optional
+  `braindecode[typing]` extra (`numpydantic` and `exca`), the channel positions
+  in `chs_info` are validated as typed 12-element arrays.
 
 `braindecode.models.base`:
 
@@ -152,11 +152,13 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`BrainModule`](generated/braindecode.models.BrainModule.html#braindecode.models.BrainModule)([n_chans, n_outputs, n_times, ...])                      | BrainModule from [[Rf869b8ed6368-brainmagick]](generated/braindecode.models.BrainModule.html#rf869b8ed6368-brainmagick), also known as SimpleConv.                                                   |
 | [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni)([n_outputs, n_chans, chs_info, ...])                           | BrainOmni from Xiao et al. (2025) [[R9a8f28a4d509-brainomni]](generated/braindecode.models.BrainOmni.html#r9a8f28a4d509-brainomni).                                                                  |
 | [`BrainTokenizer`](generated/braindecode.models.BrainTokenizer.html#braindecode.models.BrainTokenizer)([n_outputs, n_chans, ...])                      | BrainTokenizer from Xiao et al. (2025) [[R9031df3dd5f0-brainomni]](generated/braindecode.models.BrainTokenizer.html#r9031df3dd5f0-brainomni).                                                        |
+| [`Brant`](generated/braindecode.models.Brant.html#braindecode.models.Brant)([n_outputs, n_chans, chs_info, ...])                                       | Brant from Zhang et al. (2023) [[Rcebd0fff412e-Brant2023]](generated/braindecode.models.Brant.html#rcebd0fff412e-brant2023).                                                                         |
 | [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod)([n_outputs, n_chans, chs_info, ...])                                 | **C**riss-**C**ross **Bra**in **Mod**el for EEG Decoding from Wang et al. (2025) [[Rdb05ba1b4969-cbramod]](generated/braindecode.models.CBraMod.html#rdb05ba1b4969-cbramod).                         |
 | [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain)([n_outputs, n_chans, chs_info, ...])                           | CodeBrain: Scalable Code EEG Pre-Training for Unified Downstream BCI Tasks.                                                                                                                          |
 | [`ContraWR`](generated/braindecode.models.ContraWR.html#braindecode.models.ContraWR)([n_chans, n_outputs, sfreq, ...])                                 | Contrast with the World Representation ContraWR from Yang et al (2021) [[Ra71465cb6797-Yang2021]](generated/braindecode.models.ContraWR.html#ra71465cb6797-yang2021).                                |
 | [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain)([n_outputs, n_chans, chs_info, ...])                                 | Cross-scale Spatiotemporal Brain Foundation Model from Zhou et al. (2025) [[R4dd11cf2e832-zhou2025csbrain]](generated/braindecode.models.CSBrain.html#r4dd11cf2e832-zhou2025csbrain).                |
 | [`CTNet`](generated/braindecode.models.CTNet.html#braindecode.models.CTNet)([n_outputs, n_chans, sfreq, chs_info, ...])                                | CTNet from Zhao, W et al (2024) [[Rc7f1d6cec70c-ctnet]](generated/braindecode.models.CTNet.html#rc7f1d6cec70c-ctnet).                                                                                |
+| [`DANCE`](generated/braindecode.models.DANCE.html#braindecode.models.DANCE)([n_outputs, n_chans, chs_info, ...])                                       | DANCE from Lévy et al (2026) [[R583baa0bd918-dance]](generated/braindecode.models.DANCE.html#r583baa0bd918-dance).                                                                                   |
 | [`DGCNN`](generated/braindecode.models.DGCNN.html#braindecode.models.DGCNN)([n_outputs, n_chans, chs_info, ...])                                       | DGCNN for EEG classification from Song et al. (2018) [[Rff991d0fb90b-dgcnn]](generated/braindecode.models.DGCNN.html#rff991d0fb90b-dgcnn).                                                           |
 | [`DIVER1`](generated/braindecode.models.DIVER1.html#braindecode.models.DIVER1)([n_outputs, n_chans, chs_info, ...])                                    | DIVER-1 from Han et al. (2025) [[Raa6ac0ab42e7-Han2025]](generated/braindecode.models.DIVER1.html#raa6ac0ab42e7-han2025).                                                                            |
 | [`DuIN`](generated/braindecode.models.DuIN.html#braindecode.models.DuIN)([n_outputs, n_chans, chs_info, ...])                                          | Du-IN from Zheng et al. (2024) [[R23b5281b4d86-DuIN2024]](generated/braindecode.models.DuIN.html#r23b5281b4d86-duin2024).                                                                            |
@@ -188,15 +190,19 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA)([n_outputs, n_chans, chs_info, ...])                                          | MAPA from Tang, Spalding and Cogan (2026) [[Rdfa8ba30d9a1-Tang2026]](generated/braindecode.models.MAPA.html#rdfa8ba30d9a1-tang2026).                                                                 |
 | [`MEDFormer`](generated/braindecode.models.MEDFormer.html#braindecode.models.MEDFormer)([n_chans, n_outputs, n_times, ...])                            | Medformer from Wang et al (2024) [[Rf62d33a1206f-Medformer2024]](generated/braindecode.models.MEDFormer.html#rf62d33a1206f-medformer2024).                                                           |
 | [`MetaNeuromotorHand`](generated/braindecode.models.MetaNeuromotorHand.html#braindecode.models.MetaNeuromotorHand)([n_outputs, n_chans, ...])          | Generic neuromotor interface for handwriting from Meta (2025) [[R56528df87fac-gni2025]](generated/braindecode.models.MetaNeuromotorHand.html#r56528df87fac-gni2025).                                 |
+| [`MIRepNet`](generated/braindecode.models.MIRepNet.html#braindecode.models.MIRepNet)([n_outputs, n_chans, chs_info, ...])                              | MIRepNet from Liu et al. (2026) [[R262b054dda18-liu2026mirepnet]](generated/braindecode.models.MIRepNet.html#r262b054dda18-liu2026mirepnet).                                                         |
 | [`MSCFormer`](generated/braindecode.models.MSCFormer.html#braindecode.models.MSCFormer)([n_outputs, n_chans, sfreq, ...])                              | MSCFormer from Zhao, W et al (2025) [[R145bcee8b1ba-mscformer]](generated/braindecode.models.MSCFormer.html#r145bcee8b1ba-mscformer).                                                                |
 | [`MSVTNet`](generated/braindecode.models.MSVTNet.html#braindecode.models.MSVTNet)([n_chans, n_outputs, n_times, ...])                                  | MSVTNet model from Liu K et al (2024) from [[R0733e66fed6d-msvt2024]](generated/braindecode.models.MSVTNet.html#r0733e66fed6d-msvt2024).                                                             |
-| [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ)([n_outputs, n_chans, chs_info, ...])                              | NeuroRVQ foundation model for EEG, ECG and EMG from Barmpas et al. [neurorvq].                                                                                                                       |
-| [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer)([n_outputs, n_chans, ...])             | NeuroRVQ multi-scale residual-vector-quantized biosignal tokenizer from Barmpas et al. [neurorvq].                                                                                                   |
+| [`MVPFormer`](generated/braindecode.models.MVPFormer.html#braindecode.models.MVPFormer)([n_outputs, n_chans, chs_info, ...])                           | MVPFormer from Carzaniga et al. (2026) [[Rb9b969c351d7-Carzaniga2026]](generated/braindecode.models.MVPFormer.html#rb9b969c351d7-carzaniga2026).                                                     |
+| [`NeuroPose`](generated/braindecode.models.NeuroPose.html#braindecode.models.NeuroPose)([n_outputs, n_chans, chs_info, ...])                           | NeuroPose from Liu et al (2021) [[R50cdf843b812-liu2021neuropose]](generated/braindecode.models.NeuroPose.html#r50cdf843b812-liu2021neuropose).                                                      |
+| [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ)([n_outputs, n_chans, chs_info, ...])                              | NeuroRVQ foundation model for EEG, ECG and EMG from Barmpas et al. [[R66b4b6688126-neurorvq]](generated/braindecode.models.NeuroRVQ.html#r66b4b6688126-neurorvq).                                    |
+| [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer)([n_outputs, n_chans, ...])             | NeuroRVQ multi-scale residual-vector-quantized biosignal tokenizer from Barmpas et al. [[R8de28e16bd52-neurorvq]](generated/braindecode.models.NeuroRVQTokenizer.html#r8de28e16bd52-neurorvq).       |
 | [`PBT`](generated/braindecode.models.PBT.html#braindecode.models.PBT)([n_chans, n_outputs, n_times, chs_info, ...])                                    | Patched Brain Transformer (PBT) model from Klein et al (2025) [[Re7f840f86627-pbt]](generated/braindecode.models.PBT.html#re7f840f86627-pbt).                                                        |
 | [`PopulationTransformer`](generated/braindecode.models.PopulationTransformer.html#braindecode.models.PopulationTransformer)([n_outputs, n_chans, ...]) | PopulationTransformer (PopT) from Chau et al. (2024) [[R1b4476d13843-PopT2024]](generated/braindecode.models.PopulationTransformer.html#r1b4476d13843-popt2024).                                     |
 | [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE)([n_outputs, n_chans, chs_info, ...])                                          | **R**epresentation for **E**EG with **V**ersatile **E**mbeddings (REVE) from El Ouahidi et al. (2025) [[Rfc92bf36d5c3-reve]](generated/braindecode.models.REVE.html#rfc92bf36d5c3-reve).             |
 | [`SCCNet`](generated/braindecode.models.SCCNet.html#braindecode.models.SCCNet)([n_chans, n_outputs, n_times, ...])                                     | SCCNet from Wei, C S (2019) [[Rbd95e5cdbbde-sccnet]](generated/braindecode.models.SCCNet.html#rbd95e5cdbbde-sccnet).                                                                                 |
 | [`SeizureTransformer`](generated/braindecode.models.SeizureTransformer.html#braindecode.models.SeizureTransformer)([n_outputs, n_chans, ...])          | SeizureTransformer from Wu et al. (2025) [[Re066a283f37e-Wu2025]](generated/braindecode.models.SeizureTransformer.html#re066a283f37e-wu2025).                                                        |
+| [`SensingDynamics`](generated/braindecode.models.SensingDynamics.html#braindecode.models.SensingDynamics)([n_outputs, n_chans, ...])                   | SensingDynamics from Sîmpetru et al. (2022) [[R6a078fb61066-simpetru2022]](generated/braindecode.models.SensingDynamics.html#r6a078fb61066-simpetru2022).                                            |
 | [`ShallowFBCSPNet`](generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet)([n_chans, n_outputs, ...])                   | Shallow ConvNet model from Schirrmeister et al (2017) [[R9432a19f6121-Schirrmeister2017]](generated/braindecode.models.ShallowFBCSPNet.html#r9432a19f6121-schirrmeister2017).                        |
 | [`SignalJEPA`](generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA)([n_outputs, n_chans, chs_info, ...])                        | Architecture introduced in signal-JEPA for self-supervised pre-training, Guetschel, P et al (2024) [[R62b31c4b9b52-1]](generated/braindecode.models.SignalJEPA.html#r62b31c4b9b52-1)                 |
 | [`SignalJEPA_Contextual`](generated/braindecode.models.SignalJEPA_Contextual.html#braindecode.models.SignalJEPA_Contextual)([n_outputs, n_chans, ...]) | Contextual downstream architecture introduced in signal-JEPA Guetschel, P et al (2024) [[Rb25bb9e753a8-1]](generated/braindecode.models.SignalJEPA_Contextual.html#rb25bb9e753a8-1).                 |
@@ -218,6 +224,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`TMSANet`](generated/braindecode.models.TMSANet.html#braindecode.models.TMSANet)([n_outputs, n_chans, n_times, ...])                                  | TMSA-Net from Zhao and Zhu (2025) [[Ra1d0355d04de-tmsanet]](generated/braindecode.models.TMSANet.html#ra1d0355d04de-tmsanet).                                                                        |
 | [`TSception`](generated/braindecode.models.TSception.html#braindecode.models.TSception)([n_chans, n_outputs, ...])                                     | TSception model from Ding et al. (2020) from [[R576865d14b94-ding2020]](generated/braindecode.models.TSception.html#r576865d14b94-ding2020).                                                         |
 | [`USleep`](generated/braindecode.models.USleep.html#braindecode.models.USleep)([n_chans, sfreq, depth, ...])                                           | Sleep staging architecture from Perslev et al (2021) [[R58a5e8182f0a-1]](generated/braindecode.models.USleep.html#r58a5e8182f0a-1).                                                                  |
+| [`VEMG2Pose`](generated/braindecode.models.VEMG2Pose.html#braindecode.models.VEMG2Pose)([n_outputs, n_chans, chs_info, ...])                           | VEMG2Pose from Salter et al (2024) [[R7d445cdb04f7-salter2024]](generated/braindecode.models.VEMG2Pose.html#r7d445cdb04f7-salter2024).                                                               |
 | [`ZUNA`](generated/braindecode.models.ZUNA.html#braindecode.models.ZUNA)([n_outputs, n_chans, chs_info, ...])                                          | ZUNA from Warner et al. (2026) [[Rc751ab0dc940-Warner2026ZUNA]](generated/braindecode.models.ZUNA.html#rc751ab0dc940-warner2026zuna).                                                                |
 
 <a id="diver-1-recording-metadata"></a>
@@ -394,6 +401,20 @@ initializations.
 | [`LinearWithConstraint`](generated/linear/braindecode.modules.LinearWithConstraint.html#braindecode.modules.LinearWithConstraint)(\*args[, max_norm])   | Linear layer with max-norm constraint on the weights.   |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
 | [`MaxNormLinear`](generated/linear/braindecode.modules.MaxNormLinear.html#braindecode.modules.MaxNormLinear)(in_features, out_features[, ...])          | Linear layer with MaxNorm constraining on weights.      |
+
+<a id="quantization"></a>
+
+### Quantization
+
+These modules implement the vector quantizers of the tokenizer models, such as
+[`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer).
+
+`braindecode.modules.quantization`:
+
+| [`EMACodebook`](generated/quantization/braindecode.modules.EMACodebook.html#braindecode.modules.EMACodebook)(dim, codebook_size[, decay, ...])                           | EMA-updated Euclidean codebook.                                    |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| [`VectorQuantizer`](generated/quantization/braindecode.modules.VectorQuantizer.html#braindecode.modules.VectorQuantizer)(dim, codebook_size[, ...])                      | Single-layer vector quantisation with optional rotation-trick STE. |
+| [`ResidualVectorQuantizer`](generated/quantization/braindecode.modules.ResidualVectorQuantizer.html#braindecode.modules.ResidualVectorQuantizer)(dim, codebook_dim, ...) | Residual vector quantisation with L2-normalisation.                |
 
 <a id="stats"></a>
 
