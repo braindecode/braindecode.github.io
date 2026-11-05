@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: None yet. API and behavior changes: None yet. Requirements: The eegprep extra (and all) requires torch&gt;=2.7 on Python 3.11: every eegprep release for Python..." />
+<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: With return_features=True, braindecode.models.BrainBERT, EpiNT, Brant, PopulationTransformer, BaRISTA, DIVER1 and MVPFormer also return&quot;tokens&quot;, the ..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: None yet. API and behavior changes: None yet. Requirements: The eegprep extra (and all) requires torch&gt;=2.7 on Python 3.11: every eegprep release for Python..." />
+<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: With return_features=True, braindecode.models.BrainBERT, EpiNT, Brant, PopulationTransformer, BaRISTA, DIVER1 and MVPFormer also return&quot;tokens&quot;, the ..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -538,7 +538,14 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">return_features=True</span></code>, <a class="reference internal" href="generated/braindecode.models.BrainBERT.html#braindecode.models.BrainBERT" title="braindecode.models.BrainBERT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BrainBERT</span></code></a>,
+<a class="reference internal" href="generated/braindecode.models.EpiNT.html#braindecode.models.EpiNT" title="braindecode.models.EpiNT"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpiNT</span></code></a>, <a class="reference internal" href="generated/braindecode.models.Brant.html#braindecode.models.Brant" title="braindecode.models.Brant"><code class="xref py py-class docutils literal notranslate"><span class="pre">Brant</span></code></a>,
+<a class="reference internal" href="generated/braindecode.models.PopulationTransformer.html#braindecode.models.PopulationTransformer" title="braindecode.models.PopulationTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PopulationTransformer</span></code></a>,
+<a class="reference internal" href="generated/braindecode.models.BaRISTA.html#braindecode.models.BaRISTA" title="braindecode.models.BaRISTA"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaRISTA</span></code></a>, <a class="reference internal" href="generated/braindecode.models.DIVER1.html#braindecode.models.DIVER1" title="braindecode.models.DIVER1"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIVER1</span></code></a> and
+<a class="reference internal" href="generated/braindecode.models.MVPFormer.html#braindecode.models.MVPFormer" title="braindecode.models.MVPFormer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MVPFormer</span></code></a> also return <code class="docutils literal notranslate"><span class="pre">&quot;tokens&quot;</span></code>, the per-token
+encoder output <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_tokens,</span> <span class="pre">dim)</span></code> with the tokens of padded
+channels zero; DIVER1 gains
+<code class="docutils literal notranslate"><span class="pre">return_features</span></code> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1540">#1540</a> by <a class="reference external" href="https://github.com/julien-gadonneix">Julien Gadonneix</a>).</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -577,11 +584,15 @@ its first argument (<code class="docutils literal notranslate"><span class="pre"
 <section id="code-health">
 <h2>Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">test/unit_tests/training/test_ch_mask_training.py</span></code> fits every model of
-the <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> tests through <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> with
-<code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.pad_channels_collate()</span></code>, checks that each recording
-keeps the predictions and gradients it gets alone, and fails when a model
-takes <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> without a test case (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1545">#1545</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Codacy runs Bandit from a root <code class="docutils literal notranslate"><span class="pre">bandit.yml</span></code> that skips B105, which flagged every <code class="docutils literal notranslate"><span class="pre">&quot;cls_token&quot;</span></code> key of the foundation-model feature dicts as a hardcoded password, and B101, the test <code class="docutils literal notranslate"><span class="pre">assert</span></code> statements (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1546">#1546</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Every registered model whose <code class="docutils literal notranslate"><span class="pre">forward</span></code> takes <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> is checked with no
+per-model test case, like the other cross-model contracts: each recording of a
+NaN-padded batch keeps the output and gradients it gets alone, padded inputs
+get no gradient and padded <code class="docutils literal notranslate"><span class="pre">tokens</span></code> are zero, also when the model is fit
+through <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.pad_channels_collate()</span></code>; a model may instead refuse
+<code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> that names it
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1545">#1545</a>, <a class="reference external" href="https://github.com/braindecode/braindecode/issues/1548">#1548</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test/unit_tests/test_version.py</span></code> accepts release versions, so the tests
 shipped in a release sdist pass (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Documentation built from a release tag uses <a class="reference external" href="https://braindecode.org/stable/">https://braindecode.org/stable/</a>
