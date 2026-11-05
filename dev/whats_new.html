@@ -564,11 +564,24 @@ resolver conflict (by <a class="reference external" href="https://github.com/bru
 a shorter <code class="docutils literal notranslate"><span class="pre">n_times</span></code>: the learned temporal positions keep the checkpoint’s
 leading ones instead of raising a size mismatch
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1537">#1537</a> by <a class="reference external" href="https://github.com/julien-gadonneix">Julien Gadonneix</a>).</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGRegressor</span></code>
+route the batches of <code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.pad_channels_collate()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">set_return_ch_pos</span></code> by the model’s <code class="docutils literal notranslate"><span class="pre">forward</span></code> signature: the signal goes to
+its first argument (<code class="docutils literal notranslate"><span class="pre">eeg</span></code> of <a class="reference internal" href="generated/braindecode.models.REVE.html#braindecode.models.REVE" title="braindecode.models.REVE"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.REVE</span></code></a>, <code class="docutils literal notranslate"><span class="pre">X</span></code> of
+<a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">LUNA</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">pos</span></code> and <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> only to a
+<code class="docutils literal notranslate"><span class="pre">forward</span></code> that takes them. A model without them now raises a clear
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> deep in skorch
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1545">#1545</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="code-health">
 <h2>Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test/unit_tests/training/test_ch_mask_training.py</span></code> fits every model of
+the <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> tests through <code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.EEGClassifier</span></code> with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.datasets.pad_channels_collate()</span></code>, checks that each recording
+keeps the predictions and gradients it gets alone, and fails when a model
+takes <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> without a test case (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1545">#1545</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test/unit_tests/test_version.py</span></code> accepts release versions, so the tests
 shipped in a release sdist pass (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Documentation built from a release tag uses <a class="reference external" href="https://braindecode.org/stable/">https://braindecode.org/stable/</a>
