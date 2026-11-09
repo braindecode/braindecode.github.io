@@ -688,6 +688,14 @@ window.BD_MODELS = [
     "params": "359.4 K",
     "paper": "",
     "desc": "Prediction for Motor Imagery"
+  },
+  {
+    "name": "NICE",
+    "cat": "convolution",
+    "year": null,
+    "params": "2 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Visual Decoding"
   }
 ];
 window.BD_CATEGORIES = [

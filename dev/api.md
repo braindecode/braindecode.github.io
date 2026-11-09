@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [0f1cce2760aa2d6ca6491cba16b78520fa5b1627](https://github.com/braindecode/braindecode/tree/0f1cce2760aa2d6ca6491cba16b78520fa5b1627)
+Source commit: [1aea0425029aca30adb26735807ee11a9964637b](https://github.com/braindecode/braindecode/tree/1aea0425029aca30adb26735807ee11a9964637b)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -200,6 +200,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`NeuroPose`](generated/braindecode.models.NeuroPose.html#braindecode.models.NeuroPose)([n_outputs, n_chans, chs_info, ...])                           | NeuroPose from Liu et al (2021) [[R50cdf843b812-liu2021neuropose]](generated/braindecode.models.NeuroPose.html#r50cdf843b812-liu2021neuropose).                                                      |
 | [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ)([n_outputs, n_chans, chs_info, ...])                              | NeuroRVQ foundation model for EEG, ECG and EMG from Barmpas et al. [[R66b4b6688126-neurorvq]](generated/braindecode.models.NeuroRVQ.html#r66b4b6688126-neurorvq).                                    |
 | [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer)([n_outputs, n_chans, ...])             | NeuroRVQ multi-scale residual-vector-quantized biosignal tokenizer from Barmpas et al. [[R8de28e16bd52-neurorvq]](generated/braindecode.models.NeuroRVQTokenizer.html#r8de28e16bd52-neurorvq).       |
+| [`NICE`](generated/braindecode.models.NICE.html#braindecode.models.NICE)([n_outputs, n_chans, chs_info, ...])                                          | NICE EEG/MEG encoder from Song et al. (2024) [[R1d76e922b047-song2024nice]](generated/braindecode.models.NICE.html#r1d76e922b047-song2024nice).                                                      |
 | [`PBT`](generated/braindecode.models.PBT.html#braindecode.models.PBT)([n_chans, n_outputs, n_times, chs_info, ...])                                    | Patched Brain Transformer (PBT) model from Klein et al (2025) [[Re7f840f86627-pbt]](generated/braindecode.models.PBT.html#re7f840f86627-pbt).                                                        |
 | [`PopulationTransformer`](generated/braindecode.models.PopulationTransformer.html#braindecode.models.PopulationTransformer)([n_outputs, n_chans, ...]) | PopulationTransformer (PopT) from Chau et al. (2024) [[R1b4476d13843-PopT2024]](generated/braindecode.models.PopulationTransformer.html#r1b4476d13843-popt2024).                                     |
 | [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE)([n_outputs, n_chans, chs_info, ...])                                          | **R**epresentation for **E**EG with **V**ersatile **E**mbeddings (REVE) from El Ouahidi et al. (2025) [[Rfc92bf36d5c3-reve]](generated/braindecode.models.REVE.html#rfc92bf36d5c3-reve).             |

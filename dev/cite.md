@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [0f1cce2760aa2d6ca6491cba16b78520fa5b1627](https://github.com/braindecode/braindecode/tree/0f1cce2760aa2d6ca6491cba16b78520fa5b1627)
+Source commit: [1aea0425029aca30adb26735807ee11a9964637b](https://github.com/braindecode/braindecode/tree/1aea0425029aca30adb26735807ee11a9964637b)
 
 Canonical HTML: [Citing Braindecode](https://braindecode.org/dev/cite.html)
 
