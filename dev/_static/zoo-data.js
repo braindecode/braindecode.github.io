@@ -618,6 +618,14 @@ window.BD_MODELS = [
     "desc": "Classification for General"
   },
   {
+    "name": "CORTEG",
+    "cat": "foundation",
+    "year": null,
+    "params": "25.5 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "MVPFormer",
     "cat": "foundation",
     "year": null,

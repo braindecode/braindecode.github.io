@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [29c230e9656845b9f3159617a368e370b73c89e2](https://github.com/braindecode/braindecode/tree/29c230e9656845b9f3159617a368e370b73c89e2)
+Source commit: [0f1cce2760aa2d6ca6491cba16b78520fa5b1627](https://github.com/braindecode/braindecode/tree/0f1cce2760aa2d6ca6491cba16b78520fa5b1627)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -93,6 +93,8 @@ organization:
 - [`EEGPT`](generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT) - Pretrained transformer for universal EEG
 - [`STEEGFormer`](generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer) - ViT-MAE EEG foundation model with braindecode-format
   re-hosted weights
+- [`CORTEG`](generated/braindecode.models.CORTEG.html#braindecode.models.CORTEG) - ST-EEGFormer adapted to intracranial ECoG by electrode position,
+  with a high-gamma token stream
 - [`SleepFM`](generated/braindecode.models.SleepFM.html#braindecode.models.SleepFM) and [`SleepFMStager`](generated/braindecode.models.SleepFMStager.html#braindecode.models.SleepFMStager) - Multimodal PSG foundation encoder
   and token-wise sleep-staging model compatible with the authors’ CC BY-NC
   checkpoints
@@ -156,6 +158,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod)([n_outputs, n_chans, chs_info, ...])                                 | **C**riss-**C**ross **Bra**in **Mod**el for EEG Decoding from Wang et al. (2025) [[Rdb05ba1b4969-cbramod]](generated/braindecode.models.CBraMod.html#rdb05ba1b4969-cbramod).                         |
 | [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain)([n_outputs, n_chans, chs_info, ...])                           | CodeBrain: Scalable Code EEG Pre-Training for Unified Downstream BCI Tasks.                                                                                                                          |
 | [`ContraWR`](generated/braindecode.models.ContraWR.html#braindecode.models.ContraWR)([n_chans, n_outputs, sfreq, ...])                                 | Contrast with the World Representation ContraWR from Yang et al (2021) [[Ra71465cb6797-Yang2021]](generated/braindecode.models.ContraWR.html#ra71465cb6797-yang2021).                                |
+| [`CORTEG`](generated/braindecode.models.CORTEG.html#braindecode.models.CORTEG)([n_outputs, n_chans, chs_info, ...])                                    | CORTEG from Yang et al. (2026) [[Rb9affe9793d3-Yang2026b]](generated/braindecode.models.CORTEG.html#rb9affe9793d3-yang2026b).                                                                        |
 | [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain)([n_outputs, n_chans, chs_info, ...])                                 | Cross-scale Spatiotemporal Brain Foundation Model from Zhou et al. (2025) [[R4dd11cf2e832-zhou2025csbrain]](generated/braindecode.models.CSBrain.html#r4dd11cf2e832-zhou2025csbrain).                |
 | [`CTNet`](generated/braindecode.models.CTNet.html#braindecode.models.CTNet)([n_outputs, n_chans, sfreq, chs_info, ...])                                | CTNet from Zhao, W et al (2024) [[Rc7f1d6cec70c-ctnet]](generated/braindecode.models.CTNet.html#rc7f1d6cec70c-ctnet).                                                                                |
 | [`DANCE`](generated/braindecode.models.DANCE.html#braindecode.models.DANCE)([n_outputs, n_chans, chs_info, ...])                                       | DANCE from Lévy et al (2026) [[R583baa0bd918-dance]](generated/braindecode.models.DANCE.html#r583baa0bd918-dance).                                                                                   |
