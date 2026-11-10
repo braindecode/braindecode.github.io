@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [1aea0425029aca30adb26735807ee11a9964637b](https://github.com/braindecode/braindecode/tree/1aea0425029aca30adb26735807ee11a9964637b)
+Source commit: [3118540af9707c3221852829ef47a0d447a69249](https://github.com/braindecode/braindecode/tree/3118540af9707c3221852829ef47a0d447a69249)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -147,6 +147,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`AttentionBaseNet`](generated/braindecode.models.AttentionBaseNet.html#braindecode.models.AttentionBaseNet)([n_times, n_chans, ...])                  | AttentionBaseNet from Wimpff M et al (2023) [[R523d6c831d64-Martin2023]](generated/braindecode.models.AttentionBaseNet.html#r523d6c831d64-martin2023).                                               |
 | [`AttnSleep`](generated/braindecode.models.AttnSleep.html#braindecode.models.AttnSleep)([sfreq, n_tce, d_model, d_ff, ...])                            | Sleep Staging Architecture from Eldele et al  (2021) [[Re40f69d9f16e-Eldele2021]](generated/braindecode.models.AttnSleep.html#re40f69d9f16e-eldele2021).                                             |
 | [`BaRISTA`](generated/braindecode.models.BaRISTA.html#braindecode.models.BaRISTA)([n_outputs, n_chans, chs_info, ...])                                 | BaRISTA from Oganesian et al (2025) [[Rf66e33847fc0-Oganesian2025]](generated/braindecode.models.BaRISTA.html#rf66e33847fc0-oganesian2025).                                                          |
+| [`BBL`](generated/braindecode.models.BBL.html#braindecode.models.BBL)([n_outputs, n_chans, chs_info, n_times, ...])                                    | BBL, the MEG encoder of *The Brain's Bitter Lesson* from Jayalath et al. (2025) [[R418bbebb3dfb-bbl]](generated/braindecode.models.BBL.html#r418bbebb3dfb-bbl).                                      |
 | [`BDTCN`](generated/braindecode.models.BDTCN.html#braindecode.models.BDTCN)([n_chans, n_outputs, chs_info, ...])                                       | Braindecode TCN from Gemein, L et al (2020) [[Rd56781dc6fcb-gemein2020]](generated/braindecode.models.BDTCN.html#rd56781dc6fcb-gemein2020).                                                          |
 | [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR)([n_chans, n_outputs, n_times, ...])                                        | BENDR (BErt-inspired Neural Data Representations) from Kostas et al (2021) [[R26ccbd70a49a-bendr]](generated/braindecode.models.BENDR.html#r26ccbd70a49a-bendr).                                     |
 | [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT)([embed_dim, num_heads, num_layers, ...])                                      | BIOT from Yang et al (2023) [[R606e26b38fe6-Yang2023]](generated/braindecode.models.BIOT.html#r606e26b38fe6-yang2023)                                                                                |
@@ -192,6 +193,8 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA)([n_outputs, n_chans, n_times, sfreq, ...])                                    | LUNA from Döner et al [[Ra888573a1c66-LUNA]](generated/braindecode.models.LUNA.html#ra888573a1c66-luna).                                                                                             |
 | [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA)([n_outputs, n_chans, chs_info, ...])                                          | MAPA from Tang, Spalding and Cogan (2026) [[Rdfa8ba30d9a1-Tang2026]](generated/braindecode.models.MAPA.html#rdfa8ba30d9a1-tang2026).                                                                 |
 | [`MEDFormer`](generated/braindecode.models.MEDFormer.html#braindecode.models.MEDFormer)([n_chans, n_outputs, n_times, ...])                            | Medformer from Wang et al (2024) [[Rf62d33a1206f-Medformer2024]](generated/braindecode.models.MEDFormer.html#rf62d33a1206f-medformer2024).                                                           |
+| [`MEGGPT`](generated/braindecode.models.MEGGPT.html#braindecode.models.MEGGPT)([n_outputs, n_chans, chs_info, ...])                                    | MEG-GPT from Huang et al. (2026) [huang2026meggpt].                                                                                                                                                  |
+| [`MEGXL`](generated/braindecode.models.MEGXL.html#braindecode.models.MEGXL)([n_outputs, n_chans, chs_info, ...])                                       | MEG-XL from Jayalath and Parker Jones (2026) [[Rd5be6a820052-megxl]](generated/braindecode.models.MEGXL.html#rd5be6a820052-megxl).                                                                   |
 | [`MetaNeuromotorHand`](generated/braindecode.models.MetaNeuromotorHand.html#braindecode.models.MetaNeuromotorHand)([n_outputs, n_chans, ...])          | Generic neuromotor interface for handwriting from Meta (2025) [[R56528df87fac-gni2025]](generated/braindecode.models.MetaNeuromotorHand.html#r56528df87fac-gni2025).                                 |
 | [`MIRepNet`](generated/braindecode.models.MIRepNet.html#braindecode.models.MIRepNet)([n_outputs, n_chans, chs_info, ...])                              | MIRepNet from Liu et al. (2026) [[R262b054dda18-liu2026mirepnet]](generated/braindecode.models.MIRepNet.html#r262b054dda18-liu2026mirepnet).                                                         |
 | [`MSCFormer`](generated/braindecode.models.MSCFormer.html#braindecode.models.MSCFormer)([n_outputs, n_chans, sfreq, ...])                              | MSCFormer from Zhao, W et al (2025) [[R145bcee8b1ba-mscformer]](generated/braindecode.models.MSCFormer.html#r145bcee8b1ba-mscformer).                                                                |
@@ -419,6 +422,23 @@ These modules implement the vector quantizers of the tokenizer models, such as
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
 | [`VectorQuantizer`](generated/quantization/braindecode.modules.VectorQuantizer.html#braindecode.modules.VectorQuantizer)(dim, codebook_size[, ...])                      | Single-layer vector quantisation with optional rotation-trick STE. |
 | [`ResidualVectorQuantizer`](generated/quantization/braindecode.modules.ResidualVectorQuantizer.html#braindecode.modules.ResidualVectorQuantizer)(dim, codebook_dim, ...) | Residual vector quantisation with L2-normalisation.                |
+
+<a id="seanet"></a>
+
+### SEANet
+
+The EnCodec SEANet convolutional encoder and decoder, with their blocks, shared by the
+codec models (BrainOmni, BBL).
+
+`braindecode.modules.seanet`:
+
+| [`SEANetConv1d`](generated/seanet/braindecode.modules.SEANetConv1d.html#braindecode.modules.SEANetConv1d)(in_channels, out_channels, ...)                        | Weight-normed Conv1d with EnCodec's reflect padding.                                                                                                 |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`SEANetConvTranspose1d`](generated/seanet/braindecode.modules.SEANetConvTranspose1d.html#braindecode.modules.SEANetConvTranspose1d)(in_channels, ...[, causal]) | Weight-normed ConvTranspose1d trimmed as EnCodec (all on the right if causal).                                                                       |
+| [`SEANetDecoder`](generated/seanet/braindecode.modules.SEANetDecoder.html#braindecode.modules.SEANetDecoder)(dim, n_filters, ratios, ...[, ...])                 | Mirror of [`SEANetEncoder`](generated/seanet/braindecode.modules.SEANetEncoder.html#braindecode.modules.SEANetEncoder) with transposed convolutions. |
+| [`SEANetEncoder`](generated/seanet/braindecode.modules.SEANetEncoder.html#braindecode.modules.SEANetEncoder)(dim, n_filters, ratios, ...[, ...])                 | EnCodec SEANet encoder: `(N, in_channels, L) -> (N, dim, L / prod(ratios))`.                                                                         |
+| [`SEANetLSTM`](generated/seanet/braindecode.modules.SEANetLSTM.html#braindecode.modules.SEANetLSTM)(dimension)                                                   | Two-layer LSTM with a skip connection over `(batch, dim, time)`.                                                                                     |
+| [`SEANetResBlock`](generated/seanet/braindecode.modules.SEANetResBlock.html#braindecode.modules.SEANetResBlock)(dim[, dilation, compress, ...])                  | `ELU -> conv3 -> ELU -> conv1` plus a 1x1 conv (or identity) shortcut.                                                                               |
 
 <a id="stats"></a>
 

@@ -530,6 +530,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "MEGGPT",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.1 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "REVE",
     "cat": "foundation",
     "year": null,
@@ -570,12 +578,28 @@ window.BD_MODELS = [
     "desc": "Prediction, Embedding for General"
   },
   {
+    "name": "MEGXL",
+    "cat": "foundation",
+    "year": null,
+    "params": "23.5 M",
+    "paper": "",
+    "desc": "Classification,Embedding for Speech Decoding"
+  },
+  {
     "name": "BrainTokenizer",
     "cat": "foundation",
     "year": null,
     "params": "5.1 M",
     "paper": "",
     "desc": "Embedding for General"
+  },
+  {
+    "name": "BBL",
+    "cat": "foundation",
+    "year": null,
+    "params": "41.3 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Speech Decoding"
   },
   {
     "name": "TCFormer",
