@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [1e3f42589c42e286b4bba4ee289c96d66457177c](https://github.com/braindecode/braindecode/tree/1e3f42589c42e286b4bba4ee289c96d66457177c)
+Source commit: [c95a08c9def97dcc82475b3325c2b11650e494d7](https://github.com/braindecode/braindecode/tree/c95a08c9def97dcc82475b3325c2b11650e494d7)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -224,6 +224,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`SSTDPN`](generated/braindecode.models.SSTDPN.html#braindecode.models.SSTDPN)([n_chans, n_times, n_outputs, ...])                                     | SSTDPN from Can Han et al (2025) [[R15c5a176a51e-Han2025]](generated/braindecode.models.SSTDPN.html#r15c5a176a51e-han2025).                                                                          |
 | [`STEEGFormer`](generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer)([n_outputs, n_chans, chs_info, ...])                     | STEEGFormer from Yang et al. (2026) [[R2168339d6ac8-Yang2026]](generated/braindecode.models.STEEGFormer.html#r2168339d6ac8-yang2026).                                                                |
 | [`SyncNet`](generated/braindecode.models.SyncNet.html#braindecode.models.SyncNet)([n_chans, n_times, n_outputs, ...])                                  | Synchronization Network (SyncNet) from Li, Y et al (2017) [[R5cdbe961b734-Li2017]](generated/braindecode.models.SyncNet.html#r5cdbe961b734-li2017).                                                  |
+| [`TCCNet`](generated/braindecode.models.TCCNet.html#braindecode.models.TCCNet)([n_outputs, n_chans, chs_info, ...])                                    | TCCNet from Tsinganos et al. (2019) [[Rb55eacc785fb-tccnet2019]](generated/braindecode.models.TCCNet.html#rb55eacc785fb-tccnet2019).                                                                 |
 | [`TFMTokenizer`](generated/braindecode.models.TFMTokenizer.html#braindecode.models.TFMTokenizer)([n_outputs, n_chans, chs_info, ...])                  | Time-Frequency Motif (TFM) tokenizer from Pradeepkumar et al. (2026) [[R0a6852c58b1e-tfm2026]](generated/braindecode.models.TFMTokenizer.html#r0a6852c58b1e-tfm2026).                                |
 | [`TFMTokenizerOutput`](generated/braindecode.models.TFMTokenizerOutput.html#braindecode.models.TFMTokenizerOutput)(reconstruction, ...)                | Outputs of [`TFMTokenizer.tokenize()`](generated/braindecode.models.TFMTokenizer.html#braindecode.models.TFMTokenizer.tokenize).                                                                     |
 | [`TCFormer`](generated/braindecode.models.TCFormer.html#braindecode.models.TCFormer)([n_outputs, n_chans, chs_info, ...])                              | TCFormer from Altaheri et al (2025) [[Rd79f90b7998b-tcformer]](generated/braindecode.models.TCFormer.html#rd79f90b7998b-tcformer).                                                                   |

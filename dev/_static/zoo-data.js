@@ -410,6 +410,14 @@ window.BD_MODELS = [
     "desc": "CTC Sequence for Touch typing (sEMG)"
   },
   {
+    "name": "TCCNet",
+    "cat": "attention",
+    "year": null,
+    "params": "88.8 K",
+    "paper": "",
+    "desc": "Prediction for Gesture recognition (sEMG)"
+  },
+  {
     "name": "VEMG2Pose",
     "cat": "recurrent",
     "year": null,
