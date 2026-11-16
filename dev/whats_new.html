@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.models.LUNA takes return_features=True, like the other foundation models: it returns the normed encoder output before the head,(batch, n_patches, n..." />
+<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.models.BIOT returns its transformer tokens under&quot;tokens&quot; with return_features=True,(batch, n_chans, n_patches, emb_size) and zero for pad..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.models.LUNA takes return_features=True, like the other foundation models: it returns the normed encoder output before the head,(batch, n_patches, n..." />
+<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.models.BIOT returns its transformer tokens under&quot;tokens&quot; with return_features=True,(batch, n_chans, n_patches, emb_size) and zero for pad..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -538,6 +538,11 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><a class="reference internal" href="generated/braindecode.models.BIOT.html#braindecode.models.BIOT" title="braindecode.models.BIOT"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BIOT</span></code></a> returns its transformer tokens under
+<code class="docutils literal notranslate"><span class="pre">&quot;tokens&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">return_features=True</span></code>, <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_patches,</span>
+<span class="pre">emb_size)</span></code> and zero for padded channels, like CBraMod and LaBraM; they could
+only be read with a forward hook on <code class="docutils literal notranslate"><span class="pre">encoder.transformer</span></code>. Outputs and
+<code class="docutils literal notranslate"><span class="pre">&quot;features&quot;</span></code> are unchanged (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1570">#1570</a> by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.LUNA</span></code></a> takes <code class="docutils literal notranslate"><span class="pre">return_features=True</span></code>, like the other
 foundation models: it returns the normed encoder output before the head,
 <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_patches,</span> <span class="pre">num_queries</span> <span class="pre">*</span> <span class="pre">embed_dim)</span></code>, as <code class="docutils literal notranslate"><span class="pre">&quot;features&quot;</span></code> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1565">#1565</a> by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a>).</p></li>
@@ -610,6 +615,14 @@ resolver conflict (by <a class="reference external" href="https://github.com/bru
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.LUNA</span></code></a> raises when <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> has positions for
+some channels but not all (MNE stores <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for the others). It gave every
+channel a default position, evenly spaced along x, so one name missing from the
+montage silently replaced the positions of all the others. A <code class="docutils literal notranslate"><span class="pre">chs_info</span></code>
+without any position keeps the default positions. LUNA and
+<a class="reference internal" href="generated/braindecode.models.CORTEG.html#braindecode.models.CORTEG" title="braindecode.models.CORTEG"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CORTEG</span></code></a> share this rule; CORTEG now also names a
+channel whose position is <code class="docutils literal notranslate"><span class="pre">NaN</span></code> when it is built, where it took the montage
+for one without positions (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1569">#1569</a> by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.LUNA</span></code></a> gives the phase of the DC bin, and of the
 Nyquist bin of an even <code class="docutils literal notranslate"><span class="pre">patch_size</span></code>, as <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">pi</span></code> on every device.
 CUDA and MPS FFTs leave rounding noise of either sign in the imaginary part of
