@@ -760,6 +760,22 @@ window.BD_MODELS = [
     "params": "1.7 M",
     "paper": "",
     "desc": "Prediction for General"
+  },
+  {
+    "name": "MtReNIRS",
+    "cat": "foundation",
+    "year": null,
+    "params": "1.2 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "JungMAE",
+    "cat": "foundation",
+    "year": null,
+    "params": "1.9 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
   }
 ];
 window.BD_CATEGORIES = [
