@@ -744,6 +744,22 @@ window.BD_MODELS = [
     "params": "89.9 K",
     "paper": "",
     "desc": "Prediction for General"
+  },
+  {
+    "name": "FNIRST",
+    "cat": "attention",
+    "year": null,
+    "params": "1.7 M",
+    "paper": "",
+    "desc": "Prediction for General"
+  },
+  {
+    "name": "FNIRSPreT",
+    "cat": "attention",
+    "year": null,
+    "params": "1.7 M",
+    "paper": "",
+    "desc": "Prediction for General"
   }
 ];
 window.BD_CATEGORIES = [

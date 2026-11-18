@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.FNIRSNet(Wang et al., IEEE TNSRE 2023), the first fNIRS model of braindecode: a delayed-hemodynamic-response convolution and a depthwise..." />
+<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.FNIRST and FNIRSPreT(fNIRS-T and fNIRS-PreT, Wang et al., IEEE JBHI 2022), spatial and channel-level transformer branches over HbO/HbR w..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.FNIRSNet(Wang et al., IEEE TNSRE 2023), the first fNIRS model of braindecode: a delayed-hemodynamic-response convolution and a depthwise..." />
+<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.FNIRST and FNIRSPreT(fNIRS-T and fNIRS-PreT, Wang et al., IEEE JBHI 2022), spatial and channel-level transformer branches over HbO/HbR w..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -538,6 +538,12 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Add <a class="reference internal" href="generated/braindecode.models.FNIRST.html#braindecode.models.FNIRST" title="braindecode.models.FNIRST"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FNIRST</span></code></a> and <a class="reference internal" href="generated/braindecode.models.FNIRSPreT.html#braindecode.models.FNIRSPreT" title="braindecode.models.FNIRSPreT"><code class="xref py py-class docutils literal notranslate"><span class="pre">FNIRSPreT</span></code></a>
+(fNIRS-T and fNIRS-PreT, Wang et al., IEEE JBHI 2022), spatial and channel-level
+transformer branches over HbO/HbR windows, with an opt-in <code class="docutils literal notranslate"><span class="pre">mask</span></code> of hidden
+samples. <a class="reference internal" href="generated/attention/braindecode.modules.MultiHeadAttention.html#braindecode.modules.MultiHeadAttention" title="braindecode.modules.MultiHeadAttention"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiHeadAttention</span></code></a> gains <code class="docutils literal notranslate"><span class="pre">qkv_bias</span></code>
+(default <code class="docutils literal notranslate"><span class="pre">True</span></code>, unchanged) for fNIRS-T’s bias-free q/k/v (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1584">#1584</a> by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.models.FNIRSNet.html#braindecode.models.FNIRSNet" title="braindecode.models.FNIRSNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FNIRSNet</span></code></a> (Wang et al., IEEE TNSRE 2023), the first
 fNIRS model of braindecode: a delayed-hemodynamic-response convolution and a
 depthwise-separable convolution over <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_times)</span></code> HbO/HbR windows.
@@ -631,6 +637,21 @@ parameter now has no effect. With the setting, on one Gaudi2 card (bfloat16 auto
 are 4 % shorter compiled and 22 % shorter in eager mode; LaBraM without <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code>
 and EEGPT in eager mode stay within 0.5 %, and EEGPT compiled steps are 1.6 % longer
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1581">#1581</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Gaudi lazy mode (<code class="docutils literal notranslate"><span class="pre">PT_HPU_LAZY_MODE=1</span></code>) is not supported (<a class="reference internal" href="install/gaudi.html#install-gaudi"><span class="std std-ref">Running on Intel Gaudi</span></a>), and
+the code that ran only there is gone: <a class="reference internal" href="generated/braindecode.models.BrainModule.html#braindecode.models.BrainModule" title="braindecode.models.BrainModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.BrainModule</span></code></a> gates
+with <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.GLU.html#torch.nn.GLU" title="(in PyTorch v2.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.GLU</span></code></a> again (hpu-ops runs <code class="docutils literal notranslate"><span class="pre">glu</span></code> on Gaudi, eager and compiled),
+<a class="reference internal" href="generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain" title="braindecode.models.CodeBrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CodeBrain</span></code></a> sums its skip connections one by one, and the
+group norm of <a class="reference internal" href="generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA" title="braindecode.models.SignalJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.SignalJEPA</span></code></a> and the rotary embedding of
+<a class="reference internal" href="generated/braindecode.models.ZUNA.html#braindecode.models.ZUNA" title="braindecode.models.ZUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.ZUNA</span></code></a> no longer check for lazy mode. CPU, CUDA, and Gaudi
+eager and compiled runs execute the same operations as before. Two Gaudi branches that
+also ran in eager and compiled mode go as well, measured on one Gaudi2 card with
+Habana’s attention setting and hpu-ops: <a class="reference internal" href="generated/layers/braindecode.modules.ChannelMerger.html#braindecode.modules.ChannelMerger" title="braindecode.modules.ChannelMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelMerger</span></code></a>
+computes <code class="docutils literal notranslate"><span class="pre">weights</span> <span class="pre">&#64;</span> <span class="pre">x</span></code> on every device, at 0.99x to 1.00x the step time of its
+transposed Gaudi form (DANCE and <code class="docutils literal notranslate"><span class="pre">BrainModule(use_merger=True)</span></code>, 21 channels x 6000
+samples, batch 64), and <a class="reference internal" href="generated/braindecode.functional.scaled_dot_product_attention.html#braindecode.functional.scaled_dot_product_attention" title="braindecode.functional.scaled_dot_product_attention"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.scaled_dot_product_attention()</span></code></a>
+hands float32 attention with dropout to torch’s SDPA on Gaudi, whose fused kernel takes
+0.39x (EEGPT shapes) and 0.54x (REVE) the time of the math path in eager mode, 0.75x
+and 0.88x compiled; the CPU keeps the math path (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1583">#1583</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="requirements">
