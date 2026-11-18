@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [9c541453e2c13ce0c3680a1582a136ca121b0da7](https://github.com/braindecode/braindecode/tree/9c541453e2c13ce0c3680a1582a136ca121b0da7)
+Source commit: [1ea013f6ed3f03939ab0175aa812dcb59b892ff9](https://github.com/braindecode/braindecode/tree/1ea013f6ed3f03939ab0175aa812dcb59b892ff9)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -187,6 +187,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`FBLightConvNet`](generated/braindecode.models.FBLightConvNet.html#braindecode.models.FBLightConvNet)([n_chans, n_outputs, ...])                      | LightConvNet from Ma, X et al (2023) [[R501137d6e8c9-lightconvnet]](generated/braindecode.models.FBLightConvNet.html#r501137d6e8c9-lightconvnet).                                                    |
 | [`FBMSNet`](generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet)([n_chans, n_outputs, chs_info, ...])                                 | FBMSNet from Liu et al (2022) [[Re7850041dabd-fbmsnet]](generated/braindecode.models.FBMSNet.html#re7850041dabd-fbmsnet).                                                                            |
 | [`FNIRS4D`](generated/braindecode.models.FNIRS4D.html#braindecode.models.FNIRS4D)([n_outputs, n_chans, chs_info, ...])                                 | fNIRS4D from Wang et al. (2026).                                                                                                                                                                     |
+| [`FNIRSCNN1D`](generated/braindecode.models.FNIRSCNN1D.html#braindecode.models.FNIRSCNN1D)([n_outputs, n_chans, chs_info, ...])                        | FNIRSCNN1D, the 1D-CNN of Trakoolwilaiwan et al. (2018), as in GeoNIRS.                                                                                                                              |
 | [`FNIRSNet`](generated/braindecode.models.FNIRSNet.html#braindecode.models.FNIRSNet)([n_outputs, n_chans, chs_info, ...])                              | fNIRSNet from Wang et al. (2023).                                                                                                                                                                    |
 | [`FNIRSPreT`](generated/braindecode.models.FNIRSPreT.html#braindecode.models.FNIRSPreT)([n_outputs, n_chans, chs_info, ...])                           | fNIRS-PreT from Wang et al. (2022).                                                                                                                                                                  |
 | [`FNIRST`](generated/braindecode.models.FNIRST.html#braindecode.models.FNIRST)([n_outputs, n_chans, chs_info, ...])                                    | fNIRS-T from Wang et al. (2022).                                                                                                                                                                     |

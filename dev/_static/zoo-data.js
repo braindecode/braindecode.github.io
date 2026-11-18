@@ -784,6 +784,14 @@ window.BD_MODELS = [
     "params": "1.9 M",
     "paper": "",
     "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "FNIRSCNN1D",
+    "cat": "convolution",
+    "year": null,
+    "params": "59.7 K",
+    "paper": "",
+    "desc": "Prediction for General"
   }
 ];
 window.BD_CATEGORIES = [
