@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [c96253408fc36928279c69580ab2411ab86bbb23](https://github.com/braindecode/braindecode/tree/c96253408fc36928279c69580ab2411ab86bbb23)
+Source commit: [0bdad6ae0109133d89e3be6a002592a3670108a2](https://github.com/braindecode/braindecode/tree/0bdad6ae0109133d89e3be6a002592a3670108a2)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -501,7 +501,9 @@ The functional module contains various functions that can be used like functiona
 
 | [`check_ch_mask`](generated/braindecode.functional.check_ch_mask.html#braindecode.functional.check_ch_mask)(ch_mask, x)                                                          | Validate the channel mask of a padded batch.                                                                                                                      |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`derivation_matrix`](generated/braindecode.functional.derivation_matrix.html#braindecode.functional.derivation_matrix)(ch_names[, electrodes])                                  | Each channel as a row over electrode potentials.                                                                                                                  |
 | [`drop_path`](generated/braindecode.functional.drop_path.html#braindecode.functional.drop_path)(x[, drop_prob, training, ...])                                                   | Drop paths (Stochastic Depth) per sample.                                                                                                                         |
+| [`exact_derivation`](generated/braindecode.functional.exact_derivation.html#braindecode.functional.exact_derivation)(target, inputs[, atol])                                     | `W` with `W @ x` the `target` channels, from the `inputs` `x`.                                                                                                    |
 | [`fft_conv1d`](generated/braindecode.functional.fft_conv1d.html#braindecode.functional.fft_conv1d)(x, weight[, bias])                                                            | `F.conv1d(x, weight, bias, padding="same")` computed with FFTs.                                                                                                   |
 | [`glorot_weight_zero_bias`](generated/braindecode.functional.glorot_weight_zero_bias.html#braindecode.functional.glorot_weight_zero_bias)(model)                                 | Set the weights of BatchNorm layers to one and all biases to zero.                                                                                                |
 | [`hilbert_freq`](generated/braindecode.functional.hilbert_freq.html#braindecode.functional.hilbert_freq)(x[, forward_fourier])                                                   | Compute the Hilbert transform using PyTorch, separating the real and imaginary parts.                                                                             |
