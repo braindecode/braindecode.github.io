@@ -637,6 +637,19 @@ neither are copies (<code class="docutils literal notranslate"><span class="pre"
 <a class="reference internal" href="../generated/braindecode.functional.scaled_dot_product_attention.html#braindecode.functional.scaled_dot_product_attention" title="braindecode.functional.scaled_dot_product_attention"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.scaled_dot_product_attention()</span></code></a>, take q, k and v from a
 projection of the current batch, so their views span the whole projection.</p>
 </dd>
+<dt>Same-size attention calls in eager mode</dt><dd><p>In eager mode, attention can return wrong values, without an error, when its query,
+key and value are transposed views (<code class="docutils literal notranslate"><span class="pre">x.view(n,</span> <span class="pre">L,</span> <span class="pre">H,</span> <span class="pre">D).transpose(1,</span> <span class="pre">2)</span></code>) and an
+earlier call took views with as many elements in another shape: axial attention over
+the time and then the channel axis of one tensor (<a class="reference internal" href="../generated/braindecode.models.AXON.html#braindecode.models.AXON" title="braindecode.models.AXON"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.AXON</span></code></a>).
+Compiled models are not affected; in eager mode, the environment variable
+<code class="docutils literal notranslate"><span class="pre">PT_HPU_ENABLE_EAGER_JIT_CACHE=0</span></code> avoids it.</p>
+</dd>
+<dt>Learnable attention masks</dt><dd><p>The fused kernel computes no gradient for <code class="docutils literal notranslate"><span class="pre">attn_mask</span></code>. A floating-point mask that
+requires one, like the learnable channel bias of <a class="reference internal" href="../generated/braindecode.models.DIVER1.html#braindecode.models.DIVER1" title="braindecode.models.DIVER1"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.DIVER1</span></code></a>,
+gets none with 1.21; according to the bridge’s source, 1.22 returns the mask itself
+as its gradient and 1.24 none. Train such models with the attention setting off:
+attention then runs op by op and computes it.</p>
+</dd>
 <dt>Fully masked query rows</dt><dd><p>When a query has no key to attend to, the fused kernel returns NaN with an additive
 <code class="docutils literal notranslate"><span class="pre">-inf</span></code> mask, and finite, non-zero values with a boolean mask; torch returns zeros.
 In braindecode’s models, a <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> with at least one real channel per sample

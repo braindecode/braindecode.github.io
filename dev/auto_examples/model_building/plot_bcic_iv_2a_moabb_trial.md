@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [1ea013f6ed3f03939ab0175aa812dcb59b892ff9](https://github.com/braindecode/braindecode/tree/1ea013f6ed3f03939ab0175aa812dcb59b892ff9)
+Source commit: [d1d00ec241f1a44a38a9d1b405faf791f3c5ef01](https://github.com/braindecode/braindecode/tree/d1d00ec241f1a44a38a9d1b405faf791f3c5ef01)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
@@ -562,10 +562,10 @@ clf.fit(train_set, y=None, epochs=n_epochs)
 ```none
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------  ------
-      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  2.3120
-      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.0495
-      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  2.2489
-      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  2.4173
+      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  2.5338
+      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  2.4667
+      3            0.2500        1.1439       0.2500            0.2500        6.0061  0.0002  2.4312
+      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  2.4505
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 265-276 -->
@@ -697,7 +697,7 @@ ConfusionMatrixDisplay.from_predictions(
 
 ![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png)
 ```none
-<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7a059f853c20>
+<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x72c4e6ab8380>
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 374-392 -->
@@ -726,6 +726,6 @@ nipy, NIPY, Nipy, etc... -->
 <!-- spd_learn -->
 <!-- vim: ft=rst -->
 
-**Total running time of the script:** (0 minutes 18.700 seconds)
+**Total running time of the script:** (0 minutes 21.148 seconds)
 
 <a id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></a>
