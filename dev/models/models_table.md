@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [7d45007af24fadf6c1cab5d3976474314b7593f8](https://github.com/braindecode/braindecode/tree/7d45007af24fadf6c1cab5d3976474314b7593f8)
+Source commit: [6f231e162d9ae3a502de648fb76565391db3d57f](https://github.com/braindecode/braindecode/tree/6f231e162d9ae3a502de648fb76565391db3d57f)
 
 Canonical HTML: [Model selection (interactive table in HTML)](https://braindecode.org/dev/models/models_table.html)
 
@@ -22,8 +22,8 @@ Columns definitions:
 >   Imagery, P300, Sleep Staging). ‘General’ indicates applicability across multiple
 >   applications or no specific application focus.
 > - **Modality**: The recording modality (bio-signal type) the model is designed and
->   validated for, e.g. EEG, MEG, or sEMG. Most Braindecode models target EEG; a few
->   support more than one modality (e.g. EEG, MEG).
+>   validated for, e.g. EEG, MEG, iEEG, ECoG, sEMG, or fNIRS. Most Braindecode models
+>   target EEG; a few support more than one modality (e.g. EEG, MEG).
 > - **Type**: The model’s output interface. `Prediction` indicates a supervised head
 >   that can be used for classification or regression, depending on the wrapper, loss,
 >   and target. `Embedding` indicates a model that exposes an embedding

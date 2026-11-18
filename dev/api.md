@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [7d45007af24fadf6c1cab5d3976474314b7593f8](https://github.com/braindecode/braindecode/tree/7d45007af24fadf6c1cab5d3976474314b7593f8)
+Source commit: [6f231e162d9ae3a502de648fb76565391db3d57f](https://github.com/braindecode/braindecode/tree/6f231e162d9ae3a502de648fb76565391db3d57f)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -186,6 +186,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`FBCNet`](generated/braindecode.models.FBCNet.html#braindecode.models.FBCNet)([n_chans, n_outputs, chs_info, ...])                                    | FBCNet from Mane, R et al (2021) [[R9769c9f8e3f7-fbcnet2021]](generated/braindecode.models.FBCNet.html#r9769c9f8e3f7-fbcnet2021).                                                                    |
 | [`FBLightConvNet`](generated/braindecode.models.FBLightConvNet.html#braindecode.models.FBLightConvNet)([n_chans, n_outputs, ...])                      | LightConvNet from Ma, X et al (2023) [[R501137d6e8c9-lightconvnet]](generated/braindecode.models.FBLightConvNet.html#r501137d6e8c9-lightconvnet).                                                    |
 | [`FBMSNet`](generated/braindecode.models.FBMSNet.html#braindecode.models.FBMSNet)([n_chans, n_outputs, chs_info, ...])                                 | FBMSNet from Liu et al (2022) [[Re7850041dabd-fbmsnet]](generated/braindecode.models.FBMSNet.html#re7850041dabd-fbmsnet).                                                                            |
+| [`FNIRSNet`](generated/braindecode.models.FNIRSNet.html#braindecode.models.FNIRSNet)([n_outputs, n_chans, chs_info, ...])                              | fNIRSNet from Wang et al. (2023).                                                                                                                                                                    |
 | [`GCNsNet`](generated/braindecode.models.GCNsNet.html#braindecode.models.GCNsNet)([n_outputs, n_chans, chs_info, ...])                                 | GCNs-Net from Hou et al. (2022) [[Rfeeb4d7446ec-hou2022gcns]](generated/braindecode.models.GCNsNet.html#rfeeb4d7446ec-hou2022gcns).                                                                  |
 | [`Guetschel2026`](generated/braindecode.models.Guetschel2026.html#braindecode.models.Guetschel2026)([n_outputs, n_chans, ...])                         | Encoder of the EEG masking-geometry study from Guetschel et al. (2026) [[R308a17ba52fb-guetschel2026]](generated/braindecode.models.Guetschel2026.html#r308a17ba52fb-guetschel2026).                 |
 | [`IFNet`](generated/braindecode.models.IFNet.html#braindecode.models.IFNet)([n_chans, n_outputs, n_times, ...])                                        | IFNetV2 from Wang J et al (2023) [[Rd9f3b242e751-ifnet]](generated/braindecode.models.IFNet.html#rd9f3b242e751-ifnet).                                                                               |

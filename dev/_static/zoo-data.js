@@ -728,6 +728,14 @@ window.BD_MODELS = [
     "params": "2 M",
     "paper": "",
     "desc": "Prediction, Embedding for Visual Decoding"
+  },
+  {
+    "name": "FNIRSNet",
+    "cat": "convolution",
+    "year": null,
+    "params": "498",
+    "paper": "",
+    "desc": "Prediction for General"
   }
 ];
 window.BD_CATEGORIES = [
