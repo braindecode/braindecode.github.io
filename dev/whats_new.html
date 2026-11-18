@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.JungMAE, the GeoNIRS authors’ implementation of the masked autoencoder of Jung et al. (IEEE BCI 2025), with a linear head; load_state_di..." />
+<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.modules.ChannelLayer maps channels with one linear estimate, braindecode.functional.linear_channel_map(): inputs A v, targets B v, a prior covarian..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.JungMAE, the GeoNIRS authors’ implementation of the masked autoencoder of Jung et al. (IEEE BCI 2025), with a linear head; load_state_di..." />
+<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.modules.ChannelLayer maps channels with one linear estimate, braindecode.functional.linear_channel_map(): inputs A v, targets B v, a prior covarian..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -538,6 +538,20 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><a class="reference internal" href="generated/channels/braindecode.modules.ChannelLayer.html#braindecode.modules.ChannelLayer" title="braindecode.modules.ChannelLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelLayer</span></code></a> maps channels with one linear
+estimate, <a class="reference internal" href="generated/braindecode.functional.linear_channel_map.html#braindecode.functional.linear_channel_map" title="braindecode.functional.linear_channel_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.linear_channel_map()</span></code></a>: inputs <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">v</span></code>,
+targets <code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">v</span></code>, a prior covariance of the electrode potentials <code class="docutils literal notranslate"><span class="pre">v</span></code> and a flat
+prior on the unknown reference (universal kriging). <code class="docutils literal notranslate"><span class="pre">spline</span></code> (now Perrin’s
+kernel, <a class="reference internal" href="generated/braindecode.functional.spherical_spline_kernel.html#braindecode.functional.spherical_spline_kernel" title="braindecode.functional.spherical_spline_kernel"><code class="xref py py-func docutils literal notranslate"><span class="pre">spherical_spline_kernel()</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">wiener</span></code>
+use it with unchanged maps; <code class="docutils literal notranslate"><span class="pre">channel_strategy</span></code> also takes any covariance
+kernel, fed positions from the fitted head centre, with <code class="docutils literal notranslate"><span class="pre">reg=1e-3</span></code> and at
+least four positioned channels, as <code class="docutils literal notranslate"><span class="pre">spline</span></code>. The layer gives each target’s posterior <code class="docutils literal notranslate"><span class="pre">variance</span></code>, matches the
+amplitude with <code class="docutils literal notranslate"><span class="pre">match_gain=True</span></code>, re-references the targets with
+<code class="docutils literal notranslate"><span class="pre">reference=&quot;average&quot;</span></code> or an electrode name
+(<a class="reference internal" href="generated/braindecode.functional.derivation_matrix.html#braindecode.functional.derivation_matrix" title="braindecode.functional.derivation_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">derivation_matrix()</span></code></a> takes <code class="docutils literal notranslate"><span class="pre">reference</span></code> too),
+and takes one montage per sample: a model with a <code class="docutils literal notranslate"><span class="pre">channel_strategy</span></code> now takes
+the <code class="docutils literal notranslate"><span class="pre">pos</span></code>/<code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> batches of <code class="xref py py-func docutils literal notranslate"><span class="pre">pad_channels_collate()</span></code>
+instead of refusing <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1593">#1593</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.models.JungMAE.html#braindecode.models.JungMAE" title="braindecode.models.JungMAE"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.JungMAE</span></code></a>, the GeoNIRS authors’ implementation of the
 masked autoencoder of Jung et al. (IEEE BCI 2025), with a linear head;
 <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> takes the GeoNIRS benchmark’s <code class="docutils literal notranslate"><span class="pre">jung_mae.pt</span></code> as released
@@ -547,6 +561,12 @@ foundation model with a Fourier embedding of the 10-05 position and chromophore 
 a QK-norm rotary transformer; <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> takes <code class="docutils literal notranslate"><span class="pre">mtrenirs_10s.pt</span></code> as
 released, and the docstring gives the 0.01-0.5 Hz band-pass its weights expect
 (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1590">#1590</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Add <a class="reference internal" href="generated/braindecode.models.GeoNIRS.html#braindecode.models.GeoNIRS" title="braindecode.models.GeoNIRS"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.GeoNIRS</span></code></a> (Li et al., 2026), an fNIRS foundation model
+that compresses paired HbO/HbR channels onto latent channels with a cross-attention
+conditioned on the source-detector geometry read from <code class="docutils literal notranslate"><span class="pre">chs_info</span></code>;
+<code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> takes <code class="docutils literal notranslate"><span class="pre">geonirs_base.pt</span></code> and <code class="docutils literal notranslate"><span class="pre">geonirs_large.pt</span></code> as released,
+and <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> handles montages of different sizes (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1591">#1591</a> by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.models.FNIRST.html#braindecode.models.FNIRST" title="braindecode.models.FNIRST"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FNIRST</span></code></a> and <a class="reference internal" href="generated/braindecode.models.FNIRSPreT.html#braindecode.models.FNIRSPreT" title="braindecode.models.FNIRSPreT"><code class="xref py py-class docutils literal notranslate"><span class="pre">FNIRSPreT</span></code></a>
 (fNIRS-T and fNIRS-PreT, Wang et al., IEEE JBHI 2022), spatial and channel-level
 transformer branches over HbO/HbR windows, with an opt-in <code class="docutils literal notranslate"><span class="pre">mask</span></code> of hidden
@@ -690,6 +710,13 @@ no reference is guessed. The algebra is public as
 1-D index, instead of one call per channel with a 0-d index. Outputs and gradients are
 bitwise the same on CPU. On Intel Gaudi, whose embedding backward sends a 0-d index’s
 gradient to row 0, only the first channel token trained before (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1585">#1585</a> by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><a class="reference internal" href="generated/braindecode.models.MAPA.html#braindecode.models.MAPA" title="braindecode.models.MAPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.MAPA</span></code></a> attends with 4-D inputs on every device; on Intel
+Gaudi it used 5-D ones, which the fused attention kernel gets wrong (outputs 55% and
+gradients 60-70% off). <a class="reference internal" href="generated/braindecode.models.EMG2QwertyNet.html#braindecode.models.EMG2QwertyNet" title="braindecode.models.EMG2QwertyNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EMG2QwertyNet</span></code></a> takes offset 0 of
+its rotation-invariant MLP as the input itself instead of a roll by 0, which saves a
+copy; on Gaudi, the roll by 0 of a slice of the stacked gradient gave a wrong input
+gradient. Outputs and gradients are unchanged on CPU (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1595">#1595</a> by
 <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod" title="braindecode.models.CBraMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CBraMod</span></code></a> no longer applies <code class="docutils literal notranslate"><span class="pre">proj_out</span></code>, the
 pretraining reconstruction layer, to its features and classification head. The

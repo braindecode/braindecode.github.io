@@ -762,6 +762,14 @@ window.BD_MODELS = [
     "desc": "Prediction for General"
   },
   {
+    "name": "GeoNIRS",
+    "cat": "foundation",
+    "year": null,
+    "params": "4.5 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for General"
+  },
+  {
     "name": "MtReNIRS",
     "cat": "foundation",
     "year": null,
