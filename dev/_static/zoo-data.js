@@ -736,6 +736,14 @@ window.BD_MODELS = [
     "params": "498",
     "paper": "",
     "desc": "Prediction for General"
+  },
+  {
+    "name": "FNIRS4D",
+    "cat": "recurrent",
+    "year": null,
+    "params": "89.9 K",
+    "paper": "",
+    "desc": "Prediction for General"
   }
 ];
 window.BD_CATEGORIES = [

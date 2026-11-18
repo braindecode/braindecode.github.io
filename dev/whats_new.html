@@ -543,6 +543,13 @@ fNIRS model of braindecode: a delayed-hemodynamic-response convolution and a
 depthwise-separable convolution over <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_times)</span></code> HbO/HbR windows.
 Its <code class="docutils literal notranslate"><span class="pre">mapping</span></code> loads the authors’ state dict, and <code class="docutils literal notranslate"><span class="pre">fNIRS</span></code> joins the modality
 vocabulary of the models table (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1579">#1579</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Add <a class="reference internal" href="generated/braindecode.models.FNIRS4D.html#braindecode.models.FNIRS4D" title="braindecode.models.FNIRS4D"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.FNIRS4D</span></code></a> (Wang et al., IEEE TIM 2026), a diagonal
+state-space (S4D) backbone with the authors’ LOSO-CV or KFold-CV
+mean-hemoglobin branch (<code class="docutils literal notranslate"><span class="pre">mean_branch</span></code>); its <code class="docutils literal notranslate"><span class="pre">mapping</span></code> loads the authors’ state
+dict. The helpers <code class="docutils literal notranslate"><span class="pre">fnirs_chromophores_from_chs_info</span></code>, <code class="docutils literal notranslate"><span class="pre">fnirs_channel_order</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fnirs_split_hbo_hbr</span></code> of <code class="docutils literal notranslate"><span class="pre">braindecode.models.util</span></code> read HbO/HbR pairs from
+<code class="docutils literal notranslate"><span class="pre">chs_info</span></code>, stacked or in MNE’s interleaved order (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1582">#1582</a> by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.functional.masked_group_norm.html#braindecode.functional.masked_group_norm" title="braindecode.functional.masked_group_norm"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.masked_group_norm()</span></code></a> groups the channels with a view and
 counts the real entries from the mask, without a permute or a full-size masked count:
 same outputs and gradients, 28-38% less time forward and backward at CBraMod and
@@ -609,7 +616,17 @@ channels zero; DIVER1 gains
 <section id="api-and-behavior-changes">
 <h2>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>On Intel Gaudi, <a class="reference internal" href="generated/braindecode.functional.scaled_dot_product_attention.html#braindecode.functional.scaled_dot_product_attention" title="braindecode.functional.scaled_dot_product_attention"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.scaled_dot_product_attention()</span></code></a> and
+<a class="reference internal" href="generated/braindecode.models.Labram.html#braindecode.models.Labram" title="braindecode.models.Labram"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.Labram</span></code></a> no longer call the Gaudi bridge’s <code class="docutils literal notranslate"><span class="pre">FusedSDPA</span></code>
+themselves: they call torch’s SDPA on every device, which Habana’s attention setting
+runs on the fused kernel, with or without a mask. The new page <a class="reference internal" href="install/gaudi.html#install-gaudi"><span class="std std-ref">Running on Intel Gaudi</span></a>
+gives the plugins to install, the setting of each Gaudi software version and the known
+issues. Without the setting, attention on Gaudi runs op by op; the <code class="docutils literal notranslate"><span class="pre">fused_in_lazy</span></code>
+parameter now has no effect. With the setting, on one Gaudi2 card (bfloat16 autocast,
+3 x 100 windows of 32 channels x 6000 samples per step), LaBraM steps with <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code>
+are 4 % shorter compiled and 22 % shorter in eager mode; LaBraM without <code class="docutils literal notranslate"><span class="pre">ch_mask</span></code>
+and EEGPT in eager mode stay within 0.5 %, and EEGPT compiled steps are 1.6 % longer
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1581">#1581</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="requirements">
