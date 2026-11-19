@@ -536,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_sae_reve.html">Sparse feature interventions in a pretrained REVE</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_weight_audit.html">Auditing what a decoder relies on from its weights</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -620,6 +621,7 @@ to download the full example code.</p>
 targets for each recording in the TUH EEG Corpus. We’ll guide you through the
 process step by step.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Author: Lukas Gemein &lt;l.gemein&#64;gmail.com&gt;</span><span class="w">
+</span><span class="c1">#         Daria Agafonova</span><span class="w">
 </span><span class="c1">#</span><span class="w">
 </span><span class="c1"># License: BSD (3-clause)</span><span class="w">
 </span><span class="w">
@@ -646,7 +648,9 @@ process step by step.</p>
 </span></pre></div></div>
 <p>If you want to try this code with the actual data, please delete the next
 section. We are required to mock some dataset functionality, since the data
-is not available at creation time of this example.</p>
+is not available at creation time of this example.
+We use the mock’s four-recording v1.1.0 corpus so the subset example below
+includes recordings with different labels.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">datasets</span><span class="nn">.</span><span class="nn">tuh</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TUHMock</span> <span class="k">as</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH"><span class="n">TUH</span></a>  <span class="c1"># noqa F811</span><span class="w">
 </span></pre></div></div>
 <section id="creating-temple-university-hospital-tuh-eeg-corpus-dataset">
@@ -657,6 +661,7 @@ column in the description DataFrame.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">TUH_PATH</span></a> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">please insert actual path to data here</span><span class="s2">&quot;</span><span class="w">
 </span><span class="n">tuh</span> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH" title="braindecode.datasets.TUH"><span class="n">TUH</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">path</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">TUH_PATH</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">v1.1.0</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">recording_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="w">
 </span>    <span class="n">target_name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">age</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">gender</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># use both age and gender as decoding target</span><span class="w">
 </span>    <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
@@ -665,9 +670,12 @@ column in the description DataFrame.</p>
 </span><span class="nb">print</span><span class="p">(</span><span class="n">tuh</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                                                path version  ...  age gender
-0  tuh_eeg/v1.2.0/edf/03_tcp_ar_a/149/00014928/s0...  v1.2.0  ...   83      F
+0  tuh_eeg/v1.1.0/edf/02_tcp_le/000/00000058/s001...  v1.1.0  ...    0      M
+1  tuh_eeg/v1.1.0/edf/01_tcp_ar/099/00009932/s004...  v1.1.0  ...   53      F
+2  tuh_eeg/v1.1.0/edf/03_tcp_ar_a/123/00012331/s0...  v1.1.0  ...   39      M
+3  tuh_eeg/v1.1.0/edf/01_tcp_ar/000/00000000/s001...  v1.1.0  ...   37      M
 
-[1 rows x 10 columns]
+[4 rows x 10 columns]
 </pre></div>
 </div>
 </section>
@@ -682,28 +690,28 @@ Let’s look at the last example as it has more interesting age/gender labels
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">y</span></a><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x=array([[ 0.00723157],
-       [ 0.57492088],
-       [-0.36845005],
-       [-1.36749501],
-       [ 0.22367596],
-       [ 0.38842141],
-       [ 1.92555553],
-       [-0.12237615],
-       [ 1.18571314],
-       [ 0.02381478],
-       [-0.83117962],
-       [ 2.12272777],
-       [-1.78948401],
-       [ 3.69901359],
-       [-0.18003113],
-       [-0.71833606],
-       [ 1.41317045],
-       [ 0.02190266],
-       [ 0.14538793],
-       [ 1.86707835],
-       [-0.73314564]])
-y=[83, 'F']
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x=array([[-0.08388354],
+       [ 0.45734062],
+       [ 0.17444011],
+       [ 0.43492043],
+       [-0.35701738],
+       [ 0.12402036],
+       [-0.51199567],
+       [-1.8513022 ],
+       [-2.36634669],
+       [-0.90867609],
+       [-1.47135629],
+       [-0.08661267],
+       [-0.15141935],
+       [-0.79701399],
+       [-1.12771743],
+       [ 0.95583957],
+       [-0.51916642],
+       [ 1.30471802],
+       [ 1.15364533],
+       [ 0.6015342 ],
+       [ 1.23045471]])
+y=[37, 'M']
 </pre></div>
 </div>
 </section>
@@ -734,20 +742,20 @@ Let’s look at the last example again.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">y</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ind</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">tuh_windows</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">y</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ind</span></a><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x=array([[ 1.0734955 ,  0.37673166, -0.46784848, ..., -0.92888373,
-         0.5338    ,  0.00723157],
-       [ 0.5607791 , -1.1332937 ,  0.16330998, ..., -1.7045078 ,
-         0.8543865 ,  0.5749209 ],
-       [-1.2847166 , -0.9711846 ,  0.4908423 , ...,  0.81122756,
-         0.8927929 , -0.36845005],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>x=array([[ 0.5625533 ,  0.1667017 ,  1.1376368 , ...,  0.80336064,
+        -0.0759325 , -0.08388355],
+       [ 0.1215528 ,  0.17057748,  0.6270015 , ..., -0.8585031 ,
+         0.38844758,  0.45734063],
+       [-1.9293324 , -0.0690375 , -1.185494  , ..., -0.15970044,
+        -0.575385  ,  0.1744401 ],
        ...,
-       [-0.3805011 , -0.00632424,  0.02404673, ..., -0.7075746 ,
-         0.5627774 ,  0.14538793],
-       [-1.3126785 , -0.26366898, -0.53270787, ..., -0.535335  ,
-        -1.4950069 ,  1.8670783 ],
-       [ 0.17851728, -0.37275508,  0.45341465, ..., -0.69490695,
-         1.5301534 , -0.73314565]], shape=(21, 1000), dtype=float32)
-y=[83, 1]
+       [ 0.7467447 , -1.7557129 , -0.43545473, ...,  0.59196204,
+        -0.87400156,  1.1536453 ],
+       [ 1.293342  , -0.38169965,  1.6618726 , ..., -0.93147016,
+        -1.5718849 ,  0.6015342 ],
+       [ 1.5732402 ,  0.0705716 ,  1.3267263 , ..., -1.3382721 ,
+         1.6085765 ,  1.2304547 ]], shape=(21, 1000), dtype=float32)
+y=[37, 0]
 ind=[3, 2600, 3600]
 </pre></div>
 </div>
@@ -773,38 +781,62 @@ simply iterate through the DataLoader:</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor"><span class="n">batch_X</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">batch_y</span></a><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">batch_ind</span></a><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>batch_X=tensor([[[-0.5416, -0.0782, -1.2227,  ..., -0.6206,  0.2296, -0.4880],
-         [ 0.1377, -1.1635,  0.4413,  ...,  2.3704,  0.2062,  0.7871],
-         [-0.5929, -0.4484, -0.7506,  ..., -2.3431, -0.1265,  0.1282],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>batch_X=tensor([[[ 3.4255e-01,  3.9813e-01,  4.3842e-01,  ...,  6.8848e-01,
+          -6.8627e-01, -1.6076e-01],
+         [-1.4676e-01, -2.7259e+00,  5.8164e-01,  ..., -8.7323e-02,
+          -3.8489e-01,  1.4714e+00],
+         [-6.7458e-01, -1.7280e-01, -8.8024e-01,  ...,  4.2146e-01,
+           3.9975e-01, -1.9645e-01],
          ...,
-         [ 1.6077, -0.8927, -0.4703,  ...,  0.2205, -0.9260, -0.7037],
-         [-0.0548, -0.2564,  1.0371,  ...,  0.4762,  0.6274,  3.2695],
-         [ 2.3243, -0.9653,  0.6578,  ...,  0.3373, -0.2705, -1.7051]],
+         [-7.9086e-01,  5.1349e-01, -1.0982e+00,  ...,  3.1622e-01,
+          -1.3991e+00,  4.4434e-01],
+         [ 7.3869e-01, -2.7542e-01, -1.2387e+00,  ..., -9.4483e-01,
+           1.2540e+00,  1.0914e+00],
+         [ 1.6510e-01,  3.4803e-01,  6.9684e-02,  ..., -2.4324e-01,
+           1.1410e+00, -1.2149e+00]],
 
-        [[ 0.2325, -1.0578,  0.9966,  ..., -1.0582,  0.0363, -0.7856],
-         [-0.3812,  0.0935, -0.4695,  ..., -0.7288,  0.3424,  0.8714],
-         [ 0.5035, -0.3084, -0.4811,  ...,  1.3147,  1.0075,  0.3399],
+        [[-3.0154e-01, -9.2984e-01,  6.4848e-01,  ..., -4.6284e-01,
+          -6.6643e-02,  1.1902e+00],
+         [-4.1180e-01, -6.9959e-01,  1.6393e-01,  ..., -4.3973e-01,
+          -1.7124e-01, -6.5156e-01],
+         [-2.0676e+00,  1.4021e+00, -8.8960e-02,  ..., -1.2859e-03,
+           6.0182e-01,  2.0245e+00],
          ...,
-         [-0.4198, -0.7360,  0.5782,  ..., -1.6559,  1.1251,  0.0442],
-         [ 1.1577, -1.2900, -1.0762,  ..., -0.0396,  0.2402, -1.2529],
-         [ 1.2223,  1.4841, -1.1372,  ..., -1.4513, -0.5511,  0.2206]],
+         [-1.0774e+00,  4.3456e-01, -1.6407e-01,  ...,  9.0579e-01,
+           6.4514e-01, -9.6780e-01],
+         [-1.0332e+00, -6.9702e-01, -1.1782e+00,  ...,  1.8425e-01,
+           1.4251e-03,  4.6951e-01],
+         [ 2.5924e-01,  2.1697e-01, -1.1398e+00,  ...,  4.8916e-02,
+          -1.3878e+00, -5.0575e-01]],
 
-        [[ 2.1443, -2.2238,  1.5739,  ...,  0.1391,  0.2807, -1.5955],
-         [ 0.1047, -1.7176, -1.1747,  ...,  1.2637, -0.0647, -1.2108],
-         [ 0.5938, -0.4949,  1.5950,  ...,  1.2793, -1.5739,  0.5080],
+        [[ 1.4122e+00,  5.2889e-01,  9.3042e-01,  ...,  1.0026e+00,
+          -8.4910e-02,  6.3180e-01],
+         [ 7.4972e-01,  5.0729e-01, -9.0348e-01,  ...,  9.4041e-03,
+          -9.9262e-01, -2.5424e+00],
+         [-1.1751e-01,  5.6003e-02,  1.1174e-01,  ..., -1.0769e+00,
+          -1.1123e+00,  3.4882e-01],
          ...,
-         [-0.6046,  0.1553,  1.5048,  ..., -1.2343, -0.0467, -0.4440],
-         [ 0.6120,  0.2341,  0.9607,  ..., -0.6626, -1.0880,  0.2894],
-         [ 0.6179, -0.2285,  1.8812,  ...,  1.4288, -2.4196,  0.0400]],
+         [-6.1406e-01, -1.2389e+00,  2.2630e+00,  ...,  2.1672e-01,
+           1.6545e+00, -3.1211e-01],
+         [-1.4842e-01, -3.6253e-01, -1.8248e-01,  ...,  5.6481e-01,
+          -7.1054e-01,  4.7081e-01],
+         [-8.8762e-01, -6.0361e-01, -4.0231e-01,  ..., -1.0109e-01,
+           1.3751e+00, -1.6027e-01]],
 
-        [[ 1.0735,  0.3767, -0.4678,  ..., -0.9289,  0.5338,  0.0072],
-         [ 0.5608, -1.1333,  0.1633,  ..., -1.7045,  0.8544,  0.5749],
-         [-1.2847, -0.9712,  0.4908,  ...,  0.8112,  0.8928, -0.3685],
+        [[ 5.6255e-01,  1.6670e-01,  1.1376e+00,  ...,  8.0336e-01,
+          -7.5933e-02, -8.3884e-02],
+         [ 1.2155e-01,  1.7058e-01,  6.2700e-01,  ..., -8.5850e-01,
+           3.8845e-01,  4.5734e-01],
+         [-1.9293e+00, -6.9038e-02, -1.1855e+00,  ..., -1.5970e-01,
+          -5.7538e-01,  1.7444e-01],
          ...,
-         [-0.3805, -0.0063,  0.0240,  ..., -0.7076,  0.5628,  0.1454],
-         [-1.3127, -0.2637, -0.5327,  ..., -0.5353, -1.4950,  1.8671],
-         [ 0.1785, -0.3728,  0.4534,  ..., -0.6949,  1.5302, -0.7331]]])
-batch_y=[tensor([83, 83, 83, 83]), tensor([1, 1, 1, 1])]
+         [ 7.4674e-01, -1.7557e+00, -4.3545e-01,  ...,  5.9196e-01,
+          -8.7400e-01,  1.1536e+00],
+         [ 1.2933e+00, -3.8170e-01,  1.6619e+00,  ..., -9.3147e-01,
+          -1.5719e+00,  6.0153e-01],
+         [ 1.5732e+00,  7.0572e-02,  1.3267e+00,  ..., -1.3383e+00,
+           1.6086e+00,  1.2305e+00]]])
+batch_y=[tensor([37, 37, 37, 37]), tensor([0, 0, 0, 0])]
 batch_ind=[tensor([0, 1, 2, 3]), tensor([   0, 1000, 2000, 2600]), tensor([1000, 2000, 3000, 3600])]
 </pre></div>
 </div>
@@ -833,7 +865,7 @@ The target order follows <code class="docutils literal notranslate"><span class=
 </span><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Target without a mapping: </span><span class="si">{</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Target without a mapping: [83, 1]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Target without a mapping: [0, 0]
 </pre></div>
 </div>
 </section>
@@ -852,13 +884,99 @@ it a continuous regression target.</p>
 </span><span class="k">assert</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.pytorch.org/docs/stable/size.html#torch.Size" title="torch.Size"><span class="n">matrix_y</span><span class="o">.</span><span class="n">shape</span></a> <span class="o">==</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Matrix target shape: (4, 2)
-tensor([[83,  1],
-        [83,  1],
-        [83,  1],
-        [83,  1]])
+tensor([[0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0]])
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.264 seconds)</p>
+</section>
+<section id="changing-the-prediction-target">
+<h2>Changing the prediction target<a class="headerlink" href="#changing-the-prediction-target" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_target" title="braindecode.datasets.BaseConcatDataset.set_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_target()</span></code></a> to switch to a
+different target without loading the recordings or creating the windows again.
+For example, select the numeric class label we added to the description.
+Clear the array transform from the multi-target example so indexing returns a
+scalar target again.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="o">.</span><span class="n">target_transform</span> <span class="o">=</span> <span class="kc">None</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_target" title="braindecode.datasets.BaseConcatDataset.set_target"><span class="n">numeric_windows</span><span class="o">.</span><span class="n">set_target</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">gender_code</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Classification target: </span><span class="si">{</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Classification target: 0
+</pre></div>
+</div>
+<p>The same windows can instead return age as a regression target. Selecting a
+column does not choose a model, loss, or dtype: here <code class="docutils literal notranslate"><span class="pre">float</span></code> converts the
+returned target to a floating-point value. This transform does not change the
+stored metadata.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.set_target" title="braindecode.datasets.BaseConcatDataset.set_target"><span class="n">numeric_windows</span><span class="o">.</span><span class="n">set_target</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">age</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="o">.</span><span class="n">target_transform</span> <span class="o">=</span> <span class="nb">float</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Regression target: </span><span class="si">{</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Regression target: 37.0
+</pre></div>
+</div>
+</section>
+<section id="recording-descriptions-and-window-metadata">
+<h2>Recording descriptions and window metadata<a class="headerlink" href="#recording-descriptions-and-window-metadata" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">description</span></code> has one row per recording; <code class="docutils literal notranslate"><span class="pre">get_metadata()</span></code> has one row per
+window, with recording descriptions repeated alongside the window information.
+<code class="docutils literal notranslate"><span class="pre">set_target</span></code> first looks for the column in each window dataset’s metadata,
+then in its description. A description value such as age is broadcast to all
+windows of that recording. Editing the DataFrame returned by <code class="docutils literal notranslate"><span class="pre">get_metadata()</span></code>
+alone does not update the targets returned by dataset indexing.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">description</span> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="o">.</span><span class="n">description</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">age</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">gender_code</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="n">metadata</span> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.get_metadata" title="braindecode.datasets.BaseConcatDataset.get_metadata"><span class="n">numeric_windows</span><span class="o">.</span><span class="n">get_metadata</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">age</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">gender_code</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">target</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">i_window_in_trial</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   age  gender_code
+0    0            0
+1   53            1
+2   39            0
+3   37            0
+   age  gender_code  target  i_window_in_trial
+0    0            0       0                  0
+1    0            0       0                  1
+2    0            0       0                  2
+3    0            0       0                  3
+0   53            1      53                  0
+1   53            1      53                  1
+2   53            1      53                  2
+3   53            1      53                  3
+0   39            0      39                  0
+1   39            0      39                  1
+2   39            0      39                  2
+3   39            0      39                  3
+0   37            0      37                  0
+1   37            0      37                  1
+2   37            0      37                  2
+3   37            0      37                  3
+</pre></div>
+</div>
+</section>
+<section id="selecting-a-subset-of-recordings">
+<h2>Selecting a subset of recordings<a class="headerlink" href="#selecting-a-subset-of-recordings" title="Link to this heading">#</a></h2>
+<p>Keep only recordings with <code class="docutils literal notranslate"><span class="pre">gender_code</span> <span class="pre">==</span> <span class="pre">1</span></code>, independently of the current
+prediction target. To keep several values, use <code class="docutils literal notranslate"><span class="pre">isin</span></code> instead of <code class="docutils literal notranslate"><span class="pre">eq</span></code>.
+The row positions passed to <code class="docutils literal notranslate"><span class="pre">split</span></code> refer to recordings, not individual
+windows. This selection keeps all windows from each selected recording; it
+does not filter event classes that vary within a recording.
+See <a class="reference internal" href="plot_split_dataset.html#split-dataset-example"><span class="std std-ref">Split Dataset Example</span></a> for other recording-level splits.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">selected_ids</span></a> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">description</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">gender_code</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">selected_windows</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-method reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset.split" title="braindecode.datasets.BaseConcatDataset.split"><span class="n">numeric_windows</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">selected</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">selected_ids</span></a><span class="p">}</span><span class="p">)</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">selected</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">selected_windows</span></a><span class="o">.</span><span class="n">description</span><span class="p">[</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">age</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">gender_code</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">selected_windows</span></a><span class="p">)</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">numeric_windows</span></a><span class="p">)</span><span class="si">}</span><span class="s2"> windows</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   age  gender_code
+0   53            1
+Selected 4 of 16 windows
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">split</span></code> reuses the underlying datasets rather than copying the signals.
+Later calls to <code class="docutils literal notranslate"><span class="pre">set_target</span></code> also affect splits sharing those datasets. Here
+we finish changing targets before constructing the subset.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.073 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-datasets-io-plot-tuh-discrete-multitarget-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8616a7f968141825e56ab3e3d59be449/plot_tuh_discrete_multitarget.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_tuh_discrete_multitarget.ipynb</span></code></a></p>
@@ -929,6 +1047,9 @@ tensor([[83,  1],
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-dataloader">Exploring DataLoader</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numeric-targets-without-a-mapping">Numeric targets without a mapping</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-batch-target-layout">Choosing the batch target layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-the-prediction-target">Changing the prediction target</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recording-descriptions-and-window-metadata">Recording descriptions and window metadata</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-a-subset-of-recordings">Selecting a subset of recordings</a></li>
 </ul>
   </nav></div>
 

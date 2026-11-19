@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/dev/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.modules.ChannelLayer maps channels with one linear estimate, braindecode.functional.linear_channel_map(): inputs A v, targets B v, a prior covarian..." />
+<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: Extend Multiple discrete targets with the TUH EEG Corpus with target switching, the relation between recording descriptions and window metadata, and recording-..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
 <meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
-<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: braindecode.modules.ChannelLayer maps channels with one linear estimate, braindecode.functional.linear_channel_map(): inputs A v, targets B v, a prior covarian..." />
+<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: Extend Multiple discrete targets with the TUH EEG Corpus with target switching, the relation between recording descriptions and window metadata, and recording-..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 
@@ -538,6 +538,9 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Extend <a class="reference internal" href="auto_examples/datasets_io/plot_tuh_discrete_multitarget.html#multiple-discrete-targets-tuh"><span class="std std-ref">Multiple discrete targets with the TUH EEG Corpus</span></a> with target switching, the relation
+between recording descriptions and window metadata, and recording-level subset
+selection (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1596">#1596</a> by <a class="reference external" href="https://github.com/viranovskaya">Daria Agafonova</a>).</p></li>
 <li><p><a class="reference internal" href="generated/channels/braindecode.modules.ChannelLayer.html#braindecode.modules.ChannelLayer" title="braindecode.modules.ChannelLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.ChannelLayer</span></code></a> maps channels with one linear
 estimate, <a class="reference internal" href="generated/braindecode.functional.linear_channel_map.html#braindecode.functional.linear_channel_map" title="braindecode.functional.linear_channel_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">braindecode.functional.linear_channel_map()</span></code></a>: inputs <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">v</span></code>,
 targets <code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">v</span></code>, a prior covariance of the electrode potentials <code class="docutils literal notranslate"><span class="pre">v</span></code> and a flat
@@ -663,6 +666,11 @@ classification head needs <code class="docutils literal notranslate"><span class
 encoder output <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_chans,</span> <span class="pre">n_tokens,</span> <span class="pre">dim)</span></code> with the tokens of padded
 channels zero; DIVER1 gains
 <code class="docutils literal notranslate"><span class="pre">return_features</span></code> (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1540">#1540</a> by <a class="reference external" href="https://github.com/julien-gadonneix">Julien Gadonneix</a>).</p></li>
+<li><p>New tutorial <a class="reference internal" href="auto_examples/advanced_training/plot_weight_audit.html#weight-audit-tutorial"><span class="std std-ref">Auditing what a decoder relies on from its weights</span></a>: audit what a released decoder relies on
+from its weights alone (dominant band, time window and channel ranking of an
+<a class="reference internal" href="generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGNet</span></code></a>, read through its path weights), then confirm the
+reading with one occlusion check, shown on a released PhysioNet EEGNet checkpoint and
+the lateral-cue eye-movement shortcut (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1538">#1538</a> by <a class="reference external" href="https://github.com/YihengLi-1">Yiheng Li</a>).</p></li>
 <li><p><a class="reference internal" href="install/gaudi.html#install-gaudi"><span class="std std-ref">Running on Intel Gaudi</span></a> lists two attention issues of Gaudi software 1.21.4 that give no
 error: wrong values in eager mode when two calls take transposed views with as many
 elements in different shapes (<a class="reference internal" href="generated/braindecode.models.AXON.html#braindecode.models.AXON" title="braindecode.models.AXON"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.AXON</span></code></a>), and no gradient for a
@@ -714,6 +722,12 @@ resolver conflict (by <a class="reference external" href="https://github.com/bru
 <section id="bug-fixes">
 <h2>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> of every braindecode model loads checkpoints saved before
+the max-norm layers (<a class="reference internal" href="generated/convolution/braindecode.modules.Conv2dWithConstraint.html#braindecode.modules.Conv2dWithConstraint" title="braindecode.modules.Conv2dWithConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.Conv2dWithConstraint</span></code></a> and the
+other <code class="docutils literal notranslate"><span class="pre">*WithConstraint</span></code> layers) became parametrizations: their <code class="docutils literal notranslate"><span class="pre">weight</span></code> key
+is mapped to <code class="docutils literal notranslate"><span class="pre">parametrizations.weight.original</span></code>. Released checkpoints such as
+the EEGNet weights of Guetschel and Tangermann load without renaming keys
+(<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1538">#1538</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain" title="braindecode.models.CodeBrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.CodeBrain</span></code></a> with a <code class="docutils literal notranslate"><span class="pre">mask</span></code> no longer crashes when
 <code class="docutils literal notranslate"><span class="pre">patch_size</span></code> differs from the embedding size <code class="docutils literal notranslate"><span class="pre">emb_dim</span></code>, for example
 <code class="docutils literal notranslate"><span class="pre">patch_size=128</span></code> (<code class="docutils literal notranslate"><span class="pre">emb_dim=150</span></code>). <code class="docutils literal notranslate"><span class="pre">mask_encoding</span></code> replaces the masked raw

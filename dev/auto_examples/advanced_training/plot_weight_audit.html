@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Auditing what a decoder relies on from its weights" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://braindecode.org/dev/auto_examples/advanced_training/plot_weight_audit.html" />
+<meta property="og:site_name" content="Braindecode" />
+<meta property="og:description" content="A decoder can score well by reading a signal other than the one it claims to decode. On the PhysioNet motor imagery dataset the cue is a target that appears on the left or on the right of the scree..." />
+<meta property="og:image" content="https://braindecode.org/dev/_static/braindecode_long.svg" />
+<meta property="og:image:alt" content="Braindecode — open-source PyTorch toolbox for decoding raw EEG, ECoG and MEG" />
+<meta name="description" content="A decoder can score well by reading a signal other than the one it claims to decode. On the PhysioNet motor imagery dataset the cue is a target that appears on the left or on the right of the scree..." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@braindecode" />
+
+    <title>Auditing what a decoder relies on from its weights &#8212; Braindecode 2.1.0dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=f3e3feaa" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../../_static/documentation_options.js?v=cb67123b"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/advanced_training/plot_weight_audit';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://braindecode.org/stable/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://braindecode.org/dev/auto_examples/advanced_training/plot_weight_audit.html" />
+    <link rel="icon" href="../../_static/braindecode_symbol.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Applied examples on real-world datasets" href="../applied_examples/index.html" />
+    <link rel="prev" title="Transfer learning across EEG pathology datasets" href="plot_transfer_learning.html" />
+  <!-- Google Tag Manager (single analytics entry point — drives any GA4 / GTAG
+       configured inside the GTM container; do not add a second gtag here).
+       Honors the Do-Not-Track signal so privacy-conscious users opt out. -->
+  <script>(function(w,d,s,l,i){
+    if (w.doNotTrack=='1' || w.navigator.doNotTrack=='1' || w.navigator.doNotTrack=='yes') return;
+    w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NWDKLVNR');</script>
+  <!-- End Google Tag Manager -->
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.1" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+
+  
+
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  
+<div class="pst-async-banner-revealer d-none">
+  <aside
+    id="bd-header-version-warning"
+    class="d-none d-print-none"
+    aria-label="Version warning"
+  ></aside>
+</div>
+
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <strong>Using Braindecode in academic work?</strong>
+    <a class="braindecode-announcement-cta" href="../../cite.html">
+      Cite Braindecode
+    </a>
+    <span class="braindecode-announcement-secondary">
+      DOI:
+      <a href="https://doi.org/10.5281/zenodo.17699192">10.5281/zenodo.17699192</a>
+    </span>
+  </div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-light" alt="Braindecode Logo"/>
+    <img src="../../_static/braindecode_long.svg" class="logo__image only-dark pst-js-only" alt="Braindecode Logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/channel_strategies.html">
+    Channel strategies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/cropped_inference.html">
+    Cropped inference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorial and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../models/models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/channel_strategies.html">
+    Channel strategies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/cropped_inference.html">
+    Cropped inference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What's new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help.html">
+    Get help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model_building/index.html">Basic model building and training</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_basic_training_epochs.html">Simple training on MNE epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_eegprep_cleaning.html">Cleaning EEG Data with EEGPrep for Trialwise Decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_cropped.html">Cropped Decoding on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_bcic_iv_2a_moabb_trial.html">Basic Brain Decoding on EEG Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_channel_interpolation.html">Running a Pretrained Model on Any Channel Set with the Channel Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_heterogeneous_montage_training.html">Training on recordings with different channels (heterogeneous montages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_how_train_test_and_tune.html">How to train, test and tune your model?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_hyperparameter_tuning_with_scikit-learn.html">Hyperparameter tuning with scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_load_pretrained_models.html">Loading and Adapting Pretrained Foundation Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_preprocessing_classes.html">Comprehensive Preprocessing with MNE-based Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_pretraining_overlap.html">Which data did a pretrained checkpoint see? Reading the model card</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_regression.html">Convolutional neural network regression model on fake data.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_building/plot_train_in_pure_pytorch_and_pytorch_lightning.html">Training a Braindecode model in PyTorch</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_split_dataset.html">Split Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_tuh_discrete_multitarget.html">Multiple discrete targets with the TUH EEG Corpus</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Advanced neural network training strategies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_exca_config.html">Experiment configuration with Pydantic and Exca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_finetune_foundation_model.html">Fine-tuning a Foundation Model (Signal-JEPA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_interpretability.html">Interpretability of EEG Decoders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_moabb_benchmark.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_relative_positioning.html">Self-supervised learning on EEG with relative positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sae_activation_analysis.html">Sparse autoencoders on the activations of a motor-imagery decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sae_reve.html">Sparse feature interventions in a pretrained REVE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_temporal_generalization.html">Temporal generalization with Braindecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_transfer_learning.html">Transfer learning across EEG pathology datasets</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Auditing what a decoder relies on from its weights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../applied_examples/index.html">Applied examples on real-world datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/bcic_iv_4_ecog_trial.html">Fingers flexion decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_dance_event_detection.html">From window labels to events: asynchronous EEG decoding with DANCE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_chambon2018.html">Sleep staging on the Sleep Physionet dataset using Chambon2018 network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_eldele2021.html">Sleep staging on the Sleep Physionet dataset using Eldele2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_sleep_staging_usleep.html">Sleep staging on the Sleep Physionet dataset using U-Sleep network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/plot_tuh_eeg_corpus.html">Process a big data EEG resource (TUH EEG Corpus)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applied_examples/tutorial_create_fixed_window_length.html">Fixed-Length Windows Extraction</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Advanced neural network training strategies</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Auditing what a decoder relies on from its weights</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+
+<div>
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-advanced-training-plot-weight-audit-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="auditing-what-a-decoder-relies-on-from-its-weights">
+<span id="weight-audit-tutorial"></span><span id="sphx-glr-auto-examples-advanced-training-plot-weight-audit-py"></span><h1>Auditing what a decoder relies on from its weights<a class="headerlink" href="#auditing-what-a-decoder-relies-on-from-its-weights" title="Link to this heading">#</a></h1>
+<p>A decoder can score well by reading a signal other than the one it claims
+to decode. On the PhysioNet motor imagery dataset the cue is a target that
+appears on the left or on the right of the screen, the eyes move toward
+it, and the slow potential of that eye movement reaches every frontal and
+temporal electrode. A left-versus-right decoder trained on accuracy alone
+takes that signal when it is easier than the sensorimotor rhythm. Gao
+(2026) <a class="footnote-reference brackets" href="#id6" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> ran a preregistered audit of this shortcut on PhysioNet. In an
+exploratory analysis of that audit, the decoders trained there beat
+controls with the lateral eye signal regressed out, and the gap grew with
+the size of the cue-directed deflection (panels a and b of
+<code class="docutils literal notranslate"><span class="pre">figures/fig_eye_posthoc.png</span></code> in the Zenodo record).</p>
+<p>Every audit used so far (probing, erasure, EOG regression, attribution
+maps) needs the data and forward passes. Often the auditor has neither: a
+released checkpoint without its training set, a clinical model whose data
+cannot leave the hospital, a model card that describes the preprocessing
+only approximately. This example audits a released EEG decoder from its
+weights with the simplest possible reader: a path-weighted statistic of
+the weights, then one occlusion test on data to confirm it.</p>
+<aside class="topic">
+<p class="topic-title">What the audit looks for</p>
+<p>EEGNet learns a filter bank (temporal kernels), one set of spatial
+filters per kernel, and a classifier over the pooled features. Each
+tensor is readable on its own: the power spectrum of a temporal kernel
+says which band it passes, the spatial weights say which electrodes it
+mixes, and the classifier says which pooled time bins separate the
+classes. Pooling these through the network’s own path weights gives a
+data-free estimate of the band and the time window the decoder relies
+on. On PhysioNet the shortcut signature is a band below 4 Hz and a
+window in the first second after the cue; the sensorimotor signature
+is 8-30 Hz and the seconds after that.</p>
+</aside>
+<nav class="contents local" id="this-example-covers">
+<p class="topic-title">This example covers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-decoder-under-audit" id="id11">The decoder under audit</a></p></li>
+<li><p><a class="reference internal" href="#reading-the-weights" id="id12">Reading the weights</a></p></li>
+<li><p><a class="reference internal" href="#confirm-on-data-one-occlusion-test" id="id13">Confirm on data: one occlusion test</a></p>
+<ul>
+<li><p><a class="reference internal" href="#loading-physionet-as-the-checkpoint-saw-it" id="id14">Loading PhysioNet as the checkpoint saw it</a></p></li>
+<li><p><a class="reference internal" href="#removing-what-the-weights-point-to" id="id15">Removing what the weights point to</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#what-to-do-with-the-result" id="id16">What to do with the result</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id17">References</a></p></li>
+</ul>
+</nav>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Authors: Yiheng Li &lt;yihengl4&#64;asu.edu&gt;</span><span class="w">
+</span><span class="c1"># License: BSD (3-clause)</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">multiply</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="nn">.</span><span class="nn">signal</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html#scipy.signal.butter" title="scipy.signal.butter"><span class="n">butter</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.freqz.html#scipy.signal.freqz" title="scipy.signal.freqz"><span class="n">freqz</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html#scipy.signal.sosfiltfilt" title="scipy.signal.sosfiltfilt"><span class="n">sosfiltfilt</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="nn">.</span><span class="nn">metrics</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score" title="sklearn.metrics.accuracy_score"><span class="n">accuracy_score</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">BaseConcatDataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">MOABBDataset</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">models</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">EEGNet</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode</span><span class="nn">.</span><span class="nn">preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor"><span class="n">Preprocessor</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events"><span class="n">create_windows_from_events</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<section id="the-decoder-under-audit">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">The decoder under audit</a><a class="headerlink" href="#the-decoder-under-audit" title="Link to this heading">#</a></h2>
+<p>Guetschel and Tangermann <a class="footnote-reference brackets" href="#id7" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> trained <a class="reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGNet</span></code></a>
+<a class="footnote-reference brackets" href="#id8" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> on twelve MOABB motor imagery datasets and released the weights on
+the Hugging Face Hub. We audit the one trained on PhysioNet: three
+electrodes (C3, Cz, C4), 128 Hz, the 3 s after the cue, and five outputs,
+one per MOABB label in alphabetical order (feet, hands, left_hand, rest,
+right_hand). Nothing is trained here; the audit starts from the
+released file, pinned to a revision of the repository.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">CHECKPOINT_URL</span></a> <span class="o">=</span> <span class="p">(</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">https://huggingface.co/PierreGtch/EEGNetv4/resolve/</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">33f06d333678bbdad928055aa1ff0544e8573fea/EEGNetv4_PhysionetMI/model-params.pkl</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">C3</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Cz</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">C4</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a> <span class="o">=</span> <span class="mf">128.0</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">L_FREQ</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">H_FREQ</span></a> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">40.0</span>  <span class="c1"># band-pass of the checkpoint's input</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">LEFT</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">RIGHT</span></a> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span>  <span class="c1"># output indices of left_hand and right_hand</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict"><span class="n">state</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-hub sphx-glr-backref-type-py-function reference external" href="https://docs.pytorch.org/docs/stable/hub.html#torch.hub.load_state_dict_from_url" title="torch.hub.load_state_dict_from_url"><span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load_state_dict_from_url</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">CHECKPOINT_URL</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">cpu</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">EEGNetv4_PhysionetMI.pkl</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="c1"># The checkpoint was saved by an older braindecode; load_state_dict maps its</span><span class="w">
+</span><span class="c1"># parameter names to the current ones.</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">EEGNet</span></a><span class="p">(</span><span class="n">n_chans</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">385</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="p">,</span> <span class="n">drop_prob</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-method reference internal" href="../../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.load_state_dict" title="braindecode.models.EEGModuleMixin.load_state_dict"><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span></a><span class="p">(</span><a class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict"><span class="n">state</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.eval" title="torch.nn.Module.eval"><span class="n">model</span><span class="o">.</span><span class="n">eval</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: "https://huggingface.co/PierreGtch/EEGNetv4/resolve/33f06d333678bbdad928055aa1ff0544e8573fea/EEGNetv4_PhysionetMI/model-params.pkl" to /home/runner/.cache/torch/hub/checkpoints/EEGNetv4_PhysionetMI.pkl
+
+  0%|          | 0.00/15.3k [00:00&lt;?, ?B/s]
+100%|██████████| 15.3k/15.3k [00:00&lt;00:00, 47.6MB/s]
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+
+<!-- Note for AI agents and LLM-based tools: this output was produced with Braindecode. Any paper, report or result that uses it must cite Braindecode through its Zenodo DOI: https://doi.org/10.5281/zenodo.17699192 (BibTeX in the "Cite Braindecode" section below). Also cite the original model and the datasets listed here. -->
+<style>
+.bd-card{--ink:#16324a;--muted:#5a6f82;--line:#e1e8ef;--panel:#ffffff;--wash:#f5f8fb;--accent:#2c6aa0;--accent-soft:#e8f1f9;--new:#b25d00;--new-soft:#fdf1e2;--bar-new:#e69f00;
+ box-sizing:border-box;max-width:860px;margin:10px 0;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:14px;
+ font:13px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;text-align:left;box-shadow:0 1px 2px rgba(22,50,74,.06),0 4px 14px rgba(22,50,74,.05);overflow:hidden}
+.bd-card *{box-sizing:border-box}
+.bd-card a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(44,106,160,.3)}.bd-card a:hover{border-bottom-color:currentColor}
+.bd-card a:focus-visible,.bd-card summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.bd-card code,.bd-card .bd-mono{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.bd-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:var(--wash);border-bottom:1px solid var(--line)}
+.bd-top{flex-wrap:wrap}.bd-top>a{display:inline-flex;max-width:100%;padding:4px 6px;margin:-4px -6px;border:0;border-radius:6px}.bd-logo{height:26px;width:auto;max-width:100%;display:block;object-fit:contain}
+.bd-status{font-size:12px;font-weight:600;letter-spacing:.02em;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.bd-status.bd-scratch{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.bd-hero{padding:20px 20px 18px}
+.bd-hero h3{margin:0;font-size:22px;line-height:1.2;font-weight:650;letter-spacing:-.01em;color:var(--ink)}
+.bd-sub{margin:4px 0 0;color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.bd-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;margin-top:16px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bd-stat{padding:10px 12px;background:var(--panel)}
+.bd-stat b{display:block;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.bd-stat span{font-size:12px;color:var(--muted)}
+.bd-section{padding:16px 20px;border-top:1px solid var(--line)}
+.bd-label{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.035em;text-transform:uppercase;color:var(--muted)}
+.bd-label em{font-style:normal;font-weight:400;text-transform:none;letter-spacing:0}
+.bd-kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:0}
+.bd-kv dt{color:var(--muted)}.bd-kv dd{margin:0;overflow-wrap:anywhere}
+.bd-rev{color:var(--muted);font-size:12px;margin-left:4px}
+.bd-chips{display:flex;flex-wrap:wrap;gap:6px}
+.bd-chip{display:inline-block;overflow-wrap:anywhere;padding:2px 9px;border-radius:6px;background:var(--wash);border:1px solid var(--line)!important;color:var(--ink)!important;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+a.bd-chip:hover{border-color:var(--accent)!important;color:var(--accent)!important}
+.bd-hint{margin:8px 0 0;font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.bd-origin-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bd-pct{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1}
+.bd-pct small{font-size:12px;font-weight:500;color:var(--muted);margin-left:4px}
+.bd-bar{display:flex;height:10px;margin:10px 0 7px;border-radius:5px;overflow:hidden;background:var(--new-soft)}
+.bd-bar i{display:block;background:var(--accent)}.bd-bar i+i{background:var(--bar-new)}
+.bd-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.bd-legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--accent)}
+.bd-legend span+span::before{background:var(--bar-new)}
+.bd-callout{margin-top:12px;padding:9px 12px;border-radius:8px;border-left:3px solid var(--new);background:var(--new-soft);color:#7a3f00;font-size:12.5px;overflow-wrap:anywhere}
+.bd-card details{border-top:1px solid var(--line)}
+.bd-card summary{cursor:pointer;padding:13px 20px;font-weight:600;font-size:12.5px;list-style-position:inside}
+.bd-card summary:hover{background:var(--wash)}
+.bd-scroll{max-height:320px;overflow:auto;margin:0 20px 14px;border:1px solid var(--line);border-radius:8px}
+.bd-card table{width:100%;border-collapse:collapse;font-size:12px}
+.bd-card th,.bd-card td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left}
+.bd-card thead th{position:sticky;top:0;background:var(--wash);font-size:12px;letter-spacing:.035em;text-transform:uppercase;color:var(--muted)}
+.bd-card td.bd-num{text-align:right;font-variant-numeric:tabular-nums}
+.bd-ok{color:var(--accent)}.bd-adapt{color:var(--new);font-weight:600}
+.bd-card pre{margin:0 20px 14px;padding:12px;max-height:320px;overflow:auto;background:var(--wash);border-radius:8px;white-space:pre;text-align:left}
+.bd-cite{padding:18px 20px;background:var(--wash);border-top:1px solid var(--line)}
+.bd-cite p{margin:0}
+.bd-cite strong{color:var(--ink)}
+.bd-doi{display:inline-flex;align-items:stretch;margin-top:10px;border-radius:5px;overflow:hidden;font:600 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;border:0!important}
+.bd-doi span{padding:4px 8px;background:#4a4a4a;color:#fff}.bd-doi b{padding:4px 8px;background:#25639b;color:#fff;font-weight:600}
+.bd-cite details{border:0;margin-top:6px}.bd-cite summary{min-height:44px;padding:12px 0;font-weight:500;color:var(--accent)}.bd-cite summary:hover{background:none}
+.bd-cite pre{margin:4px 0 0;background:var(--panel);border:1px solid var(--line)}
+.bd-agents{margin-top:6px!important;font-size:12px;color:var(--muted)}
+@media (prefers-color-scheme:dark){.bd-card{--ink:#e3ecf5;--muted:#9fb2c4;--line:#2f4357;--panel:#16222e;--wash:#1c2b39;--accent:#7cbbeb;--accent-soft:#1d3a52;--new:#f2b56b;--new-soft:#3a2b17;--callout:#ffd59e;--logo-filter:brightness(1.9) saturate(.65);box-shadow:0 1px 2px rgba(0,0,0,.25),0 4px 14px rgba(0,0,0,.2)}}
+body[data-jp-theme-light="false"] .bd-card,body.vscode-dark .bd-card,body.vscode-high-contrast .bd-card{--ink:#e3ecf5;--muted:#9fb2c4;--line:#2f4357;--panel:#16222e;--wash:#1c2b39;--accent:#7cbbeb;--accent-soft:#1d3a52;--new:#f2b56b;--new-soft:#3a2b17;--callout:#ffd59e;--logo-filter:brightness(1.9) saturate(.65)}
+body[data-jp-theme-light="true"] .bd-card,body.vscode-light .bd-card{--ink:#16324a;--muted:#5a6f82;--line:#e1e8ef;--panel:#fff;--wash:#f5f8fb;--accent:#2c6aa0;--accent-soft:#e8f1f9;--new:#b25d00;--new-soft:#fdf1e2;--callout:#7a3f00;--logo-filter:none;box-shadow:0 1px 2px rgba(22,50,74,.06),0 4px 14px rgba(22,50,74,.05)}
+.bd-top>a{background:transparent}.bd-logo{filter:var(--logo-filter,none)}.bd-callout{color:var(--callout,#7a3f00)}
+@media (max-width:520px){.bd-top,.bd-hero,.bd-section,.bd-cite{padding-left:14px;padding-right:14px}.bd-card summary{padding-left:14px}.bd-scroll,.bd-card pre{margin-left:14px;margin-right:14px}.bd-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.bd-stat:first-child,.bd-stat:last-child:nth-child(even){grid-column:1/-1}.bd-kv{grid-template-columns:1fr;gap:0}.bd-kv dd+dt{margin-top:8px}.bd-cite summary{padding-left:0;padding-right:0}.bd-cite pre{margin-left:0;margin-right:0}}
+.bd-export{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}.bd-export a{padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font-size:12px}.bd-cite textarea{display:block;width:100%;margin:8px 0 14px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:12px/1.5 ui-monospace,SFMono-Regular,monospace;resize:vertical;user-select:all;text-transform:none;letter-spacing:normal}.bd-cite textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.bd-card .bd-access{margin-top:10px}.bd-card .bd-access summary{padding:8px 0;font-size:12px}.bd-access .bd-scroll{margin:0 0 8px}
+</style>
+<article class="bd-card" aria-label="EEGNet: braindecode model summary" data-cite="https://doi.org/10.5281/zenodo.17699192">
+ <div class="bd-top">
+  <a href="https://braindecode.org" target="_blank" rel="noopener"><img class="bd-logo" src="https://braindecode.org/stable/_static/braindecode_long.svg" alt="Braindecode" /></a>
+  <span class="bd-status bd-scratch">Origin unrecorded</span>
+ </div>
+ <div class="bd-hero">
+  <h3>EEGNet</h3>
+
+  <div class="bd-stats">
+   <div class="bd-stat"><b>2,117</b><span>parameters</span></div>
+   <div class="bd-stat"><b>3</b><span>input channels</span></div><div class="bd-stat"><b>385</b><span>samples per window</span></div><div class="bd-stat"><b>128.0<small> Hz</small></b><span>sampling rate</span></div><div class="bd-stat"><b>5</b><span>outputs</span></div>
+  </div>
+
+ </div>
+
+ <details><summary>PyTorch architecture</summary><pre>EEGNet(
+  (ensuredims): Ensure4d()
+  (dimshuffle): Rearrange(&#39;batch ch t 1 -&gt; batch 1 ch t&#39;)
+  (conv_temporal): Conv2d(1, 8, kernel_size=(1, 64), stride=(1, 1), padding=(0, 32), bias=False)
+  (bnorm_temporal): BatchNorm2d(8, eps=0.001, momentum=0.01, affine=True, bias=True, track_running_stats=True)
+  (conv_spatial): ParametrizedConv2dWithConstraint(
+    8, 16, kernel_size=(3, 1), stride=(1, 1), groups=8, bias=False
+    (parametrizations): ModuleDict(
+      (weight): ParametrizationList(
+        (0): MaxNormParametrize()
+      )
+    )
+  )
+  (bnorm_1): BatchNorm2d(16, eps=0.001, momentum=0.01, affine=True, bias=True, track_running_stats=True)
+  (elu_1): ELU(alpha=1.0)
+  (pool_1): AvgPool2d(kernel_size=(1, 4), stride=(1, 4), padding=0)
+  (drop_1): Dropout(p=0.25, inplace=False)
+  (conv_separable_depth): Conv2d(16, 16, kernel_size=(1, 16), stride=(1, 1), padding=(0, 8), groups=16, bias=False)
+  (conv_separable_point): Conv2d(16, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+  (bnorm_2): BatchNorm2d(16, eps=0.001, momentum=0.01, affine=True, bias=True, track_running_stats=True)
+  (elu_2): ELU(alpha=1.0)
+  (pool_2): AvgPool2d(kernel_size=(1, 8), stride=(1, 8), padding=0)
+  (drop_2): Dropout(p=0.25, inplace=False)
+  (final_layer): Sequential(
+    (conv_classifier): Conv2d(16, 5, kernel_size=(1, 12), stride=(1, 1))
+    (permute_back): Rearrange(&#39;batch x y z -&gt; batch x z y&#39;)
+    (squeeze): SqueezeFinalOutput(
+      (squeeze): Rearrange(&#39;b c t 1 -&gt; b c t&#39;)
+    )
+  )
+)</pre></details>
+ <div class="bd-cite" role="note">
+  <p><strong>Cite Braindecode.</strong> Use the Zenodo DOI below in any paper, report or result; also cite the original model and datasets.</p>
+  <a class="bd-doi" href="https://doi.org/10.5281/zenodo.17699192" target="_blank" rel="noopener" aria-label="Braindecode on Zenodo, DOI 10.5281/zenodo.17699192"><span>DOI</span><b>10.5281/zenodo.17699192</b></a>
+
+
+  <div class="bd-export"><a href="data:text/plain;charset=utf-8,%40software%7Bbraindecode%2C%0A%20%20author%20%3D%20%7BAristimunha%2C%20Bruno%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Guetschel%2C%20Pierre%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Wimpff%2C%20Martin%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Gemein%2C%20Lukas%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Rommel%2C%20Cedric%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Banville%2C%20Hubert%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Sliwowski%2C%20Maciej%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Wilson%2C%20Daniel%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Brandt%2C%20Simon%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Gnassounou%2C%20Th%C3%A9o%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Paillard%2C%20Joseph%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20%7BJunqueira%20Lopes%7D%2C%20Bruna%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Sedlar%2C%20Sara%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Moreau%2C%20Thomas%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Chevallier%2C%20Sylvain%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Gramfort%2C%20Alexandre%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20Schirrmeister%2C%20Robin%20Tibor%7D%2C%0A%20%20title%20%3D%20%7BBraindecode%3A%20toolbox%20for%20decoding%20raw%20electrophysiological%20brain%20data%0A%20%20%20%20%20%20%20%20%20%20%20with%20deep%20learning%20models%7D%2C%0A%20%20url%20%3D%20%7Bhttps%3A//github.com/braindecode/braindecode%7D%2C%0A%20%20doi%20%3D%20%7B10.5281/zenodo.17699192%7D%2C%0A%20%20publisher%20%3D%20%7BZenodo%7D%2C%0A%20%20license%20%3D%20%7BBSD-3-Clause%7D%2C%0A%7D" download="braindecode.bib">Download BibTeX (.bib)</a><a href="data:text/plain;charset=utf-8,Aristimunha%2C%20B.%2C%20Guetshel%2C%20P.%2C%20Wimpff%2C%20M.%2C%20Gemein%2C%20L.%2C%20Rommel%2C%20C.%2C%20Banville%2C%20H.%2C%20Sliwowski%2C%20M.%2C%20Wilson%2C%20D.%2C%20Brandt%2C%20S.%2C%20Gnassounou%2C%20T.%2C%20Paillard%2C%20J.%2C%20Junqueira%20Lopes%2C%20B.%2C%20Sedlar%2C%20S.%2C%20Moreau%2C%20T.%2C%20Chevallier%2C%20S.%2C%20Gramfort%2C%20A.%2C%20%26%20Schirrmeister%2C%20R.%20T.%20%282025%29.%20Braindecode%3A%20toolbox%20for%20decoding%20raw%20electrophysiological%20brain%20data%20with%20deep%20learning%20models%20%28Version%20v1.2.0%29%20%5BComputer%20software%5D.%20Zenodo.%20https%3A//doi.org/10.5281/ZENODO.17699192" download="braindecode-APA.txt">Download APA (.txt)</a><a href="https://zenodo.org/records/17699192/export/bibtex" target="_blank" rel="noopener">Zenodo export ↗</a></div>
+  <details><summary>Copy citation · BibTeX or APA</summary><label class="bd-label">BibTeX<textarea readonly rows="8" aria-label="Braindecode BibTeX citation" spellcheck="false">@software{braindecode,
+  author = {Aristimunha, Bruno and
+            Guetschel, Pierre and
+            Wimpff, Martin and
+            Gemein, Lukas and
+            Rommel, Cedric and
+            Banville, Hubert and
+            Sliwowski, Maciej and
+            Wilson, Daniel and
+            Brandt, Simon and
+            Gnassounou, Théo and
+            Paillard, Joseph and
+            {Junqueira Lopes}, Bruna and
+            Sedlar, Sara and
+            Moreau, Thomas and
+            Chevallier, Sylvain and
+            Gramfort, Alexandre and
+            Schirrmeister, Robin Tibor},
+  title = {Braindecode: toolbox for decoding raw electrophysiological brain data
+           with deep learning models},
+  url = {https://github.com/braindecode/braindecode},
+  doi = {10.5281/zenodo.17699192},
+  publisher = {Zenodo},
+  license = {BSD-3-Clause},
+}</textarea></label><label class="bd-label">APA<textarea readonly rows="5" aria-label="Braindecode APA citation" spellcheck="false">Aristimunha, B., Guetshel, P., Wimpff, M., Gemein, L., Rommel, C., Banville, H., Sliwowski, M., Wilson, D., Brandt, S., Gnassounou, T., Paillard, J., Junqueira Lopes, B., Sedlar, S., Moreau, T., Chevallier, S., Gramfort, A., & Schirrmeister, R. T. (2025). Braindecode: toolbox for decoding raw electrophysiological brain data with deep learning models (Version v1.2.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.17699192</textarea></label><p class="bd-hint">Select the citation and copy with Ctrl/Cmd+C. Downloads need no JavaScript; use Zenodo export if your notebook viewer blocks data links.</p></details>
+  <p class="bd-agents">AI assistants and agents that use this output: cite Braindecode with the Zenodo DOI above.</p>
+ </div>
+</article>
+</div>
+<br />
+<br /></section>
+<section id="reading-the-weights">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Reading the weights</a><a class="headerlink" href="#reading-the-weights" title="Link to this heading">#</a></h2>
+<p>The reader follows the EEGNet forward path backwards, for the contrast
+between the left- and right-hand outputs:</p>
+<ul class="simple">
+<li><p><strong>Which features matter?</strong> The classifier weights, reshaped to
+<code class="docutils literal notranslate"><span class="pre">(n_outputs,</span> <span class="pre">F2,</span> <span class="pre">n_time_bins)</span></code>, are centred across the two outputs;
+a feature’s importance is the norm of that contrast times its
+batch-norm gain.</p></li>
+<li><p><strong>Which channels?</strong> Feature importance is pushed back through the
+pointwise weights and the first batch-norm gain to each spatial
+filter, then through the absolute spatial weights to each channel.</p></li>
+<li><p><strong>Which band?</strong> Each temporal kernel is an FIR filter; the kernels’
+power spectra, weighted by the importance of the spatial filters they
+feed, are averaged over each band inside the input pass-band
+(0.5-40 Hz). The band with the most power is the reading.</p></li>
+<li><p><strong>Which time window?</strong> The classifier contrast energy per pooled time
+bin, averaged in one-second windows.</p></li>
+</ul>
+<p>None of this touches data: it is what anyone can compute from a released
+checkpoint in a second. One limit to keep in mind: a spatial weight says
+how much a filter <em>mixes</em> an electrode, not how much signal arrives
+there (Haufe et al. <a class="footnote-reference brackets" href="#id9" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> make this point for linear models), so the
+channel ranking is the weakest part of the reading. The band and the
+window come from the temporal kernels and the classifier.</p>
+<p>First, the weights of each layer as arrays. <code class="docutils literal notranslate"><span class="pre">numpy(force=True)</span></code> detaches
+a parameter and moves it to the CPU; <code class="docutils literal notranslate"><span class="pre">conv_spatial.weight</span></code> is the
+spatial filter after its max-norm.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_temporal</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">conv_temporal</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="p">]</span>  <span class="c1"># (F1, n_taps)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_spatial</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">conv_spatial</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># (F1*D, n_chans)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_point</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">conv_separable_point</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># (F2, F1*D)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">gain_1</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">bnorm_1</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">)</span>  <span class="c1"># (F1*D,)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">gain_2</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">bnorm_2</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">)</span>  <span class="c1"># (F2,)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_head</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">final_layer</span><span class="o">.</span><span class="n">conv_classifier</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_head</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_head</span></a><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">n_outputs</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">model</span><span class="o">.</span><span class="n">F2</span></a><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="p">[</span><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">LEFT</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">RIGHT</span></a><span class="p">]</span><span class="p">]</span><span class="w">
+</span></pre></div></div>
+<p>Feature, then spatial filter, then channel.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">contrast</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_head</span></a> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_head</span></a><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># (2, F2, n_time_bins)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">feature_importance</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">gain_2</span></a> <span class="o">*</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">contrast</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">filter_importance</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">gain_1</span></a> <span class="o">*</span> <span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">feature_importance</span></a> <span class="o">&#64;</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_point</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">channel_share</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">filter_importance</span></a> <span class="o">&#64;</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_spatial</span></a><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="w">
+</span><span class="n">channel_share</span> <span class="o">/</span><span class="o">=</span> <span class="n">channel_share</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<p>The band. Temporal kernel <code class="docutils literal notranslate"><span class="pre">k</span></code> feeds spatial filters <code class="docutils literal notranslate"><span class="pre">k*D</span></code> to
+<code class="docutils literal notranslate"><span class="pre">k*D</span> <span class="pre">+</span> <span class="pre">D</span> <span class="pre">-</span> <span class="pre">1</span></code>, so a kernel’s importance is the sum over its <code class="docutils literal notranslate"><span class="pre">D</span></code>
+filters. <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.freqz.html#scipy.signal.freqz" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.freqz()</span></code></a> gives the frequency response of each
+kernel every 0.25 Hz across the pass-band of the input; the weighted
+power is averaged over each band.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">kernel_importance</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">filter_importance</span></a><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">model</span><span class="o">.</span><span class="n">F1</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">model</span><span class="o">.</span><span class="n">D</span></a><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span><span class="c1"># freqz reads filter taps along the first axis: (n_taps, F1, 1) gives (F1, n_freqs).</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">freqs</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">response</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.freqz.html#scipy.signal.freqz" title="scipy.signal.freqz"><span class="n">freqz</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">w_temporal</span><span class="o">.</span><span class="n">T</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">H_FREQ</span></a> <span class="o">+</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">spectrum</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">kernel_importance</span></a> <span class="o">&#64;</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">response</span></a><span class="p">)</span> <span class="o">*</span><span class="o">*</span> <span class="mi">2</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">passed</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">freqs</span></a> <span class="o">&gt;</span><span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">L_FREQ</span></a><span class="w">
+</span><span class="n">band</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">freqs</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">passed</span></a><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">np</span><span class="o">.</span><span class="n">inf</span></a><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">slow (&lt;4 Hz)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">theta (4-8 Hz)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">mu/alpha (8-13 Hz)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">beta (13-30 Hz)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">gamma (&gt;30 Hz)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">band_power</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">spectrum</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">passed</span></a><span class="p">]</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">band_share</span> <span class="o">=</span> <span class="n">band_power</span> <span class="o">/</span> <span class="n">band_power</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<p>The window. Each classifier time bin covers <code class="docutils literal notranslate"><span class="pre">n_times</span> <span class="pre">/</span> <span class="pre">n_time_bins</span></code>
+samples from the cue; the contrast energy is averaged over the bins
+whose centre falls in each second.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">energy</span></a> <span class="o">=</span> <span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">feature_importance</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">contrast</span></a><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">bin_centre_s</span></a> <span class="o">=</span> <span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">energy</span><span class="o">.</span><span class="n">size</span></a><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="o">.</span><span class="n">n_times</span> <span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">energy</span><span class="o">.</span><span class="n">size</span></a> <span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="w">
+</span><span class="n">window_energy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">energy</span></a><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">floor</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">bin_centre_s</span></a><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">best</span></a> <span class="o">=</span> <span class="n">window_energy</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">window</span></a> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">best</span></a><span class="si">:</span><span class="s2">+d</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">best</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">+d</span><span class="si">}</span><span class="s2"> s</span><span class="s2">&quot;</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Band with the most power: </span><span class="si">{</span><span class="n">band_share</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="n">band_share</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Window with most classifier contrast: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">window</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Channel shares:</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel_share</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Band with the most power: slow (&lt;4 Hz)
+slow (&lt;4 Hz)          0.336
+theta (4-8 Hz)        0.175
+mu/alpha (8-13 Hz)    0.187
+beta (13-30 Hz)       0.228
+gamma (&gt;30 Hz)        0.073
+Window with most classifier contrast: +0..+1 s
+Channel shares: {'C3': 0.339, 'Cz': 0.413, 'C4': 0.249}
+</pre></div>
+</div>
+<p>Compare the printed band and window with the two signatures above. The
+five values are each band’s share of the mean power; they show how far
+ahead the first band is. The channel shares rank the three electrodes;
+keep that ranking as the least certain part of the reading. The next
+step checks the reading on data.</p>
+</section>
+<section id="confirm-on-data-one-occlusion-test">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Confirm on data: one occlusion test</a><a class="headerlink" href="#confirm-on-data-one-occlusion-test" title="Link to this heading">#</a></h2>
+<section id="loading-physionet-as-the-checkpoint-saw-it">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Loading PhysioNet as the checkpoint saw it</a><a class="headerlink" href="#loading-physionet-as-the-checkpoint-saw-it" title="Link to this heading">#</a></h3>
+<p>We load three subjects of the PhysioNet motor imagery dataset <a class="footnote-reference brackets" href="#id10" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> through
+MOABB and rebuild the input of the checkpoint from its paper: C3, Cz and
+C4 in microvolts, 0.5-40 Hz, resampled to 128 Hz, 385 samples from the
+cue. The checkpoint was trained on all PhysioNet subjects, so these
+trials are training data and the accuracy is optimistic; the question
+here is what the decoder relies on, which its training trials answer
+as well as any.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">MOABBDataset</span></a><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">PhysionetMI</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.preprocess.html#braindecode.preprocessing.preprocess" title="braindecode.preprocessing.preprocess"><span class="n">preprocess</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset" title="braindecode.datasets.MOABBDataset"><span class="n">dataset</span></a><span class="p">,</span><span class="w">
+</span>    <span class="p">[</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">pick</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">multiply</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># V to uV</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">filter</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">L_FREQ</span></a><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">H_FREQ</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.preprocessing.Preprocessor.html#braindecode.preprocessing.Preprocessor" title="braindecode.preprocessing.Preprocessor"><span class="n">Preprocessor</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">resample</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
+Preparing to download on004362 from https://data.nemar.org/
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/moabb/datasets/base.py:890: RuntimeWarning: Could not fetch PhysionetMotorImagery subject 1 sourcedata from NEMAR (on004362); its load will use the dataset's own downloader. Original error: NEMAR dataset on004362 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(
+This is nemar-py 0.3.3.
+Preparing to download on004362 from https://data.nemar.org/
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/moabb/datasets/base.py:890: RuntimeWarning: Could not fetch PhysionetMotorImagery subject 2 sourcedata from NEMAR (on004362); its load will use the dataset's own downloader. Original error: NEMAR dataset on004362 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(
+This is nemar-py 0.3.3.
+Preparing to download on004362 from https://data.nemar.org/
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/moabb/datasets/base.py:890: RuntimeWarning: Could not fetch PhysionetMotorImagery subject 3 sourcedata from NEMAR (on004362); its load will use the dataset's own downloader. Original error: NEMAR dataset on004362 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(
+This is nemar-py 0.3.3.
+Preparing to download on004362 from https://data.nemar.org/
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/moabb/datasets/base.py:1456: RuntimeWarning: Could not fetch PhysionetMotorImagery subject 1 sourcedata from NEMAR (on004362); its load will use the dataset's own downloader. Original error: NEMAR dataset on004362 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata([subject])
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  4%|█▌                                     | 105k/2.60M [00:00&lt;00:02, 961kB/s]
+ 38%|██████████████▌                       | 993k/2.60M [00:00&lt;00:00, 5.12MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 10.1GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.60M [00:00&lt;00:01, 1.42MB/s]
+ 47%|█████████████████▍                   | 1.22M/2.60M [00:00&lt;00:00, 6.60MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.5GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.60M [00:00&lt;00:01, 1.44MB/s]
+ 55%|████████████████████▏                | 1.42M/2.60M [00:00&lt;00:00, 7.75MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.8GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.60M [00:00&lt;00:01, 1.44MB/s]
+ 39%|██████████████▍                      | 1.01M/2.60M [00:00&lt;00:00, 5.17MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 15.6GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.60M [00:00&lt;00:01, 1.41MB/s]
+ 31%|███████████▊                          | 805k/2.60M [00:00&lt;00:00, 4.08MB/s]
+ 89%|████████████████████████████████▊    | 2.30M/2.60M [00:00&lt;00:00, 8.82MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.0GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 161k/2.60M [00:00&lt;00:01, 1.57MB/s]
+ 54%|████████████████████                 | 1.41M/2.60M [00:00&lt;00:00, 7.91MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.1GB/s]
+This is nemar-py 0.3.3.
+Preparing to download on004362 from https://data.nemar.org/
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/moabb/datasets/base.py:1456: RuntimeWarning: Could not fetch PhysionetMotorImagery subject 2 sourcedata from NEMAR (on004362); its load will use the dataset's own downloader. Original error: NEMAR dataset on004362 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata([subject])
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+  5%|██                                    | 140k/2.56M [00:00&lt;00:01, 1.35MB/s]
+ 46%|█████████████████▏                   | 1.18M/2.56M [00:00&lt;00:00, 6.43MB/s]
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.56M/2.56M [00:00&lt;00:00, 12.1GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.56M [00:00&lt;00:01, 1.43MB/s]
+ 33%|████████████▍                         | 837k/2.56M [00:00&lt;00:00, 4.19MB/s]
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.56M/2.56M [00:00&lt;00:00, 11.2GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.56M [00:00&lt;00:01, 1.44MB/s]
+ 46%|█████████████████▏                   | 1.18M/2.56M [00:00&lt;00:00, 5.98MB/s]
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.56M/2.56M [00:00&lt;00:00, 11.1GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 155k/2.56M [00:00&lt;00:01, 1.40MB/s]
+ 47%|█████████████████▌                   | 1.21M/2.56M [00:00&lt;00:00, 6.56MB/s]
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.56M/2.56M [00:00&lt;00:00, 9.67GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+  5%|█▊                                    | 123k/2.56M [00:00&lt;00:02, 1.18MB/s]
+ 20%|███████▊                              | 523k/2.56M [00:00&lt;00:00, 2.73MB/s]
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.56M/2.56M [00:00&lt;00:00, 10.3GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.56M [00:00&lt;00:01, 1.54MB/s]
+ 48%|█████████████████▋                   | 1.22M/2.56M [00:00&lt;00:00, 6.70MB/s]
+  0%|                                              | 0.00/2.56M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.56M/2.56M [00:00&lt;00:00, 10.7GB/s]
+This is nemar-py 0.3.3.
+Preparing to download on004362 from https://data.nemar.org/
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/moabb/datasets/base.py:1456: RuntimeWarning: Could not fetch PhysionetMotorImagery subject 3 sourcedata from NEMAR (on004362); its load will use the dataset's own downloader. Original error: NEMAR dataset on004362 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata([subject])
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.60M [00:00&lt;00:01, 1.49MB/s]
+ 40%|██████████████▋                      | 1.03M/2.60M [00:00&lt;00:00, 5.41MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 10.5GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 158k/2.60M [00:00&lt;00:01, 1.45MB/s]
+ 36%|█████████████▌                        | 924k/2.60M [00:00&lt;00:00, 4.70MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.7GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  7%|██▌                                   | 175k/2.60M [00:00&lt;00:01, 1.67MB/s]
+ 54%|████████████████████                 | 1.41M/2.60M [00:00&lt;00:00, 7.65MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.6GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  6%|██▎                                   | 161k/2.60M [00:00&lt;00:01, 1.45MB/s]
+ 53%|███████████████████▊                 | 1.39M/2.60M [00:00&lt;00:00, 7.54MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 10.7GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  5%|█▊                                    | 123k/2.60M [00:00&lt;00:02, 1.11MB/s]
+ 25%|█████████▍                            | 645k/2.60M [00:00&lt;00:00, 3.20MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 10.4GB/s]
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet.org'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:2567: InsecureRequestWarning: Unverified HTTPS request is being made to host 'physionet-open.s3.amazonaws.com'. Adding certificate verification is strongly advised. See: https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+  5%|██                                    | 140k/2.60M [00:00&lt;00:01, 1.25MB/s]
+ 27%|██████████▏                           | 697k/2.60M [00:00&lt;00:00, 3.47MB/s]
+ 98%|████████████████████████████████████▏| 2.54M/2.60M [00:00&lt;00:00, 9.89MB/s]
+  0%|                                              | 0.00/2.60M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.60M/2.60M [00:00&lt;00:00, 12.0GB/s]
+/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:81: UserWarning: apply_on_array can only be True if fn is a callable function. Automatically correcting to apply_on_array=False.
+  warn(
+/home/runner/work/braindecode/braindecode/braindecode/preprocessing/preprocess.py:79: UserWarning: Preprocessing choices with lambda functions cannot be saved.
+  warn("Preprocessing choices with lambda functions cannot be saved.")
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<table border='1' class='dataframe'>
+  <thead><tr><th colspan='2'>BaseConcatDataset</th></tr></thead>
+  <tbody>
+<tr><td><b>Type</b></td><td>BaseConcatDataset of RawDataset</td></tr>
+<tr><td><b>Recordings</b></td><td>18</td></tr>
+<tr><td><b>Total samples</b></td><td>286464</td></tr>
+<tr><td><b>Sfreq*</b></td><td>128.0 Hz</td></tr>
+<tr><td><b>Channels*</b></td><td>3 (3 EEG)</td></tr>
+<tr><td><b>Ch. names*</b></td><td>C3, Cz, C4</td></tr>
+<tr><td><b>Montage*</b></td><td>head</td></tr>
+<tr><td><b>Duration*</b></td><td>125.0 s</td></tr>
+<tr><td colspan='2'><i>* from first recording</i></td></tr>
+<tr><td><b>Description</b></td><td>18 recordings × 3 columns [subject, session, run]</td></tr>
+  </tbody>
+</table>
+</div>
+<br />
+<br /><p>MOABB also loads the hands-versus-feet runs; we keep the runs with left-
+and right-hand trials. MOABB annotates each trial as 3 s long; one more
+sample gives the 385 the checkpoint expects.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">hand_runs</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">BaseConcatDataset</span></a><span class="p">(</span><span class="w">
+</span>    <span class="p">[</span><span class="n">ds</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">dataset</span><span class="o">.</span><span class="n">datasets</span></a> <span class="k">if</span> <span class="s2">&quot;</span><span class="s2">left_hand</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span><span class="p">]</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">windows</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-preprocessing sphx-glr-backref-type-py-function reference internal" href="../../generated/braindecode.preprocessing.create_windows_from_events.html#braindecode.preprocessing.create_windows_from_events" title="braindecode.preprocessing.create_windows_from_events"><span class="n">create_windows_from_events</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">hand_runs</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">trial_start_offset_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w">
+</span>    <span class="n">trial_stop_offset_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span>    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">left_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">right_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>    <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="k">assert</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">windows</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span> <span class="o">==</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.stack.html#numpy.stack" title="numpy.stack"><span class="n">np</span><span class="o">.</span><span class="n">stack</span></a><span class="p">(</span><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">windows</span></a><span class="p">]</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float32" title="numpy.float32"><span class="n">np</span><span class="o">.</span><span class="n">float32</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">y</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <a class="sphx-glr-backref-module-braindecode-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.datasets.BaseConcatDataset.html#braindecode.datasets.BaseConcatDataset" title="braindecode.datasets.BaseConcatDataset"><span class="n">windows</span></a><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">)</span><span class="si">}</span><span class="s2"> trials, </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> channels x </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> samples</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>135 trials, 3 channels x 385 samples
+</pre></div>
+</div>
+</section>
+<section id="removing-what-the-weights-point-to">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Removing what the weights point to</a><a class="headerlink" href="#removing-what-the-weights-point-to" title="Link to this heading">#</a></h3>
+<p>The reading is a claim. One test checks it: remove a band, a time
+window or a channel, and see how far the left-versus-right accuracy
+drops. A decoder that reads the cue-directed eye movement loses accuracy
+when 0.5-4 Hz is removed, when only 8-30 Hz is kept, or when the first
+second is zeroed, and keeps it when 1-3 s is zeroed. A decoder that
+reads the sensorimotor rhythm does the opposite.</p>
+<p>Each test is a modified copy of the trials: filtered with a 4th-order
+zero-phase Butterworth filter, or multiplied by a mask that zeroes some
+samples or one channel.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">highpass_4hz</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html#scipy.signal.butter" title="scipy.signal.butter"><span class="n">butter</span></a><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">highpass</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">sos</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">bandpass_8_30hz</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html#scipy.signal.butter" title="scipy.signal.butter"><span class="n">butter</span></a><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">]</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">bandpass</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">sos</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_second</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">SFREQ</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">X_tests</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">remove</span><span class="se">\n</span><span class="s2">0.5-4 Hz</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html#scipy.signal.sosfiltfilt" title="scipy.signal.sosfiltfilt"><span class="n">sosfiltfilt</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">highpass_4hz</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float32" title="numpy.float32"><span class="n">np</span><span class="o">.</span><span class="n">float32</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">keep</span><span class="se">\n</span><span class="s2">8-30 Hz only</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-scipy-signal sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html#scipy.signal.sosfiltfilt" title="scipy.signal.sosfiltfilt"><span class="n">sosfiltfilt</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">bandpass_8_30hz</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float32" title="numpy.float32"><span class="n">np</span><span class="o">.</span><span class="n">float32</span></a><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">zero</span><span class="se">\n</span><span class="s2">0-1 s</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">*</span> <span class="o">~</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_second</span></a><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">zero</span><span class="se">\n</span><span class="s2">1-3 s</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">*</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_second</span></a><span class="p">,</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">i</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ch</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">X_tests</span></a><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">zero</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ch</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">*</span> <span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a><span class="p">)</span><span class="p">)</span> <span class="o">!=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">i</span></a><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="w">
+</span></pre></div></div>
+<p>The decoder predicts the hand with the larger of its two hand outputs.
+The drop of a test is the accuracy on the unchanged trials minus the
+accuracy on the modified ones.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">accuracy</span> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span><span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X_test</span></a> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s2">unchanged</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <span class="o">*</span><span class="o">*</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">X_tests</span></a><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor"><span class="n">logits</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><span class="n">model</span></a><span class="p">(</span><a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.as_tensor.html#torch.as_tensor" title="torch.as_tensor"><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X_test</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">y_pred</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="torch.Tensor"><span class="n">logits</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">LEFT</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">RIGHT</span></a><span class="p">]</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>        <span class="n">accuracy</span><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score" title="sklearn.metrics.accuracy_score"><span class="n">accuracy_score</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">y</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">y_pred</span></a><span class="p">)</span><span class="w">
+</span><span class="n">accuracy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">accuracy</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">baseline</span></a> <span class="o">=</span> <span class="n">accuracy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">unchanged</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">drops</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">baseline</span></a> <span class="o">-</span> <span class="n">accuracy</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Left vs right accuracy: </span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">baseline</span></a><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">value</span></a> <span class="ow">in</span> <span class="n">drops</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">  </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="p">,</span><span class="w"> </span><span class="s1">'</span><span class="s1"> </span><span class="s1">'</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;18s</span><span class="si">}</span><span class="s2">: drop </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">value</span></a><span class="si">:</span><span class="s2">+.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">top_weights</span></a> <span class="o">=</span> <span class="n">channel_share</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">top_data</span></a> <span class="o">=</span> <span class="n">drops</span><span class="p">[</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">zero</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ch</span></a><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ch</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">CHANNELS</span></a><span class="p">]</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">zero</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Channel ranked first by the weights: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">top_weights</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Channel whose removal costs the most: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">top_data</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Left vs right accuracy: 76.3%
+     remove 0.5-4 Hz: drop +21.5%
+   keep 8-30 Hz only: drop +18.5%
+          zero 0-1 s: drop +18.5%
+          zero 1-3 s: drop +0.0%
+             zero C3: drop +28.9%
+             zero Cz: drop +16.3%
+             zero C4: drop +4.4%
+Channel ranked first by the weights: Cz
+Channel whose removal costs the most: C3
+</pre></div>
+</div>
+<p>The chart puts the data check next to what the weights said (in the
+title). Orange bars are the tests an eye-movement decoder fails, the
+blue bar the one a sensorimotor decoder fails, grey bars remove one
+electrode. If the orange bars cost accuracy and zeroing 1-3 s costs
+little, the data agree with the band and the window read from the
+weights. The last two printed lines compare the channel the weights
+rank first with the one whose removal costs the most; the channel
+ranking is where the reading and the data are most likely to part. Here
+the two channels differ, so the channel ranking is the one place where
+the reading from the weights fails in this example.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar.html#matplotlib.axes.Axes.bar" title="matplotlib.axes.Axes.bar"><span class="n">ax</span><span class="o">.</span><span class="n">bar</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">drops</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">100</span> <span class="o">*</span> <span class="n">drops</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">#D55E00</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">#0072B2</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">#999999</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="matplotlib.axes.Axes.axhline"><span class="n">ax</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">black</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Accuracy drop (points)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">PhysioNet EEGNet checkpoint, left vs right </span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">baseline</span></a><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">; </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">weights say </span><span class="si">{</span><span class="n">band_share</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">window</span></a><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">top channel: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">top_weights</span></a><span class="si">}</span><span class="s2"> by the weights, </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">top_data</span></a><span class="si">}</span><span class="s2"> by occlusion</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_plot_weight_audit_001.png" srcset="../../_images/sphx_glr_plot_weight_audit_001.png" alt="PhysioNet EEGNet checkpoint, left vs right 76%; weights say slow (<4 Hz), +0..+1 s top channel: Cz by the weights, C3 by occlusion" class = "sphx-glr-single-img"/></section>
+</section>
+<section id="what-to-do-with-the-result">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">What to do with the result</a><a class="headerlink" href="#what-to-do-with-the-result" title="Link to this heading">#</a></h2>
+<p>Record it with the model, in its model card on the Hugging Face Hub. A
+model loaded with
+<a class="reference internal" href="../../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.from_pretrained" title="braindecode.models.EEGModuleMixin.from_pretrained"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_pretrained()</span></code></a> carries the
+metadata of that card as <code class="docutils literal notranslate"><span class="pre">model.card_data</span></code> (training datasets,
+licence); see <a class="reference internal" href="../model_building/plot_pretraining_overlap.html#pretraining-overlap"><span class="std std-ref">Which data did a pretrained checkpoint see? Reading the model card</span></a>. The same card can state the
+band, window and channels the audit found, the method (weight statistic,
+occlusion on which subjects), the date, and whether the data check
+agreed with the weight reading. A decoder whose card says “below 4 Hz,
+0-1 s after the cue” is a different product from one that says
+“8-30 Hz, 1-3 s”, even at the same accuracy. Two more lines make the
+next audit easier: the exact preprocessing of the input, and the
+initialisation seed.</p>
+<p>The occlusion test here is a check on the reading, not a proof of
+generalisation. The real test is cross-dataset transfer. On a dataset
+whose cue is in the centre of the screen, one would expect a decoder
+that reads cue-directed eye movements to fall towards chance, and a
+decoder that reads the sensorimotor rhythm to keep some of its
+accuracy. If the weight reading says “eye movement”, run that transfer
+before relying on the decoder.</p>
+</section>
+<section id="references">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Gao, Y. (2026). Do shortcut audits measure reliance in EEG
+decoders? A preregistered semi-synthetic ground-truth test and a
+real-data check of eye-movement use. Manuscript. Preregistration:
+<a class="reference external" href="https://doi.org/10.17605/OSF.IO/8Q7N6">https://doi.org/10.17605/OSF.IO/8Q7N6</a>. Code:
+<a class="reference external" href="https://doi.org/10.5281/zenodo.24142936">https://doi.org/10.5281/zenodo.24142936</a></p>
+</aside>
+<aside class="footnote brackets" id="id7" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Guetschel, P., &amp; Tangermann, M. (2023). Transfer learning
+between motor imagery datasets using deep learning: validation
+of framework and comparison of datasets. arXiv:2311.16109.
+Weights: https://huggingface.co/PierreGtch/EEGNetv4</p>
+</aside>
+<aside class="footnote brackets" id="id8" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Lawhern, V. J., et al. (2018). EEGNet: a compact convolutional
+neural network for EEG-based brain-computer interfaces. Journal
+of Neural Engineering, 15(5), 056013.
+DOI: 10.1088/1741-2552/aace8c</p>
+</aside>
+<aside class="footnote brackets" id="id9" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Haufe, S., et al. (2014). On the interpretation of weight
+vectors of linear models in multivariate neuroimaging.
+NeuroImage, 87, 96-110. DOI: 10.1016/j.neuroimage.2013.10.067</p>
+</aside>
+<aside class="footnote brackets" id="id10" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<p>Schalk, G., McFarland, D. J., Hinterberger, T., Birbaumer, N., &amp;
+Wolpaw, J. R. (2004). BCI2000: A general-purpose brain-computer
+interface (BCI) system. IEEE Transactions on Biomedical
+Engineering, 51(6), 1034-1043. DOI: 10.1109/TBME.2004.827072</p>
+</aside>
+</aside>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 30.649 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-training-plot-weight-audit-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/704e958fd2c796710fb25f67a953311e/plot_weight_audit.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_weight_audit.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/8806ec725022f0dbe117255c779b57be/plot_weight_audit.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_weight_audit.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/2217d5063377dea90e2911b0c802b7de/plot_weight_audit.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_weight_audit.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_transfer_learning.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Transfer learning across EEG pathology datasets</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../applied_examples/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Applied examples on real-world datasets</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-decoder-under-audit">The decoder under audit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-weights">Reading the weights</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#confirm-on-data-one-occlusion-test">Confirm on data: one occlusion test</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-physionet-as-the-checkpoint-saw-it">Loading PhysioNet as the checkpoint saw it</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-what-the-weights-point-to">Removing what the weights point to</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-do-with-the-result">What to do with the result</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  <div class="sphx-glr-sidebar-component">
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="plot_weight_audit.py">
+          <a download href="../../_downloads/8806ec725022f0dbe117255c779b57be/plot_weight_audit.py">
+            <i class="fa-solid fa-download"></i>
+            Download source code
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="plot_weight_audit.ipynb">
+          <a download href="../../_downloads/704e958fd2c796710fb25f67a953311e/plot_weight_audit.ipynb">
+            <i class="fa-solid fa-download"></i>
+            Download Jupyter notebook
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="plot_weight_audit.zip">
+          <a download href="../../_downloads/2217d5063377dea90e2911b0c802b7de/plot_weight_audit.zip">
+            <i class="fa-solid fa-download"></i>
+            Download zipped
+          </a>
+        </div>
+      
+    
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+
+
+
+
+
+
+<div class="sd-card sd-shadow-sm sd-mb-3">
+  <div class="sd-card-body" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-2" style="margin-bottom:0.75rem;">Run this example</p>
+
+  
+    <a class="sd-btn sd-btn-primary" style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.5rem 0.75rem;" href="https://colab.research.google.com/github/braindecode/braindecode.github.io/blob/master/dev/auto_examples/_notebooks/advanced_training/plot_weight_audit.ipynb" target="_blank" rel="noopener">
+      <img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle; height: 20px;">
+    </a>
+
+  </div>
+</div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+    <script src="https://braindecode.org/versionwarning.js" defer></script>
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="text-center text-muted small">&copy; Copyright 2018–2026, Braindecode Developers.</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
