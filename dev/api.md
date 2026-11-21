@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [f7b6e81fa3427e9596c63024d1306011711e05e4](https://github.com/braindecode/braindecode/tree/f7b6e81fa3427e9596c63024d1306011711e05e4)
+Source commit: [2e9a753399a568697c6bdb4dafe5ad7a32cd7a29](https://github.com/braindecode/braindecode/tree/2e9a753399a568697c6bdb4dafe5ad7a32cd7a29)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -371,13 +371,13 @@ perceptrons (MLPs) and inception blocks.
 
 `braindecode.modules.blocks`:
 
-| [`MLP`](generated/blocks/braindecode.modules.MLP.html#braindecode.modules.MLP)(in_features[, hidden_features, ...])                                | Multilayer Perceptron (MLP) with GELU activation and optional dropout.                                                                                       |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`TimmAttention`](generated/blocks/braindecode.modules.TimmAttention.html#braindecode.modules.TimmAttention)(dim[, num_heads, qkv_bias, ...])      | Multi-head self-attention with timm's parameter names (`qkv`, `proj`), as in ViT/MAE/BEiT checkpoints.                                                       |
-| [`TimmMlp`](generated/blocks/braindecode.modules.TimmMlp.html#braindecode.modules.TimmMlp)(in_features[, hidden_features, ...])                    | Two-layer MLP with timm's parameter names (`fc1`, `act`, `fc2`, `drop`), as in ViT/MAE checkpoints: dropout after the activation and after the second layer. |
-| [`FeedForwardBlock`](generated/blocks/braindecode.modules.FeedForwardBlock.html#braindecode.modules.FeedForwardBlock)(emb_size, expansion, drop_p) | Feedforward network block.                                                                                                                                   |
-| [`InceptionBlock`](generated/blocks/braindecode.modules.InceptionBlock.html#braindecode.modules.InceptionBlock)(branches)                          | Inception block module.                                                                                                                                      |
-| [`PatchTokenizer`](generated/blocks/braindecode.modules.PatchTokenizer.html#braindecode.modules.PatchTokenizer)(patch_size, n_times[, ...])        | Tokenize an EEG signal into non-overlapping temporal patches.                                                                                                |
+| [`MLP`](generated/blocks/braindecode.modules.MLP.html#braindecode.modules.MLP)(in_features[, hidden_features, ...])                                | Multilayer Perceptron (MLP) with GELU activation and optional dropout.                                                                                                                                                               |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`TimmAttention`](generated/blocks/braindecode.modules.TimmAttention.html#braindecode.modules.TimmAttention)(dim[, num_heads, qkv_bias, ...])      | Multi-head self-attention with timm's parameter names (`qkv`, `proj`), as in ViT/MAE/BEiT checkpoints.                                                                                                                               |
+| [`TimmMlp`](generated/blocks/braindecode.modules.TimmMlp.html#braindecode.modules.TimmMlp)(in_features[, hidden_features, ...])                    | Two-layer MLP with timm's parameter names (`fc1`, `act`, `norm`, `fc2`, `drop`), as in ViT/MAE checkpoints: dropout after the activation, optional normalization before the second linear layer, and dropout after the second layer. |
+| [`FeedForwardBlock`](generated/blocks/braindecode.modules.FeedForwardBlock.html#braindecode.modules.FeedForwardBlock)(emb_size, expansion, drop_p) | Feedforward network block.                                                                                                                                                                                                           |
+| [`InceptionBlock`](generated/blocks/braindecode.modules.InceptionBlock.html#braindecode.modules.InceptionBlock)(branches)                          | Inception block module.                                                                                                                                                                                                              |
+| [`PatchTokenizer`](generated/blocks/braindecode.modules.PatchTokenizer.html#braindecode.modules.PatchTokenizer)(patch_size, n_times[, ...])        | Tokenize an EEG signal into non-overlapping temporal patches.                                                                                                                                                                        |
 
 <a id="channels"></a>
 
