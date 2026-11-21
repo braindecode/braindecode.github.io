@@ -378,6 +378,14 @@ window.BD_MODELS = [
     "desc": "Prediction for Sleep Staging"
   },
   {
+    "name": "CareSleepNet",
+    "cat": "attention",
+    "year": null,
+    "params": "22.8 M",
+    "paper": "",
+    "desc": "Prediction for Sleep Staging"
+  },
+  {
     "name": "FBCNet",
     "cat": "filterbank",
     "year": null,
@@ -416,6 +424,14 @@ window.BD_MODELS = [
     "params": "88.8 K",
     "paper": "",
     "desc": "Prediction for Gesture recognition (sEMG)"
+  },
+  {
+    "name": "TinyMyo",
+    "cat": "foundation",
+    "year": null,
+    "params": "3.7 M",
+    "paper": "",
+    "desc": "Prediction, Embedding for Gesture recognition (sEMG)"
   },
   {
     "name": "VEMG2Pose",
@@ -496,6 +512,14 @@ window.BD_MODELS = [
     "params": "20 M",
     "paper": "",
     "desc": "Prediction, Embedding for General"
+  },
+  {
+    "name": "Pratibha2",
+    "cat": "foundation",
+    "year": null,
+    "params": "92.9 M",
+    "paper": "",
+    "desc": "Classification,Embedding for General"
   },
   {
     "name": "SSTDPN",
@@ -792,6 +816,14 @@ window.BD_MODELS = [
     "params": "59.7 K",
     "paper": "",
     "desc": "Prediction for General"
+  },
+  {
+    "name": "SAMBA",
+    "cat": "foundation",
+    "year": null,
+    "params": "392.7 K",
+    "paper": "",
+    "desc": "Classification,Embedding for General"
   }
 ];
 window.BD_CATEGORIES = [

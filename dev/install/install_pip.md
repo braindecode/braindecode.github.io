@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [74fd3d3aa1fac01ad46d0a7288007a2f99c209d0](https://github.com/braindecode/braindecode/tree/74fd3d3aa1fac01ad46d0a7288007a2f99c209d0)
+Source commit: [f7b6e81fa3427e9596c63024d1306011711e05e4](https://github.com/braindecode/braindecode/tree/f7b6e81fa3427e9596c63024d1306011711e05e4)
 
 Canonical HTML: [Installation from PyPI](https://braindecode.org/dev/install/install_pip.html)
 
@@ -14,7 +14,7 @@ Canonical HTML: [Installation from PyPI](https://braindecode.org/dev/install/ins
 
 # Installing from PyPI
 
-Braincode can be installed via pip from [PyPI](https://pypi.org/project/braindecode).
+Braindecode can be installed via pip from [PyPI](https://pypi.org/project/braindecode).
 
 #### NOTE
 We recommend the most updated version of pip to install from PyPI.
@@ -28,14 +28,14 @@ pip install braindecode
 Braindecode can also be installed along [MOABB](https://moabb.neurotechx.com) to download open datasets:
 
 ```bash
-pip install braindecode[moabb]
+pip install "braindecode[moabb]"
 ```
 
 Braindecode can also be installed with all optional dependencies for testing and
 documentation building:
 
 ```bash
-pip install braindecode[all]
+pip install "braindecode[all]"
 ```
 
 To use the potential of the deep learning modules PyTorch with GPU, we recommend the

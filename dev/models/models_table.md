@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [74fd3d3aa1fac01ad46d0a7288007a2f99c209d0](https://github.com/braindecode/braindecode/tree/74fd3d3aa1fac01ad46d0a7288007a2f99c209d0)
+Source commit: [f7b6e81fa3427e9596c63024d1306011711e05e4](https://github.com/braindecode/braindecode/tree/f7b6e81fa3427e9596c63024d1306011711e05e4)
 
 Canonical HTML: [Model selection (interactive table in HTML)](https://braindecode.org/dev/models/models_table.html)
 
@@ -54,7 +54,7 @@ those reported in the original publications due to variations in specific archit
 details, input dimensions used in the paper, or calculation methods.
 
 We are continually expanding this collection and welcome contributions! If you have
-implemented a model relevant to EEG, EcoG, or MEG analysis, consider adding it to
-Braindecode.
+implemented a model relevant to EEG, ECoG, MEG, fNIRS, or sEMG analysis, consider adding
+it to Braindecode.
 
  [Next: Models Parameter Visualization](models_visualization.html)

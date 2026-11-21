@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [74fd3d3aa1fac01ad46d0a7288007a2f99c209d0](https://github.com/braindecode/braindecode/tree/74fd3d3aa1fac01ad46d0a7288007a2f99c209d0)
+Source commit: [f7b6e81fa3427e9596c63024d1306011711e05e4](https://github.com/braindecode/braindecode/tree/f7b6e81fa3427e9596c63024d1306011711e05e4)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 
@@ -70,6 +70,7 @@ With this, in this model’s sub-pages, we provide:
 > - 1. Our definition of the brain decoding problem (here);
 > - 1. [The categorization of the neural networks based on what is inside them](models_categorization.html);
 > - 1. [A table overview to understand what is inside the models](models_table.html);
+> - 1. [How to run a pretrained model on another montage](channel_strategies.html);
 > - 1. [A visualization of the common important information from the models](models_visualization.html).
 
 [Browse the models table →](models_table.html)

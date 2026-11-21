@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [74fd3d3aa1fac01ad46d0a7288007a2f99c209d0](https://github.com/braindecode/braindecode/tree/74fd3d3aa1fac01ad46d0a7288007a2f99c209d0)
+Source commit: [f7b6e81fa3427e9596c63024d1306011711e05e4](https://github.com/braindecode/braindecode/tree/f7b6e81fa3427e9596c63024d1306011711e05e4)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -62,42 +62,81 @@ Hugging Face Hub through inheritance from
 To enable this functionality, install braindecode with Hub support:
 
 ```default
-pip install braindecode[hug]
+pip install "braindecode[hub]"
 ```
 
 **Available pre-trained models:**
 
-Some models have pre-trained weights available on the Hugging Face BrainDecode
-organization:
+Some models have pre-trained weights available on the Hugging Face Hub or are
+compatible with released checkpoints:
 
+- [`AXON`](generated/braindecode.models.AXON.html#braindecode.models.AXON) - Axis-factorized EEG foundation model with pre-trained weights
+- [`BaRISTA`](generated/braindecode.models.BaRISTA.html#braindecode.models.BaRISTA) - Multi-scale spatial intracranial EEG foundation model with
+  pre-trained weights
+- [`BBL`](generated/braindecode.models.BBL.html#braindecode.models.BBL) - MEG foundation encoder from *The Brain’s Bitter Lesson* with
+  pre-trained weights
+- [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR) - Foundation model with pre-trained weights
 - [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT) - Foundation model with pre-trained weights
 - [`BrainBERT`](generated/braindecode.models.BrainBERT.html#braindecode.models.BrainBERT) - Intracranial (sEEG/iEEG) foundation model with pre-trained
   weights
-- [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni) - Unified EEG/MEG foundation model with pre-trained weights
+- [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni) and [`BrainTokenizer`](generated/braindecode.models.BrainTokenizer.html#braindecode.models.BrainTokenizer) - Unified EEG/MEG foundation model
+  and sensor-conditioned tokenizer with pre-trained weights
+- [`Brant`](generated/braindecode.models.Brant.html#braindecode.models.Brant) - Intracranial (sEEG/ECoG) foundation model with pre-trained
+  weights
 - [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod) - Criss-Cross Transformer model with pre-trained weights
 - [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain) - Scalable EEG pre-training with temporal and spectral code
   prediction
-- [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain) - Cross-scale spatiotemporal brain foundation model with
-  structured sparse attention
-- [`Guetschel2026`](generated/braindecode.models.Guetschel2026.html#braindecode.models.Guetschel2026) - 58 MAE/JEPA encoders sharing one backbone, from the EEG
-  masking-geometry study
-- [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram) - Large Brain Model with pre-trained weights
-- [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE) - EEG foundation model with pre-trained weights
-- [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA) - Universal EEG embedding model with pre-trained weights
-- [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA) - Masked autoencoder for intracranial EEG with anatomical priors
-- [`MIRepNet`](generated/braindecode.models.MIRepNet.html#braindecode.models.MIRepNet) - Motor-imagery pre-trained model
-- [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ) - Multi-scale biosignal tokenizer foundation model
-- [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer) - Residual vector quantization EEG tokenizer
-- [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR) - Foundation model with pre-trained weights
-- [`SignalJEPA`](generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA) - Self-supervised learning model with pre-trained weights
-- [`EEGPT`](generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT) - Pretrained transformer for universal EEG
-- [`STEEGFormer`](generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer) - ViT-MAE EEG foundation model with braindecode-format
-  re-hosted weights
 - [`CORTEG`](generated/braindecode.models.CORTEG.html#braindecode.models.CORTEG) - ST-EEGFormer adapted to intracranial ECoG by electrode position,
   with a high-gamma token stream
+- [`CSBrain`](generated/braindecode.models.CSBrain.html#braindecode.models.CSBrain) - Cross-scale spatiotemporal brain foundation model with
+  structured sparse attention
+- [`DIVER1`](generated/braindecode.models.DIVER1.html#braindecode.models.DIVER1) - Any-variate EEG and intracranial foundation model with
+  pre-trained weights
+- [`DuIN`](generated/braindecode.models.DuIN.html#braindecode.models.DuIN) - Subject-adaptive sEEG masked-autoencoder model with pre-trained
+  weights
+- [`EEGDINO`](generated/braindecode.models.EEGDINO.html#braindecode.models.EEGDINO) - Self-distillation EEG foundation model with pre-trained weights
+- [`EEGPT`](generated/braindecode.models.EEGPT.html#braindecode.models.EEGPT) - Pretrained transformer for universal EEG
+- [`EpiNT`](generated/braindecode.models.EpiNT.html#braindecode.models.EpiNT) - Channel-independent epilepsy EEG/iEEG foundation model compatible
+  with released weights
+- [`GeoNIRS`](generated/braindecode.models.GeoNIRS.html#braindecode.models.GeoNIRS) - Geometry-conditioned fNIRS foundation model with pre-trained
+  weights
+- [`Guetschel2026`](generated/braindecode.models.Guetschel2026.html#braindecode.models.Guetschel2026) - 58 MAE/JEPA encoders sharing one backbone, from the EEG
+  masking-geometry study
+- [`JungMAE`](generated/braindecode.models.JungMAE.html#braindecode.models.JungMAE) - Masked autoencoder for fNIRS with pre-trained weights
+- [`Labram`](generated/braindecode.models.Labram.html#braindecode.models.Labram) - Large Brain Model with pre-trained weights
+- [`LUNA`](generated/braindecode.models.LUNA.html#braindecode.models.LUNA) - Universal EEG embedding model with pre-trained weights
+- [`MAPA`](generated/braindecode.models.MAPA.html#braindecode.models.MAPA) - Masked autoencoder for intracranial EEG with anatomical priors
+- [`MEGGPT`](generated/braindecode.models.MEGGPT.html#braindecode.models.MEGGPT) - Source-space causal MEG foundation model with pre-trained
+  weights
+- [`MEGXL`](generated/braindecode.models.MEGXL.html#braindecode.models.MEGXL) - Long-context criss-cross MEG foundation model with pre-trained
+  weights
+- [`MIRepNet`](generated/braindecode.models.MIRepNet.html#braindecode.models.MIRepNet) - Motor-imagery pre-trained model
+- [`MtReNIRS`](generated/braindecode.models.MtReNIRS.html#braindecode.models.MtReNIRS) - Montage-aware rotary-transformer fNIRS foundation model with
+  pre-trained weights
+- [`MVPFormer`](generated/braindecode.models.MVPFormer.html#braindecode.models.MVPFormer) - Multi-scale wavelet intracranial EEG foundation model
+  compatible with released weights
+- [`NeuroPose`](generated/braindecode.models.NeuroPose.html#braindecode.models.NeuroPose) - sEMG-to-hand-pose encoder-decoder with pre-trained weights
+- [`NeuroRVQ`](generated/braindecode.models.NeuroRVQ.html#braindecode.models.NeuroRVQ) - Multi-scale biosignal tokenizer foundation model
+- [`NeuroRVQTokenizer`](generated/braindecode.models.NeuroRVQTokenizer.html#braindecode.models.NeuroRVQTokenizer) - Residual vector quantization EEG tokenizer
+- [`NICE`](generated/braindecode.models.NICE.html#braindecode.models.NICE) - Contrastive EEG/MEG image-decoding encoder compatible with
+  released weights
+- [`PopulationTransformer`](generated/braindecode.models.PopulationTransformer.html#braindecode.models.PopulationTransformer) - Self-supervised intracranial population
+  transformer (PopT) with pre-trained weights
+- [`Pratibha2`](generated/braindecode.models.Pratibha2.html#braindecode.models.Pratibha2) - Dense-attention EEG foundation model with pre-trained weights
+- [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE) - EEG foundation model with pre-trained weights
+- [`SAMBA`](generated/braindecode.models.SAMBA.html#braindecode.models.SAMBA) - Coordinate-driven Mamba-2 EEG foundation model with pre-trained
+  weights
+- [`SignalJEPA`](generated/braindecode.models.SignalJEPA.html#braindecode.models.SignalJEPA) - Self-supervised learning model with pre-trained weights
 - [`SleepFM`](generated/braindecode.models.SleepFM.html#braindecode.models.SleepFM) and [`SleepFMStager`](generated/braindecode.models.SleepFMStager.html#braindecode.models.SleepFMStager) - Multimodal PSG foundation encoder
   and token-wise sleep-staging model compatible with the authors’ CC BY-NC
   checkpoints
+- [`STEEGFormer`](generated/braindecode.models.STEEGFormer.html#braindecode.models.STEEGFormer) - ViT-MAE EEG foundation model with braindecode-format
+  re-hosted weights
+- [`TFMTokenizer`](generated/braindecode.models.TFMTokenizer.html#braindecode.models.TFMTokenizer) - Time-frequency motif EEG tokenizer with pre-trained
+  weights
+- [`TinyMyo`](generated/braindecode.models.TinyMyo.html#braindecode.models.TinyMyo) - Small sEMG foundation model with pre-trained weights
+- [`VEMG2Pose`](generated/braindecode.models.VEMG2Pose.html#braindecode.models.VEMG2Pose) - Streaming sEMG-to-hand-pose model with pre-trained weights
+- [`ZUNA`](generated/braindecode.models.ZUNA.html#braindecode.models.ZUNA) - Montage-agnostic EEG foundation model with pre-trained weights
 
 **Example - Loading a pre-trained model:**
 
@@ -147,7 +186,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`AttentionBaseNet`](generated/braindecode.models.AttentionBaseNet.html#braindecode.models.AttentionBaseNet)([n_times, n_chans, ...])                  | AttentionBaseNet from Wimpff M et al (2023) [[R523d6c831d64-Martin2023]](generated/braindecode.models.AttentionBaseNet.html#r523d6c831d64-martin2023).                                               |
 | [`AttnSleep`](generated/braindecode.models.AttnSleep.html#braindecode.models.AttnSleep)([sfreq, n_tce, d_model, d_ff, ...])                            | Sleep Staging Architecture from Eldele et al  (2021) [[Re40f69d9f16e-Eldele2021]](generated/braindecode.models.AttnSleep.html#re40f69d9f16e-eldele2021).                                             |
 | [`BaRISTA`](generated/braindecode.models.BaRISTA.html#braindecode.models.BaRISTA)([n_outputs, n_chans, chs_info, ...])                                 | BaRISTA from Oganesian et al (2025) [[Rf66e33847fc0-Oganesian2025]](generated/braindecode.models.BaRISTA.html#rf66e33847fc0-oganesian2025).                                                          |
-| [`BBL`](generated/braindecode.models.BBL.html#braindecode.models.BBL)([n_outputs, n_chans, chs_info, n_times, ...])                                    | BBL, the MEG encoder of *The Brain's Bitter Lesson* from Jayalath et al. (2025) [[R418bbebb3dfb-bbl]](generated/braindecode.models.BBL.html#r418bbebb3dfb-bbl).                                      |
+| [`BBL`](generated/braindecode.models.BBL.html#braindecode.models.BBL)([n_outputs, n_chans, chs_info, n_times, ...])                                    | BBL from Jayalath et al. (2025) [[R418bbebb3dfb-bbl]](generated/braindecode.models.BBL.html#r418bbebb3dfb-bbl).                                                                                      |
 | [`BDTCN`](generated/braindecode.models.BDTCN.html#braindecode.models.BDTCN)([n_chans, n_outputs, chs_info, ...])                                       | Braindecode TCN from Gemein, L et al (2020) [[Rd56781dc6fcb-gemein2020]](generated/braindecode.models.BDTCN.html#rd56781dc6fcb-gemein2020).                                                          |
 | [`BENDR`](generated/braindecode.models.BENDR.html#braindecode.models.BENDR)([n_chans, n_outputs, n_times, ...])                                        | BENDR (BErt-inspired Neural Data Representations) from Kostas et al (2021) [[R26ccbd70a49a-bendr]](generated/braindecode.models.BENDR.html#r26ccbd70a49a-bendr).                                     |
 | [`BIOT`](generated/braindecode.models.BIOT.html#braindecode.models.BIOT)([embed_dim, num_heads, num_layers, ...])                                      | BIOT from Yang et al (2023) [[R606e26b38fe6-Yang2023]](generated/braindecode.models.BIOT.html#r606e26b38fe6-yang2023)                                                                                |
@@ -156,6 +195,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`BrainOmni`](generated/braindecode.models.BrainOmni.html#braindecode.models.BrainOmni)([n_outputs, n_chans, chs_info, ...])                           | BrainOmni from Xiao et al. (2025) [[R9a8f28a4d509-brainomni]](generated/braindecode.models.BrainOmni.html#r9a8f28a4d509-brainomni).                                                                  |
 | [`BrainTokenizer`](generated/braindecode.models.BrainTokenizer.html#braindecode.models.BrainTokenizer)([n_outputs, n_chans, ...])                      | BrainTokenizer from Xiao et al. (2025) [[R9031df3dd5f0-brainomni]](generated/braindecode.models.BrainTokenizer.html#r9031df3dd5f0-brainomni).                                                        |
 | [`Brant`](generated/braindecode.models.Brant.html#braindecode.models.Brant)([n_outputs, n_chans, chs_info, ...])                                       | Brant from Zhang et al. (2023) [[Rcebd0fff412e-Brant2023]](generated/braindecode.models.Brant.html#rcebd0fff412e-brant2023).                                                                         |
+| [`CareSleepNet`](generated/braindecode.models.CareSleepNet.html#braindecode.models.CareSleepNet)([n_outputs, n_chans, chs_info, ...])                  | CareSleepNet from Wang et al. (2024) [[R58c47091c727-caresleepnet2024]](generated/braindecode.models.CareSleepNet.html#r58c47091c727-caresleepnet2024).                                              |
 | [`CBraMod`](generated/braindecode.models.CBraMod.html#braindecode.models.CBraMod)([n_outputs, n_chans, chs_info, ...])                                 | **C**riss-**C**ross **Bra**in **Mod**el for EEG Decoding from Wang et al. (2025) [[Rdb05ba1b4969-cbramod]](generated/braindecode.models.CBraMod.html#rdb05ba1b4969-cbramod).                         |
 | [`CodeBrain`](generated/braindecode.models.CodeBrain.html#braindecode.models.CodeBrain)([n_outputs, n_chans, chs_info, ...])                           | CodeBrain: Scalable Code EEG Pre-Training for Unified Downstream BCI Tasks.                                                                                                                          |
 | [`ContraWR`](generated/braindecode.models.ContraWR.html#braindecode.models.ContraWR)([n_chans, n_outputs, sfreq, ...])                                 | Contrast with the World Representation ContraWR from Yang et al (2021) [[Ra71465cb6797-Yang2021]](generated/braindecode.models.ContraWR.html#ra71465cb6797-yang2021).                                |
@@ -214,7 +254,9 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`NICE`](generated/braindecode.models.NICE.html#braindecode.models.NICE)([n_outputs, n_chans, chs_info, ...])                                          | NICE EEG/MEG encoder from Song et al. (2024) [[R1d76e922b047-song2024nice]](generated/braindecode.models.NICE.html#r1d76e922b047-song2024nice).                                                      |
 | [`PBT`](generated/braindecode.models.PBT.html#braindecode.models.PBT)([n_chans, n_outputs, n_times, chs_info, ...])                                    | Patched Brain Transformer (PBT) model from Klein et al (2025) [[Re7f840f86627-pbt]](generated/braindecode.models.PBT.html#re7f840f86627-pbt).                                                        |
 | [`PopulationTransformer`](generated/braindecode.models.PopulationTransformer.html#braindecode.models.PopulationTransformer)([n_outputs, n_chans, ...]) | PopulationTransformer (PopT) from Chau et al. (2024) [[R1b4476d13843-PopT2024]](generated/braindecode.models.PopulationTransformer.html#r1b4476d13843-popt2024).                                     |
+| [`Pratibha2`](generated/braindecode.models.Pratibha2.html#braindecode.models.Pratibha2)([n_outputs, n_chans, chs_info, ...])                           | PRATIBHA-2 (formerly MANAS-2) from Kulkarni et al. (2026) [[R7423b06bb76f-manas2]](generated/braindecode.models.Pratibha2.html#r7423b06bb76f-manas2).                                                |
 | [`REVE`](generated/braindecode.models.REVE.html#braindecode.models.REVE)([n_outputs, n_chans, chs_info, ...])                                          | **R**epresentation for **E**EG with **V**ersatile **E**mbeddings (REVE) from El Ouahidi et al. (2025) [[Rfc92bf36d5c3-reve]](generated/braindecode.models.REVE.html#rfc92bf36d5c3-reve).             |
+| [`SAMBA`](generated/braindecode.models.SAMBA.html#braindecode.models.SAMBA)([n_outputs, n_chans, chs_info, ...])                                       | SAMBA from Hong et al. (2026) [[R1877a36ba1d3-samba]](generated/braindecode.models.SAMBA.html#r1877a36ba1d3-samba).                                                                                  |
 | [`SCCNet`](generated/braindecode.models.SCCNet.html#braindecode.models.SCCNet)([n_chans, n_outputs, n_times, ...])                                     | SCCNet from Wei, C S (2019) [[Rbd95e5cdbbde-sccnet]](generated/braindecode.models.SCCNet.html#rbd95e5cdbbde-sccnet).                                                                                 |
 | [`SeizureTransformer`](generated/braindecode.models.SeizureTransformer.html#braindecode.models.SeizureTransformer)([n_outputs, n_chans, ...])          | SeizureTransformer from Wu et al. (2025) [[Re066a283f37e-Wu2025]](generated/braindecode.models.SeizureTransformer.html#re066a283f37e-wu2025).                                                        |
 | [`SensingDynamics`](generated/braindecode.models.SensingDynamics.html#braindecode.models.SensingDynamics)([n_outputs, n_chans, ...])                   | SensingDynamics from Sîmpetru et al. (2022) [[R6a078fb61066-simpetru2022]](generated/braindecode.models.SensingDynamics.html#r6a078fb61066-simpetru2022).                                            |
@@ -237,6 +279,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`TFMTokenizerOutput`](generated/braindecode.models.TFMTokenizerOutput.html#braindecode.models.TFMTokenizerOutput)(reconstruction, ...)                | Outputs of [`TFMTokenizer.tokenize()`](generated/braindecode.models.TFMTokenizer.html#braindecode.models.TFMTokenizer.tokenize).                                                                     |
 | [`TCFormer`](generated/braindecode.models.TCFormer.html#braindecode.models.TCFormer)([n_outputs, n_chans, chs_info, ...])                              | TCFormer from Altaheri et al (2025) [[Rd79f90b7998b-tcformer]](generated/braindecode.models.TCFormer.html#rd79f90b7998b-tcformer).                                                                   |
 | [`TIDNet`](generated/braindecode.models.TIDNet.html#braindecode.models.TIDNet)([n_chans, n_outputs, n_times, ...])                                     | Thinker Invariance DenseNet model from Kostas et al (2020) [[Re74dd80418c9-TIDNet]](generated/braindecode.models.TIDNet.html#re74dd80418c9-tidnet).                                                  |
+| [`TinyMyo`](generated/braindecode.models.TinyMyo.html#braindecode.models.TinyMyo)([n_outputs, n_chans, chs_info, ...])                                 | TinyMyo from Fasulo et al. (2026) <br/><br/>```<br/>[#fasulo2026tinymyo]_<br/>```<br/><br/>.                                                                                                         |
 | [`TMSANet`](generated/braindecode.models.TMSANet.html#braindecode.models.TMSANet)([n_outputs, n_chans, n_times, ...])                                  | TMSA-Net from Zhao and Zhu (2025) [[Ra1d0355d04de-tmsanet]](generated/braindecode.models.TMSANet.html#ra1d0355d04de-tmsanet).                                                                        |
 | [`TSception`](generated/braindecode.models.TSception.html#braindecode.models.TSception)([n_chans, n_outputs, ...])                                     | TSception model from Ding et al. (2020) from [[R576865d14b94-ding2020]](generated/braindecode.models.TSception.html#r576865d14b94-ding2020).                                                         |
 | [`USleep`](generated/braindecode.models.USleep.html#braindecode.models.USleep)([n_chans, sfreq, depth, ...])                                           | Sleep staging architecture from Perslev et al (2021) [[R58a5e8182f0a-1]](generated/braindecode.models.USleep.html#r58a5e8182f0a-1).                                                                  |
@@ -272,7 +315,9 @@ Build DIVER-1 coordinate and electrode-type metadata from MNE channel info.
 
 <!-- !! processed by numpydoc !! -->
 
-Modules
+<a id="modules"></a>
+
+## Modules
 
 `braindecode.modules`:
 
@@ -338,8 +383,7 @@ perceptrons (MLPs) and inception blocks.
 
 ### Channels
 
-The channel layer behind `channel_strategy=` (see
-[Channel strategies: any montage in](user_guide/channel_strategies.html)).
+The channel layer behind `channel_strategy=` (see [Channel strategies](models/channel_strategies.html#channel-strategies)).
 
 `braindecode.modules.channels`:
 
@@ -362,6 +406,7 @@ constraints and pooling layers.
 | [`AvgPool2dWithConv`](generated/convolution/braindecode.modules.AvgPool2dWithConv.html#braindecode.modules.AvgPool2dWithConv)(kernel_size, stride[, ...])   | Compute average pooling using a convolution, to have the dilation parameter.    |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
 | [`CausalConv1d`](generated/convolution/braindecode.modules.CausalConv1d.html#braindecode.modules.CausalConv1d)(in_channels, out_channels, ...)              | Causal 1-dimensional convolution                                                |
+| [`ChebyshevGraphConv`](generated/convolution/braindecode.modules.ChebyshevGraphConv.html#braindecode.modules.ChebyshevGraphConv)(in_features, ...)          | Apply a Chebyshev spectral convolution to graph signals.                        |
 | [`CombinedConv`](generated/convolution/braindecode.modules.CombinedConv.html#braindecode.modules.CombinedConv)(in_chans[, n_filters_time, ...])             | Merged convolutional layer for temporal and spatial convs in Deep4/ShallowFBCSP |
 | [`Conv2dWithConstraint`](generated/convolution/braindecode.modules.Conv2dWithConstraint.html#braindecode.modules.Conv2dWithConstraint)(\*args[, max_norm])  | 2D convolution with max-norm constraint on the weights.                         |
 | [`DepthwiseConv2d`](generated/convolution/braindecode.modules.DepthwiseConv2d.html#braindecode.modules.DepthwiseConv2d)(in_channels[, ...])                 | Depthwise convolution layer.                                                    |
@@ -449,6 +494,18 @@ codec models (BrainOmni, BBL).
 | [`SEANetLSTM`](generated/seanet/braindecode.modules.SEANetLSTM.html#braindecode.modules.SEANetLSTM)(dimension)                                                   | Two-layer LSTM with a skip connection over `(batch, dim, time)`.                                                                                     |
 | [`SEANetResBlock`](generated/seanet/braindecode.modules.SEANetResBlock.html#braindecode.modules.SEANetResBlock)(dim[, dilation, compress, ...])                  | `ELU -> conv3 -> ELU -> conv1` plus a 1x1 conv (or identity) shortcut.                                                                               |
 
+<a id="spatial-temporal"></a>
+
+### Spatial-temporal
+
+The attention block that works over time with rotary positions on one half of the
+features and over the channels on the other, shared by BrainOmni and MEGXL.
+
+`braindecode.modules.spatial_temporal`:
+
+| [`SpatialTemporalBlock`](generated/spatial_temporal/braindecode.modules.SpatialTemporalBlock.html#braindecode.modules.SpatialTemporalBlock)(n_dim, n_head, dropout)   | Temporal attention (RoPE) on one feature half, spatial on the other.   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
+
 <a id="stats"></a>
 
 ### Stats
@@ -505,20 +562,20 @@ The functional module contains various functions that can be used like functiona
 
 | [`check_ch_mask`](generated/braindecode.functional.check_ch_mask.html#braindecode.functional.check_ch_mask)(ch_mask, x)                                                          | Validate the channel mask of a padded batch.                                                                                                                      |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`derivation_matrix`](generated/braindecode.functional.derivation_matrix.html#braindecode.functional.derivation_matrix)(ch_names[, electrodes, ...])                             | Each channel as a row over electrode potentials.                                                                                                                  |
+| [`check_n_chans`](generated/braindecode.functional.check_n_chans.html#braindecode.functional.check_n_chans)(x, n_chans, model[, hint])                                           | Check that the input has the channels a model was built for.                                                                                                      |
+| [`derivation_matrix`](generated/braindecode.functional.derivation_matrix.html#braindecode.functional.derivation_matrix)(ch_names[, electrodes])                                  | Each channel as a row over electrode potentials.                                                                                                                  |
 | [`drop_path`](generated/braindecode.functional.drop_path.html#braindecode.functional.drop_path)(x[, drop_prob, training, ...])                                                   | Drop paths (Stochastic Depth) per sample.                                                                                                                         |
 | [`exact_derivation`](generated/braindecode.functional.exact_derivation.html#braindecode.functional.exact_derivation)(target, inputs[, atol])                                     | `W` with `W @ x` the `target` channels, from the `inputs` `x`.                                                                                                    |
 | [`fft_conv1d`](generated/braindecode.functional.fft_conv1d.html#braindecode.functional.fft_conv1d)(x, weight[, bias])                                                            | `F.conv1d(x, weight, bias, padding="same")` computed with FFTs.                                                                                                   |
 | [`glorot_weight_zero_bias`](generated/braindecode.functional.glorot_weight_zero_bias.html#braindecode.functional.glorot_weight_zero_bias)(model)                                 | Set the weights of BatchNorm layers to one and all biases to zero.                                                                                                |
-| [`hilbert_freq`](generated/braindecode.functional.hilbert_freq.html#braindecode.functional.hilbert_freq)(x[, forward_fourier])                                                   | Compute the Hilbert transform using PyTorch, separating the real and imaginary parts.                                                                             |
+| [`hilbert_freq`](generated/braindecode.functional.hilbert_freq.html#braindecode.functional.hilbert_freq)(x[, forward_fourier, n_times])                                          | Compute the Hilbert transform using PyTorch, separating the real and imaginary parts.                                                                             |
 | [`identity`](generated/braindecode.functional.identity.html#braindecode.functional.identity)(x)                                                                                  |                                                                                                                                                                   |
-| [`linear_channel_map`](generated/braindecode.functional.linear_channel_map.html#braindecode.functional.linear_channel_map)(A, B, cov[, noise, flat, ...])                        | Best linear estimate of the channels `B v` from the channels `A v`.                                                                                               |
 | [`masked_group_norm`](generated/braindecode.functional.masked_group_norm.html#braindecode.functional.masked_group_norm)(x, num_groups[, mask, ...])                              | Group normalization with statistics over the entries a mask flags.                                                                                                |
 | [`masked_mean`](generated/braindecode.functional.masked_mean.html#braindecode.functional.masked_mean)(x, mask, dim)                                                              | Mean over `dim` of the entries a mask flags.                                                                                                                      |
 | [`pack_channels`](generated/braindecode.functional.pack_channels.html#braindecode.functional.pack_channels)(x[, ch_mask])                                                        | Merge the batch and channel axes and drop the padded channels.                                                                                                    |
 | [`pad_or_crop_to_patches`](generated/braindecode.functional.pad_or_crop_to_patches.html#braindecode.functional.pad_or_crop_to_patches)(x, patch_size[, ...])                     | Right zero-pad or crop the last axis so the patches tile it.                                                                                                      |
 | [`patch_count`](generated/braindecode.functional.patch_count.html#braindecode.functional.patch_count)(n_times, patch_size[, ...])                                                | Number of patches cut from `n_times` samples.                                                                                                                     |
-| [`plv_time`](generated/braindecode.functional.plv_time.html#braindecode.functional.plv_time)(x[, forward_fourier, epsilon])                                                      | Compute the Phase Locking Value (PLV) metric in the time domain.                                                                                                  |
+| [`plv_time`](generated/braindecode.functional.plv_time.html#braindecode.functional.plv_time)(x[, forward_fourier, epsilon, n_times])                                             | Compute the Phase Locking Value (PLV) metric in the time domain.                                                                                                  |
 | [`prefer_fft_conv`](generated/braindecode.functional.prefer_fft_conv.html#braindecode.functional.prefer_fft_conv)(x, kernel_size)                                                | Whether [`fft_conv1d()`](generated/braindecode.functional.fft_conv1d.html#braindecode.functional.fft_conv1d) is expected to beat a direct convolution.            |
 | [`rescale_parameter`](generated/braindecode.functional.rescale_parameter.html#braindecode.functional.rescale_parameter)(param, layer_id)                                         | Recaling the l-th transformer layer.                                                                                                                              |
 | [`init_weights_`](generated/braindecode.functional.init_weights_.html#braindecode.functional.init_weights_)(module[, weights, norms, ...])                                       | Initialize one module by layer type; apply to a model with `model.apply`.                                                                                         |
@@ -530,8 +587,7 @@ The functional module contains various functions that can be used like functiona
 | [`safe_log`](generated/braindecode.functional.safe_log.html#braindecode.functional.safe_log)(x[, eps])                                                                           | Prevents $log(0)$ by using $log(max(x, eps))$.                                                                                                                    |
 | [`scaled_dot_product_attention`](generated/braindecode.functional.scaled_dot_product_attention.html#braindecode.functional.scaled_dot_product_attention)(query, key, value)      | `F.scaled_dot_product_attention`, or the textbook op order (`exact`).                                                                                             |
 | [`sinusoidal_positional_encoding`](generated/braindecode.functional.sinusoidal_positional_encoding.html#braindecode.functional.sinusoidal_positional_encoding)(n_positions, dim) | Fixed sine/cosine positional-encoding table of shape `(n_positions, dim)`.                                                                                        |
-| [`spectral_input`](generated/braindecode.functional.spectral_input.html#braindecode.functional.spectral_input)(x)                                                                | Prepare `x` for an FFT, STFT or eigendecomposition.                                                                                                               |
-| [`spherical_spline_kernel`](generated/braindecode.functional.spherical_spline_kernel.html#braindecode.functional.spherical_spline_kernel)(pos_a, pos_b[, ...])                   | Spherical-spline covariance $g(\cos\gamma)$ between two sets of positions.                                                                                        |
+| [`spectral_input`](generated/braindecode.functional.spectral_input.html#braindecode.functional.spectral_input)(x[, dtype])                                                       | Prepare `x` for an FFT, STFT or eigendecomposition.                                                                                                               |
 | [`square`](generated/braindecode.functional.square.html#braindecode.functional.square)(x)                                                                                        |                                                                                                                                                                   |
 | [`unpack_channels`](generated/braindecode.functional.unpack_channels.html#braindecode.functional.unpack_channels)(x, ch_mask, n_chans)                                           | Split the output of [`pack_channels()`](generated/braindecode.functional.pack_channels.html#braindecode.functional.pack_channels) back into samples and channels. |
 
@@ -561,7 +617,7 @@ Raw and MNE Epochs.
 
 | [`BCICompetitionIVDataset4`](generated/braindecode.datasets.BCICompetitionIVDataset4.html#braindecode.datasets.BCICompetitionIVDataset4)([subject_ids])               | BCI competition IV dataset 4.                              |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `BNCI2014_001`                                                                                                                                                        |                                                            |
+| [`BNCI2014_001`](generated/braindecode.datasets.BNCI2014_001.html#braindecode.datasets.BNCI2014_001)(subject_ids)                                                     | BNCI 2014-001 Motor Imagery dataset.                       |
 | [`CHBMIT`](generated/braindecode.datasets.CHBMIT.html#braindecode.datasets.CHBMIT)([root])                                                                            | The Children's Hospital Boston EEG Dataset.                |
 | [`HGD`](generated/braindecode.datasets.HGD.html#braindecode.datasets.HGD)(subject_ids)                                                                                | High-gamma dataset described in Schirrmeister et al. 2017. |
 | [`MOABBDataset`](generated/braindecode.datasets.MOABBDataset.html#braindecode.datasets.MOABBDataset)(dataset_name[, subject_ids, ...])                                | A class for moabb datasets.                                |
@@ -572,6 +628,13 @@ Raw and MNE Epochs.
 | [`TUH`](generated/braindecode.datasets.TUH.html#braindecode.datasets.TUH)(path[, recording_ids, target_name, ...])                                                    | Temple University Hospital (TUH) EEG Corpus.               |
 | [`TUHAbnormal`](generated/braindecode.datasets.TUHAbnormal.html#braindecode.datasets.TUHAbnormal)(path[, recording_ids, ...])                                         | Temple University Hospital (TUH) Abnormal EEG Corpus.      |
 | [`TUHEvents`](generated/braindecode.datasets.TUHEvents.html#braindecode.datasets.TUHEvents)(path[, recording_ids, ...])                                               | Temple University Hospital (TUH) EEG Event Corpus.         |
+
+<a id="batch-collation"></a>
+
+### Batch collation
+
+| [`pad_channels_collate`](generated/braindecode.datasets.pad_channels_collate.html#braindecode.datasets.pad_channels_collate)(batch[, pad_value, ...])   | Collate variable-channel windows by padding channels to the batch maximum.   |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
 
 <a id="dataset-builders-functions"></a>
 
@@ -733,10 +796,10 @@ dataset loading and Hugging Face Hub push/pull functionality.
 
 `braindecode.datautil`:
 
-| [`save_concat_dataset`](generated/braindecode.datautil.save_concat_dataset.html#braindecode.datautil.save_concat_dataset)(path, concat_dataset[, ...])       |                                         |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|
-| [`load_concat_dataset`](generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset)(path, preload[, ...])              | Load a stored BaseConcatDataset from.   |
-| [`infer_signal_properties`](generated/braindecode.datautil.infer_signal_properties.html#braindecode.datautil.infer_signal_properties)(X[, y, mode, classes]) | Infers signal properties from the data. |
+| [`save_concat_dataset`](generated/braindecode.datautil.save_concat_dataset.html#braindecode.datautil.save_concat_dataset)(path, concat_dataset[, ...])   |                                         |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|
+| [`load_concat_dataset`](generated/braindecode.datautil.load_concat_dataset.html#braindecode.datautil.load_concat_dataset)(path, preload[, ...])          | Load a stored BaseConcatDataset from.   |
+| [`infer_signal_properties`](generated/braindecode.datautil.infer_signal_properties.html#braindecode.datautil.infer_signal_properties)(X[, y, mode, ...]) | Infers signal properties from the data. |
 
 <a id="samplers"></a>
 
@@ -872,8 +935,10 @@ models and evaluate their performance.
 | [`iter_trial_prediction_chunks`](generated/braindecode.training.iter_trial_prediction_chunks.html#braindecode.training.iter_trial_prediction_chunks)(module, ...[, ...]) | Yield predictions in chunks of at most `windows_per_chunk` windows.                                                                                                          |
 | [`TrialPredictionChunk`](generated/braindecode.training.TrialPredictionChunk.html#braindecode.training.TrialPredictionChunk)(trial_index, ...)                           | One chunk yielded by [`iter_trial_prediction_chunks()`](generated/braindecode.training.iter_trial_prediction_chunks.html#braindecode.training.iter_trial_prediction_chunks). |
 | [`f1_event`](generated/braindecode.training.f1_event.html#braindecode.training.f1_event)(pred_events, gt_events[, iou_threshold])                                        | COCO-style greedy event F1: TP requires IoU > threshold AND class match.                                                                                                     |
+| [`szcore_event_scores`](generated/braindecode.training.szcore_event_scores.html#braindecode.training.szcore_event_scores)(reference, hypothesis, ...)                    | SzCORE event-based seizure scoring of one recording.                                                                                                                         |
 
-See [Cropped inference: trials, chunks and lifecycle](user_guide/cropped_inference.html#cropped-inference) for memory bounds, lifecycle and loader settings.
+The section [Predict whole trials](auto_examples/model_building/plot_bcic_iv_2a_moabb_cropped.html#cropped-inference) of the cropped decoding tutorial runs the trial
+functions on a trained model.
 
 <a id="utils"></a>
 
@@ -883,9 +948,9 @@ Functions available in braindecode util module.
 
 `braindecode.util`:
 
-| [`set_random_seeds`](generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds)(seed, cuda[, cudnn_benchmark])   | Set seeds for python random module numpy.random and torch.          |
-|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-| [`resolve_montage_name`](generated/braindecode.util.resolve_montage_name.html#braindecode.util.resolve_montage_name)(name)                | Resolve an MNE standard montage name for the installed MNE version. |
+| [`set_random_seeds`](generated/braindecode.util.set_random_seeds.html#braindecode.util.set_random_seeds)(seed, cuda[, cudnn_benchmark])   | Set seeds for python random module numpy.random and torch.   |
+|-------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| [`resolve_montage_name`](generated/braindecode.util.resolve_montage_name.html#braindecode.util.resolve_montage_name)(name)                | Return the current MNE name for a standard montage.          |
 
 <a id="visualization"></a>
 
@@ -906,20 +971,22 @@ which methods are trustworthy on your data. See the [interpretability tutorial](
 
 ### Time-domain attribution
 
-Per-trial attribution maps in the input domain. Each function takes `(model, x,
-target)` and returns a tensor with the same spatial shape as `x`; all are thin
-wrappers around [captum](https://captum.ai/) (a soft dependency installed via `pip
-install braindecode[viz]`) and raise [`ImportError`](https://docs.python.org/3/builtins/exceptions.html#ImportError) without it.
+These [Captum](https://captum.ai/) wrappers compute one attribution map per trial.
+Install the optional dependency with `pip install braindecode[viz]`. Input-space
+methods return a tensor with the spatial shape of `x`. [`layer_grad_cam()`](generated/braindecode.visualization.layer_grad_cam.html#braindecode.visualization.layer_grad_cam) returns
+`(batch, n_times)` for a layer with one spatial axis, such as a one-dimensional
+convolution, and `(batch, n_chans, n_times)` for a layer with two; see its docstring
+for the axis order this assumes.
 
-| [`saliency`](generated/braindecode.visualization.saliency.html#braindecode.visualization.saliency)(model, x, target)                                            | Vanilla saliency: `|d y[target] / d x|`.                                |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| [`input_x_gradient`](generated/braindecode.visualization.input_x_gradient.html#braindecode.visualization.input_x_gradient)(model, x, target)                    | Element-wise input × input-gradient.                                    |
-| [`integrated_gradients`](generated/braindecode.visualization.integrated_gradients.html#braindecode.visualization.integrated_gradients)(model, x, target[, ...]) | Integrated Gradients (Sundararajan et al., 2017) via captum.            |
-| [`layer_grad_cam`](generated/braindecode.visualization.layer_grad_cam.html#braindecode.visualization.layer_grad_cam)(model, x, target, layer)                   | Layer GradCAM via captum: class-discriminative localization at `layer`. |
-| [`guided_backprop`](generated/braindecode.visualization.guided_backprop.html#braindecode.visualization.guided_backprop)(model, x, target)                       | GuidedBackprop attribution (Springenberg et al., 2014) via captum.      |
-| [`deconvolution`](generated/braindecode.visualization.deconvolution.html#braindecode.visualization.deconvolution)(model, x, target)                             | DeconvNet-style attribution (Zeiler & Fergus, 2014) via captum.         |
-| [`deep_lift`](generated/braindecode.visualization.deep_lift.html#braindecode.visualization.deep_lift)(model, x, target[, baseline])                             | DeepLIFT attribution (Shrikumar et al., 2017) via captum.               |
-| [`lrp`](generated/braindecode.visualization.lrp.html#braindecode.visualization.lrp)(model, x, target)                                                           | Layer-wise Relevance Propagation (Bach et al., 2015) via captum.        |
+| [`saliency`](generated/braindecode.visualization.saliency.html#braindecode.visualization.saliency)(model, x, target)                                            | Vanilla saliency: `|d y[target] / d x|`.                             |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| [`input_x_gradient`](generated/braindecode.visualization.input_x_gradient.html#braindecode.visualization.input_x_gradient)(model, x, target)                    | Element-wise input × input-gradient.                                 |
+| [`integrated_gradients`](generated/braindecode.visualization.integrated_gradients.html#braindecode.visualization.integrated_gradients)(model, x, target[, ...]) | Integrated Gradients (Sundararajan et al., 2017) via captum.         |
+| [`layer_grad_cam`](generated/braindecode.visualization.layer_grad_cam.html#braindecode.visualization.layer_grad_cam)(model, x, target, layer)                   | Compute a class activation map at a convolutional layer with Captum. |
+| [`guided_backprop`](generated/braindecode.visualization.guided_backprop.html#braindecode.visualization.guided_backprop)(model, x, target)                       | GuidedBackprop attribution (Springenberg et al., 2014) via captum.   |
+| [`deconvolution`](generated/braindecode.visualization.deconvolution.html#braindecode.visualization.deconvolution)(model, x, target)                             | DeconvNet-style attribution (Zeiler & Fergus, 2014) via captum.      |
+| [`deep_lift`](generated/braindecode.visualization.deep_lift.html#braindecode.visualization.deep_lift)(model, x, target[, baseline])                             | DeepLIFT attribution (Shrikumar et al., 2017) via captum.            |
+| [`lrp`](generated/braindecode.visualization.lrp.html#braindecode.visualization.lrp)(model, x, target)                                                           | Layer-wise Relevance Propagation (Bach et al., 2015) via captum.     |
 
 <a id="frequency-domain-attribution"></a>
 
@@ -948,7 +1015,7 @@ learning.
 
 | [`random_target`](generated/braindecode.visualization.random_target.html#braindecode.visualization.random_target)(target, n_classes[, generator])                  | Return labels uniformly sampled from `{0, ..., n_classes-1} \ target`.   |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| [`cascading_layer_reset`](generated/braindecode.visualization.cascading_layer_reset.html#braindecode.visualization.cascading_layer_reset)(model[, deepcopy_first]) | Yield model copies with progressively-randomized parameters.             |
+| [`cascading_layer_reset`](generated/braindecode.visualization.cascading_layer_reset.html#braindecode.visualization.cascading_layer_reset)(model[, deepcopy_first]) | Yield the working model after each successive layer reset.               |
 
 <a id="attribution-quality-metrics"></a>
 
