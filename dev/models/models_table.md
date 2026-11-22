@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [32f2c540bc07696824fa490c699f292f04ee4dff](https://github.com/braindecode/braindecode/tree/32f2c540bc07696824fa490c699f292f04ee4dff)
+Source commit: [4a2da9386eb17c876bd674619507e1f4a910a7e0](https://github.com/braindecode/braindecode/tree/4a2da9386eb17c876bd674619507e1f4a910a7e0)
 
 Canonical HTML: [Model selection (interactive table in HTML)](https://braindecode.org/dev/models/models_table.html)
 
@@ -12,8 +12,8 @@ Canonical HTML: [Model selection (interactive table in HTML)](https://braindecod
 
 # Models Summary
 
-This page offers a summary of all [`braindecode`](../api.html#module-braindecode) implemented models. For more
-information on each model, please consult the API.
+This page offers a summary of all implemented Braindecode models. For more information
+on each model, please consult the [Braindecode API Reference](../api.html).
 
 Columns definitions:
 
@@ -31,8 +31,8 @@ Columns definitions:
 > - **Sampling Frequency**: The data sampling rate (in Hertz) the model is designed
 >   for. Note that this might be adaptable depending on the specific dataset and
 >   application.
-> - **Categorization**: models categorization based on the main building blocks used
->   in the architecture. See Models Categorization page for more details.
+> - **Categorization**: Architecture categorization based on the main building blocks
+>   used in the model. See [Models Categorization](models_categorization.html) for details.
 > - **Hyperparameters**: The mandatory hyperparameters required for instantiating the model class. These may include:
 >   : -  **n_chans**, number of channels/electrodes/sensors,
 >     -  **n_outputs**, number of output classes or regression targets,

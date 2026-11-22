@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [32f2c540bc07696824fa490c699f292f04ee4dff](https://github.com/braindecode/braindecode/tree/32f2c540bc07696824fa490c699f292f04ee4dff)
+Source commit: [4a2da9386eb17c876bd674619507e1f4a910a7e0](https://github.com/braindecode/braindecode/tree/4a2da9386eb17c876bd674619507e1f4a910a7e0)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 
@@ -10,9 +10,9 @@ Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models
 
 <a id="models"></a>
 
-<a id="the-brain-decode-problem"></a>
+<a id="brain-decoding-models"></a>
 
-# The brain decode problem
+# Brain decoding models
 
 All models in Braindecode address a shared supervised or self-supervised problem: given
 multichannel time-series recordings $X \in \mathbb{R}^{C \times T}$ and targets
