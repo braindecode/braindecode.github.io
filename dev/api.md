@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2e9a753399a568697c6bdb4dafe5ad7a32cd7a29](https://github.com/braindecode/braindecode/tree/2e9a753399a568697c6bdb4dafe5ad7a32cd7a29)
+Source commit: [89b9bd699c5d36458dbfff3ba6166c79981f9a98](https://github.com/braindecode/braindecode/tree/89b9bd699c5d36458dbfff3ba6166c79981f9a98)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -22,11 +22,11 @@ Canonical HTML: [API and model input conventions](https://braindecode.org/dev/ap
 
 ## Models
 
-Model zoo availables in braindecode. The models are implemented as `PyTorch`
-[`torch.nn.Module`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module) and can be used for various EEG decoding ways tasks.
+All architectures in Braindecode are implemented as PyTorch [`torch.nn.Module`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module)
+classes for classification, regression, sleep staging, seizure detection, and
+representation learning across EEG, iEEG, MEG, fNIRS, and sEMG.
 
-All the models have the convention of having the signal related parameters named the
-same way, following the braindecode’s standards:
+Every model uses standardized signal-geometry parameters:
 
 -  `n_outputs`: Number of labels or outputs of the model.
 -  `n_chans`: Number of EEG channels.

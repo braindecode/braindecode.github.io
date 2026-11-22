@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2e9a753399a568697c6bdb4dafe5ad7a32cd7a29](https://github.com/braindecode/braindecode/tree/2e9a753399a568697c6bdb4dafe5ad7a32cd7a29)
+Source commit: [89b9bd699c5d36458dbfff3ba6166c79981f9a98](https://github.com/braindecode/braindecode/tree/89b9bd699c5d36458dbfff3ba6166c79981f9a98)
 
 Canonical HTML: [Citing Braindecode](https://braindecode.org/dev/cite.html)
 
@@ -14,19 +14,29 @@ Canonical HTML: [Citing Braindecode](https://braindecode.org/dev/cite.html)
 
 # How to cite Braindecode
 
-<a id="citing-the-braindecode"></a>
+Please cite Braindecode whenever you use the library in any context, including journal
+articles, conference papers, preprints, clinical studies, benchmark suites, master’s or
+PhD dissertations, competition entries, and grant proposals.
 
-## Citing the Braindecode
+Use the **Zenodo software DOI** ([10.5281/zenodo.8214376](https://doi.org/10.5281/zenodo.8214376)) first as your primary citation. That concept
+DOI covers every Braindecode release, resolves automatically to the latest version, and
+credits the active maintainer and contributor team. When space permits, also cite the
+foundational *Human Brain Mapping* (2017) paper and the specific neural architecture
+papers used in your experiments.
 
-If you use Braindecode in scientific work, please cite the software using the global
-Zenodo DOI shown in the badge below:
+<a id="cite-the-braindecode-software-zenodo-primary"></a>
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8214376.svg)](https://doi.org/10.5281/zenodo.8214376)
+## 1. Cite the Braindecode software (Zenodo, primary)
 
-You can use the following BibTeX entry:
+Citing the Zenodo software archive directly tracks open-source software impact and
+credits all contributors who build and maintain Braindecode across releases:
+
+[![Zenodo DOI 10.5281/zenodo.8214376](https://zenodo.org/badge/DOI/10.5281/zenodo.8214376.svg)](https://doi.org/10.5281/zenodo.8214376)
+
+**BibTeX / BibLaTeX:**
 
 ```bibtex
-@misc{braindecode,
+@software{braindecode,
   author = {Aristimunha, Bruno and
             Guetschel, Pierre and
             Wimpff, Martin and
@@ -36,7 +46,7 @@ You can use the following BibTeX entry:
             Sliwowski, Maciej and
             Wilson, Daniel and
             Brandt, Simon and
-            Gnassounou, Théo and
+            Gnassounou, Th{\'e}o and
             Paillard, Joseph and
             Srivastava, Aman and
             {Junqueira Lopes}, Bruna and
@@ -55,80 +65,84 @@ You can use the following BibTeX entry:
             Kowshik, Bhargav and
             Li, Yiheng and
             Siddique, Fashad Ahmed and
+            Patel, Aayushya and
             Moreau, Thomas and
             Chevallier, Sylvain and
             Gramfort, Alexandre and
             Schirrmeister, Robin Tibor},
   title = {Braindecode: toolbox for decoding raw electrophysiological brain data
            with deep learning models},
+  year = {2026},
+  publisher = {Zenodo},
   howpublished = {Zenodo},
   url = {https://github.com/braindecode/braindecode},
   doi = {10.5281/zenodo.8214376},
-  license = {BSD-3-Clause},
+  license = {BSD-3-Clause}
 }
 ```
 
-Or the following APA reference:
+**APA:**
 
 > Aristimunha, B., Guetschel, P., Wimpff, M., Gemein, L., Rommel, C., Banville, H.,
 > Sliwowski, M., Wilson, D., Brandt, S., Gnassounou, T., Paillard, J., Srivastava, A.,
 > Junqueira Lopes, B., Sedlar, S., Tayal, S., Truong, Y., Gadonneix, J., Mounir, A.,
 > Zhang, Z., Soloviev, A., Li, Q., Rathi, R., Shah, V., Arthur, Jain, M., Kowshik, B.,
-> Li, Y., Siddique, F. A., Moreau, T., Chevallier, S., Gramfort, A., & Schirrmeister,
-> R. T. (2026). *Braindecode: toolbox for decoding raw electrophysiological brain data
-> with deep learning models* [Computer software]. Zenodo.
-> [https://doi.org/10.5281/zenodo.8214376](https://doi.org/10.5281/zenodo.8214376)
+> Li, Y., Siddique, F. A., Patel, A., Moreau, T., Chevallier, S., Gramfort, A., &
+> Schirrmeister, R. T. (2026). *Braindecode: toolbox for decoding raw
+> electrophysiological brain data with deep learning models* [Computer software].
+> Zenodo. [https://doi.org/10.5281/zenodo.8214376](https://doi.org/10.5281/zenodo.8214376)
 
-Additionally, we highly encourage you to cite the article that originally introduced the
-Braindecode library and has served as a foundational reference for many works on deep
-learning with EEG recordings. Please use the following reference:
+<a id="cite-the-foundational-paper-human-brain-mapping-2017"></a>
+
+## 2. Cite the foundational paper (Human Brain Mapping, 2017)
+
+Alongside the Zenodo software DOI, we encourage citing the journal article that
+introduced Braindecode, ShallowFBCSPNet, Deep4Net, and cropped convolutional decoding
+for raw EEG:
 
 ```bibtex
-@article {HBM:HBM23730,
-author = {Schirrmeister, Robin Tibor and Springenberg, Jost Tobias and Fiederer,
-  Lukas Dominique Josef and Glasstetter, Martin and Eggensperger, Katharina and Tangermann, Michael and
-  Hutter, Frank and Burgard, Wolfram and Ball, Tonio},
-title = {Deep learning with convolutional neural networks for EEG decoding and visualization},
-journal = {Human Brain Mapping},
-issn = {1097-0193},
-url = {http://dx.doi.org/10.1002/hbm.23730},
-doi = {10.1002/hbm.23730},
-month = {aug},
-year = {2017},
-keywords = {electroencephalography, EEG analysis, machine learning, end-to-end learning, brain–machine interface,
-  brain–computer interface, model interpretability, brain mapping},
+@article{HBM:HBM23730,
+  author = {Schirrmeister, Robin Tibor and Springenberg, Jost Tobias and
+            Fiederer, Lukas Dominique Josef and Glasstetter, Martin and
+            Eggensperger, Katharina and Tangermann, Michael and
+            Hutter, Frank and Burgard, Wolfram and Ball, Tonio},
+  title = {Deep learning with convolutional neural networks for {EEG} decoding and visualization},
+  journal = {Human Brain Mapping},
+  issn = {1097-0193},
+  url = {https://doi.org/10.1002/hbm.23730},
+  doi = {10.1002/hbm.23730},
+  month = {aug},
+  year = {2017},
+  keywords = {electroencephalography, EEG analysis, machine learning, end-to-end learning, brain-machine interface, brain-computer interface, model interpretability, brain mapping}
 }
 ```
 
-<a id="citing-the-mne"></a>
+<a id="cite-individual-model-architectures-and-mne-python"></a>
 
-## Citing the MNE
+## 3. Cite individual model architectures and MNE-Python
 
-Braindecode is built on top of the [MNE-Python](https://mne.tools) software. you can
-use the DOIs provided by [Zenodo](https://doi.org/10.5281/zenodo.592483).
-Additionally, we also ask that when citing the MNE-Python package, you cite the
-canonical journal article reference below:
+**Model and dataset papers.** When you train, benchmark, or fine-tune specific neural
+architectures or foundation models from `braindecode.models`, please also cite the
+original papers introducing those models and datasets. Every model class lists its
+primary publication in its docstring and in the [Models summary table](models/models_table.html).
+
+**MNE-Python.** Braindecode builds on [MNE-Python](https://mne.tools) for
+electrophysiological data structures, montages, and signal processing. You can cite the
+[MNE-Python Zenodo archive](https://doi.org/10.5281/zenodo.592483) and the canonical
+MNE-Python journal article:
 
 ```bibtex
 @article{10.3389/fnins.2013.00267,
-author={Gramfort, Alexandre and Luessi, Martin and Larson, Eric and Engemann,
-        Denis and Strohmeier, Daniel and Brodbeck, Christian and Goj, Roman and Jas,
-        Mainak and Brooks, Teon and Parkkonen, Lauri and Hämäläinen, Matti},
-title={{MEG and EEG data analysis with MNE-Python}},
-journal={Frontiers in Neuroscience},
-volume={7},
-pages={267},
-year={2013},
-url={https://www.frontiersin.org/article/10.3389/fnins.2013.00267},
-doi={10.3389/fnins.2013.00267},
-issn={1662-453X},
+  author = {Gramfort, Alexandre and Luessi, Martin and Larson, Eric and Engemann,
+            Denis and Strohmeier, Daniel and Brodbeck, Christian and Goj, Roman and
+            Jas, Mainak and Brooks, Teon and Parkkonen, Lauri and H{\"a}m{\"a}l{\"a}inen, Matti},
+  title = {{MEG and EEG data analysis with MNE-Python}},
+  journal = {Frontiers in Neuroscience},
+  volume = {7},
+  pages = {267},
+  year = {2013},
+  url = {https://www.frontiersin.org/article/10.3389/fnins.2013.00267},
+  doi = {10.3389/fnins.2013.00267},
+  issn = {1662-453X}
 }
 ```
-
-<a id="citing-other-algorithms"></a>
-
-## Citing other algorithms
-
-Depending on your research topic, it may also be appropriate to cite related method
-papers, some of which are listed in the documentation strings of the relevant functions
-or methods. We recommend always check the documentation of the function.

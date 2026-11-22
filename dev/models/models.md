@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2e9a753399a568697c6bdb4dafe5ad7a32cd7a29](https://github.com/braindecode/braindecode/tree/2e9a753399a568697c6bdb4dafe5ad7a32cd7a29)
+Source commit: [89b9bd699c5d36458dbfff3ba6166c79981f9a98](https://github.com/braindecode/braindecode/tree/89b9bd699c5d36458dbfff3ba6166c79981f9a98)
 
 Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models.html)
 
@@ -14,37 +14,36 @@ Canonical HTML: [The decoding problem](https://braindecode.org/dev/models/models
 
 # The brain decode problem
 
-All the models in this library tackle the following problem: given time-series signals
-$X \in \mathbb{R}^{C \times T}$ and labels $y \in \mathcal{Y}$,
-[`braindecode`](../api.html#module-braindecode) implements neural networks $f$ that **decode** brain
-activity, i.e., it applies a series of transformations layers (e.g.
-[`Conv2d`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d), [`Linear`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear), [`ELU`](https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU)) to the
-data to allow us to filter and extract features that are relevant to what we are
-modeling, in other words:
+All models in Braindecode address a shared supervised or self-supervised problem: given
+multichannel time-series recordings $X \in \mathbb{R}^{C \times T}$ and targets
+$y \in \mathcal{Y}$, `braindecode.models` implements neural networks
+$f$ that **decode** brain activity by applying a sequence of transformation layers
+(such as [`Conv2d`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d), [`Linear`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear), and
+[`ELU`](https://docs.pytorch.org/docs/stable/generated/torch.nn.ELU.html#torch.nn.ELU)) to filter signals and extract task-relevant representations:
 
 $$
 f_{\theta} : X \to y,
 $$
 
-where $C$ (`n_chans`) is the number of channels/electrodes and $T$
-(`n_times`) is the temporal window length/epoch size over the interval of interest.
+where $C$ (`n_chans`) is the number of recording channels or electrodes and
+$T$ (`n_times`) is the temporal window length (epoch size in samples) over the
+interval of interest.
 
-The definition of $y$ is broad; it may be anchored in a cognitive stimulus (e.g.,
-BCI, ERP, SSVEP, cVEP), mental state (sleep stage), brain age, visual/audio/text/action
-inputs, or any target that can be quantized and modeled as a decoding task, see
-references
+The target $y$ can represent a sensory or cognitive paradigm (motor imagery BCI,
+ERP, SSVEP, cVEP), a physiological or clinical state (sleep stage, pathology, brain
+age), continuous visual, auditory, speech, or motor variables, or any quantity modeled
+as a decoding task
 [1](#id4), [2](#id8), [3](#id5), [4](#id9), [5](#id10), [6](#id12), [7](#id13), [8](#id14).
 
-We aim to translate recorded brain activity into its originating stimulus, behavior, or
-mental state, King and Dehaene [[2014](#id15)], King *et al.* [[2020](#id16)], again, $f(X) \to y$.
+Our goal is to map recorded brain activity back to its originating stimulus, behavior,
+or clinical state King and Dehaene [[2014](#id15)], King *et al.* [[2020](#id16)], written compactly as
+$f(X) \to y$. The neural network $f$ learns representations of time-series
+activity that predict the underlying variable of interest, a setting often called
+*reverse inference*.
 
-The neural networks model $f$ learns a representation that is useful for the
-encoded stimulus in the subject’s brain over time series—also known as *reverse
-inference*.
-
-In supervised decoding, we usually learn the network parameters $\theta$ by
-minimizing the regularized the average loss over the training set
-$\mathcal{D}_{\text{tr}}=\{(x_i,y_i)\}_{i=1}^{N_{\text{tr}}}$.
+In supervised decoding, we estimate the network parameters $\theta$ by minimizing
+the regularized average loss over the training set
+$\mathcal{D}_{\text{tr}}=\{(x_i,y_i)\}_{i=1}^{N_{\text{tr}}}$:
 
 $$
 \begin{aligned}
@@ -55,23 +54,22 @@ $$
 \end{aligned}
 $$
 
-where $\ell$ is the task loss (e.g., cross-entropy
+where $\ell$ is the task loss (for example, cross-entropy
 [`CrossEntropyLoss`](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss)), $\Omega$ is an optional regularizer, and
-$\lambda \ge 0$ its weight (e.g. `weight_decay` parameter in
-[`Adam`](https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam) is the example of regularization).
+$\lambda \ge 0$ controls regularization strength (for example, the
+`weight_decay` parameter in [`Adam`](https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam)).
 
-Equivalently, the goal is to minimize the expected risk
+Equivalently, training minimizes a finite-sample approximation to the expected risk
 $\mathcal{R}(\theta)=\mathbb{E}_{(x,y)\sim P_{\text{tr}}}
-[\ell(f_{\theta}(x),y)]$, for which the empirical average above is a finite-sample
-approximation.
+[\ell(f_{\theta}(x),y)]$.
 
-With this, in this model’s sub-pages, we provide:
+Across the pages in this section, you will find:
 
-> - 1. Our definition of the brain decoding problem (here);
-> - 1. [The categorization of the neural networks based on what is inside them](models_categorization.html);
-> - 1. [A table overview to understand what is inside the models](models_table.html);
-> - 1. [How to run a pretrained model on another montage](channel_strategies.html);
-> - 1. [A visualization of the common important information from the models](models_visualization.html).
+1. The problem formulation above;
+2. [Architecture categorization by core building blocks](models_categorization.html);
+3. [Interactive models summary table](models_table.html);
+4. [Channel and montage adaptation strategies for pretrained models](channel_strategies.html);
+5. [Comparative visualizations across model families](models_visualization.html).
 
 [Browse the models table →](models_table.html)
 
