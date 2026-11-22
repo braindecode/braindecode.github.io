@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [87e86f978a5c399e5d8564afd181fa90ca8e6c4e](https://github.com/braindecode/braindecode/tree/87e86f978a5c399e5d8564afd181fa90ca8e6c4e)
+Source commit: [695594c7a0f0f50b28efbd32ba7e228627ad3264](https://github.com/braindecode/braindecode/tree/695594c7a0f0f50b28efbd32ba7e228627ad3264)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
