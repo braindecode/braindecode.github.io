@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [f5e857de41abeac40b355a2c40faf868b6fe5b17](https://github.com/braindecode/braindecode/tree/f5e857de41abeac40b355a2c40faf868b6fe5b17)
+Source commit: [379b84aac880994eca481c05ba00b33c1d8f5cc7](https://github.com/braindecode/braindecode/tree/379b84aac880994eca481c05ba00b33c1d8f5cc7)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -208,6 +208,7 @@ and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/d
 | [`DuIN`](generated/braindecode.models.DuIN.html#braindecode.models.DuIN)([n_outputs, n_chans, chs_info, ...])                                          | Du-IN from Zheng et al. (2024) [[R23b5281b4d86-DuIN2024]](generated/braindecode.models.DuIN.html#r23b5281b4d86-duin2024).                                                                            |
 | [`Deep4Net`](generated/braindecode.models.Deep4Net.html#braindecode.models.Deep4Net)([n_chans, n_outputs, n_times, ...])                               | Deep ConvNet model from Schirrmeister et al (2017) [[Rb8ef6c2733ce-Schirrmeister2017]](generated/braindecode.models.Deep4Net.html#rb8ef6c2733ce-schirrmeister2017).                                  |
 | [`DeepSleepNet`](generated/braindecode.models.DeepSleepNet.html#braindecode.models.DeepSleepNet)([n_outputs, return_feats, ...])                       | DeepSleepNet from Supratak et al (2017) [[R28b528aca953-Supratak2017]](generated/braindecode.models.DeepSleepNet.html#r28b528aca953-supratak2017).                                                   |
+| [`DeepSOZ`](generated/braindecode.models.DeepSOZ.html#braindecode.models.DeepSOZ)([n_outputs, n_chans, chs_info, ...])                                 | DeepSOZ from Shama et al. (2023) [[R61d7495ff844-Shama2023]](generated/braindecode.models.DeepSOZ.html#r61d7495ff844-shama2023).                                                                     |
 | [`EEGConformer`](generated/braindecode.models.EEGConformer.html#braindecode.models.EEGConformer)([n_outputs, n_chans, ...])                            | EEG Conformer from Song et al (2022) [[Rd6c0fefc356a-song2022]](generated/braindecode.models.EEGConformer.html#rd6c0fefc356a-song2022).                                                              |
 | [`EEGCLIP`](generated/braindecode.models.EEGCLIP.html#braindecode.models.EEGCLIP)([n_outputs, n_chans, n_times, ...])                                  | Dual encoder for contrastive alignment of EEG and text [[R071b2450b709-eegclip]](generated/braindecode.models.EEGCLIP.html#r071b2450b709-eegclip).                                                   |
 | [`EEGDINO`](generated/braindecode.models.EEGDINO.html#braindecode.models.EEGDINO)([n_outputs, n_chans, chs_info, ...])                                 | EEG-DINO from Wang et al. (2025) [[R8a8c4f990233-eegdino]](generated/braindecode.models.EEGDINO.html#r8a8c4f990233-eegdino).                                                                         |
