@@ -221,7 +221,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+  <a class="nav-link nav-internal" href="../tutorials.html">
     Tutorials
   </a>
 </li>
@@ -369,7 +369,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+  <a class="nav-link nav-internal" href="../tutorials.html">
     Tutorials
   </a>
 </li>
@@ -739,14 +739,17 @@ Hugging Face Hub. Install with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">n_chans</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">n_times</span><span class="p">)</span>
-<span class="c1"># Extract encoder features (consistent dict across all models)</span>
+<span class="c1"># Extract encoder features and a mean-pooled 2-D embedding</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">return_features</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">"embedding"</span><span class="p">]</span>  <span class="c1"># (batch, dim)</span>
 <span class="n">features</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">"features"</span><span class="p">]</span>
 
 <span class="c1"># Replace the classification head</span>
 <span class="n">model</span><span class="o">.</span><span class="n">reset_head</span><span class="p">(</span><span class="n">n_outputs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">torch.jit.script</span></code> returns features only on models whose
+<code class="docutils literal notranslate"><span class="pre">forward</span></code> declares <code class="docutils literal notranslate"><span class="pre">return_features</span></code>.</p>
 <p><strong>Saving and restoring full configuration:</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
@@ -798,12 +801,18 @@ Needs <code class="docutils literal notranslate"><span class="pre">pooling=&quot
 <span class="sig-name descname"><span class="pre">reset_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_outputs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/braindecode/braindecode//blob/master/braindecode/models/base.py#L336-L344"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#braindecode.models.MVPFormer.reset_head" title="Link to this definition">#</a></dt>
 <dd><p>Replace the classification head for a new number of outputs.</p>
 <p>This is called automatically by <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_pretrained()</span></code> when the
-user passes an <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code> that differs from the saved config.
-Override in subclasses that need a model-specific head structure.
-Implementations keep changed constructor arguments in sync with
-<code class="docutils literal notranslate"><span class="pre">self._update_init_kwargs</span></code>, so that a saved model can be loaded
-back. Implementations requiring positive outputs can also use
-<code class="docutils literal notranslate"><span class="pre">self._set_n_outputs</span></code> to validate and record the new value.</p>
+user passes an <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code> that differs from the saved config, and
+attaches a head to a model built with <code class="docutils literal notranslate"><span class="pre">n_outputs=None</span></code>. The default
+replaces the last linear or convolutional layer of <code class="docutils literal notranslate"><span class="pre">final_layer</span></code> by
+a new one with <code class="docutils literal notranslate"><span class="pre">n_outputs</span></code> outputs, and raises
+<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#NotImplementedError" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a> when that layer is constrained, when
+<code class="docutils literal notranslate"><span class="pre">final_layer</span></code> holds more than one such layer, or when it does not end
+with one. Override in subclasses that need
+a model-specific head structure. Implementations keep changed
+constructor arguments in sync with <code class="docutils literal notranslate"><span class="pre">self._update_init_kwargs</span></code>, so
+that a saved model can be loaded back. Implementations requiring
+positive outputs can also use <code class="docutils literal notranslate"><span class="pre">self._set_n_outputs</span></code> to validate and
+record the new value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_outputs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – New number of output classes.</p>

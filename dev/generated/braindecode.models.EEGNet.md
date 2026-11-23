@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [319506e67a3eaf164e58c41d297486dabe126e63](https://github.com/braindecode/braindecode/tree/319506e67a3eaf164e58c41d297486dabe126e63)
+Source commit: [8364cf268dc1102a3ded05129fc078e72e992b0d](https://github.com/braindecode/braindecode/tree/8364cf268dc1102a3ded05129fc078e72e992b0d)
 
 Canonical HTML: [EEGNet model reference](https://braindecode.org/dev/generated/braindecode.models.EEGNet.html)
 
@@ -167,13 +167,17 @@ model = EEGNet.from_pretrained("username/my-eegnet-model", n_outputs=4)
 import torch
 
 x = torch.randn(1, model.n_chans, model.n_times)
-# Extract encoder features (consistent dict across all models)
+# Extract encoder features and a mean-pooled 2-D embedding
 out = model(x, return_features=True)
+embedding = out["embedding"]  # (batch, dim)
 features = out["features"]
 
 # Replace the classification head
 model.reset_head(n_outputs=10)
 ```
+
+Note that `torch.jit.script` returns features only on models whose
+`forward` declares `return_features`.
 
 **Saving and restoring full configuration:**
 

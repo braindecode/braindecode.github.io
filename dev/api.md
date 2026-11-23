@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [319506e67a3eaf164e58c41d297486dabe126e63](https://github.com/braindecode/braindecode/tree/319506e67a3eaf164e58c41d297486dabe126e63)
+Source commit: [8364cf268dc1102a3ded05129fc078e72e992b0d](https://github.com/braindecode/braindecode/tree/8364cf268dc1102a3ded05129fc078e72e992b0d)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -926,6 +926,7 @@ models and evaluate their performance.
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [`TimeSeriesLoss`](generated/braindecode.training.TimeSeriesLoss.html#braindecode.training.TimeSeriesLoss)(loss_function)                                                | Compute Loss between timeseries targets and predictions.                                                                                                                     |
 | [`DanceLoss`](generated/braindecode.training.DanceLoss.html#braindecode.training.DanceLoss)([weight_class, weight_iou, ...])                                             | DANCE criterion: matched DETR (CE + IoU) + dense CE + consistency KL.                                                                                                        |
+| [`info_nce`](generated/braindecode.training.info_nce.html#braindecode.training.info_nce)(z1, z2[, temperature])                                                          | InfoNCE (NT-Xent) contrastive loss between two views of a batch [[R90494a613b32-1]](generated/braindecode.training.info_nce.html#r90494a613b32-1).                           |
 | [`CroppedTrialEpochScoring`](generated/braindecode.training.CroppedTrialEpochScoring.html#braindecode.training.CroppedTrialEpochScoring)(scoring[, ...])                 | Class to compute scores for trials from a model that predicts (super)crops.                                                                                                  |
 | [`CroppedTimeSeriesEpochScoring`](generated/braindecode.training.CroppedTimeSeriesEpochScoring.html#braindecode.training.CroppedTimeSeriesEpochScoring)(scoring[, ...])  | Class to compute scores for trials from a model that predicts (super)crops with time series target.                                                                          |
 | [`PostEpochTrainScoring`](generated/braindecode.training.PostEpochTrainScoring.html#braindecode.training.PostEpochTrainScoring)(scoring[, ...])                          | Epoch Scoring class that recomputes predictions after the epoch on the training in validation mode.                                                                          |

@@ -220,7 +220,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+  <a class="nav-link nav-internal" href="../tutorials.html">
     Tutorials
   </a>
 </li>
@@ -368,7 +368,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+  <a class="nav-link nav-internal" href="../tutorials.html">
     Tutorials
   </a>
 </li>
@@ -608,14 +608,17 @@ Hugging Face Hub. Install with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">n_chans</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">n_times</span><span class="p">)</span>
-<span class="c1"># Extract encoder features (consistent dict across all models)</span>
+<span class="c1"># Extract encoder features and a mean-pooled 2-D embedding</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">return_features</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">"embedding"</span><span class="p">]</span>  <span class="c1"># (batch, dim)</span>
 <span class="n">features</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">"features"</span><span class="p">]</span>
 
 <span class="c1"># Replace the classification head</span>
 <span class="n">model</span><span class="o">.</span><span class="n">reset_head</span><span class="p">(</span><span class="n">n_outputs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">torch.jit.script</span></code> returns features only on models whose
+<code class="docutils literal notranslate"><span class="pre">forward</span></code> declares <code class="docutils literal notranslate"><span class="pre">return_features</span></code>.</p>
 <p><strong>Saving and restoring full configuration:</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
