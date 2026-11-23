@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [8364cf268dc1102a3ded05129fc078e72e992b0d](https://github.com/braindecode/braindecode/tree/8364cf268dc1102a3ded05129fc078e72e992b0d)
+Source commit: [0b1f17a4068857526d793b1be055e8d02358caa6](https://github.com/braindecode/braindecode/tree/0b1f17a4068857526d793b1be055e8d02358caa6)
 
 Canonical HTML: [ShallowFBCSPNet model reference](https://braindecode.org/dev/generated/braindecode.models.ShallowFBCSPNet.html)
 
@@ -147,6 +147,17 @@ dropout rates, activation functions, number of filters) are automatically
 saved to the Hub and restored when loading.
 
 See [Loading and Adapting Pretrained Foundation Models](../auto_examples/model_building/plot_load_pretrained_models.html#load-pretrained-models) for a complete tutorial.
+
+<!-- !! processed by numpydoc !! -->
+
+### Methods
+
+#### forward(x)
+
+Run the layers in order on `x`, `(batch, n_chans, n_times)`.
+
+* **Parameters:**
+  **x** – The description is missing.
 
 <!-- !! processed by numpydoc !! -->
 
