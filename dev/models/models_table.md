@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [82a0e2a2e073c26032672554b01f7259e174c11c](https://github.com/braindecode/braindecode/tree/82a0e2a2e073c26032672554b01f7259e174c11c)
+Source commit: [8eace43894143af74b2e70fba6b00d3ee3780d1d](https://github.com/braindecode/braindecode/tree/8eace43894143af74b2e70fba6b00d3ee3780d1d)
 
 Canonical HTML: [Model selection (interactive table in HTML)](https://braindecode.org/dev/models/models_table.html)
 
