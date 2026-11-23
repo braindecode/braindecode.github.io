@@ -10,10 +10,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://braindecode.org/stable/whats_new.html" />
 <meta property="og:site_name" content="Braindecode" />
-<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.DeepSOZ(Shama et al., 2023), which detects seizures second by second and, with return_soz=True, gives one seizure onset zone logit per c..." />
+<meta property="og:description" content="Current 2.1.0 (GitHub): Enhancements: ATCNet, CareSleepNet, EEGInceptionMI, FBCNet, FBMSNet, IFNet, Labram ( neural_tokenizer=True), NeuroRVQTokenizer, PBT and SeizureTransformer read the window le..." />
 <meta property="og:image" content="https://braindecode.org/dev/_static/braindecode.png" />
 <meta property="og:image:alt" content="Braindecode — Open-source PyTorch library for decoding raw EEG, MEG, iEEG, fNIRS, and sEMG" />
-<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: Add braindecode.models.DeepSOZ(Shama et al., 2023), which detects seizures second by second and, with return_soz=True, gives one seizure onset zone logit per c..." />
+<meta name="description" content="Current 2.1.0 (GitHub): Enhancements: ATCNet, CareSleepNet, EEGInceptionMI, FBCNet, FBMSNet, IFNet, Labram ( neural_tokenizer=True), NeuroRVQTokenizer, PBT and SeizureTransformer read the window le..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@braindecode" />
 <meta name="robots" content="noindex, follow" />
@@ -514,6 +514,9 @@
 <section id="enhancements">
 <h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>ATCNet, CareSleepNet, EEGInceptionMI, FBCNet, FBMSNet, IFNet, Labram (<code class="docutils literal notranslate"><span class="pre">neural_tokenizer=True</span></code>), NeuroRVQTokenizer, PBT
+and SeizureTransformer read the window length from the input instead of the length stored at build, so other lengths run
+with unchanged weights, and outputs at the build length stay the same (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/braindecode.models.DeepSOZ.html#braindecode.models.DeepSOZ" title="braindecode.models.DeepSOZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.DeepSOZ</span></code></a> (Shama et al., 2023), which detects seizures second by second and,
 with <code class="docutils literal notranslate"><span class="pre">return_soz=True</span></code>, gives one seizure onset zone logit per channel; it reproduces the outputs of the
 DeepSOZ-HEM challenge model exactly (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1771">#1771</a> by <a class="reference external" href="https://github.com/raghav-rathi">Raghav Rathi</a>).</p></li>
@@ -687,6 +690,9 @@ scores its alarms (<a class="reference external" href="https://github.com/braind
 <section id="api-and-behavior-changes">
 <h2>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Registered models declare their time and channel axes, and <a class="reference internal" href="generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin" title="braindecode.models.EEGModuleMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.EEGModuleMixin</span></code></a> checks channel counts
+and lengths before <code class="docutils literal notranslate"><span class="pre">forward</span></code>: a length off by at most 1% of <code class="docutils literal notranslate"><span class="pre">n_times</span></code> and one step snaps to it with a one-time
+<code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> unless <code class="docutils literal notranslate"><span class="pre">on_non_divisible=&quot;error&quot;</span></code>; larger mismatches raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/braindecode.models.LUNA.html#braindecode.models.LUNA" title="braindecode.models.LUNA"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.models.LUNA</span></code></a> restores the hidden <code class="docutils literal notranslate"><span class="pre">norm_layer</span></code> in
 <code class="docutils literal notranslate"><span class="pre">channel_location_embedder</span></code> and <code class="docutils literal notranslate"><span class="pre">cross_attn.ffn</span></code> via <a class="reference internal" href="generated/blocks/braindecode.modules.TimmMlp.html#braindecode.modules.TimmMlp" title="braindecode.modules.TimmMlp"><code class="xref py py-class docutils literal notranslate"><span class="pre">braindecode.modules.TimmMlp</span></code></a>
 so released <code class="docutils literal notranslate"><span class="pre">PulpBio/LUNA</span></code> checkpoints load strictly (<a class="reference external" href="https://github.com/braindecode/braindecode/issues/1758">#1758</a> by <a class="reference external" href="https://github.com/aloneangel45">&#64;aloneangel45</a>).</p></li>
