@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [8eace43894143af74b2e70fba6b00d3ee3780d1d](https://github.com/braindecode/braindecode/tree/8eace43894143af74b2e70fba6b00d3ee3780d1d)
+Source commit: [2a943df6c8415721086e46156cd1e2de633fc3ab](https://github.com/braindecode/braindecode/tree/2a943df6c8415721086e46156cd1e2de633fc3ab)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
@@ -168,66 +168,6 @@ preprocess(dataset, preprocessors, n_jobs=-1)
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -271,6 +211,66 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
 - Filter length: 413 samples (1.652 s)
 
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -562,10 +562,10 @@ clf.fit(train_set, y=None, epochs=n_epochs)
 ```none
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------  ------
-      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  3.5969
-      2            0.2500        1.2511       0.2500            0.2500        6.6945  0.0005  3.7514
-      3            0.2500        1.1439       0.2500            0.2500        6.0061  0.0002  3.4906
-      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  3.3600
+      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  3.5152
+      2            0.2500        1.2511       0.2500            0.2500        6.6945  0.0005  3.7484
+      3            0.2500        1.1439       0.2500            0.2500        6.0061  0.0002  3.4290
+      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  3.5880
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 265-276 -->
@@ -697,7 +697,7 @@ ConfusionMatrixDisplay.from_predictions(
 
 ![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png)
 ```none
-<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x758a4ca3e360>
+<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7a4d9ee67950>
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 374-392 -->
@@ -726,6 +726,6 @@ nipy, NIPY, Nipy, etc... -->
 <!-- spd_learn -->
 <!-- vim: ft=rst -->
 
-**Total running time of the script:** (0 minutes 28.759 seconds)
+**Total running time of the script:** (0 minutes 28.488 seconds)
 
 <a id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></a>

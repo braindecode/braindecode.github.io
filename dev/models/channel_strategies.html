@@ -793,6 +793,51 @@ checkpoint without these keys still loads. The layer runs in eager mode, and Tor
 works under <code class="docutils literal notranslate"><span class="pre">&quot;native&quot;</span></code> only.</p>
 </section>
 </section>
+<section id="adapting-a-built-model">
+<span id="id3"></span><h2>Adapting a built model<a class="headerlink" href="#adapting-a-built-model" title="Link to this heading">#</a></h2>
+<p>A model that has already been trained or loaded can be adapted in place to another
+montage or sampling rate with <a class="reference internal" href="../generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin.adapt_input" title="braindecode.models.EEGModuleMixin.adapt_input"><code class="xref py py-meth docutils literal notranslate"><span class="pre">adapt_input()</span></code></a>,
+without adding keys to its <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">pad_channels_collate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">braindecode.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEGNet</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">EEGNet</span><span class="p">(</span><span class="n">chs_info</span><span class="o">=</span><span class="n">train_chs</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+
+<span class="c1"># Fixed source montage and 500 Hz -&gt; 250 Hz in-model resampling</span>
+<span class="n">model</span><span class="o">.</span><span class="n">adapt_input</span><span class="p">(</span><span class="n">chs_info</span><span class="o">=</span><span class="n">eval_chs</span><span class="p">,</span> <span class="n">channel_strategy</span><span class="o">=</span><span class="s2">"spline"</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x_500hz</span><span class="p">)</span>  <span class="c1"># x_500hz: (batch, len(eval_chs), 2000)</span>
+
+<span class="c1"># Mixed-montage batches from windows with set_return_ch_pos(True)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">adapt_input</span><span class="p">(</span><span class="n">channel_strategy</span><span class="o">=</span><span class="s2">"spline"</span><span class="p">)</span>  <span class="c1"># chs_info=None: per-sample pos</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">ch_mask</span> <span class="o">=</span> <span class="n">pad_channels_collate</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">ch_mask</span><span class="o">=</span><span class="n">ch_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Montage.</strong> <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> (<code class="docutils literal notranslate"><span class="pre">channel_strategy</span></code> defaults to the one of an earlier
+<code class="docutils literal notranslate"><span class="pre">adapt_input</span></code> call, else <code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>) adds a
+<a class="reference internal" href="../generated/channels/braindecode.modules.ChannelLayer.html#braindecode.modules.ChannelLayer" title="braindecode.modules.ChannelLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelLayer</span></code></a> from that montage onto the montage the
+model was built with. <code class="docutils literal notranslate"><span class="pre">channel_strategy</span></code> alone maps each sample from the <code class="docutils literal notranslate"><span class="pre">pos</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ch_mask</span></code> of <a class="reference internal" href="../generated/braindecode.datasets.pad_channels_collate.html#braindecode.datasets.pad_channels_collate" title="braindecode.datasets.pad_channels_collate"><code class="xref py py-func docutils literal notranslate"><span class="pre">pad_channels_collate()</span></code></a> with
+<code class="docutils literal notranslate"><span class="pre">set_return_ch_pos(True)</span></code>, so mixed-montage batches also reach native convolutional
+models such as <a class="reference internal" href="../generated/braindecode.models.EEGNet.html#braindecode.models.EEGNet" title="braindecode.models.EEGNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGNet</span></code></a>. A model built without
+<code class="docutils literal notranslate"><span class="pre">chs_info</span></code>, built with a <code class="docutils literal notranslate"><span class="pre">channel_strategy</span></code> (pass <code class="docutils literal notranslate"><span class="pre">chs_info</span></code> to <code class="docutils literal notranslate"><span class="pre">forward</span></code>
+instead), or taking MEG, fNIRS, sEMG or non-electrode channels raises a
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p><strong>Stateless strategies only.</strong> <code class="docutils literal notranslate"><span class="pre">&quot;wiener&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;latent&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;source&quot;</span></code> with
+<code class="docutils literal notranslate"><span class="pre">trainable=True</span></code> raise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>: they add fitted or trained tensors. The
+<code class="docutils literal notranslate"><span class="pre">state_dict</span></code> keys stay those of the built model, so checkpoints load with
+<code class="docutils literal notranslate"><span class="pre">strict=True</span></code> before and after <code class="docutils literal notranslate"><span class="pre">adapt_input</span></code>.</p></li>
+<li><p><strong>Sampling rate.</strong> An integer <code class="docutils literal notranslate"><span class="pre">sfreq</span></code> resamples the input to <code class="docutils literal notranslate"><span class="pre">model.sfreq</span></code> before
+the length checks and the channel mapping. <code class="docutils literal notranslate"><span class="pre">sfreq=model.sfreq</span></code> removes it.</p></li>
+<li><p><strong>Saved with the model.</strong> <code class="docutils literal notranslate"><span class="pre">get_config()[&quot;input_adaptation&quot;]</span></code> holds the adaptation,
+and <code class="docutils literal notranslate"><span class="pre">from_config</span></code> and <code class="docutils literal notranslate"><span class="pre">from_pretrained</span></code> apply it again. A model without adaptation
+has no such entry.</p></li>
+<li><p><strong>Eager only.</strong> <code class="docutils literal notranslate"><span class="pre">model(x)</span></code> and <code class="docutils literal notranslate"><span class="pre">model.forward(x)</span></code> both apply the adaptation.
+<code class="docutils literal notranslate"><span class="pre">torch.jit.script</span></code> of an adapted model raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>;
+<code class="docutils literal notranslate"><span class="pre">torch.export</span></code> and <code class="docutils literal notranslate"><span class="pre">torch.jit.trace</span></code> keep the adaptation.</p></li>
+</ul>
+</section>
 <section id="reconstruct-a-bad-channel">
 <h2>Reconstruct a bad channel<a class="headerlink" href="#reconstruct-a-bad-channel" title="Link to this heading">#</a></h2>
 <p>To reconstruct a bad EEG channel, keep the full montage as the target. Select the good
@@ -859,7 +904,7 @@ and saves them with their configuration.</p>
 <p><a class="reference internal" href="../auto_examples/model_building/plot_channel_interpolation.html"><span class="doc">Running a Pretrained Model on Any Channel Set with the Channel Layer</span></a></p>
   <div class="sphx-glr-thumbnail-title">Running a Pretrained Model on Any Channel Set with the Channel Layer</div>
 </div></div><p class="rubric">References</p>
-<div class="docutils container" id="id3">
+<div class="docutils container" id="id4">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-kokate2026channel" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
@@ -927,6 +972,7 @@ and saves them with their configuration.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#saved-state-and-torchscript">Saved state and TorchScript</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adapting-a-built-model">Adapting a built model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconstruct-a-bad-channel">Reconstruct a bad channel</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-it-in-a-tutorial">See it in a tutorial</a></li>
 </ul>
