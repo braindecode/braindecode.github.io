@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [535c15fef7119d5ecc0efdf2203851e35d8d5646](https://github.com/braindecode/braindecode/tree/535c15fef7119d5ecc0efdf2203851e35d8d5646)
+Source commit: [319506e67a3eaf164e58c41d297486dabe126e63](https://github.com/braindecode/braindecode/tree/319506e67a3eaf164e58c41d297486dabe126e63)
 
 Canonical HTML: [ShallowFBCSPNet model reference](https://braindecode.org/dev/generated/braindecode.models.ShallowFBCSPNet.html)
 
@@ -178,7 +178,7 @@ See [Loading and Adapting Pretrained Foundation Models](../auto_examples/model_b
 
 * [Sparse autoencoders on the activations of a motor-imagery decoder](../auto_examples/advanced_training/plot_sae_activation_analysis.html)
 
-* [Fingers flexion decoding on BCIC IV 4 ECoG Dataset](../auto_examples/applied_examples/bcic_iv_4_ecog_trial.html)
+* [Fingers flexion decoding on BCIC IV 4 ECoG Dataset](../auto_examples/applied_examples/plot_bcic_iv_4_ecog_trial.html)
 
 * [Seizure alarm on CHB-MIT, scored with SzCORE](../auto_examples/applied_examples/plot_seizure_alarm_chbmit.html)
 
