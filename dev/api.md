@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2a943df6c8415721086e46156cd1e2de633fc3ab](https://github.com/braindecode/braindecode/tree/2a943df6c8415721086e46156cd1e2de633fc3ab)
+Source commit: [535c15fef7119d5ecc0efdf2203851e35d8d5646](https://github.com/braindecode/braindecode/tree/535c15fef7119d5ecc0efdf2203851e35d8d5646)
 
 Canonical HTML: [API and model input conventions](https://braindecode.org/dev/api.html)
 
@@ -166,7 +166,7 @@ model.push_to_hub(
 ```
 
 For more details, see the [`EEGModuleMixin`](generated/braindecode.models.EEGModuleMixin.html#braindecode.models.EEGModuleMixin) documentation
-and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/datasets_io/plot_hub_integration.html#hub-integration) tutorial.
+and the [Uploading and downloading datasets to Hugging Face Hub](auto_examples/datasets_io/hub_integration.html#hub-integration) tutorial.
 
 * **note:**
   Model configs are generated with Pydantic, a core dependency. With the optional

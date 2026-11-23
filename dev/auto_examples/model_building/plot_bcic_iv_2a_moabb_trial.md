@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2a943df6c8415721086e46156cd1e2de633fc3ab](https://github.com/braindecode/braindecode/tree/2a943df6c8415721086e46156cd1e2de633fc3ab)
+Source commit: [535c15fef7119d5ecc0efdf2203851e35d8d5646](https://github.com/braindecode/braindecode/tree/535c15fef7119d5ecc0efdf2203851e35d8d5646)
 
 Canonical HTML: [Motor imagery tutorial](https://braindecode.org/dev/auto_examples/model_building/plot_bcic_iv_2a_moabb_trial.html)
 
@@ -168,20 +168,6 @@ preprocess(dataset, preprocessors, n_jobs=-1)
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
@@ -225,7 +211,66 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
 - Filter length: 413 samples (1.652 s)
 
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 4 - 38 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 4.00
+- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
+- Upper passband edge: 38.00 Hz
+- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
+- Filter length: 413 samples (1.652 s)
+
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -286,51 +331,6 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Filter length: 413 samples (1.652 s)
 
 NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
-Filtering raw data in 1 contiguous segment
-Setting up band-pass filter from 4 - 38 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 4.00
-- Lower transition bandwidth: 2.00 Hz (-6 dB cutoff frequency: 3.00 Hz)
-- Upper passband edge: 38.00 Hz
-- Upper transition bandwidth: 9.50 Hz (-6 dB cutoff frequency: 42.75 Hz)
-- Filter length: 413 samples (1.652 s)
-
 Filtering raw data in 1 contiguous segment
 Setting up band-pass filter from 4 - 38 Hz
 
@@ -562,10 +562,10 @@ clf.fit(train_set, y=None, epochs=n_epochs)
 ```none
   epoch    train_accuracy    train_loss    valid_acc    valid_accuracy    valid_loss      lr     dur
 -------  ----------------  ------------  -----------  ----------------  ------------  ------  ------
-      1            0.2500        1.6341       0.2500            0.2500        5.8028  0.0006  3.5152
-      2            0.2500        1.2511       0.2500            0.2500        6.6945  0.0005  3.7484
-      3            0.2500        1.1439       0.2500            0.2500        6.0061  0.0002  3.4290
-      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  3.5880
+      1            0.2500        1.6341       0.2500            0.2500        5.8029  0.0006  4.1849
+      2            0.2500        1.2511       0.2500            0.2500        6.6946  0.0005  4.0582
+      3            0.2500        1.1439       0.2500            0.2500        6.0062  0.0002  4.2215
+      4            0.2604        1.0877       0.2535            0.2535        4.9446  0.0000  4.1676
 ```
 
 <!-- GENERATED FROM PYTHON SOURCE LINES 265-276 -->
@@ -617,11 +617,32 @@ Re-initializing optimizer.
 
 ### Plot training curves
 
-<!-- GENERATED FROM PYTHON SOURCE LINES 299-348 -->
+<!-- GENERATED FROM PYTHON SOURCE LINES 299-385 -->
 ```Python
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib.lines import Line2D
+
+BLUE, GREY, INK = "#0072B2", "#7F7F7F", "#14181F"
+
+plt.rcdefaults()  # importing MOABB applies seaborn's "whitegrid" style globally
+plt.rcParams.update(
+    {
+        "figure.facecolor": "white",
+        "axes.facecolor": "white",
+        "font.family": "sans-serif",
+        "font.size": 10,
+        "axes.labelsize": 10,
+        "axes.titlesize": 10.5,
+        "xtick.labelsize": 9,
+        "ytick.labelsize": 9,
+        "axes.linewidth": 0.8,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "xtick.direction": "out",
+        "ytick.direction": "out",
+        "legend.frameon": False,
+    }
+)
 
 # Extract loss and accuracy values for plotting from history object
 results_columns = ["train_loss", "valid_loss", "train_accuracy", "valid_accuracy"]
@@ -630,55 +651,71 @@ df = pd.DataFrame(
     columns=results_columns,
     index=clf.history[:, "epoch"],
 )
+df[["train_accuracy", "valid_accuracy"]] *= 100  # fractions to percent
 
-# get percent of misclass for better visual comparison to loss
-df = df.assign(
-    train_misclass=100 - 100 * df.train_accuracy,
-    valid_misclass=100 - 100 * df.valid_accuracy,
+
+def label_curve_ends(ax, ends, min_gap=0.07):
+    """Write each curve's name after its last point, keeping names apart."""
+    y_min, y_max = ax.get_ylim()
+    gap = min_gap * (y_max - y_min)
+    (low_name, (low_y, _)), (high_name, (high_y, _)) = sorted(
+        ends.items(), key=lambda item: item[1][0]
+    )
+    if high_y - low_y < gap:
+        middle = (high_y + low_y) / 2
+        low_y, high_y = middle - gap / 2, middle + gap / 2
+    for name, y in [(low_name, low_y), (high_name, high_y)]:
+        ax.text(
+            df.index[-1] + 0.02 * len(df),
+            y,
+            name,
+            color=ends[name][1],
+            va="center",
+            fontweight="bold",
+        )
+
+
+fig, (ax_loss, ax_acc) = plt.subplots(1, 2, figsize=(8, 3.2), sharex=True)
+
+# Four balanced classes: a random guess is right 25 % of the time
+ax_acc.axhline(25, color=GREY, ls="--", lw=0.9)
+ax_acc.text(
+    df.index[-1], 23, "Chance (25%)", color=GREY, fontsize=8.5, ha="right", va="top"
 )
+ax_acc.set_ylim(0, 100)
+ax_acc.set_yticks([0, 25, 50, 75, 100])
 
-fig, ax1 = plt.subplots(figsize=(8, 3))
-df.loc[:, ["train_loss", "valid_loss"]].plot(
-    ax=ax1, style=["-", ":"], marker="o", color="tab:blue", legend=False, fontsize=14
-)
-
-ax1.tick_params(axis="y", labelcolor="tab:blue", labelsize=14)
-ax1.set_ylabel("Loss", color="tab:blue", fontsize=14)
-
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
-df.loc[:, ["train_misclass", "valid_misclass"]].plot(
-    ax=ax2, style=["-", ":"], marker="o", color="tab:red", legend=False
-)
-ax2.tick_params(axis="y", labelcolor="tab:red", labelsize=14)
-ax2.set_ylabel("Misclassification Rate [%]", color="tab:red", fontsize=14)
-ax2.set_ylim(ax2.get_ylim()[0], 85)  # make some room for legend
-ax1.set_xlabel("Epoch", fontsize=14)
-
-# where some data has already been plotted to ax
-handles = []
-handles.append(
-    Line2D([0], [0], color="black", linewidth=1, linestyle="-", label="Train")
-)
-handles.append(
-    Line2D([0], [0], color="black", linewidth=1, linestyle=":", label="Valid")
-)
-plt.legend(handles, [h.get_label() for h in handles], fontsize=14)
-plt.tight_layout()
+for ax, metric, letter, title, ylabel in [
+    (ax_loss, "loss", "A", "Cross-entropy loss", "Loss"),
+    (ax_acc, "accuracy", "B", "Classification accuracy", "Accuracy (%)"),
+]:
+    ends = {}
+    for split, color in [("Train", GREY), ("Valid", BLUE)]:
+        values = df[f"{split.lower()}_{metric}"]
+        ax.plot(df.index, values, color=color, lw=1.8)
+        ends[split] = (values.iloc[-1], color)
+    label_curve_ends(ax, ends)
+    ax.set_title(f"{letter}  {title}", loc="left", fontweight="bold", color=INK)
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel(ylabel)
+    ax.grid(axis="y", color="#EAEAEA", lw=0.7)
+    ax.set_axisbelow(True)
+    ax.xaxis.set_major_locator(plt.MaxNLocator(4, integer=True))
+fig.tight_layout()
 ```
 
-![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png)
-<!-- GENERATED FROM PYTHON SOURCE LINES 349-352 -->
+![A  Cross-entropy loss, B  Classification accuracy](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_001.png)
+<!-- GENERATED FROM PYTHON SOURCE LINES 386-389 -->
 
 <a id="plotting-a-confusion-matrix"></a>
 
 ## Plotting a  Confusion Matrix
 
-<!-- GENERATED FROM PYTHON SOURCE LINES 355-357 -->
+<!-- GENERATED FROM PYTHON SOURCE LINES 392-394 -->
 
 Here we generate a confusion matrix as in <sup>[3](#id7)</sup>.
 
-<!-- GENERATED FROM PYTHON SOURCE LINES 357-373 -->
+<!-- GENERATED FROM PYTHON SOURCE LINES 394-423 -->
 ```Python
 from sklearn.metrics import ConfusionMatrixDisplay
 
@@ -690,17 +727,26 @@ sorted_items = sorted(label_dict.items(), key=lambda kv: kv[1])
 labels = [k for k, _ in sorted_items]
 class_ids = [v for _, v in sorted_items]
 
+fig, ax = plt.subplots(figsize=(4.4, 3.8))
+# Each row sums to 100 %: the share of a true class given to each prediction
 ConfusionMatrixDisplay.from_predictions(
-    y_true, y_pred, labels=class_ids, display_labels=labels
+    y_true,
+    y_pred,
+    labels=class_ids,
+    display_labels=[label.replace("_", " ") for label in labels],
+    normalize="true",
+    values_format=".0%",
+    cmap="Blues",
+    colorbar=False,
+    ax=ax,
 )
+ax.set_xlabel("Predicted class")
+ax.set_ylabel("True class")
+fig.tight_layout()
 ```
 
 ![plot bcic iv 2a moabb trial](../../_images/sphx_glr_plot_bcic_iv_2a_moabb_trial_002.png)
-```none
-<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay object at 0x7a4d9ee67950>
-```
-
-<!-- GENERATED FROM PYTHON SOURCE LINES 374-392 -->
+<!-- GENERATED FROM PYTHON SOURCE LINES 424-442 -->
 
 <a id="references"></a>
 
@@ -726,6 +772,6 @@ nipy, NIPY, Nipy, etc... -->
 <!-- spd_learn -->
 <!-- vim: ft=rst -->
 
-**Total running time of the script:** (0 minutes 28.488 seconds)
+**Total running time of the script:** (0 minutes 34.128 seconds)
 
 <a id="sphx-glr-download-auto-examples-model-building-plot-bcic-iv-2a-moabb-trial-py"></a>

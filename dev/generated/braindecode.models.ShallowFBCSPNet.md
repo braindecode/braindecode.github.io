@@ -2,7 +2,7 @@ Braindecode package version: 2.1.0dev0
 
 Documentation scope: https://braindecode.org/dev/
 
-Source commit: [2a943df6c8415721086e46156cd1e2de633fc3ab](https://github.com/braindecode/braindecode/tree/2a943df6c8415721086e46156cd1e2de633fc3ab)
+Source commit: [535c15fef7119d5ecc0efdf2203851e35d8d5646](https://github.com/braindecode/braindecode/tree/535c15fef7119d5ecc0efdf2203851e35d8d5646)
 
 Canonical HTML: [ShallowFBCSPNet model reference](https://braindecode.org/dev/generated/braindecode.models.ShallowFBCSPNet.html)
 
@@ -168,7 +168,7 @@ See [Loading and Adapting Pretrained Foundation Models](../auto_examples/model_b
 
 * [Benchmarking eager and lazy loading](../auto_examples/datasets_io/benchmark_lazy_eager_loading.html)
 
-* [Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset](../auto_examples/advanced_training/bcic_iv_4_ecog_cropped.html)
+* [Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset](../auto_examples/advanced_training/plot_bcic_iv_4_ecog_cropped.html)
 
 * [Data Augmentation on BCIC IV 2a Dataset](../auto_examples/advanced_training/plot_data_augmentation.html)
 

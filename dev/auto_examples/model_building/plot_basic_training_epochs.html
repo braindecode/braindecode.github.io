@@ -490,9 +490,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../datasets_io/index.html">Loading and organizing data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/benchmark_lazy_eager_loading.html">Benchmarking eager and lazy loading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/bids_dataset_example.html">BIDS Dataset Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets_io/hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_benchmark_preprocessing.html">Benchmarking preprocessing with parallelization and serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_custom_dataset_example.html">Custom Dataset Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_hub_integration.html">Uploading and downloading datasets to Hugging Face Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_load_save_datasets.html">Load and save dataset example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_mne_dataset_example.html">MNE Dataset Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets_io/plot_moabb_dataset_example.html">MOABB Dataset Example</a></li>
@@ -501,7 +501,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_training/index.html">Advanced neural network training strategies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../advanced_training/bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_bcic_iv_4_ecog_cropped.html">Fingers flexion cropped decoding on BCIC IV 4 ECoG Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation.html">Data Augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_data_augmentation_search.html">Searching the best data augmentation on BCIC IV 2a Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_training/plot_exca_config.html">Experiment configuration with Pydantic and Exca</a></li>
@@ -909,6 +909,9 @@ with the prefix <code class="docutils literal notranslate"><span class="pre">mod
 </span>    <span class="n">module__final_conv_length</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">auto</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">train_split</span><span class="o">=</span><a class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class reference external" href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit"><span class="n">ValidSplit</span></a><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span>    <span class="c1"># To train a neural network you need validation split, here, we use 20%.</span><span class="w">
+</span>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span><span class="w">
+</span>    <span class="c1"># The 80 training examples are fewer than the default batch size (128); as</span><span class="w">
+</span>    <span class="c1"># incomplete batches are dropped, a smaller batch size is needed to train.</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <p>In this example, we passed one additional parameter to the wrapper: <code class="docutils literal notranslate"><span class="pre">module__final_conv_length</span></code>
@@ -932,20 +935,18 @@ to extract these parameters:</p>
 we can train it by simply calling the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-method reference external" href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier.fit" title="skorch.classifier.NeuralNetClassifier.fit"><span class="n">net</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray"><span class="n">epochs</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">y</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/braindecode/braindecode/braindecode/eegneuralnet.py:388: UserWarning: The training set has 80 example(s), which is smaller than batch_size=128. With iterator_train__drop_last=True (the braindecode default), all training batches are dropped and the model is not trained. Reduce batch_size to at most 80, or pass iterator_train__drop_last=False.
-  warnings.warn(
-  epoch    valid_acc    valid_loss     dur
--------  -----------  ------------  ------
-      1       0.3000       15.6130  0.0180
-      2       0.3000       15.6130  0.0118
-      3       0.3000       15.6130  0.0136
-      4       0.3000       15.6130  0.0147
-      5       0.3000       15.6130  0.0143
-      6       0.3000       15.6130  0.0133
-      7       0.3000       15.6130  0.0129
-      8       0.3000       15.6130  0.0132
-      9       0.3000       15.6130  0.0131
-     10       0.3000       15.6130  0.0115
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss    valid_acc    valid_loss     dur
+-------  ------------  -----------  ------------  ------
+      1        1.4426       0.2000        1.5330  0.2745
+      2        1.3579       0.1500        1.5125  0.2953
+      3        1.3256       0.2000        1.5048  0.2256
+      4        1.2499       0.2500        1.4942  0.2132
+      5        1.1787       0.3000        1.4884  0.2099
+      6        1.1205       0.2500        1.4884  0.2092
+      7        1.0768       0.3000        1.4921  0.2881
+      8        1.0185       0.3000        1.4905  0.2152
+      9        0.9787       0.3000        1.4959  0.2034
+     10        0.9577       0.3000        1.4927  0.2140
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1740,7 +1741,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">batch_size</td>
-            <td class="value">128</td>
+            <td class="value">16</td>
         </tr>
 
 
@@ -1784,7 +1785,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">train_split</td>
-            <td class="value">&lt;skorch.datas...x7af560f34ec0&gt;</td>
+            <td class="value">&lt;skorch.datas...x704db75b51f0&gt;</td>
         </tr>
 
 
@@ -1905,7 +1906,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__epoch_timer</td>
-            <td class="value">&lt;skorch.callb...x7af55d7c0140&gt;</td>
+            <td class="value">&lt;skorch.callb...x704db5974500&gt;</td>
         </tr>
 
 
@@ -1916,7 +1917,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__train_loss</td>
-            <td class="value">&lt;skorch.callb...x7af55cf4c830&gt;</td>
+            <td class="value">&lt;skorch.callb...x704db51273e0&gt;</td>
         </tr>
 
 
@@ -1927,7 +1928,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__train_loss__scoring</td>
-            <td class="value">&lt;function tra...x7af560af8900&gt;</td>
+            <td class="value">&lt;function tra...x704db7be09a0&gt;</td>
         </tr>
 
 
@@ -1971,7 +1972,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__train_loss__target_extractor</td>
-            <td class="value">&lt;function noo...x7af560af8720&gt;</td>
+            <td class="value">&lt;function noo...x704db7be07c0&gt;</td>
         </tr>
 
 
@@ -1993,7 +1994,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__valid_loss</td>
-            <td class="value">&lt;skorch.callb...x7af55cf3e870&gt;</td>
+            <td class="value">&lt;skorch.callb...x704db487c740&gt;</td>
         </tr>
 
 
@@ -2004,7 +2005,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__valid_loss__scoring</td>
-            <td class="value">&lt;function val...x7af560af89a0&gt;</td>
+            <td class="value">&lt;function val...x704db7be0a40&gt;</td>
         </tr>
 
 
@@ -2048,7 +2049,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__valid_loss__target_extractor</td>
-            <td class="value">&lt;function noo...x7af560af8720&gt;</td>
+            <td class="value">&lt;function noo...x704db7be07c0&gt;</td>
         </tr>
 
 
@@ -2070,7 +2071,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__valid_acc</td>
-            <td class="value">&lt;skorch.callb...x7af55d807290&gt;</td>
+            <td class="value">&lt;skorch.callb...x704db4343020&gt;</td>
         </tr>
 
 
@@ -2125,7 +2126,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__valid_acc__target_extractor</td>
-            <td class="value">&lt;function to_...x7af560abfc40&gt;</td>
+            <td class="value">&lt;function to_...x704db7babce0&gt;</td>
         </tr>
 
 
@@ -2147,7 +2148,7 @@ a.param-doc-link::before {
                           this.parentElement.nextElementSibling)"
             ></button></td>
             <td class="param">callbacks__print_log</td>
-            <td class="value">&lt;skorch.callb...x7af55d3991c0&gt;</td>
+            <td class="value">&lt;skorch.callb...x704db4667f80&gt;</td>
         </tr>
 
 
@@ -2290,7 +2291,7 @@ a.param-doc-link::before {
        <tr class="default">
            <td class="param"><a class="param-doc-link" style="text-decoration:none;">callbacks_</a></td>
            <td class="fitted-att-type">list</td>
-           <td>[(&#x27;ep...er&#x27;, &lt;skorch.callb...x7af560f12750&gt;), (&#x27;tr...ss&#x27;, &lt;skorch.callb...x7af5603ccef0&gt;), (&#x27;va...ss&#x27;, &lt;skorch.callb...x7af5604094c0&gt;), (&#x27;va...cc&#x27;, &lt;skorch.callb...x7af5604094f0&gt;), ...]</td>
+           <td>[(&#x27;ep...er&#x27;, &lt;skorch.callb...x704db74edcd0&gt;), (&#x27;tr...ss&#x27;, &lt;skorch.callb...x704db74ec500&gt;), (&#x27;va...ss&#x27;, &lt;skorch.callb...x704db74ec920&gt;), (&#x27;va...cc&#x27;, &lt;skorch.callb...x704db74eedb0&gt;), ...]</td>
 
 
        </tr>
@@ -2585,7 +2586,70 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-1');</script></body>
 </div>
 <br />
-<br /><p>The pre-trained model is accessible via the <code class="docutils literal notranslate"><span class="pre">module_</span></code> attribute:</p>
+<br /><p><code class="docutils literal notranslate"><span class="pre">net.history</span></code> keeps the loss of each epoch on the training data and on
+the 20 % validation split, and the validation accuracy. Our labels are
+random, so the network has nothing to learn: the validation accuracy
+stays around the 25 % chance level of four balanced classes.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">BLUE</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">GREY</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">INK</span></a> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">#0072B2</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">#7F7F7F</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">#14181F</span><span class="s2">&quot;</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.rcdefaults.html#matplotlib.pyplot.rcdefaults" title="matplotlib.pyplot.rcdefaults"><span class="n">plt</span><span class="o">.</span><span class="n">rcdefaults</span></a><span class="p">(</span><span class="p">)</span>  <span class="c1"># importing MOABB applies seaborn's &quot;whitegrid&quot; style globally</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-method reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict.update" title="dict.update"><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><span class="w">
+</span>    <span class="p">{</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">figure.facecolor</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">white</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">axes.facecolor</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">white</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">font.family</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">sans-serif</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">font.size</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">axes.labelsize</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">axes.titlesize</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">10.5</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">xtick.labelsize</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">ytick.labelsize</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">axes.linewidth</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">axes.spines.top</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">axes.spines.right</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">xtick.direction</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">out</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">ytick.direction</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">out</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">}</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">history_epochs</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">net</span></a><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">epoch</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <span class="p">(</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax_loss</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax_acc</span></a><span class="p">)</span> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">)</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">constrained</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">split</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a> <span class="ow">in</span> <span class="p">[</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Train</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">GREY</span></a><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">Valid</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">BLUE</span></a><span class="p">)</span><span class="p">]</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">loss</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">net</span></a><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">split</span></a><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="p">)</span><span class="si">}</span><span class="s2">_loss</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax_loss</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">history_epochs</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">loss</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.annotate.html#matplotlib.axes.Axes.annotate" title="matplotlib.axes.Axes.annotate"><span class="n">ax_loss</span><span class="o">.</span><span class="n">annotate</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">split</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">xy</span><span class="o">=</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">history_epochs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">loss</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">offset points</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">center</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">bold</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax_acc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">history_epochs</span></a><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-braindecode sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.classifier.EEGClassifier.html#braindecode.classifier.EEGClassifier" title="braindecode.EEGClassifier"><span class="n">net</span></a><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">valid_acc</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">BLUE</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="matplotlib.axes.Axes.axhline"><span class="n">ax_acc</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">GREY</span></a><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">--</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="matplotlib.axes.Axes.text"><span class="n">ax_acc</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">history_epochs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">23</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">Chance (25</span><span class="s2">%</span><span class="s2">)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">GREY</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">fontsize</span><span class="o">=</span><span class="mf">8.5</span><span class="p">,</span><span class="w">
+</span>    <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">right</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">va</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">top</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim"><span class="n">ax_acc</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticks.html#matplotlib.axes.Axes.set_yticks" title="matplotlib.axes.Axes.set_yticks"><span class="n">ax_acc</span><span class="o">.</span><span class="n">set_yticks</span></a><span class="p">(</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">letter</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">title</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ylabel</span></a> <span class="ow">in</span> <span class="p">[</span><span class="w">
+</span>    <span class="p">(</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax_loss</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">A</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Cross-entropy loss</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Loss</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="p">(</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax_acc</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">B</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Validation accuracy</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Accuracy (</span><span class="s2">%</span><span class="s2">)</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">]</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">letter</span></a><span class="si">}</span><span class="s2">  </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">title</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">bold</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">color</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">INK</span></a><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Epoch</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ylabel</span></a><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axis sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axis.Axis.set_major_locator.html#matplotlib.axis.Axis.set_major_locator" title="matplotlib.axis.Axis.set_major_locator"><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span></a><span class="p">(</span><a class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.MaxNLocator" title="matplotlib.ticker.MaxNLocator"><span class="n">plt</span><span class="o">.</span><span class="n">MaxNLocator</span></a><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_plot_basic_training_epochs_001.png" srcset="../../_images/sphx_glr_plot_basic_training_epochs_001.png" alt="A  Cross-entropy loss, B  Validation accuracy" class = "sphx-glr-single-img"/><p>The pre-trained model is accessible via the <code class="docutils literal notranslate"><span class="pre">module_</span></code> attribute:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-braindecode-models sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/braindecode.models.ShallowFBCSPNet.html#braindecode.models.ShallowFBCSPNet" title="braindecode.models.ShallowFBCSPNet"><span class="n">net</span><span class="o">.</span><span class="n">module_</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>=================================================================================================================================================
@@ -2652,7 +2716,7 @@ Human Brain Mapping, Aug. 2017.
 Online: <a class="reference external" href="http://dx.doi.org/10.1002/hbm.23730">http://dx.doi.org/10.1002/hbm.23730</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.381 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.760 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-model-building-plot-basic-training-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fff46913db5173d3ae22c1113acffb45/plot_basic_training_epochs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_basic_training_epochs.ipynb</span></code></a></p>
